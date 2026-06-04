@@ -493,13 +493,7 @@ export default function App() {
                       <button
                         key={ch.number}
                         onClick={() => {
-                          if (ch.type === 'red') {
-                            setActivePrivateChannel(ch);
-                          } else {
-                            setChannelNumber(ch.number);
-                            setIsChannelListOpen(false);
-                            setSearchQuery('');
-                          }
+                          setActivePrivateChannel(ch);
                         }}
                         className="w-full flex items-center p-0 hover:bg-gray-50 active:bg-gray-100 text-left cursor-pointer select-none focus:outline-none"
                       >
@@ -535,7 +529,13 @@ export default function App() {
                       onClick={() => {
                         const ch = activePrivateChannel;
                         setActivePrivateChannel(null);
-                        setRestrictedChannel(ch);
+                        if (ch.type === 'red') {
+                          setRestrictedChannel(ch);
+                        } else {
+                          setChannelNumber(ch.number);
+                          setIsChannelListOpen(false);
+                          setSearchQuery('');
+                        }
                       }}
                       className="w-full text-left px-5 py-4.5 hover:bg-gray-50 active:bg-gray-100 text-[16px] text-gray-800 font-medium border-b border-gray-100 cursor-pointer select-none focus:outline-none"
                     >
@@ -578,30 +578,85 @@ export default function App() {
 
               {infoChannel && (
                 <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-60 p-6 animate-in fade-in duration-100">
-                  <div className="bg-white w-[85%] max-w-[300px] rounded-2xl shadow-2xl flex flex-col p-6 animate-in fade-in zoom-in-95 duration-100 text-left">
-                    <h3 className="text-[17px] font-bold text-gray-800">
-                      Informasi Channel {infoChannel.number}
-                    </h3>
-                    <div className="mt-3.5 space-y-2 text-[14px] text-gray-600">
-                      <p>
-                        <strong className="text-gray-700">Nama:</strong> {infoChannel.name}
-                      </p>
-                      <p>
-                        <strong className="text-gray-700">Tipe:</strong>{' '}
-                        <span className="font-semibold text-red-600">Terbatas (Private)</span>
-                      </p>
-                      <p>
-                        <strong className="text-gray-700">Pengguna Aktif:</strong>{' '}
+                  {/* Backdrop dismiss for info dialog */}
+                  <div className="absolute inset-0" onClick={() => setInfoChannel(null)} />
+                  <div className="bg-white w-[85%] max-w-[300px] rounded-2xl shadow-2xl flex flex-col p-5 z-10 animate-in fade-in zoom-in-95 duration-100 text-left border border-gray-100">
+                    {/* Header */}
+                    <div className="flex items-center gap-2 pb-2.5">
+                      <svg
+                        className="w-5 h-5 text-[#0c62a8] shrink-0"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="16" x2="12" y2="12" />
+                        <line x1="12" y1="8" x2="12.01" y2="8" />
+                      </svg>
+                      <h3 className="text-[16px] font-bold text-gray-800">
+                        Channel {infoChannel.number}
+                      </h3>
+                    </div>
+
+                    {/* Logo in the middle */}
+                    <div className="flex items-center justify-center py-4">
+                      <svg
+                        viewBox="0 0 100 100"
+                        className="h-[75px] w-auto shrink-0"
+                        style={{
+                          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))',
+                        }}
+                      >
+                        <circle cx="50" cy="50" r="10" fill="#EF4444" />
+                        <path
+                          d="M 37.3 62.7 A 18 18 0 1 1 62.7 62.7"
+                          stroke="#10B981"
+                          strokeWidth="4.5"
+                          strokeLinecap="round"
+                          fill="none"
+                        />
+                        <path
+                          d="M 30.2 69.8 A 28 28 0 1 1 69.8 69.8"
+                          stroke="#34D399"
+                          strokeWidth="4.5"
+                          strokeLinecap="round"
+                          fill="none"
+                        />
+                        <path
+                          d="M 23.1 76.9 A 38 38 0 1 1 76.9 76.9"
+                          stroke="#A7F3D0"
+                          strokeWidth="4.5"
+                          strokeLinecap="round"
+                          fill="none"
+                        />
+                      </svg>
+                    </div>
+
+                    {/* Table-like Detail Rows */}
+                    <div className="flex border-t border-gray-100 py-3.5 text-[14px]">
+                      <span className="w-14 font-bold text-gray-400 shrink-0">Nama</span>
+                      <span className="font-bold text-gray-800 flex-1 min-w-0 break-words">
+                        {infoChannel.name}
+                      </span>
+                    </div>
+                    <div className="flex border-t border-b border-gray-100 py-3.5 text-[14px]">
+                      <span className="w-14 font-bold text-gray-400 shrink-0">Info</span>
+                      <span className="font-semibold text-gray-700 flex-1 min-w-0 break-words">
                         {infoChannel.users.length > 0 ? (
-                          <span className="font-semibold text-gray-800">
-                            {infoChannel.users.join(', ')}
+                          <span>
+                            {infoChannel.users.length} Pengguna • {infoChannel.users.join(', ')}
                           </span>
                         ) : (
-                          <span className="italic text-gray-400">Tidak ada pengguna</span>
+                          <span>0 Pengguna</span>
                         )}
-                      </p>
+                      </span>
                     </div>
-                    <div className="mt-6 flex justify-center">
+
+                    {/* Tutup Button */}
+                    <div className="mt-5 flex justify-center">
                       <button
                         onClick={() => setInfoChannel(null)}
                         className="text-[15px] font-bold text-[#0c62a8] hover:text-[#0b5490] px-6 py-2 cursor-pointer focus:outline-none select-none"
