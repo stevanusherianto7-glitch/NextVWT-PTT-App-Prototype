@@ -489,9 +489,7 @@ export default function App() {
             </div>
 
             {/* Main Content */}
-            <div
-              className={`flex-1 w-full max-w-[400px] flex flex-col items-center ${isUserListOpen ? 'pt-0 px-4' : 'pt-8 px-4'} pb-20 relative`}
-            >
+            <div className="flex-1 w-full max-w-[400px] flex flex-col items-center pt-8 px-4 pb-20 relative">
               {isUserListOpen ? (
                 <UserListModal
                   channel={channel}

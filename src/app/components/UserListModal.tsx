@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { usePTTStore } from '../store/usePTTStore';
 
 interface UserListModalProps {
   channel: number;
@@ -336,6 +337,28 @@ export function UserListModal({
   users,
   onClose: _onClose,
 }: UserListModalProps) {
+  const isTransmitting = usePTTStore((state) => state.isTransmitting);
+  const [activeSpeakerIdx, setActiveSpeakerIdx] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (isTransmitting) {
+      setActiveSpeakerIdx(null);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      const rand = Math.random();
+      if (rand < 0.4) {
+        const randomIdx = Math.floor(Math.random() * users.length);
+        setActiveSpeakerIdx(randomIdx);
+      } else {
+        setActiveSpeakerIdx(null);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [isTransmitting, users.length]);
+
   // Map user list or generate dynamic fallback
   const allUsersMapped = users.map((username) => {
     if (USER_PROFILES[username]) {
@@ -345,7 +368,7 @@ export function UserListModal({
   });
 
   return (
-    <div className="w-full h-[402px] -mt-8 bg-white border-x border-b border-gray-300 rounded-b-2xl flex flex-col overflow-hidden animate-in fade-in duration-200">
+    <div className="w-full h-[402px] -mt-8 pt-8 bg-white border-x border-b border-gray-300 rounded-b-2xl flex flex-col overflow-hidden animate-in fade-in duration-200">
       <style>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 1px;
@@ -381,40 +404,55 @@ export function UserListModal({
 
         {/* Users List */}
         {allUsersMapped.length > 0 ? (
-          allUsersMapped.map((profile, idx) => (
-            <div
-              key={`${profile.callSign}-${idx}`}
-              className="w-full flex items-center px-4 py-2.5 hover:bg-white active:bg-gray-100 transition-colors bg-[#fafbfc]"
-            >
-              {/* Avatar with status overlay */}
-              <div className="relative w-11 h-11 shrink-0 select-none">
-                <AvatarImage
-                  src={profile.avatarUrl}
-                  displayName={profile.displayName}
-                  avatarColor={profile.avatarColor}
-                />
-                {/* Blue status overlay badge */}
-                <div className="absolute bottom-0 right-0 w-[15px] h-[15px] bg-[#0088cc] rounded-full border-[1.5px] border-white flex items-center justify-center shadow-sm">
-                  <svg viewBox="0 0 24 24" className="w-2 h-2 text-white" fill="currentColor">
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                  </svg>
-                </div>
-              </div>
+          allUsersMapped.map((profile, idx) => {
+            const isLocalUser = profile.callSign === '2DYUA';
+            const isSpeaking =
+              (isTransmitting && isLocalUser) || (!isTransmitting && idx === activeSpeakerIdx);
 
-              {/* Name & Details */}
-              <div className="ml-3 flex-1 min-w-0 text-left">
-                <div className="text-[14px] font-bold text-gray-800 truncate leading-snug">
-                  {profile.displayName}
+            return (
+              <div
+                key={`${profile.callSign}-${idx}`}
+                className="w-full flex items-center px-4 py-2.5 hover:bg-white active:bg-gray-100 transition-colors bg-[#fafbfc]"
+              >
+                {/* Avatar with status overlay */}
+                <div className="relative w-11 h-11 shrink-0 select-none">
+                  <AvatarImage
+                    src={profile.avatarUrl}
+                    displayName={profile.displayName}
+                    avatarColor={profile.avatarColor}
+                  />
+                  {/* Blue status overlay badge */}
+                  <div className="absolute bottom-0 right-0 w-[15px] h-[15px] bg-[#0088cc] rounded-full border-[1.5px] border-white flex items-center justify-center shadow-sm">
+                    <svg viewBox="0 0 24 24" className="w-2 h-2 text-white" fill="currentColor">
+                      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                    </svg>
+                  </div>
                 </div>
-                <div className="flex items-center text-[11px] mt-0.5 truncate gap-1.5 font-medium leading-none">
-                  <span className="text-[#0088cc] font-extrabold tracking-wide">
-                    {profile.callSign}
-                  </span>
-                  <span className="text-gray-500 font-bold uppercase">{profile.location}</span>
+
+                {/* Name & Details */}
+                <div className="ml-3 flex-1 min-w-0 text-left">
+                  <div className="text-[14px] font-bold text-gray-800 truncate leading-snug">
+                    {profile.displayName}
+                  </div>
+                  <div className="flex items-center text-[11px] mt-0.5 truncate gap-1.5 font-medium leading-none">
+                    <span className="text-[#0088cc] font-extrabold tracking-wide">
+                      {profile.callSign}
+                    </span>
+                    <span className="text-gray-500 font-bold uppercase">{profile.location}</span>
+                  </div>
                 </div>
+
+                {/* Active Speaker Megaphone Toa Icon */}
+                {isSpeaking && (
+                  <div className="mr-1 flex items-center justify-center animate-pulse text-gray-500">
+                    <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="currentColor">
+                      <path d="M16 5v14c0 .55-.45 1-1 1h-1l-4-4H6c-1.1 0-2-.9-2-2v-4c0-1.1.9-2 2-2h4l4-4h1c.55 0 1 .45 1 1zm3 7c0-2.03-1.02-3.82-2.58-4.88L15 8.56C16.2 9.29 17 10.55 17 12s-.8 2.71-2 3.44l1.42 1.44C17.98 15.82 19 14.03 19 12zm-3-2.28c.59.54.96 1.3.96 2.28s-.37 1.74-.96 2.28l1.42 1.42c1.07-1 1.71-2.39 1.71-3.7s-.64-2.7-1.71-3.7l-1.42 1.42z" />
+                    </svg>
+                  </div>
+                )}
               </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className="p-8 text-center text-xs text-gray-400 font-semibold">
             Tidak ada pengguna ditemukan
