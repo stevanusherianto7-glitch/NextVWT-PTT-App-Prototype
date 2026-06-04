@@ -476,8 +476,8 @@ export default function App() {
                   filteredChannels.map((ch) => {
                     let bgClass = 'bg-gradient-to-b from-[#9E9E9E] to-[#616161]'; // Default gray
                     if (ch.type === 'green') {
-                      // High-end blue gradient like INDOVWT
-                      bgClass = 'bg-gradient-to-b from-[#1e88e5] to-[#1565c0]';
+                      // High-end green gradient for NextVWT
+                      bgClass = 'bg-gradient-to-b from-[#4caf50] to-[#2e7d32]';
                     } else if (ch.type === 'red') {
                       // High-end red gradient
                       bgClass = 'bg-gradient-to-b from-[#e53935] to-[#c62828]';
