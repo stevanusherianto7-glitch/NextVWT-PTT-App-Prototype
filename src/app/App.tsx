@@ -457,7 +457,7 @@ export default function App() {
                     style={{
                       color: '#22c55e',
                       textShadow:
-                        '1px 1px 0px #16a34a, 2px 2px 0px #15803d, 3px 3px 0px #166534, 4px 4px 0px #14532d, 5px 5px 6px rgba(0,0,0,0.6)',
+                        '0px 1px 0px #16a34a, 0px -1px 0px #16a34a, 1px 0px 0px #16a34a, -1px 0px 0px #16a34a, 0px 2px 0px #15803d, 0px -2px 0px #15803d, 2px 0px 0px #15803d, -2px 0px 0px #15803d, 0px 3px 0px #166534, 0px -3px 0px #166534, 3px 0px 0px #166534, -3px 0px 0px #166534, 0px 4px 0px #14532d, 0px -4px 0px #14532d, 4px 0px 0px #14532d, -4px 0px 0px #14532d, 0px 5px 6px rgba(0,0,0,0.6)',
                     }}
                   >
                     NEXT
@@ -500,7 +500,7 @@ export default function App() {
                     style={{
                       color: '#22c55e',
                       textShadow:
-                        '1px 1px 0px #16a34a, 2px 2px 0px #15803d, 3px 3px 0px #166534, 4px 4px 0px #14532d, 5px 5px 6px rgba(0,0,0,0.6)',
+                        '0px 1px 0px #16a34a, 0px -1px 0px #16a34a, 1px 0px 0px #16a34a, -1px 0px 0px #16a34a, 0px 2px 0px #15803d, 0px -2px 0px #15803d, 2px 0px 0px #15803d, -2px 0px 0px #15803d, 0px 3px 0px #166534, 0px -3px 0px #166534, 3px 0px 0px #166534, -3px 0px 0px #166534, 0px 4px 0px #14532d, 0px -4px 0px #14532d, 4px 0px 0px #14532d, -4px 0px 0px #14532d, 0px 5px 6px rgba(0,0,0,0.6)',
                     }}
                   >
                     VWT
