@@ -18,6 +18,40 @@ interface ChannelItem {
 const STATIC_CHANNELS: ChannelItem[] = [
   { number: 0, name: 'DUKUNGAN & BANTUAN', type: 'green', users: [] },
   {
+    number: 100,
+    name: 'LANDING-ECHO CHANNEL',
+    type: 'green',
+    users: [
+      'Pebri Haryanto',
+      'antoni_99',
+      'budi_salatiga',
+      'rudi_bandung',
+      'medan_dx',
+      'palembang_line',
+      'touring_rider',
+      'ninja_club',
+      'pak_rudi_rt',
+      'siskamling_1',
+      'lalin_update',
+      'anto_bekasi',
+      'doni_depok',
+      'makassar_boy',
+      'sar_team_1',
+      'mount_hiker',
+      'support_admin',
+      'eko_pratama',
+      'dewi_sari',
+      'siti_aminah',
+      'joko_susilo',
+      'hendra_w',
+      'yudi_antara',
+      'agus_setiawan',
+      'roni_h',
+      'irma_p',
+      'pebri_fans',
+    ],
+  },
+  {
     number: 1,
     name: 'KOPDAR NASIONAL UTAMA',
     type: 'green',
@@ -67,40 +101,6 @@ const STATIC_CHANNELS: ChannelItem[] = [
   { number: 28, name: 'STANDBY CHANNEL 28', type: 'gray', users: [] },
   { number: 29, name: 'STANDBY CHANNEL 29', type: 'gray', users: [] },
   { number: 30, name: 'BANTUAN TEKNIS ADMIN', type: 'red', users: ['support_admin'] },
-  {
-    number: 100,
-    name: 'LANDING-ECHO CHANNEL',
-    type: 'green',
-    users: [
-      'Pebri Haryanto',
-      'antoni_99',
-      'budi_salatiga',
-      'rudi_bandung',
-      'medan_dx',
-      'palembang_line',
-      'touring_rider',
-      'ninja_club',
-      'pak_rudi_rt',
-      'siskamling_1',
-      'lalin_update',
-      'anto_bekasi',
-      'doni_depok',
-      'makassar_boy',
-      'sar_team_1',
-      'mount_hiker',
-      'support_admin',
-      'eko_pratama',
-      'dewi_sari',
-      'siti_aminah',
-      'joko_susilo',
-      'hendra_w',
-      'yudi_antara',
-      'agus_setiawan',
-      'roni_h',
-      'irma_p',
-      'pebri_fans',
-    ],
-  },
 ];
 
 function getChannelUserCount(channelNum: number): number {
@@ -188,7 +188,9 @@ export default function App() {
 
   const displayUser = infoText ? infoText.toUpperCase() : 'USER';
   const displayLoc = locationText ? locationText.toUpperCase() : 'BANDUNG, JAWA BARAT';
-  const marqueeText = `CHANNEL ${channel} • ${displayUser} (${displayLoc}) • STANDBY • READY`;
+  const activeChannelObj = STATIC_CHANNELS.find((ch) => ch.number === channel);
+  const channelNameStr = activeChannelObj ? activeChannelObj.name.toUpperCase() : 'STANDBY CHANNEL';
+  const marqueeText = `CHANNEL ${channel} • ${channelNameStr} • ${displayUser} (${displayLoc}) • STANDBY • READY`;
 
   const filteredChannels = STATIC_CHANNELS.filter(
     (ch) =>
@@ -526,8 +528,13 @@ export default function App() {
                   filteredChannels.map((ch) => {
                     let bgClass = 'bg-gradient-to-b from-[#9E9E9E] to-[#616161]'; // Default gray
                     if (ch.type === 'green') {
-                      // High-end green gradient for NextVWT
-                      bgClass = 'bg-gradient-to-b from-[#4caf50] to-[#2e7d32]';
+                      if (ch.number === 0 || ch.number === 100) {
+                        // Hijau tua premium untuk channel 000 dan 100
+                        bgClass = 'bg-gradient-to-b from-[#1b5e20] to-[#0e3b12]';
+                      } else {
+                        // Hijau muda segar untuk channel umum
+                        bgClass = 'bg-gradient-to-b from-[#66bb6a] to-[#388e3c]';
+                      }
                     } else if (ch.type === 'red') {
                       // High-end red gradient
                       bgClass = 'bg-gradient-to-b from-[#e53935] to-[#c62828]';
