@@ -64,7 +64,7 @@
 .toggle-indicator.right {
   right: 10%;
   border-radius: 0 100px 100px 0;
-  background-image: linear-gradient(180deg, #9ca6b1 10%, #8b96a2 60%, #768390);
+  background: linear-gradient(180deg, #d32f2f 10%, #b71c1c 60%, #7f0000);
 }
 
 .toggle-button {

@@ -58,7 +58,7 @@ function resetStore() {
     channelId: getChannelUUID(100),
     userId: '',
     error: null,
-    infoText: '',
+    infoText: 'Pebe Herianto',
     locationText: 'BANDUNG, JAWA BARAT',
     showMyPhoto: true,
     showOtherPhotos: true,
