@@ -12,6 +12,7 @@ interface UserProfile {
   callSign: string;
   location: string;
   avatarColor: string;
+  avatarUrl: string;
 }
 
 const USER_PROFILES: Record<string, UserProfile> = {
@@ -20,168 +21,224 @@ const USER_PROFILES: Record<string, UserProfile> = {
     callSign: '2DYUA',
     location: 'BANDUNG, JABAR',
     avatarColor: '#3F51B5',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1504257404764-5a9b0ad04e26?w=80&h=80&fit=crop&crop=faces',
   },
   'Pebe Herianto': {
     displayName: 'Pebe Herianto',
     callSign: '2DYUA',
     location: 'BANDUNG, JABAR',
     avatarColor: '#3F51B5',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1504257404764-5a9b0ad04e26?w=80&h=80&fit=crop&crop=faces',
   },
   antoni_99: {
     displayName: 'Arthur',
     callSign: 'FLPSP',
     location: 'CILEGON, BANTEN',
     avatarColor: '#E91E63',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80&h=80&fit=crop&crop=faces',
   },
   budi_salatiga: {
     displayName: 'Benhur',
     callSign: '6EKR4',
     location: 'DEMAK, JATENG',
     avatarColor: '#9C27B0',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=80&h=80&fit=crop&crop=faces',
   },
   rudi_bandung: {
     displayName: 'Ayda',
     callSign: 'L2P8G',
     location: 'SEMARANG, JATENG',
     avatarColor: '#FF9800',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=faces',
   },
   medan_dx: {
     displayName: 'Zainiz',
     callSign: '6Y2RM',
     location: 'BANDA ACEH, ACEH',
     avatarColor: '#009688',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=faces',
   },
   palembang_line: {
     displayName: 'Gun Pakabelo',
     callSign: 'JYQTJ',
     location: 'PALU, SULTENG',
     avatarColor: '#795548',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1628157582853-a796fa650a6a?w=80&h=80&fit=crop&crop=faces',
   },
   touring_rider: {
     displayName: 'Topo',
     callSign: '0S9W4',
     location: 'BANDAR LAMPUNG, LAMPUNG',
     avatarColor: '#4CAF50',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=80&h=80&fit=crop&crop=faces',
   },
   ninja_club: {
     displayName: 'Nengkleo',
     callSign: 'J3REY',
     location: 'PASURUAN, JATIM',
     avatarColor: '#00BCD4',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&h=80&fit=crop&crop=faces',
   },
   pak_rudi_rt: {
     displayName: 'Endang Wahyuni',
     callSign: 'JK4Z1',
     location: 'SOLO, JATENG',
     avatarColor: '#FF5722',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&h=80&fit=crop&crop=faces',
   },
   siskamling_1: {
     displayName: 'Gwenie',
     callSign: 'KWZ10',
     location: 'SAMARINDA, KALTIM',
     avatarColor: '#607D8B',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=80&h=80&fit=crop&crop=faces',
   },
   lalin_update: {
     displayName: 'Rudi Interizti',
     callSign: 'QR95J',
     location: 'CILACAP, JATENG',
     avatarColor: '#3F51B5',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=80&h=80&fit=crop&crop=faces',
   },
   anto_bekasi: {
     displayName: 'Vida',
     callSign: 'XGYQK',
     location: 'LIMA PULUH KOTA, SUMBAR',
     avatarColor: '#E91E63',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1554151228-14d9def656e4?w=80&h=80&fit=crop&crop=faces',
   },
   doni_depok: {
     displayName: 'Zaki',
     callSign: '1C0TT',
     location: 'SUMENEP, JATIM',
     avatarColor: '#9C27B0',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop&crop=faces',
   },
   makassar_boy: {
     displayName: 'Pin Ponelipu',
     callSign: '84NCR',
     location: 'MOROWALI, SULTENG',
     avatarColor: '#FF9800',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=80&h=80&fit=crop&crop=faces',
   },
   sar_team_1: {
     displayName: 'Dino',
     callSign: 'FKXFV',
     location: 'JAMBI KOTA, JAMBI',
     avatarColor: '#009688',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1639149888905-fb39731f2e6c?w=80&h=80&fit=crop&crop=faces',
   },
   mount_hiker: {
     displayName: 'Saif Sereyang',
     callSign: '5UFQ4',
     location: 'METRO, LAMPUNG',
     avatarColor: '#795548',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1607990283143-e81e7a2c93ab?w=80&h=80&fit=crop&crop=faces',
   },
   support_admin: {
     displayName: '☆•°•LÌÀ••°•☆',
     callSign: 'SATU HATI',
     location: 'SEMARANG, JATENG',
     avatarColor: '#4CAF50',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=80&h=80&fit=crop&crop=faces',
   },
   eko_pratama: {
     displayName: 'Gam Cantoy',
     callSign: 'H4T1P',
     location: 'BANDA ACEH, ACEH',
     avatarColor: '#00BCD4',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=80&h=80&fit=crop&crop=faces',
   },
   dewi_sari: {
     displayName: 'Neng Tien',
     callSign: 'NPT3U',
     location: 'PADANG LAWAS, SUMUT',
     avatarColor: '#FF5722',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=80&h=80&fit=crop&crop=faces',
   },
   siti_aminah: {
     displayName: 'Zha Zha',
     callSign: 'XJV6T',
     location: 'MADIUN, JATIM',
     avatarColor: '#607D8B',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1548142813-c348350df52b?w=80&h=80&fit=crop&crop=faces',
   },
   joko_susilo: {
     displayName: 'Putra Paser',
     callSign: '65TQH',
     location: 'BANTAENG, SULSEL',
     avatarColor: '#3F51B5',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=80&h=80&fit=crop&crop=faces',
   },
   hendra_w: {
     displayName: 'Hendra Wijaya',
     callSign: '8YFD3',
     location: 'DENPASAR, BALI',
     avatarColor: '#E91E63',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=80&h=80&fit=crop&crop=faces',
   },
   yudi_antara: {
     displayName: 'Yudi Antara',
     callSign: '5TGB7',
     location: 'MATARAM, NTB',
     avatarColor: '#9C27B0',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=80&h=80&fit=crop&crop=faces',
   },
   agus_setiawan: {
     displayName: 'Agus Setiawan',
     callSign: '4RFV2',
     location: 'SURABAYA, JATIM',
     avatarColor: '#FF9800',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=faces',
   },
   roni_h: {
     displayName: 'Roni Hidayat',
     callSign: '9OLK4',
     location: 'BALIKPAPAN, KALTIM',
     avatarColor: '#009688',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1513956589380-bad6acb9b9d4?w=80&h=80&fit=crop&crop=faces',
   },
   irma_p: {
     displayName: 'Irma Permata',
     callSign: '1QAZ2',
     location: 'PALEMBANG, SUMSEL',
     avatarColor: '#795548',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=80&h=80&fit=crop&crop=faces',
   },
   pebri_fans: {
     displayName: 'Pebri Fans Club',
     callSign: '7UJM8',
     location: 'CIREBON, JABAR',
     avatarColor: '#4CAF50',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=80&h=80&fit=crop&crop=faces',
   },
 };
 
@@ -234,12 +291,51 @@ function getDeterministicProfile(username: string): UserProfile {
   const nameParts = username.split(/[_\s]+/);
   const displayName = nameParts.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
 
-  return { displayName, callSign, location, avatarColor };
+  const picNum = (hash % 70) + 1;
+  const avatarUrl = `https://randomuser.me/api/portraits/${hash % 2 === 0 ? 'men' : 'women'}/${picNum}.jpg`;
+
+  return { displayName, callSign, location, avatarColor, avatarUrl };
 }
 
-export function UserListModal({ channel, channelName, users, onClose }: UserListModalProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+function AvatarImage({
+  src,
+  displayName,
+  avatarColor,
+}: {
+  src?: string;
+  displayName: string;
+  avatarColor: string;
+}) {
+  const [hasError, setHasError] = useState(false);
+  const initial = displayName.charAt(0).toUpperCase();
 
+  if (hasError || !src) {
+    return (
+      <div
+        className="w-full h-full rounded-full flex items-center justify-center text-white font-extrabold text-[17px] shadow-[inset_0_1.5px_3px_rgba(255,255,255,0.4)]"
+        style={{ backgroundColor: avatarColor }}
+      >
+        {initial}
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={displayName}
+      onError={() => setHasError(true)}
+      className="w-full h-full rounded-full object-cover shadow-[0_2px_4px_rgba(0,0,0,0.15)] border border-white/20"
+    />
+  );
+}
+
+export function UserListModal({
+  channel: _channel,
+  channelName: _channelName,
+  users,
+  onClose: _onClose,
+}: UserListModalProps) {
   // Map user list or generate dynamic fallback
   const allUsersMapped = users.map((username) => {
     if (USER_PROFILES[username]) {
@@ -248,15 +344,8 @@ export function UserListModal({ channel, channelName, users, onClose }: UserList
     return getDeterministicProfile(username);
   });
 
-  const filteredUsers = allUsersMapped.filter(
-    (u) =>
-      u.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.callSign.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.location.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   return (
-    <div className="w-full h-[470px] bg-white border-b border-gray-300 flex flex-col overflow-hidden animate-in fade-in duration-200">
+    <div className="w-full h-[402px] -mt-8 bg-white border-x border-b border-gray-300 rounded-b-2xl flex flex-col overflow-hidden animate-in fade-in duration-200">
       <style>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 1px;
@@ -273,101 +362,37 @@ export function UserListModal({ channel, channelName, users, onClose }: UserList
         }
       `}</style>
 
-      {/* Header */}
-      <div
-        className="flex items-center px-4 py-3 shrink-0 border-b border-gray-200"
-        style={{
-          background: 'linear-gradient(to bottom, #ffffff 0%, #f7f9fa 100%)',
-        }}
-      >
-        <button
-          onClick={onClose}
-          className="flex items-center gap-1 text-gray-700 hover:text-blue-600 active:scale-95 transition-all select-none p-1 -ml-1 rounded focus:outline-none"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="19" y1="12" x2="5" y2="12" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-          <span className="text-xs font-bold uppercase tracking-wider">Kembali</span>
-        </button>
-
-        <div className="flex-1 text-center mr-8">
-          <div className="text-[10px] text-gray-400 font-extrabold tracking-widest uppercase">
-            DAFTAR PENGGUNA
-          </div>
-          <div className="text-xs font-black text-gray-800 truncate uppercase mt-0.5">
-            CH {channel.toString().padStart(3, '0')} • {channelName}
-          </div>
-        </div>
-      </div>
-
-      {/* Search Input Box */}
-      <div className="p-3 bg-gray-50 border-b border-gray-100 shrink-0 relative">
-        <div className="absolute left-6.5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
-          <svg
-            viewBox="0 0 24 24"
-            className="w-4 h-4 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-        </div>
-        <input
-          type="text"
-          placeholder="Cari nama, callsign atau kota..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full border border-gray-200 rounded-lg pl-9 pr-4 py-2 text-xs bg-white text-black outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 font-semibold transition-all"
-        />
-      </div>
-
       {/* User List Container (Scrollable) */}
       <div className="flex-1 overflow-y-auto bg-[#fafbfc] divide-y divide-gray-100 custom-scrollbar">
-        {/* Server Row (Fixed first item like in IndoVWT screenshot) */}
-        {searchQuery === '' && (
-          <div className="w-full flex items-center px-4 py-2.5 border-b border-gray-100 bg-[#f4f7f6]">
-            <div className="w-11 h-11 shrink-0 rounded-full bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center shadow-inner relative">
-              <svg className="w-6 h-6 text-white fill-current" viewBox="0 0 24 24">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-              </svg>
-            </div>
-            <div className="ml-3 flex-1 min-w-0">
-              <div className="text-sm font-bold text-gray-900">Server</div>
-              <div className="text-[10px] text-gray-500 font-extrabold uppercase mt-0.5 tracking-wider">
-                SERVER NextVWT
-              </div>
+        {/* Server Row */}
+        <div className="w-full flex items-center px-4 py-2.5 border-b border-gray-100 bg-[#f4f7f6]">
+          <div className="w-11 h-11 shrink-0 rounded-full bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center shadow-inner relative">
+            <svg className="w-6 h-6 text-white fill-current" viewBox="0 0 24 24">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+          </div>
+          <div className="ml-3 flex-1 min-w-0 text-left">
+            <div className="text-sm font-bold text-gray-900">Server</div>
+            <div className="text-[10px] text-gray-500 font-extrabold uppercase mt-0.5 tracking-wider">
+              SERVER NextVWT
             </div>
           </div>
-        )}
+        </div>
 
         {/* Users List */}
-        {filteredUsers.length > 0 ? (
-          filteredUsers.map((profile, idx) => (
+        {allUsersMapped.length > 0 ? (
+          allUsersMapped.map((profile, idx) => (
             <div
               key={`${profile.callSign}-${idx}`}
               className="w-full flex items-center px-4 py-2.5 hover:bg-white active:bg-gray-100 transition-colors bg-[#fafbfc]"
             >
-              {/* Avatar with blue silhouette overlay */}
+              {/* Avatar with status overlay */}
               <div className="relative w-11 h-11 shrink-0 select-none">
-                <div
-                  className="w-full h-full rounded-full flex items-center justify-center text-white font-extrabold text-[17px] shadow-[inset_0_1.5px_3px_rgba(255,255,255,0.4),_0_2px_4px_rgba(0,0,0,0.1)]"
-                  style={{ backgroundColor: profile.avatarColor }}
-                >
-                  {profile.displayName.charAt(0).toUpperCase()}
-                </div>
+                <AvatarImage
+                  src={profile.avatarUrl}
+                  displayName={profile.displayName}
+                  avatarColor={profile.avatarColor}
+                />
                 {/* Blue status overlay badge */}
                 <div className="absolute bottom-0 right-0 w-[15px] h-[15px] bg-[#0088cc] rounded-full border-[1.5px] border-white flex items-center justify-center shadow-sm">
                   <svg viewBox="0 0 24 24" className="w-2 h-2 text-white" fill="currentColor">
@@ -377,7 +402,7 @@ export function UserListModal({ channel, channelName, users, onClose }: UserList
               </div>
 
               {/* Name & Details */}
-              <div className="ml-3 flex-1 min-w-0">
+              <div className="ml-3 flex-1 min-w-0 text-left">
                 <div className="text-[14px] font-bold text-gray-800 truncate leading-snug">
                   {profile.displayName}
                 </div>

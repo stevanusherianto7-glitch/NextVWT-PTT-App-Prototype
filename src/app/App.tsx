@@ -302,7 +302,14 @@ export default function App() {
                 borderBottom: '1px solid #a4b0be',
               }}
             >
-              <div className="flex items-center gap-3 relative z-20">
+              <div
+                onClick={() => {
+                  if (isPowerOn) {
+                    setIsUserListOpen(!isUserListOpen);
+                  }
+                }}
+                className={`flex items-center gap-3 relative z-20 ${isPowerOn ? 'cursor-pointer hover:opacity-85 active:scale-98 transition-all' : ''}`}
+              >
                 {/* Logo Section */}
                 <div className="relative flex items-center justify-center h-full">
                   <div className="relative flex items-center justify-center">
@@ -483,7 +490,7 @@ export default function App() {
 
             {/* Main Content */}
             <div
-              className={`flex-1 w-full max-w-[400px] flex flex-col items-center ${isUserListOpen ? 'pt-0 px-0' : 'pt-8 px-4'} pb-20 relative`}
+              className={`flex-1 w-full max-w-[400px] flex flex-col items-center ${isUserListOpen ? 'pt-0 px-4' : 'pt-8 px-4'} pb-20 relative`}
             >
               {isUserListOpen ? (
                 <UserListModal
@@ -495,7 +502,7 @@ export default function App() {
               ) : (
                 /* White Faceplate Container */
                 <div
-                  className="w-full bg-[#f0f3f6] flex flex-col items-center pt-6 pb-10 relative z-10"
+                  className="w-full bg-[#f0f3f6] flex flex-col items-center pt-6 pb-10 relative z-10 h-[370px]"
                   style={{
                     borderRadius: '40px 40px 200px 200px / 40px 40px 90px 90px',
                     boxShadow:
@@ -541,7 +548,7 @@ export default function App() {
               {/* PTT Button */}
               {showPTT && (
                 <div
-                  className={`${isUserListOpen ? 'mt-6 px-4' : 'mt-24'} mb-8 w-full flex justify-center transition-opacity duration-300 opacity-100 ${isPowerOn ? '' : 'pointer-events-none'}`}
+                  className={`mt-24 mb-8 w-full flex justify-center transition-opacity duration-300 opacity-100 ${isPowerOn ? '' : 'pointer-events-none'}`}
                 >
                   <PTTButton
                     isActive={isTransmitting}
