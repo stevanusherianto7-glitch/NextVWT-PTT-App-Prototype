@@ -238,7 +238,7 @@ export const usePTTStore = create<PTTState>((set) => ({
     set((state) => {
       if (!state.isPowerOn) return {};
       const nextVal = typeof numOrFn === 'function' ? numOrFn(state.channelNumber) : numOrFn;
-      const clamped = Math.max(1, Math.min(999, nextVal));
+      const clamped = Math.max(0, Math.min(999, nextVal));
 
       // Subscribe to the new channel
       setTimeout(() => subscribeToChannel(clamped), 0);
@@ -295,7 +295,7 @@ export const usePTTStore = create<PTTState>((set) => ({
   channelUp: () =>
     set((state) => {
       if (!state.isPowerOn) return {};
-      const nextVal = state.channelNumber >= 999 ? 1 : state.channelNumber + 1;
+      const nextVal = state.channelNumber >= 999 ? 0 : state.channelNumber + 1;
 
       setTimeout(() => subscribeToChannel(nextVal), 0);
       safeSetStorage({ channelNumber: nextVal });
@@ -309,7 +309,7 @@ export const usePTTStore = create<PTTState>((set) => ({
   channelDown: () =>
     set((state) => {
       if (!state.isPowerOn) return {};
-      const nextVal = state.channelNumber <= 1 ? 999 : state.channelNumber - 1;
+      const nextVal = state.channelNumber <= 0 ? 999 : state.channelNumber - 1;
 
       setTimeout(() => subscribeToChannel(nextVal), 0);
       safeSetStorage({ channelNumber: nextVal });

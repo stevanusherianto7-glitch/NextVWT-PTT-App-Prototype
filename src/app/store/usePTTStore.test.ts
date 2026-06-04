@@ -116,17 +116,17 @@ describe('usePTTStore – Core Unit Tests', () => {
     expect(updatedState.channelId).toMatch(UUID_V4_REGEX);
   });
 
-  it('should clamp channel numbers between 1 and 999', () => {
+  it('should clamp channel numbers between 0 and 999', () => {
     const state = usePTTStore.getState();
 
     state.setChannelNumber(1000);
     expect(usePTTStore.getState().channelNumber).toBe(999);
 
     state.setChannelNumber(0);
-    expect(usePTTStore.getState().channelNumber).toBe(1);
+    expect(usePTTStore.getState().channelNumber).toBe(0);
 
     state.setChannelNumber(-50);
-    expect(usePTTStore.getState().channelNumber).toBe(1);
+    expect(usePTTStore.getState().channelNumber).toBe(0);
   });
 
   it('should support callback function updater syntax for channel transitions', () => {
@@ -175,7 +175,7 @@ describe('usePTTStore – Core Unit Tests', () => {
     expect(updatedState.progress).toBe(0);
   });
 
-  it('should increment channel number with channelUp and wrap from 999 to 1', () => {
+  it('should increment channel number with channelUp and wrap from 999 to 0', () => {
     const state = usePTTStore.getState();
 
     state.channelUp();
@@ -184,18 +184,18 @@ describe('usePTTStore – Core Unit Tests', () => {
 
     state.setChannelNumber(999);
     state.channelUp();
-    expect(usePTTStore.getState().channelNumber).toBe(1);
-    expect(usePTTStore.getState().channelId).toBe(getChannelUUID(1));
+    expect(usePTTStore.getState().channelNumber).toBe(0);
+    expect(usePTTStore.getState().channelId).toBe(getChannelUUID(0));
   });
 
-  it('should decrement channel number with channelDown and wrap from 1 to 999', () => {
+  it('should decrement channel number with channelDown and wrap from 0 to 999', () => {
     const state = usePTTStore.getState();
 
     state.channelDown();
     expect(usePTTStore.getState().channelNumber).toBe(99);
     expect(usePTTStore.getState().channelId).toBe(getChannelUUID(99));
 
-    state.setChannelNumber(1);
+    state.setChannelNumber(0);
     state.channelDown();
     expect(usePTTStore.getState().channelNumber).toBe(999);
     expect(usePTTStore.getState().channelId).toBe(getChannelUUID(999));
