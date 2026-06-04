@@ -37,14 +37,16 @@ export function ControlButtons({
         <div
           className="w-[310px] h-[90px] rounded-full absolute bg-gradient-to-b from-[#ffffff] to-[#e8ebf0]"
           style={{
-            boxShadow: 'inset 0 8px 12px rgba(255,255,255,1), inset 0 -6px 12px rgba(0,0,0,0.15)',
+            boxShadow:
+              'inset 0 8px 12px rgba(255,255,255,1), inset 0 -6px 12px rgba(0,0,0,0.15), inset 0 0 14px rgba(0,0,0,0.08)',
             border: '1px solid #c8d1db',
           }}
         />
         <div
           className="w-[95px] h-[150px] rounded-full absolute bg-gradient-to-b from-[#ffffff] to-[#e8ebf0]"
           style={{
-            boxShadow: 'inset 0 8px 12px rgba(255,255,255,1), inset 0 -6px 12px rgba(0,0,0,0.15)',
+            boxShadow:
+              'inset 0 8px 12px rgba(255,255,255,1), inset 0 -6px 12px rgba(0,0,0,0.15), inset 0 0 14px rgba(0,0,0,0.08)',
             border: '1px solid #c8d1db',
           }}
         />
