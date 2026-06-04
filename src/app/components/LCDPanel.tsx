@@ -14,11 +14,11 @@ export function LCDPanel({
   channel,
   userCount = 0,
   isOffline = false,
-  isPowerOn = true,
+  isPowerOn: _isPowerOn = true,
 }: LCDPanelProps) {
   const channelStr = channel.toString().padStart(3, '0');
   const infoText = usePTTStore((state) => state.infoText);
-  const displayChar = infoText ? infoText.trim().charAt(0).toLowerCase() : 'p';
+  const username = infoText ? infoText.trim() : 'Pebe Herianto';
 
   // Signal strength simulator (fluctuates 1-4 bars when online, 0 when offline)
   const [signalBars, setSignalBars] = useState(4);
@@ -92,9 +92,7 @@ export function LCDPanel({
     <div
       className="relative w-[340px] h-[155px] rounded-3xl mx-auto transition-colors duration-300"
       style={{
-        background: isPowerOn
-          ? 'linear-gradient(to bottom, #FF9500 0%, #d87d00 100%)'
-          : 'linear-gradient(to bottom, #4a4a4a 0%, #2a2a2a 100%)',
+        background: 'linear-gradient(to bottom, #FF9500 0%, #d87d00 100%)',
         boxShadow:
           'inset 0 4px 10px rgba(0,0,0,0.5), inset 0 -2px 5px rgba(255,255,255,0.2), 0 8px 20px rgba(0,0,0,0.25)',
         borderWidth: '10px',
@@ -114,9 +112,7 @@ export function LCDPanel({
       />
 
       {/* Content */}
-      <div
-        className={`relative p-3 h-full flex flex-col justify-between transition-opacity duration-300 ${isPowerOn ? 'opacity-100' : 'opacity-0'}`}
-      >
+      <div className="relative p-3 h-full flex flex-col justify-between transition-opacity duration-300 opacity-100">
         {/* Top status bar */}
         <div className="flex items-start justify-between">
           {/* Top Left: Username Icon and Letter */}
@@ -127,8 +123,11 @@ export function LCDPanel({
               className="h-[58px] w-auto object-contain -mt-3.5 -ml-1"
               style={{ filter: 'drop-shadow(1px 1px 0px rgba(0,0,0,0.2))' }}
             />
-            <span className="text-sm text-black -ml-1" style={{ fontWeight: 600 }}>
-              {displayChar}
+            <span
+              className="text-sm text-black -ml-1 truncate max-w-[140px]"
+              style={{ fontWeight: 600 }}
+            >
+              {username}
             </span>
           </div>
 
@@ -165,7 +164,7 @@ export function LCDPanel({
             className="flex items-end h-[28px] relative gap-1 mt-1 mr-1 cursor-pointer select-none"
           >
             {isOffline && (
-              <span className="text-[#E53935] font-bold text-sm leading-none absolute -left-3 top-0 z-10">
+              <span className="text-[#d32f2f] font-black text-base leading-none absolute -left-2 top-0 z-10 drop-shadow-[1px_1px_0px_rgba(255,255,255,0.6)]">
                 ×
               </span>
             )}
@@ -182,33 +181,8 @@ export function LCDPanel({
               </div>
             )}
 
-            {/* Antenna SVG */}
-            <svg
-              width="12"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="text-black mb-[2px]"
-              style={{ opacity: isOffline ? 0.3 : 1 }}
-            >
-              <path d="M12 2v20" />
-              <path d="M8 18h8" />
-              <path d="M10 22h4" />
-            </svg>
-
             {/* Signal Bars SVG approach */}
             <div className="flex items-end gap-0 h-full pb-[2px] relative">
-              {isOffline && (
-                <div className="absolute inset-0 flex items-center justify-center bg-transparent z-10 pointer-events-none -mt-[3px]">
-                  <span className="text-[#E53935] text-[18px] font-black leading-none drop-shadow-[0_1px_1px_rgba(255,255,255,0.4)]">
-                    ×
-                  </span>
-                </div>
-              )}
               {[1, 2, 3, 4].map((bar) => {
                 const isActive = bar <= signalBars;
                 let barBackground =
@@ -239,7 +213,7 @@ export function LCDPanel({
                       borderRadius: '1.5px',
                       boxShadow:
                         'inset 1px 1.5px 0.5px rgba(255,255,255,0.5), inset -1px -1px 0.5px rgba(0,0,0,0.3)',
-                      opacity: isOffline ? 0.35 : 1,
+                      opacity: 1,
                       transition: 'background 0.2s ease-in-out',
                     }}
                   />
@@ -288,7 +262,7 @@ export function LCDPanel({
               className="text-3xl text-black font-medium tracking-tight leading-none"
               style={{ textShadow: '1px 1px 1px rgba(255,255,255,0.5)' }}
             >
-              {userCount.toString().padStart(2, '0')}
+              {_isPowerOn ? userCount.toString().padStart(2, '0') : '00'}
             </span>
           </div>
         </div>

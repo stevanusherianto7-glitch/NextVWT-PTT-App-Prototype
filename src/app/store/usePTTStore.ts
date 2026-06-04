@@ -132,7 +132,7 @@ function pickPersistedState(state: Partial<PTTState>): Partial<PTTState> {
 
 // ─── Default Settings ─────────────────────────────────────────────────────────
 const DEFAULT_SETTINGS = {
-  infoText: '',
+  infoText: 'Pebe Herianto',
   locationText: 'BANDUNG, JAWA BARAT',
   showMyPhoto: true,
   showOtherPhotos: true,
