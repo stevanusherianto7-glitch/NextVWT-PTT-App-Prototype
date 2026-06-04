@@ -250,16 +250,16 @@ export function LCDPanel({
         </div>
 
         {/* Center/Bottom Content */}
-        <div className="flex justify-between items-end pb-[5px] px-1 mt-auto">
+        <div className="flex justify-between items-end pb-0 px-1 mt-auto">
           <div className="flex items-end gap-1">
             <div
-              className="text-black relative translate-y-[3px]"
-              style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '1px' }}
+              className="text-black relative"
+              style={{ fontSize: '20px', fontWeight: 'bold', paddingBottom: '5px' }}
             >
               CH
             </div>
             <div
-              className="text-white relative translate-y-[5px]"
+              className="text-white relative"
               style={{
                 fontFamily: "'DSEG7', monospace",
                 fontSize: '52px',
@@ -267,6 +267,7 @@ export function LCDPanel({
                 lineHeight: 0.75,
                 marginLeft: '-2px',
                 textShadow: '0 0 10px rgba(255,255,255,0.8), 2px 2px 4px rgba(0,0,0,0.4)',
+                paddingBottom: '5px',
               }}
             >
               {channelStr}
@@ -274,10 +275,7 @@ export function LCDPanel({
           </div>
 
           {/* Bottom Right: Twin Heads & Enlarged User Count (Shifted Left via margin) */}
-          <div
-            className="flex items-end gap-2 mr-4 relative translate-y-[6px]"
-            style={{ marginBottom: '2px' }}
-          >
+          <div className="flex items-end gap-2 mr-4 relative" style={{ paddingBottom: '5px' }}>
             <div className="flex items-center justify-center">
               <img
                 src={twinHeadsIcon}
