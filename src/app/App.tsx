@@ -331,37 +331,126 @@ export default function App() {
 
                       {/* === OUTER ARC (Mint Green #34D399) === */}
                       {/* Shadow layer */}
-                      <path d="M 22 77 A 38 38 0 1 1 78 77" stroke="#0a2e1a" strokeWidth="6" strokeLinecap="round" fill="none" transform="translate(1, 1.2)" opacity="0.5" />
+                      <path
+                        d="M 22 77 A 38 38 0 1 1 78 77"
+                        stroke="#0a2e1a"
+                        strokeWidth="6"
+                        strokeLinecap="round"
+                        fill="none"
+                        transform="translate(1, 1.2)"
+                        opacity="0.5"
+                      />
                       {/* Color layer */}
-                      <path d="M 22 77 A 38 38 0 1 1 78 77" stroke="#34D399" strokeWidth="6" strokeLinecap="round" fill="none" />
+                      <path
+                        d="M 22 77 A 38 38 0 1 1 78 77"
+                        stroke="#34D399"
+                        strokeWidth="6"
+                        strokeLinecap="round"
+                        fill="none"
+                      />
                       {/* Specular highlight */}
-                      <path d="M 22 77 A 38 38 0 1 1 78 77" stroke="#a7f3d0" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.65" transform="translate(-0.6, -0.7)" />
+                      <path
+                        d="M 22 77 A 38 38 0 1 1 78 77"
+                        stroke="#a7f3d0"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        fill="none"
+                        opacity="0.65"
+                        transform="translate(-0.6, -0.7)"
+                      />
 
                       {/* === MIDDLE ARC (Emerald Green #10B981) === */}
                       {/* Shadow layer */}
-                      <path d="M 29 71 A 28 28 0 1 1 71 71" stroke="#064e3b" strokeWidth="6" strokeLinecap="round" fill="none" transform="translate(1, 1.2)" opacity="0.5" />
+                      <path
+                        d="M 29 71 A 28 28 0 1 1 71 71"
+                        stroke="#064e3b"
+                        strokeWidth="6"
+                        strokeLinecap="round"
+                        fill="none"
+                        transform="translate(1, 1.2)"
+                        opacity="0.5"
+                      />
                       {/* Color layer */}
-                      <path d="M 29 71 A 28 28 0 1 1 71 71" stroke="#10B981" strokeWidth="6" strokeLinecap="round" fill="none" />
+                      <path
+                        d="M 29 71 A 28 28 0 1 1 71 71"
+                        stroke="#10B981"
+                        strokeWidth="6"
+                        strokeLinecap="round"
+                        fill="none"
+                      />
                       {/* Specular highlight */}
-                      <path d="M 29 71 A 28 28 0 1 1 71 71" stroke="#6ee7b7" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.65" transform="translate(-0.6, -0.7)" />
+                      <path
+                        d="M 29 71 A 28 28 0 1 1 71 71"
+                        stroke="#6ee7b7"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        fill="none"
+                        opacity="0.65"
+                        transform="translate(-0.6, -0.7)"
+                      />
 
                       {/* === INNER ARC (Bold Green #00C853) === */}
                       {/* Shadow layer */}
-                      <path d="M 36 65 A 18 18 0 1 1 64 65" stroke="#003a17" strokeWidth="6" strokeLinecap="round" fill="none" transform="translate(1, 1.2)" opacity="0.5" />
+                      <path
+                        d="M 36 65 A 18 18 0 1 1 64 65"
+                        stroke="#003a17"
+                        strokeWidth="6"
+                        strokeLinecap="round"
+                        fill="none"
+                        transform="translate(1, 1.2)"
+                        opacity="0.5"
+                      />
                       {/* Color layer */}
-                      <path d="M 36 65 A 18 18 0 1 1 64 65" stroke="#00C853" strokeWidth="6" strokeLinecap="round" fill="none" />
+                      <path
+                        d="M 36 65 A 18 18 0 1 1 64 65"
+                        stroke="#00C853"
+                        strokeWidth="6"
+                        strokeLinecap="round"
+                        fill="none"
+                      />
                       {/* Specular highlight */}
-                      <path d="M 36 65 A 18 18 0 1 1 64 65" stroke="#69f0ae" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.65" transform="translate(-0.6, -0.7)" />
+                      <path
+                        d="M 36 65 A 18 18 0 1 1 64 65"
+                        stroke="#69f0ae"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        fill="none"
+                        opacity="0.65"
+                        transform="translate(-0.6, -0.7)"
+                      />
 
                       {/* === CENTRAL RED SPHERE === */}
                       {/* Drop shadow */}
-                      <circle cx="50" cy="50" r="11" fill="#1a0000" transform="translate(1.2, 1.5)" opacity="0.45" />
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="11"
+                        fill="#1a0000"
+                        transform="translate(1.2, 1.5)"
+                        opacity="0.45"
+                      />
                       {/* Main sphere */}
                       <circle cx="50" cy="50" r="11" fill="url(#nextvwtSphere3D)" />
                       {/* Rim light (bottom-right edge glow for 3D depth) */}
-                      <circle cx="50" cy="50" r="11" fill="none" stroke="#ff4444" strokeWidth="0.8" opacity="0.4" />
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="11"
+                        fill="none"
+                        stroke="#ff4444"
+                        strokeWidth="0.8"
+                        opacity="0.4"
+                      />
                       {/* Specular catchlight */}
-                      <ellipse cx="46.5" cy="45.5" rx="3.2" ry="2.2" fill="white" opacity="0.7" transform="rotate(-25, 46.5, 45.5)" />
+                      <ellipse
+                        cx="46.5"
+                        cy="45.5"
+                        rx="3.2"
+                        ry="2.2"
+                        fill="white"
+                        opacity="0.7"
+                        transform="rotate(-25, 46.5, 45.5)"
+                      />
                     </svg>
                   </div>
                   <div
