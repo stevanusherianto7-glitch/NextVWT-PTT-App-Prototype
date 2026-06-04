@@ -35,7 +35,7 @@ export function ControlButtons({
       {/* Molded white background base (D-Pad Frame) */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none drop-shadow-[0_12px_12px_rgba(0,0,0,0.2)] drop-shadow-[0_4px_4px_rgba(0,0,0,0.15)]">
         <div
-          className="w-[310px] h-[90px] rounded-full absolute bg-gradient-to-b from-[#ffffff] to-[#e8ebf0]"
+          className="w-[290px] h-[90px] rounded-full absolute bg-gradient-to-b from-[#ffffff] to-[#e8ebf0]"
           style={{
             boxShadow:
               'inset 0 8px 12px rgba(255,255,255,1), inset 0 -6px 12px rgba(0,0,0,0.15), inset 0 0 28px rgba(0,0,0,0.28)',
@@ -59,12 +59,12 @@ export function ControlButtons({
           onMouseDown={() => setPressedBtn('scan')}
           onMouseUp={() => setPressedBtn(null)}
           onMouseLeave={() => setPressedBtn(null)}
-          className="w-[85px] h-[55px] rounded-full text-white relative overflow-hidden flex items-center justify-center"
+          className="w-[75px] h-[50px] rounded-l-full rounded-r-[6px] text-white relative overflow-hidden flex items-center justify-center"
           style={getButtonStyle('scan')}
         >
           <span
             style={{
-              fontSize: '18px',
+              fontSize: '16px',
               fontWeight: 800,
               textTransform: 'uppercase',
               letterSpacing: '0.5px',
@@ -153,12 +153,12 @@ export function ControlButtons({
           onMouseDown={() => setPressedBtn('set')}
           onMouseUp={() => setPressedBtn(null)}
           onMouseLeave={() => setPressedBtn(null)}
-          className="w-[85px] h-[55px] rounded-full text-white flex items-center justify-center"
+          className="w-[75px] h-[50px] rounded-r-full rounded-l-[6px] text-white flex items-center justify-center"
           style={getButtonStyle('set')}
         >
           <span
             style={{
-              fontSize: '18px',
+              fontSize: '16px',
               fontWeight: 800,
               textTransform: 'uppercase',
               letterSpacing: '0.5px',

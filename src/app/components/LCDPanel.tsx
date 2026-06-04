@@ -92,7 +92,7 @@ export function LCDPanel({
 
   return (
     <div
-      className="relative w-[340px] h-[155px] rounded-3xl mx-auto transition-colors duration-300"
+      className="relative w-[300px] h-[155px] rounded-3xl mx-auto transition-colors duration-300"
       style={{
         background: 'linear-gradient(to bottom, #FF9500 0%, #d87d00 100%)',
         boxShadow:
@@ -135,7 +135,7 @@ export function LCDPanel({
               style={{ filter: 'drop-shadow(1px 1px 0px rgba(0,0,0,0.2))' }}
             />
             <span
-              className="text-sm text-black -ml-1 truncate max-w-[140px]"
+              className="text-sm text-black -ml-1 truncate max-w-[100px]"
               style={{ fontWeight: 600 }}
             >
               {username}
