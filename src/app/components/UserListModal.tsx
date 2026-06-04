@@ -368,7 +368,10 @@ export function UserListModal({
   });
 
   return (
-    <div className="w-full h-[402px] -mt-8 pt-8 bg-white border-x border-b border-gray-300 rounded-b-2xl flex flex-col overflow-hidden animate-in fade-in duration-200">
+    <div
+      onClick={(e) => e.stopPropagation()}
+      className="w-full h-[535px] -mt-8 pt-8 bg-white border-x border-b border-gray-300 rounded-b-2xl flex flex-col overflow-hidden animate-in fade-in duration-200"
+    >
       <style>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 1px;
