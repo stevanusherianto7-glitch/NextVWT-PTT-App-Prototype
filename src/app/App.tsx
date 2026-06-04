@@ -486,7 +486,7 @@ export default function App() {
                 style={{
                   borderRadius: '40px 40px 200px 200px / 40px 40px 90px 90px',
                   boxShadow:
-                    '0 18px 40px rgba(0,0,0,0.22), 0 6px 15px rgba(0,0,0,0.15), 0 -2px 4px rgba(255,255,255,0.95), inset 0 0 18px rgba(0,0,0,0.12), inset 0 8px 12px rgba(255,255,255,1), inset 0 -15px 30px rgba(0,0,0,0.24), inset 15px 0 25px rgba(0,0,0,0.08), inset -15px 0 25px rgba(0,0,0,0.08)',
+                    '0 18px 40px rgba(0,0,0,0.22), 0 6px 15px rgba(0,0,0,0.15), 0 -2px 4px rgba(255,255,255,0.95), inset 0 0 28px rgba(0,0,0,0.22), inset 0 8px 12px rgba(255,255,255,1), inset 0 -15px 30px rgba(0,0,0,0.24), inset 15px 0 25px rgba(0,0,0,0.08), inset -15px 0 25px rgba(0,0,0,0.08)',
                   border: '1px solid #dbe2e9',
                 }}
               >
