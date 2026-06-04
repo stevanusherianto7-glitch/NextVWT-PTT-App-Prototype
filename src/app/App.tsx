@@ -507,7 +507,7 @@ export default function App() {
               ) : (
                 /* White Faceplate Container */
                 <div
-                  className="w-full bg-[#f0f3f6] flex flex-col items-center pt-4 pb-6 relative z-10"
+                  className="w-full bg-[#f0f3f6] flex flex-col items-center pt-6 pb-12 relative z-10"
                   style={{
                     borderRadius: '40px 40px 200px 200px / 40px 40px 90px 90px',
                     boxShadow:
@@ -554,7 +554,7 @@ export default function App() {
               {showPTT && (
                 <div
                   onClick={(e) => e.stopPropagation()}
-                  className={`absolute bottom-8 left-0 right-0 w-full flex justify-center transition-opacity duration-300 opacity-100 ${isPowerOn ? '' : 'pointer-events-none'}`}
+                  className={`absolute bottom-16 left-0 right-0 w-full flex justify-center transition-opacity duration-300 opacity-100 ${isPowerOn ? '' : 'pointer-events-none'}`}
                 >
                   <PTTButton
                     isActive={isTransmitting}
