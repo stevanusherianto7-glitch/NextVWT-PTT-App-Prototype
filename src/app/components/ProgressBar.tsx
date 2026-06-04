@@ -15,21 +15,11 @@ export function ProgressBar({ progress }: ProgressBarProps) {
     <div
       className="w-[320px] h-[14px] rounded-full overflow-hidden relative"
       style={{
-        background: '#ffffff',
-        boxShadow:
-          'inset 0 2px 4px rgba(0,0,0,0.45), inset 0 -1px 3px rgba(0,0,0,0.25), inset 2px 0 4px rgba(0,0,0,0.2), inset -2px 0 4px rgba(0,0,0,0.2)',
-        border: '1.5px solid rgba(0,0,0,0.25)',
+        background: '#f1f5f9',
+        boxShadow: 'inset 0 0 0 2px rgba(0,0,0,0.1), inset 0 2.5px 5px rgba(0,0,0,0.25)',
+        border: '1px solid rgba(0,0,0,0.12)',
       }}
     >
-      {/* Background segments/grid (optional, for that LCD meter look) */}
-      <div
-        className="absolute inset-0 z-0 pointer-events-none opacity-20"
-        style={{
-          background:
-            'repeating-linear-gradient(to right, transparent, transparent 3px, #000 3px, #000 5px)',
-        }}
-      />
-
       {/* The moving mask */}
       <div
         className="h-full transition-all duration-75 relative z-10"
