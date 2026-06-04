@@ -124,7 +124,7 @@ export function LCDPanel({
             <img
               src={usernameIcon}
               alt="Username Icon"
-              className="h-[48px] w-auto object-contain -mt-2 -ml-1"
+              className="h-[58px] w-auto object-contain -mt-3.5 -ml-1"
               style={{ filter: 'drop-shadow(1px 1px 0px rgba(0,0,0,0.2))' }}
             />
             <span className="text-sm text-black -ml-1" style={{ fontWeight: 600 }}>
@@ -280,7 +280,7 @@ export function LCDPanel({
               <img
                 src={twinHeadsIcon}
                 alt="User Count Icon"
-                className="h-[48px] w-auto object-contain"
+                className="h-[58px] w-auto object-contain"
                 style={{ filter: 'drop-shadow(1px 1px 0px rgba(0,0,0,0.2))' }}
               />
             </div>
