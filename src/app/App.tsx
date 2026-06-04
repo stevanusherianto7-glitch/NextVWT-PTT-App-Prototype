@@ -411,14 +411,14 @@ export default function App() {
                   />
                 </div>
 
-                {/* Modulation Bar — always visible as placeholder (IndoVWT style) */}
-                <div
-                  className={`flex justify-center transition-all duration-300 w-full overflow-hidden ${
-                    showModulator ? 'mt-3 opacity-100' : 'mt-0 max-h-0 opacity-0'
-                  } ${!isPowerOn ? 'opacity-20' : ''}`}
-                >
-                  <ProgressBar progress={progress} />
-                </div>
+                {/* Progress Bar */}
+                {showModulator && (
+                  <div
+                    className={`mt-4 flex justify-center transition-opacity duration-300 w-full ${isPowerOn ? 'opacity-100' : 'opacity-30'}`}
+                  >
+                    <ProgressBar progress={progress} />
+                  </div>
+                )}
 
                 {/* Control Buttons */}
                 <div
