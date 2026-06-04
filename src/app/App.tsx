@@ -318,11 +318,52 @@ export default function App() {
                       className={`h-[55px] w-auto relative z-20 transition-all duration-300 ${isTransmitting ? 'logo-transmitting' : ''}`}
                       style={{
                         transform: 'translateZ(1px)',
-                        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))',
+                        filter: 'drop-shadow(0 2px 5px rgba(0,0,0,0.2))',
                       }}
                     >
-                      {/* Central Red Circle */}
-                      <circle cx="50" cy="50" r="10" fill="#EF4444" />
+                      <defs>
+                        {/* Glossy Red Radial Gradient */}
+                        <radialGradient id="glossyRed" cx="35%" cy="35%" r="65%">
+                          <stop offset="0%" stopColor="#ffa8a8" />
+                          <stop offset="30%" stopColor="#ef4444" />
+                          <stop offset="70%" stopColor="#991b1b" />
+                          <stop offset="100%" stopColor="#5c0e0e" />
+                        </radialGradient>
+                        {/* 3D Emboss Filter */}
+                        <filter id="emboss3D" x="-20%" y="-20%" width="140%" height="140%">
+                          <feDropShadow
+                            dx="0.5"
+                            dy="1"
+                            stdDeviation="0.8"
+                            floodColor="#000"
+                            floodOpacity="0.3"
+                          />
+                          <feGaussianBlur in="SourceAlpha" stdDeviation="0.6" result="blur" />
+                          <feSpecularLighting
+                            in="blur"
+                            specularExponent="22"
+                            specularConstant="1.5"
+                            lightingColor="#fff"
+                            result="spec"
+                          >
+                            <feDistantLight azimuth="225" elevation="60" />
+                          </feSpecularLighting>
+                          <feComposite in="spec" in2="SourceAlpha" operator="in" result="specOut" />
+                          <feMerge>
+                            <feMergeNode in="SourceGraphic" />
+                            <feMergeNode in="specOut" />
+                          </feMerge>
+                        </filter>
+                      </defs>
+
+                      {/* Central Red Sphere */}
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="10"
+                        fill="url(#glossyRed)"
+                        filter="url(#emboss3D)"
+                      />
 
                       {/* Concentric Green Signal Arcs - Fading Outwards */}
                       <path
@@ -331,6 +372,7 @@ export default function App() {
                         strokeWidth="4.5"
                         strokeLinecap="round"
                         fill="none"
+                        filter="url(#emboss3D)"
                       />
                       <path
                         d="M 30.2 69.8 A 28 28 0 1 1 69.8 69.8"
@@ -338,6 +380,7 @@ export default function App() {
                         strokeWidth="4.5"
                         strokeLinecap="round"
                         fill="none"
+                        filter="url(#emboss3D)"
                       />
                       <path
                         d="M 23.1 76.9 A 38 38 0 1 1 76.9 76.9"
@@ -345,6 +388,7 @@ export default function App() {
                         strokeWidth="4.5"
                         strokeLinecap="round"
                         fill="none"
+                        filter="url(#emboss3D)"
                       />
                     </svg>
                   </div>
@@ -466,11 +510,50 @@ export default function App() {
                     viewBox="0 0 100 100"
                     className="h-[36px] sm:h-[42px] w-auto shrink-0 mx-0.5 translate-y-[2px]"
                     style={{
-                      filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))',
+                      filter: 'drop-shadow(0 2px 5px rgba(0,0,0,0.2))',
                     }}
                   >
-                    {/* Central Red Circle */}
-                    <circle cx="50" cy="50" r="10" fill="#EF4444" />
+                    <defs>
+                      <radialGradient id="glossyRedModal" cx="35%" cy="35%" r="65%">
+                        <stop offset="0%" stopColor="#ffa8a8" />
+                        <stop offset="30%" stopColor="#ef4444" />
+                        <stop offset="70%" stopColor="#991b1b" />
+                        <stop offset="100%" stopColor="#5c0e0e" />
+                      </radialGradient>
+                      <filter id="emboss3DModal" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow
+                          dx="0.5"
+                          dy="1"
+                          stdDeviation="0.8"
+                          floodColor="#000"
+                          floodOpacity="0.3"
+                        />
+                        <feGaussianBlur in="SourceAlpha" stdDeviation="0.6" result="blur" />
+                        <feSpecularLighting
+                          in="blur"
+                          specularExponent="22"
+                          specularConstant="1.5"
+                          lightingColor="#fff"
+                          result="spec"
+                        >
+                          <feDistantLight azimuth="225" elevation="60" />
+                        </feSpecularLighting>
+                        <feComposite in="spec" in2="SourceAlpha" operator="in" result="specOut" />
+                        <feMerge>
+                          <feMergeNode in="SourceGraphic" />
+                          <feMergeNode in="specOut" />
+                        </feMerge>
+                      </filter>
+                    </defs>
+
+                    {/* Central Red Sphere */}
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="10"
+                      fill="url(#glossyRedModal)"
+                      filter="url(#emboss3DModal)"
+                    />
 
                     {/* Concentric Green Signal Arcs - Fading Outwards */}
                     <path
@@ -479,6 +562,7 @@ export default function App() {
                       strokeWidth="4.5"
                       strokeLinecap="round"
                       fill="none"
+                      filter="url(#emboss3DModal)"
                     />
                     <path
                       d="M 30.2 69.8 A 28 28 0 1 1 69.8 69.8"
@@ -486,6 +570,7 @@ export default function App() {
                       strokeWidth="4.5"
                       strokeLinecap="round"
                       fill="none"
+                      filter="url(#emboss3DModal)"
                     />
                     <path
                       d="M 23.1 76.9 A 38 38 0 1 1 76.9 76.9"
@@ -493,6 +578,7 @@ export default function App() {
                       strokeWidth="4.5"
                       strokeLinecap="round"
                       fill="none"
+                      filter="url(#emboss3DModal)"
                     />
                   </svg>
                   <span
@@ -668,16 +754,64 @@ export default function App() {
                         viewBox="0 0 100 100"
                         className="h-[75px] w-auto shrink-0"
                         style={{
-                          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))',
+                          filter: 'drop-shadow(0 2px 5px rgba(0,0,0,0.2))',
                         }}
                       >
-                        <circle cx="50" cy="50" r="10" fill="#EF4444" />
+                        <defs>
+                          <radialGradient id="glossyRedInfo" cx="35%" cy="35%" r="65%">
+                            <stop offset="0%" stopColor="#ffa8a8" />
+                            <stop offset="30%" stopColor="#ef4444" />
+                            <stop offset="70%" stopColor="#991b1b" />
+                            <stop offset="100%" stopColor="#5c0e0e" />
+                          </radialGradient>
+                          <filter id="emboss3DInfo" x="-20%" y="-20%" width="140%" height="140%">
+                            <feDropShadow
+                              dx="0.5"
+                              dy="1"
+                              stdDeviation="0.8"
+                              floodColor="#000"
+                              floodOpacity="0.3"
+                            />
+                            <feGaussianBlur in="SourceAlpha" stdDeviation="0.6" result="blur" />
+                            <feSpecularLighting
+                              in="blur"
+                              specularExponent="22"
+                              specularConstant="1.5"
+                              lightingColor="#fff"
+                              result="spec"
+                            >
+                              <feDistantLight azimuth="225" elevation="60" />
+                            </feSpecularLighting>
+                            <feComposite
+                              in="spec"
+                              in2="SourceAlpha"
+                              operator="in"
+                              result="specOut"
+                            />
+                            <feMerge>
+                              <feMergeNode in="SourceGraphic" />
+                              <feMergeNode in="specOut" />
+                            </feMerge>
+                          </filter>
+                        </defs>
+
+                        {/* Central Red Sphere */}
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="10"
+                          fill="url(#glossyRedInfo)"
+                          filter="url(#emboss3DInfo)"
+                        />
+
+                        {/* Concentric Green Signal Arcs - Fading Outwards */}
                         <path
                           d="M 37.3 62.7 A 18 18 0 1 1 62.7 62.7"
                           stroke="#10B981"
                           strokeWidth="4.5"
                           strokeLinecap="round"
                           fill="none"
+                          filter="url(#emboss3DInfo)"
                         />
                         <path
                           d="M 30.2 69.8 A 28 28 0 1 1 69.8 69.8"
@@ -685,6 +819,7 @@ export default function App() {
                           strokeWidth="4.5"
                           strokeLinecap="round"
                           fill="none"
+                          filter="url(#emboss3DInfo)"
                         />
                         <path
                           d="M 23.1 76.9 A 38 38 0 1 1 76.9 76.9"
@@ -692,6 +827,7 @@ export default function App() {
                           strokeWidth="4.5"
                           strokeLinecap="round"
                           fill="none"
+                          filter="url(#emboss3DInfo)"
                         />
                       </svg>
                     </div>
