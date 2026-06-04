@@ -123,6 +123,9 @@ export default function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isChannelListOpen, setIsChannelListOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [activePrivateChannel, setActivePrivateChannel] = useState<ChannelItem | null>(null);
+  const [restrictedChannel, setRestrictedChannel] = useState<ChannelItem | null>(null);
+  const [infoChannel, setInfoChannel] = useState<ChannelItem | null>(null);
 
   // Auto-close settings if power is turned off
   useEffect(() => {
@@ -490,9 +493,13 @@ export default function App() {
                       <button
                         key={ch.number}
                         onClick={() => {
-                          setChannelNumber(ch.number);
-                          setIsChannelListOpen(false);
-                          setSearchQuery('');
+                          if (ch.type === 'red') {
+                            setActivePrivateChannel(ch);
+                          } else {
+                            setChannelNumber(ch.number);
+                            setIsChannelListOpen(false);
+                            setSearchQuery('');
+                          }
                         }}
                         className="w-full flex items-center p-0 hover:bg-gray-50 active:bg-gray-100 text-left cursor-pointer select-none focus:outline-none"
                       >
@@ -517,6 +524,94 @@ export default function App() {
                   </div>
                 )}
               </div>
+
+              {/* Overlays inside Modal */}
+              {activePrivateChannel && (
+                <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-55 p-6 animate-in fade-in duration-100">
+                  {/* Backdrop dismiss for option menu */}
+                  <div className="absolute inset-0" onClick={() => setActivePrivateChannel(null)} />
+                  <div className="bg-white w-[85%] max-w-[280px] rounded-lg shadow-2xl flex flex-col z-10 overflow-hidden border border-gray-100 animate-in fade-in zoom-in-95 duration-100">
+                    <button
+                      onClick={() => {
+                        const ch = activePrivateChannel;
+                        setActivePrivateChannel(null);
+                        setRestrictedChannel(ch);
+                      }}
+                      className="w-full text-left px-5 py-4.5 hover:bg-gray-50 active:bg-gray-100 text-[16px] text-gray-800 font-medium border-b border-gray-100 cursor-pointer select-none focus:outline-none"
+                    >
+                      Menuju Channel {activePrivateChannel.number}
+                    </button>
+                    <button
+                      onClick={() => {
+                        const ch = activePrivateChannel;
+                        setActivePrivateChannel(null);
+                        setInfoChannel(ch);
+                      }}
+                      className="w-full text-left px-5 py-4.5 hover:bg-gray-50 active:bg-gray-100 text-[16px] text-gray-800 font-medium cursor-pointer select-none focus:outline-none"
+                    >
+                      Info Channel {activePrivateChannel.number}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {restrictedChannel && (
+                <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-60 p-6 animate-in fade-in duration-100">
+                  <div className="bg-white w-[85%] max-w-[300px] rounded-2xl shadow-2xl flex flex-col p-6 animate-in fade-in zoom-in-95 duration-100 text-left">
+                    <h3 className="text-[17px] font-bold text-gray-800">
+                      Channel {restrictedChannel.number} terbatas
+                    </h3>
+                    <p className="text-[14px] text-gray-600 mt-2.5 leading-relaxed">
+                      Channel ini terbatas hanya untuk anggota channel
+                    </p>
+                    <div className="mt-6 flex justify-center">
+                      <button
+                        onClick={() => setRestrictedChannel(null)}
+                        className="text-[15px] font-bold text-[#0c62a8] hover:text-[#0b5490] px-6 py-2 cursor-pointer focus:outline-none select-none"
+                      >
+                        Tutup
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {infoChannel && (
+                <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-60 p-6 animate-in fade-in duration-100">
+                  <div className="bg-white w-[85%] max-w-[300px] rounded-2xl shadow-2xl flex flex-col p-6 animate-in fade-in zoom-in-95 duration-100 text-left">
+                    <h3 className="text-[17px] font-bold text-gray-800">
+                      Informasi Channel {infoChannel.number}
+                    </h3>
+                    <div className="mt-3.5 space-y-2 text-[14px] text-gray-600">
+                      <p>
+                        <strong className="text-gray-700">Nama:</strong> {infoChannel.name}
+                      </p>
+                      <p>
+                        <strong className="text-gray-700">Tipe:</strong>{' '}
+                        <span className="font-semibold text-red-600">Terbatas (Private)</span>
+                      </p>
+                      <p>
+                        <strong className="text-gray-700">Pengguna Aktif:</strong>{' '}
+                        {infoChannel.users.length > 0 ? (
+                          <span className="font-semibold text-gray-800">
+                            {infoChannel.users.join(', ')}
+                          </span>
+                        ) : (
+                          <span className="italic text-gray-400">Tidak ada pengguna</span>
+                        )}
+                      </p>
+                    </div>
+                    <div className="mt-6 flex justify-center">
+                      <button
+                        onClick={() => setInfoChannel(null)}
+                        className="text-[15px] font-bold text-[#0c62a8] hover:text-[#0b5490] px-6 py-2 cursor-pointer focus:outline-none select-none"
+                      >
+                        Tutup
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
