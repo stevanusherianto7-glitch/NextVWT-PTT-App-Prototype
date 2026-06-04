@@ -432,14 +432,16 @@ export default function App() {
               </div>
 
               {/* List */}
-              <div className="flex-1 overflow-y-auto bg-white text-left divide-y divide-gray-100">
+              <div className="flex-1 overflow-y-auto bg-white text-left divide-y divide-gray-200">
                 {filteredChannels.length > 0 ? (
                   filteredChannels.map((ch) => {
-                    let bgClass = 'bg-gray-400';
+                    let bgClass = 'bg-gradient-to-b from-[#9E9E9E] to-[#616161]'; // Default gray
                     if (ch.type === 'green') {
-                      bgClass = 'bg-[#4CAF50]';
+                      // High-end blue gradient like INDOVWT
+                      bgClass = 'bg-gradient-to-b from-[#1e88e5] to-[#1565c0]';
                     } else if (ch.type === 'red') {
-                      bgClass = 'bg-[#F44336]';
+                      // High-end red gradient
+                      bgClass = 'bg-gradient-to-b from-[#e53935] to-[#c62828]';
                     }
 
                     const activeUserCount = ch.users.length;
@@ -456,14 +458,15 @@ export default function App() {
                           setIsChannelListOpen(false);
                           setSearchQuery('');
                         }}
-                        className="w-full flex items-center py-1 px-3 hover:bg-gray-50 active:bg-gray-100 text-left cursor-pointer select-none focus:outline-none"
+                        className="w-full flex items-center p-0 hover:bg-gray-50 active:bg-gray-100 text-left cursor-pointer select-none focus:outline-none"
                       >
                         <div
-                          className={`w-[45px] h-[35px] ${bgClass} rounded flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm`}
+                          className={`w-[55px] py-2.5 flex items-center justify-center text-white font-bold text-sm shrink-0 ${bgClass} border-t-[2px] border-l-[2px] border-t-white/45 border-l-white/45 border-r-[2px] border-b-[2px] border-r-black/45 border-b-black/45 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.3)]`}
+                          style={{ textShadow: '1px 1px 1px rgba(0,0,0,0.6)' }}
                         >
                           {ch.number.toString().padStart(3, '0')}
                         </div>
-                        <div className="ml-3 flex-1 min-w-0">
+                        <div className="ml-3 pr-3 flex-1 min-w-0 py-1">
                           <div className="text-xs font-bold text-black truncate">{ch.name}</div>
                           <div className="text-[10px] text-gray-500 font-semibold truncate mt-0.5 uppercase">
                             {activeUsersStr}
