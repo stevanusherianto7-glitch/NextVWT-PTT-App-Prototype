@@ -321,16 +321,61 @@ export default function App() {
                         filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))',
                       }}
                     >
-                      {/* Central Red Circle */}
-                      <circle cx="50" cy="50" r="10" fill="#EF4444" />
+                      <defs>
+                        {/* Glossy Red Radial Gradient (Sharp) */}
+                        <radialGradient id="glossyRedTopBar" cx="35%" cy="35%" r="65%">
+                          <stop offset="0%" stopColor="#ffa0a0" />
+                          <stop offset="35%" stopColor="#ef4444" />
+                          <stop offset="85%" stopColor="#991b1b" />
+                          <stop offset="100%" stopColor="#5a0000" />
+                        </radialGradient>
+                      </defs>
 
-                      {/* Concentric Green Signal Arcs - Fading Outwards */}
+                      {/* Central Red Sphere 3D Stack */}
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="10"
+                        fill="#2d0a0a"
+                        transform="translate(0.8, 1)"
+                        opacity="0.4"
+                      />
+                      <circle cx="50" cy="50" r="10" fill="url(#glossyRedTopBar)" />
+
+                      {/* Inner Arc 3D Stack */}
+                      <path
+                        d="M 37.3 62.7 A 18 18 0 1 1 62.7 62.7"
+                        stroke="#0c3b1a"
+                        strokeWidth="4.5"
+                        strokeLinecap="round"
+                        fill="none"
+                        transform="translate(0.8, 1)"
+                      />
                       <path
                         d="M 37.3 62.7 A 18 18 0 1 1 62.7 62.7"
                         stroke="#10B981"
                         strokeWidth="4.5"
                         strokeLinecap="round"
                         fill="none"
+                      />
+                      <path
+                        d="M 37.3 62.7 A 18 18 0 1 1 62.7 62.7"
+                        stroke="#ffffff"
+                        strokeWidth="1.2"
+                        strokeLinecap="round"
+                        fill="none"
+                        opacity="0.6"
+                        transform="translate(-0.5, -0.6)"
+                      />
+
+                      {/* Middle Arc 3D Stack */}
+                      <path
+                        d="M 30.2 69.8 A 28 28 0 1 1 69.8 69.8"
+                        stroke="#0e4f25"
+                        strokeWidth="4.5"
+                        strokeLinecap="round"
+                        fill="none"
+                        transform="translate(0.8, 1)"
                       />
                       <path
                         d="M 30.2 69.8 A 28 28 0 1 1 69.8 69.8"
@@ -340,11 +385,39 @@ export default function App() {
                         fill="none"
                       />
                       <path
+                        d="M 30.2 69.8 A 28 28 0 1 1 69.8 69.8"
+                        stroke="#ffffff"
+                        strokeWidth="1.2"
+                        strokeLinecap="round"
+                        fill="none"
+                        opacity="0.6"
+                        transform="translate(-0.5, -0.6)"
+                      />
+
+                      {/* Outer Arc 3D Stack */}
+                      <path
+                        d="M 23.1 76.9 A 38 38 0 1 1 76.9 76.9"
+                        stroke="#165f33"
+                        strokeWidth="4.5"
+                        strokeLinecap="round"
+                        fill="none"
+                        transform="translate(0.8, 1)"
+                      />
+                      <path
                         d="M 23.1 76.9 A 38 38 0 1 1 76.9 76.9"
                         stroke="#A7F3D0"
                         strokeWidth="4.5"
                         strokeLinecap="round"
                         fill="none"
+                      />
+                      <path
+                        d="M 23.1 76.9 A 38 38 0 1 1 76.9 76.9"
+                        stroke="#ffffff"
+                        strokeWidth="1.2"
+                        strokeLinecap="round"
+                        fill="none"
+                        opacity="0.65"
+                        transform="translate(-0.5, -0.6)"
                       />
                     </svg>
                   </div>
@@ -469,16 +542,61 @@ export default function App() {
                       filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))',
                     }}
                   >
-                    {/* Central Red Circle */}
-                    <circle cx="50" cy="50" r="10" fill="#EF4444" />
+                    <defs>
+                      {/* Glossy Red Radial Gradient (Sharp) */}
+                      <radialGradient id="glossyRedModal" cx="35%" cy="35%" r="65%">
+                        <stop offset="0%" stopColor="#ffa0a0" />
+                        <stop offset="35%" stopColor="#ef4444" />
+                        <stop offset="85%" stopColor="#991b1b" />
+                        <stop offset="100%" stopColor="#5a0000" />
+                      </radialGradient>
+                    </defs>
 
-                    {/* Concentric Green Signal Arcs - Fading Outwards */}
+                    {/* Central Red Sphere 3D Stack */}
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="10"
+                      fill="#2d0a0a"
+                      transform="translate(0.8, 1)"
+                      opacity="0.4"
+                    />
+                    <circle cx="50" cy="50" r="10" fill="url(#glossyRedModal)" />
+
+                    {/* Inner Arc 3D Stack */}
+                    <path
+                      d="M 37.3 62.7 A 18 18 0 1 1 62.7 62.7"
+                      stroke="#0c3b1a"
+                      strokeWidth="4.5"
+                      strokeLinecap="round"
+                      fill="none"
+                      transform="translate(0.8, 1)"
+                    />
                     <path
                       d="M 37.3 62.7 A 18 18 0 1 1 62.7 62.7"
                       stroke="#10B981"
                       strokeWidth="4.5"
                       strokeLinecap="round"
                       fill="none"
+                    />
+                    <path
+                      d="M 37.3 62.7 A 18 18 0 1 1 62.7 62.7"
+                      stroke="#ffffff"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                      fill="none"
+                      opacity="0.6"
+                      transform="translate(-0.5, -0.6)"
+                    />
+
+                    {/* Middle Arc 3D Stack */}
+                    <path
+                      d="M 30.2 69.8 A 28 28 0 1 1 69.8 69.8"
+                      stroke="#0e4f25"
+                      strokeWidth="4.5"
+                      strokeLinecap="round"
+                      fill="none"
+                      transform="translate(0.8, 1)"
                     />
                     <path
                       d="M 30.2 69.8 A 28 28 0 1 1 69.8 69.8"
@@ -488,11 +606,39 @@ export default function App() {
                       fill="none"
                     />
                     <path
+                      d="M 30.2 69.8 A 28 28 0 1 1 69.8 69.8"
+                      stroke="#ffffff"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                      fill="none"
+                      opacity="0.6"
+                      transform="translate(-0.5, -0.6)"
+                    />
+
+                    {/* Outer Arc 3D Stack */}
+                    <path
+                      d="M 23.1 76.9 A 38 38 0 1 1 76.9 76.9"
+                      stroke="#165f33"
+                      strokeWidth="4.5"
+                      strokeLinecap="round"
+                      fill="none"
+                      transform="translate(0.8, 1)"
+                    />
+                    <path
                       d="M 23.1 76.9 A 38 38 0 1 1 76.9 76.9"
                       stroke="#A7F3D0"
                       strokeWidth="4.5"
                       strokeLinecap="round"
                       fill="none"
+                    />
+                    <path
+                      d="M 23.1 76.9 A 38 38 0 1 1 76.9 76.9"
+                      stroke="#ffffff"
+                      strokeWidth="1.2"
+                      strokeLinecap="round"
+                      fill="none"
+                      opacity="0.65"
+                      transform="translate(-0.5, -0.6)"
                     />
                   </svg>
                   <span
@@ -671,13 +817,61 @@ export default function App() {
                           filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))',
                         }}
                       >
-                        <circle cx="50" cy="50" r="10" fill="#EF4444" />
+                        <defs>
+                          {/* Glossy Red Radial Gradient (Sharp) */}
+                          <radialGradient id="glossyRedInfo" cx="35%" cy="35%" r="65%">
+                            <stop offset="0%" stopColor="#ffa0a0" />
+                            <stop offset="35%" stopColor="#ef4444" />
+                            <stop offset="85%" stopColor="#991b1b" />
+                            <stop offset="100%" stopColor="#5a0000" />
+                          </radialGradient>
+                        </defs>
+
+                        {/* Central Red Sphere 3D Stack */}
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="10"
+                          fill="#2d0a0a"
+                          transform="translate(0.8, 1)"
+                          opacity="0.4"
+                        />
+                        <circle cx="50" cy="50" r="10" fill="url(#glossyRedInfo)" />
+
+                        {/* Inner Arc 3D Stack */}
+                        <path
+                          d="M 37.3 62.7 A 18 18 0 1 1 62.7 62.7"
+                          stroke="#0c3b1a"
+                          strokeWidth="4.5"
+                          strokeLinecap="round"
+                          fill="none"
+                          transform="translate(0.8, 1)"
+                        />
                         <path
                           d="M 37.3 62.7 A 18 18 0 1 1 62.7 62.7"
                           stroke="#10B981"
                           strokeWidth="4.5"
                           strokeLinecap="round"
                           fill="none"
+                        />
+                        <path
+                          d="M 37.3 62.7 A 18 18 0 1 1 62.7 62.7"
+                          stroke="#ffffff"
+                          strokeWidth="1.2"
+                          strokeLinecap="round"
+                          fill="none"
+                          opacity="0.6"
+                          transform="translate(-0.5, -0.6)"
+                        />
+
+                        {/* Middle Arc 3D Stack */}
+                        <path
+                          d="M 30.2 69.8 A 28 28 0 1 1 69.8 69.8"
+                          stroke="#0e4f25"
+                          strokeWidth="4.5"
+                          strokeLinecap="round"
+                          fill="none"
+                          transform="translate(0.8, 1)"
                         />
                         <path
                           d="M 30.2 69.8 A 28 28 0 1 1 69.8 69.8"
@@ -687,11 +881,39 @@ export default function App() {
                           fill="none"
                         />
                         <path
+                          d="M 30.2 69.8 A 28 28 0 1 1 69.8 69.8"
+                          stroke="#ffffff"
+                          strokeWidth="1.2"
+                          strokeLinecap="round"
+                          fill="none"
+                          opacity="0.6"
+                          transform="translate(-0.5, -0.6)"
+                        />
+
+                        {/* Outer Arc 3D Stack */}
+                        <path
+                          d="M 23.1 76.9 A 38 38 0 1 1 76.9 76.9"
+                          stroke="#165f33"
+                          strokeWidth="4.5"
+                          strokeLinecap="round"
+                          fill="none"
+                          transform="translate(0.8, 1)"
+                        />
+                        <path
                           d="M 23.1 76.9 A 38 38 0 1 1 76.9 76.9"
                           stroke="#A7F3D0"
                           strokeWidth="4.5"
                           strokeLinecap="round"
                           fill="none"
+                        />
+                        <path
+                          d="M 23.1 76.9 A 38 38 0 1 1 76.9 76.9"
+                          stroke="#ffffff"
+                          strokeWidth="1.2"
+                          strokeLinecap="round"
+                          fill="none"
+                          opacity="0.65"
+                          transform="translate(-0.5, -0.6)"
                         />
                       </svg>
                     </div>
