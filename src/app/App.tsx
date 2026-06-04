@@ -419,9 +419,14 @@ export default function App() {
                   </svg>
                 </button>
 
-                <div className="flex items-center justify-center gap-1.5 w-full px-2 py-1">
+                <img
+                  src={logoBrand}
+                  alt="Logo NextVWT"
+                  className="h-[55px] sm:h-[62px] w-auto shrink-0 mb-2"
+                />
+                <div className="flex items-center justify-center gap-2 w-full px-2">
                   <span
-                    className="text-[34px] sm:text-[38px] font-black tracking-tighter uppercase"
+                    className="text-[32px] sm:text-[36px] font-black tracking-tighter uppercase"
                     style={{
                       color: '#22c55e',
                       textShadow:
@@ -430,13 +435,8 @@ export default function App() {
                   >
                     NEXT
                   </span>
-                  <img
-                    src={logoBrand}
-                    alt="Logo NextVWT"
-                    className="h-[50px] sm:h-[56px] w-auto shrink-0 mx-1"
-                  />
                   <span
-                    className="text-[34px] sm:text-[38px] font-black tracking-tighter uppercase"
+                    className="text-[32px] sm:text-[36px] font-black tracking-tighter uppercase"
                     style={{
                       color: '#22c55e',
                       textShadow:
@@ -446,7 +446,7 @@ export default function App() {
                     VWT
                   </span>
                 </div>
-                <div className="text-[10px] sm:text-[11px] font-black text-[#e53935] tracking-[0.18em] mt-2 text-center uppercase">
+                <div className="text-[9px] sm:text-[10px] font-black text-[#e53935] tracking-[0.18em] mt-1.5 text-center uppercase">
                   NEXT VIRTUAL WALKIE TALKIE
                 </div>
               </div>
