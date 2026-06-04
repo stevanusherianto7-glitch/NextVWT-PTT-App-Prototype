@@ -7,6 +7,7 @@ import { PTTButton } from './components/PTTButton';
 import { usePTTStore } from './store/usePTTStore';
 import { SettingsPanel } from './components/SettingsPanel';
 import { Toaster } from './components/ui/sonner';
+import logoBrand from '../imports/logo_nextvwt.png';
 
 interface ChannelItem {
   number: number;
@@ -395,14 +396,13 @@ export default function App() {
             {/* Modal Container */}
             <div className="bg-white w-[90%] max-h-[80%] rounded-lg shadow-2xl flex flex-col z-10 overflow-hidden border border-gray-300 animate-in fade-in zoom-in-95 duration-100">
               {/* Header */}
-              <div className="flex items-center px-4 py-3 bg-white shrink-0 border-b border-gray-200 justify-between">
-                <span className="text-[16px] font-bold text-gray-800">Daftar Channel</span>
+              <div className="relative flex flex-col items-center px-4 py-4 bg-white shrink-0 border-b border-gray-200">
                 <button
                   onClick={() => {
                     setIsChannelListOpen(false);
                     setSearchQuery('');
                   }}
-                  className="text-gray-500 hover:text-gray-700 cursor-pointer focus:outline-none"
+                  className="absolute right-3.5 top-3.5 text-gray-500 hover:text-gray-700 cursor-pointer focus:outline-none z-10"
                 >
                   <svg
                     width="20"
@@ -418,6 +418,20 @@ export default function App() {
                     <line x1="6" y1="6" x2="18" y2="18" />
                   </svg>
                 </button>
+
+                <div className="flex items-center justify-center gap-2">
+                  <img
+                    src={logoBrand}
+                    alt="Logo NextVWT"
+                    className="h-[28px] w-auto object-contain"
+                  />
+                  <span className="text-[20px] font-black bg-gradient-to-r from-[#22c55e] to-[#15803d] bg-clip-text text-transparent tracking-tight">
+                    NextVWT
+                  </span>
+                </div>
+                <div className="text-[8px] font-extrabold text-gray-500 tracking-[0.1em] mt-1 text-center uppercase">
+                  NEXT VIRTUAL WALKIE TALKIE
+                </div>
               </div>
 
               {/* Search Bar */}
