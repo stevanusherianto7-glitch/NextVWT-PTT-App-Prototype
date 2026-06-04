@@ -316,109 +316,52 @@ export default function App() {
                     <svg
                       viewBox="0 0 100 100"
                       className={`h-[55px] w-auto relative z-20 transition-all duration-300 ${isTransmitting ? 'logo-transmitting' : ''}`}
-                      style={{
-                        transform: 'translateZ(1px)',
-                        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))',
-                      }}
+                      style={{ filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.25))' }}
                     >
                       <defs>
-                        {/* High-Intensity Glossy Red Radial Gradient */}
-                        <radialGradient id="glossyRedTopBar" cx="35%" cy="35%" r="65%">
-                          <stop offset="0%" stopColor="#ffffff" />
-                          <stop offset="25%" stopColor="#ff1a1a" />
-                          <stop offset="70%" stopColor="#b30000" />
-                          <stop offset="100%" stopColor="#4a0000" />
+                        {/* Glossy 3D Red Sphere Gradient - light source top-left */}
+                        <radialGradient id="nextvwtSphere3D" cx="32%" cy="30%" r="68%">
+                          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+                          <stop offset="18%" stopColor="#ff6b6b" />
+                          <stop offset="50%" stopColor="#cc0000" />
+                          <stop offset="80%" stopColor="#800000" />
+                          <stop offset="100%" stopColor="#3d0000" />
                         </radialGradient>
                       </defs>
 
-                      {/* Central Red Sphere 3D Stack */}
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="10"
-                        fill="#2d0a0a"
-                        transform="translate(0.8, 1)"
-                        opacity="0.4"
-                      />
-                      <circle cx="50" cy="50" r="10" fill="url(#glossyRedTopBar)" />
+                      {/* === OUTER ARC (Mint Green #34D399) === */}
+                      {/* Shadow layer */}
+                      <path d="M 22 77 A 38 38 0 1 1 78 77" stroke="#0a2e1a" strokeWidth="6" strokeLinecap="round" fill="none" transform="translate(1, 1.2)" opacity="0.5" />
+                      {/* Color layer */}
+                      <path d="M 22 77 A 38 38 0 1 1 78 77" stroke="#34D399" strokeWidth="6" strokeLinecap="round" fill="none" />
+                      {/* Specular highlight */}
+                      <path d="M 22 77 A 38 38 0 1 1 78 77" stroke="#a7f3d0" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.65" transform="translate(-0.6, -0.7)" />
 
-                      {/* Inner Arc 3D Stack - Bold Green */}
-                      <path
-                        d="M 37.3 62.7 A 18 18 0 1 1 62.7 62.7"
-                        stroke="#0a3c10"
-                        strokeWidth="5.5"
-                        strokeLinecap="round"
-                        fill="none"
-                        transform="translate(0.8, 1)"
-                      />
-                      <path
-                        d="M 37.3 62.7 A 18 18 0 1 1 62.7 62.7"
-                        stroke="#00C853"
-                        strokeWidth="5.5"
-                        strokeLinecap="round"
-                        fill="none"
-                      />
-                      <path
-                        d="M 37.3 62.7 A 18 18 0 1 1 62.7 62.7"
-                        stroke="#ffffff"
-                        strokeWidth="1.2"
-                        strokeLinecap="round"
-                        fill="none"
-                        opacity="0.7"
-                        transform="translate(-0.5, -0.6)"
-                      />
+                      {/* === MIDDLE ARC (Emerald Green #10B981) === */}
+                      {/* Shadow layer */}
+                      <path d="M 29 71 A 28 28 0 1 1 71 71" stroke="#064e3b" strokeWidth="6" strokeLinecap="round" fill="none" transform="translate(1, 1.2)" opacity="0.5" />
+                      {/* Color layer */}
+                      <path d="M 29 71 A 28 28 0 1 1 71 71" stroke="#10B981" strokeWidth="6" strokeLinecap="round" fill="none" />
+                      {/* Specular highlight */}
+                      <path d="M 29 71 A 28 28 0 1 1 71 71" stroke="#6ee7b7" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.65" transform="translate(-0.6, -0.7)" />
 
-                      {/* Middle Arc 3D Stack - Emerald Green */}
-                      <path
-                        d="M 30.2 69.8 A 28 28 0 1 1 69.8 69.8"
-                        stroke="#083818"
-                        strokeWidth="5.5"
-                        strokeLinecap="round"
-                        fill="none"
-                        transform="translate(0.8, 1)"
-                      />
-                      <path
-                        d="M 30.2 69.8 A 28 28 0 1 1 69.8 69.8"
-                        stroke="#10B981"
-                        strokeWidth="5.5"
-                        strokeLinecap="round"
-                        fill="none"
-                      />
-                      <path
-                        d="M 30.2 69.8 A 28 28 0 1 1 69.8 69.8"
-                        stroke="#ffffff"
-                        strokeWidth="1.2"
-                        strokeLinecap="round"
-                        fill="none"
-                        opacity="0.7"
-                        transform="translate(-0.5, -0.6)"
-                      />
+                      {/* === INNER ARC (Bold Green #00C853) === */}
+                      {/* Shadow layer */}
+                      <path d="M 36 65 A 18 18 0 1 1 64 65" stroke="#003a17" strokeWidth="6" strokeLinecap="round" fill="none" transform="translate(1, 1.2)" opacity="0.5" />
+                      {/* Color layer */}
+                      <path d="M 36 65 A 18 18 0 1 1 64 65" stroke="#00C853" strokeWidth="6" strokeLinecap="round" fill="none" />
+                      {/* Specular highlight */}
+                      <path d="M 36 65 A 18 18 0 1 1 64 65" stroke="#69f0ae" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.65" transform="translate(-0.6, -0.7)" />
 
-                      {/* Outer Arc 3D Stack - Mint Green */}
-                      <path
-                        d="M 23.1 76.9 A 38 38 0 1 1 76.9 76.9"
-                        stroke="#0c351c"
-                        strokeWidth="5.5"
-                        strokeLinecap="round"
-                        fill="none"
-                        transform="translate(0.8, 1)"
-                      />
-                      <path
-                        d="M 23.1 76.9 A 38 38 0 1 1 76.9 76.9"
-                        stroke="#34D399"
-                        strokeWidth="5.5"
-                        strokeLinecap="round"
-                        fill="none"
-                      />
-                      <path
-                        d="M 23.1 76.9 A 38 38 0 1 1 76.9 76.9"
-                        stroke="#ffffff"
-                        strokeWidth="1.2"
-                        strokeLinecap="round"
-                        fill="none"
-                        opacity="0.7"
-                        transform="translate(-0.5, -0.6)"
-                      />
+                      {/* === CENTRAL RED SPHERE === */}
+                      {/* Drop shadow */}
+                      <circle cx="50" cy="50" r="11" fill="#1a0000" transform="translate(1.2, 1.5)" opacity="0.45" />
+                      {/* Main sphere */}
+                      <circle cx="50" cy="50" r="11" fill="url(#nextvwtSphere3D)" />
+                      {/* Rim light (bottom-right edge glow for 3D depth) */}
+                      <circle cx="50" cy="50" r="11" fill="none" stroke="#ff4444" strokeWidth="0.8" opacity="0.4" />
+                      {/* Specular catchlight */}
+                      <ellipse cx="46.5" cy="45.5" rx="3.2" ry="2.2" fill="white" opacity="0.7" transform="rotate(-25, 46.5, 45.5)" />
                     </svg>
                   </div>
                   <div
@@ -479,7 +422,7 @@ export default function App() {
 
                 {/* Control Buttons */}
                 <div
-                  className={`mt-8 mb-4 flex justify-center transition-opacity duration-300 w-full ${isPowerOn ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}
+                  className={`mt-8 mb-4 flex justify-center transition-opacity duration-300 w-full ${isPowerOn ? '' : 'pointer-events-none'}`}
                 >
                   <ControlButtons
                     onScan={() => setIsChannelListOpen(true)}
@@ -494,7 +437,7 @@ export default function App() {
               {/* PTT Button */}
               {showPTT && (
                 <div
-                  className={`mt-24 mb-8 w-full flex justify-center transition-opacity duration-300 ${isPowerOn ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}
+                  className={`mt-24 mb-8 w-full flex justify-center transition-opacity duration-300 opacity-100 ${isPowerOn ? '' : 'pointer-events-none'}`}
                 >
                   <PTTButton
                     isActive={isTransmitting}
