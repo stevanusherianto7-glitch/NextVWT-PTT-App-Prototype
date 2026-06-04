@@ -205,7 +205,7 @@ export default function App() {
     <div className="min-h-screen w-full bg-[#1a1c23] flex items-center justify-center sm:p-4 select-none overflow-auto">
       {/* Mobile Device Wrapper - Responsive to fit Android/iOS viewports and mock device on Desktop */}
       <div
-        className="w-full h-full min-h-screen sm:min-h-0 sm:w-[412px] sm:h-[892px] bg-white sm:rounded-[40px] overflow-hidden relative sm:shadow-[0_20px_50px_rgba(0,0,0,0.5)] sm:border-[8px] sm:border-[#2a2d36] flex-shrink-0 flex flex-col"
+        className="w-full h-full min-h-screen sm:min-h-0 sm:w-[360px] sm:h-[640px] bg-white sm:rounded-[40px] overflow-hidden relative sm:shadow-[0_20px_50px_rgba(0,0,0,0.5)] sm:border-[8px] sm:border-[#2a2d36] flex-shrink-0 flex flex-col"
         style={{
           boxShadow: 'inset 0 0 0 2px rgba(255,255,255,0.1)',
         }}
@@ -495,7 +495,7 @@ export default function App() {
                   setIsUserListOpen(false);
                 }
               }}
-              className="flex-1 w-full max-w-[400px] flex flex-col items-center pt-8 px-4 pb-20 relative cursor-default"
+              className="flex-1 w-full max-w-[400px] flex flex-col items-center pt-4 px-[10px] pb-20 relative cursor-default"
             >
               {isUserListOpen ? (
                 <UserListModal
@@ -507,7 +507,7 @@ export default function App() {
               ) : (
                 /* White Faceplate Container */
                 <div
-                  className="w-full bg-[#f0f3f6] flex flex-col items-center pt-6 pb-10 relative z-10 h-[370px]"
+                  className="w-full bg-[#f0f3f6] flex flex-col items-center pt-4 pb-6 relative z-10"
                   style={{
                     borderRadius: '40px 40px 200px 200px / 40px 40px 90px 90px',
                     boxShadow:
@@ -529,7 +529,7 @@ export default function App() {
                   {/* Progress Bar */}
                   {showModulator && (
                     <div
-                      className={`mt-4 flex justify-center transition-opacity duration-300 w-full ${isPowerOn ? 'opacity-100' : 'opacity-30'}`}
+                      className={`mt-2 flex justify-center transition-opacity duration-300 w-full ${isPowerOn ? 'opacity-100' : 'opacity-30'}`}
                     >
                       <ProgressBar progress={progress} />
                     </div>
@@ -537,7 +537,7 @@ export default function App() {
 
                   {/* Control Buttons */}
                   <div
-                    className={`mt-8 mb-4 flex justify-center transition-opacity duration-300 w-full ${isPowerOn ? '' : 'pointer-events-none'}`}
+                    className={`mt-4 mb-2 flex justify-center transition-opacity duration-300 w-full ${isPowerOn ? '' : 'pointer-events-none'}`}
                   >
                     <ControlButtons
                       onScan={() => setIsChannelListOpen(true)}
