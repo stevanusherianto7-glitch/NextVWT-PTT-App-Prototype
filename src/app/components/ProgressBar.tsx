@@ -15,9 +15,10 @@ export function ProgressBar({ progress }: ProgressBarProps) {
     <div
       className="w-[320px] h-[14px] rounded-full overflow-hidden relative"
       style={{
-        background: 'linear-gradient(to bottom, #555555 0%, #6b6b6b 50%, #4a4a4a 100%)',
-        boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.7), inset 0 -1px 2px rgba(255,255,255,0.15), 0 1px 1px rgba(255,255,255,0.4)',
-        border: '1px solid #333',
+        background: '#ffffff',
+        boxShadow:
+          'inset 0 2px 4px rgba(0,0,0,0.45), inset 0 -1px 3px rgba(0,0,0,0.25), inset 2px 0 4px rgba(0,0,0,0.2), inset -2px 0 4px rgba(0,0,0,0.2)',
+        border: '1.5px solid rgba(0,0,0,0.25)',
       }}
     >
       {/* Background segments/grid (optional, for that LCD meter look) */}
