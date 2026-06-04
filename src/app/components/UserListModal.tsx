@@ -313,7 +313,7 @@ function AvatarImage({
   if (hasError || !src) {
     return (
       <div
-        className="w-full h-full rounded-full flex items-center justify-center text-white font-extrabold text-[17px] shadow-[inset_0_1.5px_3px_rgba(255,255,255,0.4)]"
+        className="w-full h-full rounded-full flex items-center justify-center text-white font-semibold text-[17px] shadow-[inset_0_1.5px_3px_rgba(255,255,255,0.4)]"
         style={{ backgroundColor: avatarColor }}
       >
         {initial}
@@ -370,15 +370,15 @@ export function UserListModal({
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      className="w-full max-w-[300px] user-list-modal -mt-8 pt-8 bg-white border-x border-b border-gray-300 rounded-b-2xl flex flex-col overflow-hidden animate-in fade-in duration-200"
+      className="w-full max-w-[340px] user-list-modal -mt-8 pb-4 bg-white border-x border-b border-gray-300 rounded-b-2xl flex flex-col overflow-hidden animate-in fade-in duration-200"
     >
       <style>{`
         .user-list-modal {
-          height: 385px;
+          height: 350px;
         }
         @media (min-height: 700px) {
           .user-list-modal {
-            height: 535px;
+            height: 485px;
           }
         }
         .custom-scrollbar::-webkit-scrollbar {
@@ -406,8 +406,8 @@ export function UserListModal({
             </svg>
           </div>
           <div className="ml-3 flex-1 min-w-0 text-left">
-            <div className="text-sm font-bold text-gray-900">Server</div>
-            <div className="text-[10px] text-gray-500 font-extrabold uppercase mt-0.5 tracking-wider">
+            <div className="text-sm font-medium text-gray-900">Server</div>
+            <div className="text-[10px] text-gray-500 font-normal uppercase mt-0.5 tracking-wider">
               SERVER NextVWT
             </div>
           </div>
@@ -423,7 +423,7 @@ export function UserListModal({
             return (
               <div
                 key={`${profile.callSign}-${idx}`}
-                className="w-full flex items-center px-4 py-2.5 hover:bg-white active:bg-gray-100 transition-colors bg-[#fafbfc]"
+                className="w-full flex items-center px-4 py-2.5 hover:bg-white active:bg-gray-100 transition-colors bg-[#fafbfc] border-b border-gray-300/70"
               >
                 {/* Avatar with status overlay */}
                 <div className="relative w-11 h-11 shrink-0 select-none">
@@ -442,14 +442,14 @@ export function UserListModal({
 
                 {/* Name & Details */}
                 <div className="ml-3 flex-1 min-w-0 text-left">
-                  <div className="text-[14px] font-bold text-gray-800 truncate leading-snug">
+                  <div className="text-[14px] font-medium text-gray-800 truncate leading-snug">
                     {profile.displayName}
                   </div>
                   <div className="flex items-center text-[11px] mt-0.5 truncate gap-1.5 font-medium leading-none">
-                    <span className="text-[#0088cc] font-extrabold tracking-wide">
+                    <span className="text-[#0088cc] font-medium tracking-wide">
                       {profile.callSign}
                     </span>
-                    <span className="text-gray-500 font-bold uppercase">{profile.location}</span>
+                    <span className="text-gray-500 font-normal uppercase">{profile.location}</span>
                   </div>
                 </div>
 
@@ -465,7 +465,7 @@ export function UserListModal({
             );
           })
         ) : (
-          <div className="p-8 text-center text-xs text-gray-400 font-semibold">
+          <div className="p-8 text-center text-xs text-gray-400 font-medium">
             Tidak ada pengguna ditemukan
           </div>
         )}

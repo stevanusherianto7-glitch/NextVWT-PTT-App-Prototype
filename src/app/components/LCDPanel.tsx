@@ -135,7 +135,7 @@ export function LCDPanel({
               style={{ filter: 'drop-shadow(1px 1px 0px rgba(0,0,0,0.2))' }}
             />
             <span
-              className="text-sm text-black -ml-1 truncate max-w-[100px]"
+              className="text-base text-black -ml-1 truncate max-w-[110px]"
               style={{ fontWeight: 600 }}
             >
               {username}
@@ -267,7 +267,7 @@ export function LCDPanel({
                 onUserCountClick();
               }
             }}
-            className={`flex items-end gap-2 mr-4 relative transition-all duration-150 ${_isPowerOn && onUserCountClick ? 'cursor-pointer hover:opacity-75 active:scale-95' : ''}`}
+            className={`flex items-end gap-0.5 mr-4 relative transition-all duration-150 ${_isPowerOn && onUserCountClick ? 'cursor-pointer hover:opacity-75 active:scale-95' : ''}`}
             style={{ paddingBottom: '5px' }}
           >
             <div className="flex items-center justify-center">
@@ -279,7 +279,7 @@ export function LCDPanel({
               />
             </div>
             <span
-              className="text-3xl text-black font-medium tracking-tight leading-none"
+              className="text-2xl text-black font-medium tracking-tight leading-none"
               style={{ textShadow: '1px 1px 1px rgba(255,255,255,0.5)' }}
             >
               {_isPowerOn ? userCount.toString().padStart(2, '0') : '00'}
