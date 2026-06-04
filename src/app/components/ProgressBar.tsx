@@ -31,16 +31,17 @@ export function ProgressBar({ progress }: ProgressBarProps) {
           style={{
             width: '320px', // Must match parent width
             background:
-              'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, transparent 35%, rgba(0,0,0,0.45) 100%), linear-gradient(to right, #00ff55 0%, #00ff55 62.5%, #ffff00 62.5%, #ffff00 83.3%, #ff003c 83.3%, #ff003c 100%)',
+              'linear-gradient(to bottom, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.15) 25%, transparent 45%, rgba(0,0,0,0.7) 100%), linear-gradient(to right, #00ff55 0%, #00ff55 62.5%, #ffff00 62.5%, #ffff00 83.3%, #ff003c 83.3%, #ff003c 100%)',
             boxShadow: 'inset 0 0 6px rgba(255,255,255,0.9), 0 0 15px rgba(255,255,255,0.5)',
           }}
         >
           {/* White Laser Core Line */}
           <div
-            className="absolute top-[4.75px] left-0 h-[2.5px] bg-white opacity-95 rounded-full pointer-events-none"
+            className="absolute top-[4.5px] left-0 h-[3px] bg-white opacity-95 rounded-full pointer-events-none"
             style={{
               width: '320px',
-              boxShadow: '0 0 8px #fff, 0 0 16px rgba(255,255,255,0.7)',
+              boxShadow:
+                '0 0 12px #fff, 0 0 24px rgba(255,255,255,0.95), 0 0 35px rgba(255,255,255,0.7)',
             }}
           />
         </div>
@@ -53,7 +54,7 @@ export function ProgressBar({ progress }: ProgressBarProps) {
           style={{
             left: `${progress}%`,
             background: '#fff',
-            boxShadow: `0 0 10px #fff, 0 0 20px ${headGlow}, 0 0 35px ${headGlow}`,
+            boxShadow: `0 0 12px #fff, 0 0 25px ${headGlow}, 0 0 42px ${headGlow}`,
             borderRadius: '2px',
           }}
         />
