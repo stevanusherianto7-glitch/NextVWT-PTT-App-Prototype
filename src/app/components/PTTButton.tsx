@@ -268,9 +268,9 @@ export function PTTButton({ onPressStart, onPressEnd, isActive = false }: PTTBut
     <div
       className="relative flex items-center justify-center p-1"
       style={{
-        width: '308px',
-        height: '88px',
-        borderRadius: '44px',
+        width: '338px',
+        height: '108px',
+        borderRadius: '54px',
         background: 'transparent',
         boxShadow: isDepressed
           ? 'inset 0 5px 10px rgba(0,0,0,0.3)'
@@ -286,9 +286,9 @@ export function PTTButton({ onPressStart, onPressEnd, isActive = false }: PTTBut
         onTouchStart={handleMouseDown}
         onTouchEnd={handleMouseUp}
         onTouchCancel={handleMouseLeave}
-        className="relative w-[296px] h-[76px] flex items-center justify-center overflow-hidden focus:outline-none"
+        className="relative w-[326px] h-[96px] flex items-center justify-center overflow-hidden focus:outline-none"
         style={{
-          borderRadius: '38px',
+          borderRadius: '48px',
           background: isActive
             ? 'linear-gradient(to bottom, #d62828 0%, #a01010 100%)' // Red when active
             : 'linear-gradient(to bottom, #2cdb66 0%, #19ba42 100%)', // Brighter base to look more convex
@@ -306,7 +306,7 @@ export function PTTButton({ onPressStart, onPressEnd, isActive = false }: PTTBut
           className="relative z-10"
           style={{
             color: '#ffffff',
-            fontSize: '34px',
+            fontSize: '44px',
             fontWeight: 800,
             letterSpacing: '3px',
             textShadow: isActive
@@ -319,7 +319,7 @@ export function PTTButton({ onPressStart, onPressEnd, isActive = false }: PTTBut
 
         {/* Top inner glass highlight (convex effect) */}
         <div
-          className="absolute top-0.5 left-2 right-2 h-[26px] rounded-[26px] pointer-events-none transition-opacity duration-300"
+          className="absolute top-0.5 left-2 right-2 h-[34px] rounded-[34px] pointer-events-none transition-opacity duration-300"
           style={{
             background:
               'linear-gradient(to bottom, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.0) 100%)',

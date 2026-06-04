@@ -69,6 +69,17 @@ const STATIC_CHANNELS: ChannelItem[] = [
   { number: 30, name: 'BANTUAN TEKNIS ADMIN', type: 'red', users: ['support_admin'] },
 ];
 
+function getChannelUserCount(channelNum: number): number {
+  const ch = STATIC_CHANNELS.find((c) => c.number === channelNum);
+  if (ch) {
+    return ch.users ? ch.users.length : 0;
+  }
+  if (channelNum === 100) return 27; // Persis mockup
+  // Deterministik user count untuk channel lainnya (2 - 38)
+  const hash = (channelNum * 13 + 7) % 37;
+  return hash + 2;
+}
+
 export default function App() {
   const {
     isPowerOn,
@@ -340,7 +351,12 @@ export default function App() {
               >
                 {/* LCD Panel */}
                 <div className="transition-opacity duration-300 flex justify-center w-full">
-                  <LCDPanel channel={channel} isOffline={!isConnected} isPowerOn={isPowerOn} />
+                  <LCDPanel
+                    channel={channel}
+                    userCount={getChannelUserCount(channel)}
+                    isOffline={!isConnected}
+                    isPowerOn={isPowerOn}
+                  />
                 </div>
 
                 {/* Progress Bar */}
