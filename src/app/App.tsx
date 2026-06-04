@@ -495,7 +495,7 @@ export default function App() {
                   setIsUserListOpen(false);
                 }
               }}
-              className="flex-1 w-full max-w-[400px] flex flex-col items-center pt-8 px-9 pb-20 relative cursor-default"
+              className="flex-1 w-full max-w-[400px] flex flex-col items-center pt-8 px-4 pb-20 relative cursor-default"
             >
               {isUserListOpen ? (
                 <UserListModal
