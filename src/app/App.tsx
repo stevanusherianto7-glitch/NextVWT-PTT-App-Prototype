@@ -419,20 +419,34 @@ export default function App() {
                   </svg>
                 </button>
 
-                <div className="flex items-center justify-center gap-1.5 w-full px-2">
-                  <span className="text-[30px] sm:text-[34px] font-black bg-gradient-to-r from-[#22c55e] to-[#15803d] bg-clip-text text-transparent tracking-tighter uppercase">
+                <div className="flex items-center justify-center gap-1.5 w-full px-2 py-1">
+                  <span
+                    className="text-[34px] sm:text-[38px] font-black tracking-tighter uppercase"
+                    style={{
+                      color: '#22c55e',
+                      textShadow:
+                        '1px 1px 0px #16a34a, 2px 2px 0px #15803d, 3px 3px 0px #166534, 4px 4px 0px #14532d, 5px 5px 6px rgba(0,0,0,0.6)',
+                    }}
+                  >
                     NEXT
                   </span>
                   <img
                     src={logoBrand}
                     alt="Logo NextVWT"
-                    className="h-[32px] sm:h-[36px] w-auto object-contain shrink-0 mx-0.5"
+                    className="h-[50px] sm:h-[56px] w-auto shrink-0 mx-1"
                   />
-                  <span className="text-[30px] sm:text-[34px] font-black bg-gradient-to-r from-[#22c55e] to-[#15803d] bg-clip-text text-transparent tracking-tighter uppercase">
+                  <span
+                    className="text-[34px] sm:text-[38px] font-black tracking-tighter uppercase"
+                    style={{
+                      color: '#22c55e',
+                      textShadow:
+                        '1px 1px 0px #16a34a, 2px 2px 0px #15803d, 3px 3px 0px #166534, 4px 4px 0px #14532d, 5px 5px 6px rgba(0,0,0,0.6)',
+                    }}
+                  >
                     VWT
                   </span>
                 </div>
-                <div className="text-[9px] sm:text-[10px] font-black text-[#e53935] tracking-[0.15em] mt-1 text-center uppercase">
+                <div className="text-[10px] sm:text-[11px] font-black text-[#e53935] tracking-[0.18em] mt-2 text-center uppercase">
                   NEXT VIRTUAL WALKIE TALKIE
                 </div>
               </div>
