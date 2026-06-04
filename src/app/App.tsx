@@ -419,17 +419,20 @@ export default function App() {
                   </svg>
                 </button>
 
-                <div className="flex items-center justify-center gap-2">
+                <div className="flex items-center justify-center gap-1.5 w-full px-2">
+                  <span className="text-[30px] sm:text-[34px] font-black bg-gradient-to-r from-[#22c55e] to-[#15803d] bg-clip-text text-transparent tracking-tighter uppercase">
+                    NEXT
+                  </span>
                   <img
                     src={logoBrand}
                     alt="Logo NextVWT"
-                    className="h-[28px] w-auto object-contain"
+                    className="h-[32px] sm:h-[36px] w-auto object-contain shrink-0 mx-0.5"
                   />
-                  <span className="text-[20px] font-black bg-gradient-to-r from-[#22c55e] to-[#15803d] bg-clip-text text-transparent tracking-tight">
-                    NextVWT
+                  <span className="text-[30px] sm:text-[34px] font-black bg-gradient-to-r from-[#22c55e] to-[#15803d] bg-clip-text text-transparent tracking-tighter uppercase">
+                    VWT
                   </span>
                 </div>
-                <div className="text-[8px] font-extrabold text-gray-500 tracking-[0.1em] mt-1 text-center uppercase">
+                <div className="text-[9px] sm:text-[10px] font-black text-[#e53935] tracking-[0.15em] mt-1 text-center uppercase">
                   NEXT VIRTUAL WALKIE TALKIE
                 </div>
               </div>
