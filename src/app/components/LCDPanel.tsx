@@ -250,16 +250,16 @@ export function LCDPanel({
         </div>
 
         {/* Center/Bottom Content */}
-        <div className="flex justify-between items-end pb-0 px-1 mt-auto">
+        <div className="flex justify-between items-end pb-[5px] px-1 mt-auto">
           <div className="flex items-end gap-1">
             <div
-              className="text-black relative translate-y-[6px]"
+              className="text-black relative translate-y-[3px]"
               style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '1px' }}
             >
               CH
             </div>
             <div
-              className="text-white relative translate-y-[8px]"
+              className="text-white relative translate-y-[5px]"
               style={{
                 fontFamily: "'DSEG7', monospace",
                 fontSize: '52px',
@@ -275,7 +275,7 @@ export function LCDPanel({
 
           {/* Bottom Right: Twin Heads & Enlarged User Count (Shifted Left via margin) */}
           <div
-            className="flex items-end gap-2 mr-4 relative translate-y-[8px]"
+            className="flex items-end gap-2 mr-4 relative translate-y-[6px]"
             style={{ marginBottom: '2px' }}
           >
             <div className="flex items-center justify-center">
