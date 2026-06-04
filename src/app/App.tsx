@@ -7,7 +7,6 @@ import { PTTButton } from './components/PTTButton';
 import { usePTTStore } from './store/usePTTStore';
 import { SettingsPanel } from './components/SettingsPanel';
 import { Toaster } from './components/ui/sonner';
-import logoBrand from '../imports/logo_nextvwt.png';
 
 interface ChannelItem {
   number: number;
@@ -419,14 +418,9 @@ export default function App() {
                   </svg>
                 </button>
 
-                <img
-                  src={logoBrand}
-                  alt="Logo NextVWT"
-                  className="h-[55px] sm:h-[62px] w-auto shrink-0 mb-2"
-                />
-                <div className="flex items-center justify-center gap-2 w-full px-2">
+                <div className="flex items-center justify-center gap-1.5 w-full px-2 py-1">
                   <span
-                    className="text-[32px] sm:text-[36px] font-black tracking-tighter uppercase"
+                    className="text-[30px] sm:text-[34px] font-black tracking-tighter uppercase"
                     style={{
                       color: '#22c55e',
                       textShadow:
@@ -435,8 +429,41 @@ export default function App() {
                   >
                     NEXT
                   </span>
+                  <svg
+                    viewBox="0 0 100 100"
+                    className="h-[36px] sm:h-[42px] w-auto shrink-0 mx-0.5"
+                    style={{
+                      filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))',
+                    }}
+                  >
+                    {/* Central Red Circle */}
+                    <circle cx="50" cy="50" r="10" fill="#EF4444" />
+
+                    {/* Concentric Green Signal Arcs - Fading Outwards */}
+                    <path
+                      d="M 37.3 62.7 A 18 18 0 1 1 62.7 62.7"
+                      stroke="#10B981"
+                      strokeWidth="4.5"
+                      strokeLinecap="round"
+                      fill="none"
+                    />
+                    <path
+                      d="M 30.2 69.8 A 28 28 0 1 1 69.8 69.8"
+                      stroke="#34D399"
+                      strokeWidth="4.5"
+                      strokeLinecap="round"
+                      fill="none"
+                    />
+                    <path
+                      d="M 23.1 76.9 A 38 38 0 1 1 76.9 76.9"
+                      stroke="#A7F3D0"
+                      strokeWidth="4.5"
+                      strokeLinecap="round"
+                      fill="none"
+                    />
+                  </svg>
                   <span
-                    className="text-[32px] sm:text-[36px] font-black tracking-tighter uppercase"
+                    className="text-[30px] sm:text-[34px] font-black tracking-tighter uppercase"
                     style={{
                       color: '#22c55e',
                       textShadow:
