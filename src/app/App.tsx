@@ -7,6 +7,7 @@ import { PTTButton } from './components/PTTButton';
 import { usePTTStore } from './store/usePTTStore';
 import { SettingsPanel } from './components/SettingsPanel';
 import { Toaster } from './components/ui/sonner';
+import { UserListModal } from './components/UserListModal';
 
 interface ChannelItem {
   number: number;
@@ -167,16 +168,18 @@ export default function App() {
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isChannelListOpen, setIsChannelListOpen] = useState(false);
+  const [isUserListOpen, setIsUserListOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [activePrivateChannel, setActivePrivateChannel] = useState<ChannelItem | null>(null);
   const [restrictedChannel, setRestrictedChannel] = useState<ChannelItem | null>(null);
   const [infoChannel, setInfoChannel] = useState<ChannelItem | null>(null);
 
-  // Auto-close settings if power is turned off
+  // Auto-close settings and user list if power is turned off
   useEffect(() => {
     if (!isPowerOn) {
       setIsSettingsOpen(false);
       setIsChannelListOpen(false);
+      setIsUserListOpen(false);
     }
   }, [isPowerOn]);
 
@@ -480,53 +483,63 @@ export default function App() {
 
             {/* Main Content */}
             <div className="flex-1 w-full max-w-[400px] flex flex-col items-center pt-8 pb-20 px-4 relative">
-              {/* White Faceplate Container */}
-              <div
-                className="w-full bg-[#f0f3f6] flex flex-col items-center pt-6 pb-10 relative z-10"
-                style={{
-                  borderRadius: '40px 40px 200px 200px / 40px 40px 90px 90px',
-                  boxShadow:
-                    '0 18px 40px rgba(0,0,0,0.22), 0 6px 15px rgba(0,0,0,0.15), 0 -2px 4px rgba(255,255,255,0.95), inset 0 0 38px rgba(0,0,0,0.32), inset 0 8px 12px rgba(255,255,255,1), inset 0 -15px 30px rgba(0,0,0,0.24), inset 15px 0 25px rgba(0,0,0,0.08), inset -15px 0 25px rgba(0,0,0,0.08)',
-                  border: '1px solid #dbe2e9',
-                }}
-              >
-                {/* LCD Panel */}
-                <div className="transition-opacity duration-300 flex justify-center w-full">
-                  <LCDPanel
-                    channel={channel}
-                    userCount={getChannelUserCount(channel)}
-                    isOffline={!isConnected}
-                    isPowerOn={isPowerOn}
-                  />
-                </div>
-
-                {/* Progress Bar */}
-                {showModulator && (
-                  <div
-                    className={`mt-4 flex justify-center transition-opacity duration-300 w-full ${isPowerOn ? 'opacity-100' : 'opacity-30'}`}
-                  >
-                    <ProgressBar progress={progress} />
-                  </div>
-                )}
-
-                {/* Control Buttons */}
+              {isUserListOpen ? (
+                <UserListModal
+                  channel={channel}
+                  channelName={channelNameStr}
+                  users={activeChannelObj?.users || []}
+                  onClose={() => setIsUserListOpen(false)}
+                />
+              ) : (
+                /* White Faceplate Container */
                 <div
-                  className={`mt-8 mb-4 flex justify-center transition-opacity duration-300 w-full ${isPowerOn ? '' : 'pointer-events-none'}`}
+                  className="w-full bg-[#f0f3f6] flex flex-col items-center pt-6 pb-10 relative z-10"
+                  style={{
+                    borderRadius: '40px 40px 200px 200px / 40px 40px 90px 90px',
+                    boxShadow:
+                      '0 18px 40px rgba(0,0,0,0.22), 0 6px 15px rgba(0,0,0,0.15), 0 -2px 4px rgba(255,255,255,0.95), inset 0 0 38px rgba(0,0,0,0.32), inset 0 8px 12px rgba(255,255,255,1), inset 0 -15px 30px rgba(0,0,0,0.24), inset 15px 0 25px rgba(0,0,0,0.08), inset -15px 0 25px rgba(0,0,0,0.08)',
+                    border: '1px solid #dbe2e9',
+                  }}
                 >
-                  <ControlButtons
-                    onScan={() => setIsChannelListOpen(true)}
-                    onSet={handleSet}
-                    onUp={channelUp}
-                    onDown={channelDown}
-                    isScanning={isScanning}
-                  />
+                  {/* LCD Panel */}
+                  <div className="transition-opacity duration-300 flex justify-center w-full">
+                    <LCDPanel
+                      channel={channel}
+                      userCount={getChannelUserCount(channel)}
+                      isOffline={!isConnected}
+                      isPowerOn={isPowerOn}
+                      onUserCountClick={() => setIsUserListOpen(true)}
+                    />
+                  </div>
+
+                  {/* Progress Bar */}
+                  {showModulator && (
+                    <div
+                      className={`mt-4 flex justify-center transition-opacity duration-300 w-full ${isPowerOn ? 'opacity-100' : 'opacity-30'}`}
+                    >
+                      <ProgressBar progress={progress} />
+                    </div>
+                  )}
+
+                  {/* Control Buttons */}
+                  <div
+                    className={`mt-8 mb-4 flex justify-center transition-opacity duration-300 w-full ${isPowerOn ? '' : 'pointer-events-none'}`}
+                  >
+                    <ControlButtons
+                      onScan={() => setIsChannelListOpen(true)}
+                      onSet={handleSet}
+                      onUp={channelUp}
+                      onDown={channelDown}
+                      isScanning={isScanning}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* PTT Button */}
               {showPTT && (
                 <div
-                  className={`mt-24 mb-8 w-full flex justify-center transition-opacity duration-300 opacity-100 ${isPowerOn ? '' : 'pointer-events-none'}`}
+                  className={`${isUserListOpen ? 'mt-6' : 'mt-24'} mb-8 w-full flex justify-center transition-opacity duration-300 opacity-100 ${isPowerOn ? '' : 'pointer-events-none'}`}
                 >
                   <PTTButton
                     isActive={isTransmitting}
