@@ -16,7 +16,7 @@ interface ChannelItem {
 }
 
 const STATIC_CHANNELS: ChannelItem[] = [
-  { number: 0, name: 'CH-DARURAT / SAR INFO', type: 'red', users: [] },
+  { number: 0, name: 'DUKUNGAN & BANTUAN', type: 'green', users: [] },
   {
     number: 1,
     name: 'KOPDAR NASIONAL UTAMA',
@@ -67,6 +67,40 @@ const STATIC_CHANNELS: ChannelItem[] = [
   { number: 28, name: 'STANDBY CHANNEL 28', type: 'gray', users: [] },
   { number: 29, name: 'STANDBY CHANNEL 29', type: 'gray', users: [] },
   { number: 30, name: 'BANTUAN TEKNIS ADMIN', type: 'red', users: ['support_admin'] },
+  {
+    number: 100,
+    name: 'LANDING-ECHO CHANNEL',
+    type: 'green',
+    users: [
+      'Pebri Haryanto',
+      'antoni_99',
+      'budi_salatiga',
+      'rudi_bandung',
+      'medan_dx',
+      'palembang_line',
+      'touring_rider',
+      'ninja_club',
+      'pak_rudi_rt',
+      'siskamling_1',
+      'lalin_update',
+      'anto_bekasi',
+      'doni_depok',
+      'makassar_boy',
+      'sar_team_1',
+      'mount_hiker',
+      'support_admin',
+      'eko_pratama',
+      'dewi_sari',
+      'siti_aminah',
+      'joko_susilo',
+      'hendra_w',
+      'yudi_antara',
+      'agus_setiawan',
+      'roni_h',
+      'irma_p',
+      'pebri_fans',
+    ],
+  },
 ];
 
 function getChannelUserCount(channelNum: number): number {
@@ -500,10 +534,14 @@ export default function App() {
                     }
 
                     const activeUserCount = ch.users.length;
-                    const activeUsersStr =
+                    let activeUsersStr =
                       activeUserCount > 0
                         ? `${activeUserCount} PENGGUNA • ${ch.users.join(', ')}`
                         : '0 PENGGUNA';
+
+                    if (ch.number === 0) {
+                      activeUsersStr = 'WWW.NEXTVWT.ID';
+                    }
 
                     return (
                       <button
