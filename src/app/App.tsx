@@ -456,7 +456,7 @@ export default function App() {
                           setIsChannelListOpen(false);
                           setSearchQuery('');
                         }}
-                        className="w-full flex items-center p-3 hover:bg-gray-50 active:bg-gray-100 text-left border-b border-gray-100 cursor-pointer select-none focus:outline-none"
+                        className="w-full flex items-center py-1 px-3 hover:bg-gray-50 active:bg-gray-100 text-left cursor-pointer select-none focus:outline-none"
                       >
                         <div
                           className={`w-[45px] h-[35px] ${bgClass} rounded flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm`}
