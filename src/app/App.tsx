@@ -202,7 +202,14 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen w-full bg-[#1a1c23] flex items-center justify-center sm:p-4 select-none overflow-auto">
+    <div
+      onClick={() => {
+        if (isPowerOn && isUserListOpen) {
+          setIsUserListOpen(false);
+        }
+      }}
+      className="min-h-screen w-full bg-[#1a1c23] flex items-center justify-center sm:p-4 select-none overflow-auto"
+    >
       {/* Mobile Device Wrapper - Responsive to fit Android/iOS viewports and mock device on Desktop */}
       <div
         className="w-full h-full min-h-screen sm:min-h-0 sm:w-[360px] sm:h-[800px] bg-white sm:rounded-[40px] overflow-hidden relative sm:shadow-[0_20px_50px_rgba(0,0,0,0.5)] sm:border-[8px] sm:border-[#2a2d36] flex-shrink-0 flex flex-col"
@@ -553,14 +560,15 @@ export default function App() {
               {/* PTT Button */}
               {showPTT && (
                 <div
-                  onClick={(e) => e.stopPropagation()}
                   className={`absolute bottom-16 left-0 right-0 w-full flex justify-center transition-opacity duration-300 opacity-100 ${isPowerOn ? '' : 'pointer-events-none'}`}
                 >
-                  <PTTButton
-                    isActive={isTransmitting}
-                    onPressStart={() => isPowerOn && setIsTransmitting(true)}
-                    onPressEnd={() => setIsTransmitting(false)}
-                  />
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <PTTButton
+                      isActive={isTransmitting}
+                      onPressStart={() => isPowerOn && setIsTransmitting(true)}
+                      onPressEnd={() => setIsTransmitting(false)}
+                    />
+                  </div>
                 </div>
               )}
             </div>
@@ -581,7 +589,7 @@ export default function App() {
             />
 
             {/* Modal Container */}
-            <div className="bg-white w-[90%] max-h-[80%] rounded-lg shadow-2xl flex flex-col z-10 overflow-hidden border border-gray-300 animate-in fade-in zoom-in-95 duration-100">
+            <div className="bg-white w-full max-w-[340px] max-h-[80%] rounded-lg shadow-2xl flex flex-col z-10 overflow-hidden border border-gray-300 animate-in fade-in zoom-in-95 duration-100">
               {/* Header */}
               <div className="flex flex-col items-center px-4 py-4 bg-white shrink-0 border-b border-gray-200">
                 <div className="flex items-center justify-center gap-1.5 w-full px-2 py-1">

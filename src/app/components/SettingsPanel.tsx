@@ -1061,34 +1061,32 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
           {/* Slider 1: Ukuran */}
           <div className="flex flex-col gap-1">
             <div className="text-xs font-semibold text-gray-700">Ukuran</div>
-            <div className="flex items-center gap-3">
+            <div className="PB-range-slider-div">
               <input
                 type="range"
                 min="10"
                 max="100"
                 value={pttSize}
                 onChange={(e) => setPttSize(Number(e.target.value))}
-                className="flex-1 accent-[#10B981] cursor-pointer h-1 bg-gray-200 rounded-lg appearance-none"
+                className="PB-range-slider"
               />
-              <span className="text-[11px] text-gray-500 font-bold w-6 text-right">{pttSize}%</span>
+              <span className="PB-range-slidervalue">{pttSize}%</span>
             </div>
           </div>
 
           {/* Slider 2: Batas Bawah */}
           <div className="flex flex-col gap-1">
             <div className="text-xs font-semibold text-gray-700">Batas Bawah</div>
-            <div className="flex items-center gap-3">
+            <div className="PB-range-slider-div">
               <input
                 type="range"
                 min="10"
                 max="100"
                 value={pttBottom}
                 onChange={(e) => setPttBottom(Number(e.target.value))}
-                className="flex-1 accent-[#10B981] cursor-pointer h-1 bg-gray-200 rounded-lg appearance-none"
+                className="PB-range-slider"
               />
-              <span className="text-[11px] text-gray-500 font-bold w-6 text-right">
-                {pttBottom}%
-              </span>
+              <span className="PB-range-slidervalue">{pttBottom}%</span>
             </div>
           </div>
 
@@ -1114,18 +1112,16 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
             <div className="text-xs font-semibold text-gray-700">
               Volume Pemutar Suara Saat Menekan PTT
             </div>
-            <div className="flex items-center gap-3">
+            <div className="PB-range-slider-div">
               <input
                 type="range"
                 min="0"
                 max="100"
                 value={pttVolume}
                 onChange={(e) => setPttVolume(Number(e.target.value))}
-                className="flex-1 accent-[#10B981] cursor-pointer h-1 bg-gray-200 rounded-lg appearance-none"
+                className="PB-range-slider"
               />
-              <span className="text-[11px] text-gray-500 font-bold w-6 text-right">
-                {pttVolume}%
-              </span>
+              <span className="PB-range-slidervalue">{pttVolume}%</span>
             </div>
           </div>
 
