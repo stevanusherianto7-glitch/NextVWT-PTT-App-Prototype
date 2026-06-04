@@ -13,11 +13,15 @@ export function ProgressBar({ progress }: ProgressBarProps) {
 
   return (
     <div
-      className="w-[320px] h-[14px] rounded-full overflow-hidden relative"
+      className="w-full h-[14px] overflow-hidden relative"
       style={{
-        background: '#111',
-        boxShadow: 'inset 0 2px 5px rgba(0,0,0,0.9), 0 1px 1px rgba(255,255,255,0.4)',
+        borderRadius: '2px',
+        background: 'linear-gradient(to bottom, #0a0a0a 0%, #1c1c1c 40%, #141414 100%)',
+        boxShadow:
+          'inset 0 3px 5px rgba(0,0,0,1), inset 0 -1px 2px rgba(255,255,255,0.06), 0 1px 0px rgba(255,255,255,0.18)',
         border: '1px solid #000',
+        borderTop: '1px solid #000',
+        borderBottom: '1px solid #2a2a2a',
       }}
     >
       {/* Background segments/grid (optional, for that LCD meter look) */}
@@ -38,7 +42,7 @@ export function ProgressBar({ progress }: ProgressBarProps) {
         <div
           className="h-full relative"
           style={{
-            width: '320px', // Must match parent width
+            width: '100%', // Full width of parent
             background:
               'linear-gradient(to right, #00ff66 0%, #00ff66 62.5%, #ffaa00 62.5%, #ffaa00 83.3%, #ff3333 83.3%, #ff3333 100%)',
             boxShadow: 'inset 0 0 4px rgba(255,255,255,0.8), 0 0 12px rgba(255,255,255,0.4)',
@@ -48,7 +52,7 @@ export function ProgressBar({ progress }: ProgressBarProps) {
           <div
             className="absolute top-[5px] left-0 h-[2px] bg-white opacity-95 rounded-full pointer-events-none"
             style={{
-              width: '320px',
+              width: '100%',
               boxShadow: '0 0 4px rgba(255,255,255,1), 0 0 8px rgba(255,255,255,0.6)',
             }}
           />
