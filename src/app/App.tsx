@@ -482,7 +482,9 @@ export default function App() {
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 w-full max-w-[400px] flex flex-col items-center pt-8 pb-20 px-4 relative">
+            <div
+              className={`flex-1 w-full max-w-[400px] flex flex-col items-center ${isUserListOpen ? 'pt-0 px-0' : 'pt-8 px-4'} pb-20 relative`}
+            >
               {isUserListOpen ? (
                 <UserListModal
                   channel={channel}
@@ -539,7 +541,7 @@ export default function App() {
               {/* PTT Button */}
               {showPTT && (
                 <div
-                  className={`${isUserListOpen ? 'mt-6' : 'mt-24'} mb-8 w-full flex justify-center transition-opacity duration-300 opacity-100 ${isPowerOn ? '' : 'pointer-events-none'}`}
+                  className={`${isUserListOpen ? 'mt-6 px-4' : 'mt-24'} mb-8 w-full flex justify-center transition-opacity duration-300 opacity-100 ${isPowerOn ? '' : 'pointer-events-none'}`}
                 >
                   <PTTButton
                     isActive={isTransmitting}

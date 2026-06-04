@@ -256,13 +256,23 @@ export function UserListModal({ channel, channelName, users, onClose }: UserList
   );
 
   return (
-    <div
-      className="w-full h-[440px] bg-white border border-gray-300 rounded-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200"
-      style={{
-        boxShadow:
-          'inset 0 0 1px rgba(0,0,0,0.1), 0 10px 25px -5px rgba(0,0,0,0.15), 0 8px 10px -6px rgba(0,0,0,0.1)',
-      }}
-    >
+    <div className="w-full h-[470px] bg-white border-b border-gray-300 flex flex-col overflow-hidden animate-in fade-in duration-200">
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 1px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+        }
+        /* Firefox */
+        .custom-scrollbar {
+          scrollbar-width: thin;
+        }
+      `}</style>
+
       {/* Header */}
       <div
         className="flex items-center px-4 py-3 shrink-0 border-b border-gray-200"
@@ -325,7 +335,7 @@ export function UserListModal({ channel, channelName, users, onClose }: UserList
       </div>
 
       {/* User List Container (Scrollable) */}
-      <div className="flex-1 overflow-y-auto bg-[#fafbfc] divide-y divide-gray-100">
+      <div className="flex-1 overflow-y-auto bg-[#fafbfc] divide-y divide-gray-100 custom-scrollbar">
         {/* Server Row (Fixed first item like in IndoVWT screenshot) */}
         {searchQuery === '' && (
           <div className="w-full flex items-center px-4 py-2.5 border-b border-gray-100 bg-[#f4f7f6]">
