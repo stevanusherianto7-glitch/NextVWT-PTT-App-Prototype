@@ -395,29 +395,7 @@ export default function App() {
             {/* Modal Container */}
             <div className="bg-white w-[90%] max-h-[80%] rounded-lg shadow-2xl flex flex-col z-10 overflow-hidden border border-gray-300 animate-in fade-in zoom-in-95 duration-100">
               {/* Header */}
-              <div className="relative flex flex-col items-center px-4 py-4 bg-white shrink-0 border-b border-gray-200">
-                <button
-                  onClick={() => {
-                    setIsChannelListOpen(false);
-                    setSearchQuery('');
-                  }}
-                  className="absolute right-3.5 top-3.5 text-gray-500 hover:text-gray-700 cursor-pointer focus:outline-none z-10"
-                >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                </button>
-
+              <div className="flex flex-col items-center px-4 py-4 bg-white shrink-0 border-b border-gray-200">
                 <div className="flex items-center justify-center gap-1.5 w-full px-2 py-1">
                   <span
                     className="text-[30px] sm:text-[34px] font-black tracking-tighter uppercase"
@@ -431,7 +409,7 @@ export default function App() {
                   </span>
                   <svg
                     viewBox="0 0 100 100"
-                    className="h-[36px] sm:h-[42px] w-auto shrink-0 mx-0.5"
+                    className="h-[36px] sm:h-[42px] w-auto shrink-0 mx-0.5 translate-y-[2px]"
                     style={{
                       filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))',
                     }}
