@@ -205,7 +205,7 @@ export default function App() {
     <div className="min-h-screen w-full bg-[#1a1c23] flex items-center justify-center sm:p-4 select-none overflow-auto">
       {/* Mobile Device Wrapper - Responsive to fit Android/iOS viewports and mock device on Desktop */}
       <div
-        className="w-full h-full min-h-screen sm:min-h-0 sm:w-[412px] sm:h-[892px] bg-white sm:rounded-[40px] overflow-hidden relative sm:shadow-[0_20px_50px_rgba(0,0,0,0.5)] sm:border-[8px] sm:border-[#2a2d36] flex-shrink-0 flex flex-col"
+        className="w-full h-full min-h-screen sm:min-h-0 sm:w-[360px] sm:h-[800px] bg-white sm:rounded-[40px] overflow-hidden relative sm:shadow-[0_20px_50px_rgba(0,0,0,0.5)] sm:border-[8px] sm:border-[#2a2d36] flex-shrink-0 flex flex-col"
         style={{
           boxShadow: 'inset 0 0 0 2px rgba(255,255,255,0.1)',
         }}
@@ -495,7 +495,7 @@ export default function App() {
                   setIsUserListOpen(false);
                 }
               }}
-              className="flex-1 w-full max-w-[400px] flex flex-col items-center pt-8 px-4 pb-20 relative cursor-default"
+              className="flex-1 w-full max-w-[400px] flex flex-col items-center pt-8 px-[10px] pb-20 relative cursor-default"
             >
               {isUserListOpen ? (
                 <UserListModal

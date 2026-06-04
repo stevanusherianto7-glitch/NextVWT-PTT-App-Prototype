@@ -13,7 +13,7 @@ export function ProgressBar({ progress }: ProgressBarProps) {
 
   return (
     <div
-      className="w-[320px] h-[14px] rounded-full overflow-hidden relative"
+      className="w-[280px] h-[14px] rounded-full overflow-hidden relative"
       style={{
         background: '#f1f5f9',
         boxShadow: 'inset 0 0 0 2px rgba(0,0,0,0.1), inset 0 2.5px 5px rgba(0,0,0,0.25)',
@@ -29,7 +29,7 @@ export function ProgressBar({ progress }: ProgressBarProps) {
         <div
           className="h-full relative"
           style={{
-            width: '320px', // Must match parent width
+            width: '280px', // Must match parent width
             background:
               'linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.15) 20%, transparent 40%, rgba(0,0,0,0.85) 100%), linear-gradient(to right, #00ff55 0%, #00ff55 62.5%, #ffff00 62.5%, #ffff00 83.3%, #ff003c 83.3%, #ff003c 100%)',
             boxShadow: 'inset 0 0 6px rgba(255,255,255,0.9), 0 0 15px rgba(255,255,255,0.5)',
