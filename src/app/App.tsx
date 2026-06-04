@@ -411,10 +411,10 @@ export default function App() {
                   />
                 </div>
 
-                {/* Progress Bar */}
+                {/* Modulation Bar — full-width slot/groove like IndoVWT */}
                 {showModulator && (
                   <div
-                    className={`mt-4 flex justify-center transition-opacity duration-300 w-full ${isPowerOn ? 'opacity-100' : 'opacity-30'}`}
+                    className={`mt-3 w-full transition-opacity duration-300 px-0 ${isPowerOn ? 'opacity-100' : 'opacity-30'}`}
                   >
                     <ProgressBar progress={progress} />
                   </div>
