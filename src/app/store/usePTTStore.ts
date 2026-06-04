@@ -1,0 +1,328 @@
+import { create } from 'zustand';
+import { supabase } from '../utils/supabase';
+
+// ─── Local Storage Key ────────────────────────────────────────────────────────
+const LS_KEY = 'nextvwt_settings';
+
+// Robust localStorage read – returns null on parse errors or security exceptions
+export function safeGetStorage(): Partial<PTTState> | null {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as Partial<PTTState>;
+  } catch {
+    return null;
+  }
+}
+
+// Robust localStorage write – silent on quota/security errors
+export function safeSetStorage(partial: Partial<PTTState>): void {
+  try {
+    const existing = safeGetStorage() ?? {};
+    localStorage.setItem(LS_KEY, JSON.stringify({ ...existing, ...partial }));
+  } catch {
+    // Quota exceeded or private-browsing blocked – fail silently per Robustness Rule
+  }
+}
+
+// ─── UUID Utilities ───────────────────────────────────────────────────────────
+// Robust RFC4122 v4 UUID generator with fallback
+export function generateUUID(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
+// Map channel integers deterministically to syntactically valid UUID v4 format
+export function getChannelUUID(channelNum: number): string {
+  const padded = channelNum.toString().padStart(12, '0');
+  return `00000000-0000-4000-8000-${padded}`;
+}
+
+// ─── State Interface ──────────────────────────────────────────────────────────
+export interface PTTState {
+  isPowerOn: boolean;
+  isConnected: boolean;
+  isTransmitting: boolean;
+  isScanning: boolean;
+  progress: number;
+  channelNumber: number;
+  channelId: string; // UUID v4 format
+  userId: string; // UUID v4 format
+  error: string | null;
+
+  // Settings State
+  infoText: string;
+  locationText: string;
+  showMyPhoto: boolean;
+  showOtherPhotos: boolean;
+  showPhotosInList: boolean;
+  fastClick: boolean;
+  showModulator: boolean;
+  showPTT: boolean;
+  maxQueue: string;
+  audioMode: 'discussion' | 'music';
+  pttSize: number;
+  pttBottom: number;
+  togglePtt: boolean;
+  pttVolume: number;
+  vibrateOnStart: boolean;
+  toneOnStartEnd: boolean;
+  bgActive: boolean;
+  fullDuplex: boolean;
+  themeText: string;
+
+  // Actions
+  setPower: (power: boolean) => void;
+  setConnected: (connected: boolean) => void;
+  setTransmitting: (transmitting: boolean) => void;
+  setScanning: (scanning: boolean) => void;
+  setProgress: (progress: number) => void;
+  setChannelNumber: (numOrFn: number | ((prev: number) => number)) => void;
+  setError: (err: string | null) => void;
+  initializeSession: () => void;
+  updateSettings: (settings: Partial<PTTState>) => void;
+
+  // Control actions
+  channelUp: () => void;
+  channelDown: () => void;
+  toggleScan: () => void;
+}
+
+// ─── Persisted Settings Keys ──────────────────────────────────────────────────
+// Only these keys are persisted to localStorage (volatile runtime state is excluded)
+const PERSISTED_KEYS: Array<keyof PTTState> = [
+  'infoText',
+  'locationText',
+  'channelNumber',
+  'showMyPhoto',
+  'showOtherPhotos',
+  'showPhotosInList',
+  'fastClick',
+  'showModulator',
+  'showPTT',
+  'maxQueue',
+  'audioMode',
+  'pttSize',
+  'pttBottom',
+  'togglePtt',
+  'pttVolume',
+  'vibrateOnStart',
+  'toneOnStartEnd',
+  'bgActive',
+  'fullDuplex',
+  'themeText',
+];
+
+function pickPersistedState(state: Partial<PTTState>): Partial<PTTState> {
+  const result: Partial<PTTState> = {};
+  for (const key of PERSISTED_KEYS) {
+    if (key in state) {
+      // @ts-expect-error dynamic key access
+      result[key] = state[key];
+    }
+  }
+  return result;
+}
+
+// ─── Default Settings ─────────────────────────────────────────────────────────
+const DEFAULT_SETTINGS = {
+  infoText: '',
+  locationText: 'BANDUNG, JAWA BARAT',
+  showMyPhoto: true,
+  showOtherPhotos: true,
+  showPhotosInList: true,
+  fastClick: true,
+  showModulator: true,
+  showPTT: true,
+  maxQueue: '99999',
+  audioMode: 'music' as const,
+  pttSize: 30,
+  pttBottom: 50,
+  togglePtt: true,
+  pttVolume: 70,
+  vibrateOnStart: true,
+  toneOnStartEnd: true,
+  bgActive: true,
+  fullDuplex: true,
+  themeText: 'Monokrom',
+};
+
+// ─── Supabase Channel Subscription ───────────────────────────────────────────
+// Keep subscription reference in closure to avoid React rendering cycles
+let activeChannelSubscription: any = null;
+
+function subscribeToChannel(channelNum: number) {
+  try {
+    if (activeChannelSubscription) {
+      activeChannelSubscription.unsubscribe();
+      activeChannelSubscription = null;
+    }
+
+    activeChannelSubscription = supabase.channel(`ptt-room-${channelNum}`);
+    activeChannelSubscription.subscribe((status: string) => {
+      // Update store connection state based on subscription status
+      usePTTStore.setState({ isConnected: status === 'SUBSCRIBED' });
+    });
+  } catch (err) {
+    console.error('Supabase room connection error:', err);
+    // Graceful Degradation: mark offline but don't crash
+    usePTTStore.setState({
+      isConnected: false,
+      error: 'Connection failed – operating in offline mode',
+    });
+  }
+}
+
+// ─── Store ────────────────────────────────────────────────────────────────────
+export const usePTTStore = create<PTTState>((set) => ({
+  isPowerOn: true,
+  isConnected: false,
+  isTransmitting: false,
+  isScanning: false,
+  progress: 0,
+  channelNumber: 100,
+  channelId: getChannelUUID(100),
+  userId: '',
+  error: null,
+
+  // Merge defaults – initializeSession will overlay with localStorage cache
+  ...DEFAULT_SETTINGS,
+
+  setPower: (power) =>
+    set((state) => {
+      if (!power) {
+        if (activeChannelSubscription) {
+          activeChannelSubscription.unsubscribe();
+          activeChannelSubscription = null;
+        }
+        return {
+          isPowerOn: false,
+          isConnected: false,
+          isTransmitting: false,
+          isScanning: false,
+          progress: 0,
+        };
+      }
+      // Re-establish subscription on power on
+      setTimeout(() => subscribeToChannel(state.channelNumber), 0);
+      return { isPowerOn: true };
+    }),
+
+  setConnected: (connected) => set({ isConnected: connected }),
+
+  setTransmitting: (transmitting) =>
+    set((state) => {
+      if (!state.isPowerOn) return {};
+      return { isTransmitting: transmitting, progress: transmitting ? 50 : 0 };
+    }),
+
+  setScanning: (scanning) =>
+    set((state) => {
+      if (!state.isPowerOn) return {};
+      return { isScanning: scanning };
+    }),
+
+  setProgress: (progress) =>
+    set((state) => {
+      if (!state.isPowerOn) return {};
+      return { progress };
+    }),
+
+  setChannelNumber: (numOrFn) =>
+    set((state) => {
+      if (!state.isPowerOn) return {};
+      const nextVal = typeof numOrFn === 'function' ? numOrFn(state.channelNumber) : numOrFn;
+      const clamped = Math.max(1, Math.min(999, nextVal));
+
+      // Subscribe to the new channel
+      setTimeout(() => subscribeToChannel(clamped), 0);
+      // Persist channel selection for offline recovery
+      safeSetStorage({ channelNumber: clamped });
+
+      return {
+        channelNumber: clamped,
+        channelId: getChannelUUID(clamped),
+      };
+    }),
+
+  setError: (err) => set({ error: err }),
+
+  initializeSession: () =>
+    set((state) => {
+      if (state.userId) return {}; // Already initialized
+
+      const newUserId = generateUUID();
+
+      // --- Offline Recovery: restore settings from localStorage cache ---
+      const cached = safeGetStorage();
+      const restored: Partial<PTTState> = {};
+
+      if (cached) {
+        for (const key of PERSISTED_KEYS) {
+          if (key in cached && (cached as Record<string, unknown>)[key] !== undefined) {
+            // @ts-expect-error dynamic key assignment
+            restored[key] = (cached as Record<string, unknown>)[key];
+          }
+        }
+      }
+
+      // Establish initial connection using restored or default channel
+      const channelToJoin = (restored.channelNumber as number) ?? state.channelNumber;
+      setTimeout(() => subscribeToChannel(channelToJoin), 0);
+
+      return {
+        userId: newUserId,
+        ...restored,
+        // Derive channelId from restored channel number
+        channelId: getChannelUUID(channelToJoin),
+      };
+    }),
+
+  updateSettings: (settings) =>
+    set((state) => {
+      const next = { ...state, ...settings };
+      // Delta-sync: only write settings-relevant keys to localStorage
+      safeSetStorage(pickPersistedState(settings));
+      return next;
+    }),
+
+  channelUp: () =>
+    set((state) => {
+      if (!state.isPowerOn) return {};
+      const nextVal = state.channelNumber >= 999 ? 1 : state.channelNumber + 1;
+
+      setTimeout(() => subscribeToChannel(nextVal), 0);
+      safeSetStorage({ channelNumber: nextVal });
+
+      return {
+        channelNumber: nextVal,
+        channelId: getChannelUUID(nextVal),
+      };
+    }),
+
+  channelDown: () =>
+    set((state) => {
+      if (!state.isPowerOn) return {};
+      const nextVal = state.channelNumber <= 1 ? 999 : state.channelNumber - 1;
+
+      setTimeout(() => subscribeToChannel(nextVal), 0);
+      safeSetStorage({ channelNumber: nextVal });
+
+      return {
+        channelNumber: nextVal,
+        channelId: getChannelUUID(nextVal),
+      };
+    }),
+
+  toggleScan: () =>
+    set((state) => {
+      if (!state.isPowerOn) return {};
+      return { isScanning: !state.isScanning };
+    }),
+}));

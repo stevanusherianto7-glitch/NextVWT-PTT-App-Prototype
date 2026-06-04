@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+tmp/
+
+# Environment variables (NEVER commit credentials)
+.env
+.env.local
+.env.production
+
+# Playwright test artifacts
+test-results/
+playwright-report/
+
+# Vite cache
+.vite/
+
+# Editor
+.vscode/
+.idea/
+*.suo
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# pnpm
+.pnpm-store/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
