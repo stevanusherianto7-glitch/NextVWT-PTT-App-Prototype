@@ -103,6 +103,15 @@ export function LCDPanel({
         borderLeftColor: '#e6ba70', // 3D gold border effect
       }}
     >
+      {/* 3D Gold Bezel Emboss Overlay */}
+      <div
+        className="absolute -inset-[10px] pointer-events-none rounded-3xl"
+        style={{
+          boxShadow:
+            'inset 0 0 0 1px rgba(0,0,0,0.22), inset 0 3.5px 6px rgba(255,255,255,0.45), inset 0 -3.5px 6px rgba(0,0,0,0.45), inset 0 0 10px rgba(0,0,0,0.15)',
+        }}
+      />
+
       {/* 3D Border Overlay */}
       <div
         className="absolute inset-0 pointer-events-none rounded-2xl"
