@@ -23,6 +23,46 @@ export function LCDPanel({
   // Signal strength simulator (fluctuates 1-4 bars when online, 0 when offline)
   const [signalBars, setSignalBars] = useState(4);
 
+  // Latency info tooltip interaction
+  const [showLatency, setShowLatency] = useState(false);
+  const [latencyVal, setLatencyVal] = useState(77);
+
+  const handleSignalClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (showLatency) {
+      setShowLatency(false);
+      return;
+    }
+
+    if (isOffline) {
+      setLatencyVal(999);
+      setShowLatency(true);
+      return;
+    }
+
+    let base = 77;
+    if (signalBars === 4) {
+      base = Math.floor(Math.random() * 15) + 25; // 25-40ms
+    } else if (signalBars === 3) {
+      base = Math.floor(Math.random() * 25) + 45; // 45-70ms
+    } else if (signalBars === 2) {
+      base = Math.floor(Math.random() * 45) + 75; // 75-120ms
+    } else if (signalBars === 1) {
+      base = Math.floor(Math.random() * 100) + 125; // 125-225ms
+    }
+    setLatencyVal(base);
+    setShowLatency(true);
+  };
+
+  useEffect(() => {
+    if (showLatency) {
+      const timer = setTimeout(() => {
+        setShowLatency(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showLatency]);
+
   useEffect(() => {
     if (isOffline) {
       setSignalBars(0);
@@ -50,7 +90,7 @@ export function LCDPanel({
 
   return (
     <div
-      className="relative w-[340px] h-[155px] rounded-3xl overflow-hidden mx-auto transition-colors duration-300"
+      className="relative w-[340px] h-[155px] rounded-3xl mx-auto transition-colors duration-300"
       style={{
         background: isPowerOn
           ? 'linear-gradient(to bottom, #FF9500 0%, #d87d00 100%)'
@@ -120,11 +160,26 @@ export function LCDPanel({
           )}
 
           {/* Signal Bar */}
-          <div className="flex items-end h-6 relative gap-1 mt-1 mr-1">
+          <div
+            onClick={handleSignalClick}
+            className="flex items-end h-[28px] relative gap-1 mt-1 mr-1 cursor-pointer select-none"
+          >
             {isOffline && (
               <span className="text-[#E53935] font-bold text-sm leading-none absolute -left-3 top-0 z-10">
                 ×
               </span>
+            )}
+
+            {/* Latency Tooltip */}
+            {showLatency && (
+              <div
+                className="absolute bottom-full right-0 mb-1.5 px-2 py-0.5 rounded bg-black text-white text-[10px] font-sans font-medium border border-neutral-800 shadow-lg whitespace-nowrap z-50 animate-in fade-in zoom-in-95 duration-150"
+                style={{
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3)',
+                }}
+              >
+                {isOffline ? 'Latency: Offline' : `Latency: ${latencyVal}ms`}
+              </div>
             )}
 
             {/* Antenna SVG */}
@@ -146,7 +201,7 @@ export function LCDPanel({
             </svg>
 
             {/* Signal Bars SVG approach */}
-            <div className="flex items-end gap-[1.5px] h-full pb-[2px] relative">
+            <div className="flex items-end gap-0 h-full pb-[2px] relative">
               {isOffline && (
                 <div className="absolute inset-0 flex items-center justify-center bg-transparent z-10 pointer-events-none -mt-[3px]">
                   <span className="text-[#E53935] text-[18px] font-black leading-none drop-shadow-[0_1px_1px_rgba(255,255,255,0.4)]">
@@ -156,28 +211,34 @@ export function LCDPanel({
               )}
               {[1, 2, 3, 4].map((bar) => {
                 const isActive = bar <= signalBars;
-                let barColor = '#ffffff'; // Solid White for empty/inactive
+                let barBackground =
+                  'linear-gradient(to bottom, #ffffff 0%, #e5e5e5 50%, #cccccc 100%)';
 
                 if (isActive) {
                   if (signalBars >= 3) {
-                    barColor = '#00e64d'; // Green (3 or 4 bars)
+                    barBackground =
+                      'linear-gradient(to bottom, #a2f3a5 0%, #00e64d 40%, #009c34 100%)';
                   } else if (signalBars === 2) {
-                    barColor = '#ffbb00'; // Yellow (2 bars)
+                    barBackground =
+                      'linear-gradient(to bottom, #ffea85 0%, #ffbb00 40%, #cc9600 100%)';
                   } else if (signalBars === 1) {
-                    barColor = '#ff3333'; // Red (1 bar)
+                    barBackground =
+                      'linear-gradient(to bottom, #ff9999 0%, #ff3333 40%, #b31a1a 100%)';
                   }
                 }
 
                 return (
                   <div
                     key={bar}
-                    className="w-[6px] flex-shrink-0"
+                    className="flex-shrink-0"
                     style={{
-                      width: '6px',
-                      height: `${bar * 4 + 3}px`,
-                      background: barColor,
-                      border: '1px solid #000000',
+                      width: '9px',
+                      height: `${bar * 6 + 3}px`,
+                      background: barBackground,
+                      border: '1px solid #1a1a1a',
                       borderRadius: '1.5px',
+                      boxShadow:
+                        'inset 1px 1.5px 0.5px rgba(255,255,255,0.5), inset -1px -1px 0.5px rgba(0,0,0,0.3)',
                       opacity: isOffline ? 0.35 : 1,
                       transition: 'background 0.2s ease-in-out',
                     }}
