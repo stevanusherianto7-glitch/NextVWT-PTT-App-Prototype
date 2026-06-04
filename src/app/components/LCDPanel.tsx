@@ -8,6 +8,7 @@ interface LCDPanelProps {
   userCount?: number;
   isOffline?: boolean;
   isPowerOn?: boolean;
+  onUserCountClick?: () => void;
 }
 
 export function LCDPanel({
@@ -15,6 +16,7 @@ export function LCDPanel({
   userCount = 0,
   isOffline = false,
   isPowerOn: _isPowerOn = true,
+  onUserCountClick,
 }: LCDPanelProps) {
   const channelStr = channel.toString().padStart(3, '0');
   const infoText = usePTTStore((state) => state.infoText);
@@ -258,7 +260,16 @@ export function LCDPanel({
           </div>
 
           {/* Bottom Right: Twin Heads & Enlarged User Count (Shifted Left via margin) */}
-          <div className="flex items-end gap-2 mr-4 relative" style={{ paddingBottom: '5px' }}>
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              if (_isPowerOn && onUserCountClick) {
+                onUserCountClick();
+              }
+            }}
+            className={`flex items-end gap-2 mr-4 relative transition-all duration-150 ${_isPowerOn && onUserCountClick ? 'cursor-pointer hover:opacity-75 active:scale-95' : ''}`}
+            style={{ paddingBottom: '5px' }}
+          >
             <div className="flex items-center justify-center">
               <img
                 src={twinHeadsIcon}
