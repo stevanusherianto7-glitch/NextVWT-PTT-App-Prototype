@@ -7,6 +7,16 @@ import { test, expect } from '@playwright/test';
 test.describe('Settings Panel Flow', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
+    // Automatically bypass LoginGate if visible
+    const guestBtn = page.locator('button:has-text("Masuk sebagai Tamu")');
+    const pttBtn = page.locator('button:has-text("PTT")');
+    await Promise.race([
+      guestBtn.waitFor({ state: 'visible', timeout: 3000 }).catch(() => {}),
+      pttBtn.waitFor({ state: 'visible', timeout: 3000 }).catch(() => {}),
+    ]);
+    if (await guestBtn.isVisible()) {
+      await guestBtn.click();
+    }
     await page.waitForSelector('button:has-text("SET")', { timeout: 10_000 });
     await page.click('button:has-text("SET")');
     await page.waitForSelector('text=Pengaturan', { timeout: 5_000 });

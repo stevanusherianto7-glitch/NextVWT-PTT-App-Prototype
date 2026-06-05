@@ -7,12 +7,22 @@ import { test, expect } from '@playwright/test';
 test.describe('Channel Scan Flow', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
+    // Automatically bypass LoginGate if visible
+    const guestBtn = page.locator('button:has-text("Masuk sebagai Tamu")');
+    const pttBtn = page.locator('button:has-text("PTT")');
+    await Promise.race([
+      guestBtn.waitFor({ state: 'visible', timeout: 3000 }).catch(() => {}),
+      pttBtn.waitFor({ state: 'visible', timeout: 3000 }).catch(() => {}),
+    ]);
+    if (await guestBtn.isVisible()) {
+      await guestBtn.click();
+    }
     await page.waitForSelector('button:has-text("SCAN")', { timeout: 10_000 });
   });
 
   test('clicking SCAN opens the Daftar Channel modal', async ({ page }) => {
     await page.click('button:has-text("SCAN")');
-    await expect(page.locator('text=Daftar Channel')).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('input[placeholder="Cari channel..."]')).toBeVisible({ timeout: 5_000 });
   });
 
   test('modal shows a search input placeholder "Cari channel..."', async ({ page }) => {
@@ -23,16 +33,16 @@ test.describe('Channel Scan Flow', () => {
 
   test('modal lists channel entries with number badges', async ({ page }) => {
     await page.click('button:has-text("SCAN")');
-    await expect(page.locator('text=CH-DARURAT')).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('text=DUKUNGAN & BANTUAN')).toBeVisible({ timeout: 5_000 });
     await expect(page.locator('text=KOPDAR NASIONAL UTAMA')).toBeVisible();
   });
 
   test('search input filters channels dynamically', async ({ page }) => {
     await page.click('button:has-text("SCAN")');
     const searchInput = page.locator('input[placeholder="Cari channel..."]');
-    await searchInput.fill('SAR');
-    await expect(page.locator('text=CH-DARURAT / SAR INFO')).toBeVisible();
-    await expect(page.locator('text=KOPDAR NASIONAL UTAMA')).not.toBeVisible();
+    await searchInput.fill('KOPDAR');
+    await expect(page.locator('text=KOPDAR NASIONAL UTAMA')).toBeVisible();
+    await expect(page.locator('text=DUKUNGAN & BANTUAN')).not.toBeVisible();
   });
 
   test('searching for non-existent channel shows "Tidak ada channel ditemukan"', async ({ page }) => {
@@ -45,31 +55,30 @@ test.describe('Channel Scan Flow', () => {
   test('selecting a channel closes the modal', async ({ page }) => {
     await page.click('button:has-text("SCAN")');
     await page.locator('button').filter({ hasText: 'KOPDAR NASIONAL UTAMA' }).click();
-    await expect(page.locator('text=Daftar Channel')).not.toBeVisible({ timeout: 5_000 });
+    // Click 'Menuju Channel' in the private channel dialog options
+    await page.locator('button:has-text("Menuju Channel")').click();
+    await expect(page.locator('input[placeholder="Cari channel..."]')).not.toBeVisible({ timeout: 5_000 });
   });
 
   test('closing modal with X button removes it from view', async ({ page }) => {
     await page.click('button:has-text("SCAN")');
-    await expect(page.locator('text=Daftar Channel')).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('input[placeholder="Cari channel..."]')).toBeVisible({ timeout: 5_000 });
 
-    // The X close button is inside the modal header — use aria or the SVG line pattern
-    // It's the only button in the header row next to "Daftar Channel" text
-    const modalHeader = page.locator('div.bg-white').filter({ hasText: 'Daftar Channel' }).first();
-    const closeBtn = modalHeader.locator('button').last();
+    // Click the X button in the header of the modal
+    const closeBtn = page.locator('button[aria-label="Tutup"]');
     await closeBtn.click();
 
-    await expect(page.locator('text=Daftar Channel')).not.toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('input[placeholder="Cari channel..."]')).not.toBeVisible({ timeout: 5_000 });
   });
 
   test('backdrop click on modal closes it', async ({ page }) => {
     await page.click('button:has-text("SCAN")');
-    await expect(page.locator('text=Daftar Channel')).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('input[placeholder="Cari channel..."]')).toBeVisible({ timeout: 5_000 });
 
-    // The backdrop is a div.absolute.inset-0 layered behind the modal card
-    // Click the semi-transparent overlay directly
-    const backdrop = page.locator('div.absolute.inset-0').first();
-    await backdrop.click({ force: true });
+    // Click the backdrop
+    const backdrop = page.getByTestId('modal-backdrop');
+    await backdrop.click({ position: { x: 10, y: 10 } });
 
-    await expect(page.locator('text=Daftar Channel')).not.toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('input[placeholder="Cari channel..."]')).not.toBeVisible({ timeout: 5_000 });
   });
 });
