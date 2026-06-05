@@ -19,6 +19,22 @@ test.describe('User Modulation Activity Simulation', () => {
       await guestBtn.click();
     }
     await page.waitForSelector('button:has-text("PTT")', { timeout: 10_000 });
+
+    // Mock getUserMedia for simulated microphone stream to support PTT recording
+    await page.evaluate(() => {
+      if (navigator.mediaDevices) {
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        const ctx = new AudioContextClass();
+        const dest = ctx.createMediaStreamDestination();
+        const osc = ctx.createOscillator();
+        osc.connect(dest);
+        osc.start();
+        
+        navigator.mediaDevices.getUserMedia = async () => {
+          return dest.stream;
+        };
+      }
+    });
   });
 
   test('user can scan, change channel, and confirm selection', async ({ page }) => {

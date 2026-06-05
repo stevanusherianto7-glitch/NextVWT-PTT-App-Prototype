@@ -49,6 +49,23 @@ test.describe('Multi-User Real-time Modulation Delivery', () => {
     await pageBeta.click('button:has-text("Simpan")');
     await expect(pageBeta.locator('span:has-text("Pengaturan")').first()).not.toBeVisible();
 
+    // 5. Mock getUserMedia to return a real synthetic Web Audio destination stream
+    const mockUserMediaScript = () => {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const ctx = new AudioContextClass();
+      const dest = ctx.createMediaStreamDestination();
+      const osc = ctx.createOscillator();
+      osc.connect(dest);
+      osc.start();
+      
+      navigator.mediaDevices.getUserMedia = async () => {
+        return dest.stream;
+      };
+    };
+
+    await pageAlfa.evaluate(mockUserMediaScript);
+    await pageBeta.evaluate(mockUserMediaScript);
+
     // 5. Retrieve User IDs
     const userIdAlfa = await pageAlfa.evaluate(() => (window as unknown as { __store__: { getState: () => { userId: string } } }).__store__.getState().userId);
     const userIdBeta = await pageBeta.evaluate(() => (window as unknown as { __store__: { getState: () => { userId: string } } }).__store__.getState().userId);
