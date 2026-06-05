@@ -5,9 +5,11 @@ import { usePTTStore, getChannelUUID, safeGetStorage, safeSetStorage } from './u
 // Mock Supabase to keep unit tests offline-capable and fast
 vi.mock('../utils/supabase', () => {
   const mockChannel = {
+    on: vi.fn(() => mockChannel),
+    track: vi.fn(() => Promise.resolve()),
+    send: vi.fn(() => Promise.resolve()),
     subscribe: vi.fn((callback) => {
-      // Trigger callback with SUBSCRIBED immediately for tests
-      callback('SUBSCRIBED');
+      if (callback) callback('SUBSCRIBED');
       return {
         unsubscribe: vi.fn(),
       };
@@ -18,6 +20,12 @@ vi.mock('../utils/supabase', () => {
   return {
     supabase: {
       channel: vi.fn(() => mockChannel),
+      auth: {
+        getSession: vi.fn(() => Promise.resolve({ data: { session: null } })),
+        onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
+        signInWithOAuth: vi.fn(() => Promise.resolve({ error: null })),
+        signOut: vi.fn(() => Promise.resolve({ error: null })),
+      },
     },
   };
 });

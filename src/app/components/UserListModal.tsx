@@ -338,6 +338,9 @@ export function UserListModal({
   onClose: _onClose,
 }: UserListModalProps) {
   const isTransmitting = usePTTStore((state) => state.isTransmitting);
+  const localUser = usePTTStore((state) => state.user);
+  const localInfoText = usePTTStore((state) => state.infoText);
+  const localName = localUser?.user_metadata?.full_name || localInfoText;
   const [activeSpeakerIdx, setActiveSpeakerIdx] = useState<number | null>(null);
 
   useEffect(() => {
@@ -416,7 +419,7 @@ export function UserListModal({
         {/* Users List */}
         {allUsersMapped.length > 0 ? (
           allUsersMapped.map((profile, idx) => {
-            const isLocalUser = profile.callSign === '2DYUA';
+            const isLocalUser = profile.displayName === localName || profile.callSign === '2DYUA';
             const isSpeaking =
               (isTransmitting && isLocalUser) || (!isTransmitting && idx === activeSpeakerIdx);
 

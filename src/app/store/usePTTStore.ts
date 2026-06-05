@@ -56,6 +56,11 @@ export interface PTTState {
   userId: string; // UUID v4 format
   error: string | null;
 
+  // Auth State
+  user: any | null;
+  activeTransmitter: { userId: string; displayName: string; callSign: string } | null;
+  activeUsers: Array<{ userId: string; displayName: string; callSign: string; location: string }>;
+
   // Settings State
   infoText: string;
   locationText: string;
@@ -87,6 +92,9 @@ export interface PTTState {
   setError: (err: string | null) => void;
   initializeSession: () => void;
   updateSettings: (settings: Partial<PTTState>) => void;
+  setUser: (user: any) => void;
+  signInWithGoogle: () => Promise<void>;
+  signOut: () => Promise<void>;
 
   // Control actions
   channelUp: () => void;
@@ -164,10 +172,62 @@ function subscribeToChannel(channelNum: number) {
       activeChannelSubscription = null;
     }
 
-    activeChannelSubscription = supabase.channel(`ptt-room-${channelNum}`);
+    const store = usePTTStore.getState();
+    activeChannelSubscription = supabase.channel(`ptt-room-${channelNum}`, {
+      config: {
+        presence: {
+          key: store.userId || 'anonymous',
+        },
+      },
+    });
+
+    activeChannelSubscription
+      .on('presence', { event: 'sync' }, () => {
+        if (!activeChannelSubscription) return;
+        const presenceState = activeChannelSubscription.presenceState();
+        const rawList = Object.values(presenceState).flat() as any[];
+        const users = rawList.map((p: any) => ({
+          userId: p.userId || 'unknown',
+          displayName: p.displayName || 'Anonim',
+          callSign: p.callSign || '2DYUA',
+          location: p.location || 'BANDUNG, JABAR',
+        }));
+        usePTTStore.setState({ activeUsers: users });
+      })
+      .on('broadcast', { event: 'ptt_state' }, ({ payload }: { payload: any }) => {
+        if (payload.isTransmitting) {
+          usePTTStore.setState({
+            activeTransmitter: {
+              userId: payload.userId,
+              displayName: payload.displayName,
+              callSign: payload.callSign,
+            },
+          });
+        } else {
+          const currentTx = usePTTStore.getState().activeTransmitter;
+          if (currentTx && currentTx.userId === payload.userId) {
+            usePTTStore.setState({ activeTransmitter: null });
+          }
+        }
+      });
+
     activeChannelSubscription.subscribe((status: string) => {
-      // Update store connection state based on subscription status
-      usePTTStore.setState({ isConnected: status === 'SUBSCRIBED' });
+      const isSubscribed = status === 'SUBSCRIBED';
+      usePTTStore.setState({ isConnected: isSubscribed });
+
+      if (isSubscribed && activeChannelSubscription) {
+        const currentStore = usePTTStore.getState();
+        const userMeta = currentStore.user;
+        const displayName = userMeta?.user_metadata?.full_name || currentStore.infoText;
+        const location = currentStore.locationText;
+
+        activeChannelSubscription.track({
+          userId: currentStore.userId,
+          displayName: displayName,
+          callSign: location.split(',')[0]?.trim() || '2DYUA',
+          location: location,
+        });
+      }
     });
   } catch (err) {
     console.error('Supabase room connection error:', err);
@@ -190,6 +250,11 @@ export const usePTTStore = create<PTTState>((set) => ({
   channelId: getChannelUUID(100),
   userId: '',
   error: null,
+
+  // Auth State
+  user: null,
+  activeTransmitter: null,
+  activeUsers: [],
 
   // Merge defaults – initializeSession will overlay with localStorage cache
   ...DEFAULT_SETTINGS,
@@ -219,6 +284,24 @@ export const usePTTStore = create<PTTState>((set) => ({
   setTransmitting: (transmitting) =>
     set((state) => {
       if (!state.isPowerOn) return {};
+
+      if (activeChannelSubscription && state.isConnected) {
+        const userMeta = state.user;
+        const displayName = userMeta?.user_metadata?.full_name || state.infoText;
+        const location = state.locationText;
+
+        activeChannelSubscription.send({
+          type: 'broadcast',
+          event: 'ptt_state',
+          payload: {
+            userId: state.userId,
+            displayName: displayName,
+            callSign: location.split(',')[0]?.trim() || '2DYUA',
+            isTransmitting: transmitting,
+          },
+        });
+      }
+
       return { isTransmitting: transmitting, progress: transmitting ? 50 : 0 };
     }),
 
@@ -291,6 +374,32 @@ export const usePTTStore = create<PTTState>((set) => ({
       safeSetStorage(pickPersistedState(settings));
       return next;
     }),
+
+  setUser: (user) => set({ user }),
+
+  signInWithGoogle: async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: typeof window !== 'undefined' ? window.location.origin : undefined,
+        },
+      });
+      if (error) throw error;
+    } catch (err: any) {
+      set({ error: err.message || 'Gagal masuk dengan Google' });
+    }
+  },
+
+  signOut: async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      set({ user: null, activeTransmitter: null });
+    } catch (err: any) {
+      set({ error: err.message || 'Gagal keluar akun' });
+    }
+  },
 
   channelUp: () =>
     set((state) => {
