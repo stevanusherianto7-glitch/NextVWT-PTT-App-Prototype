@@ -251,7 +251,7 @@ function subscribeToChannel(channelNum: number) {
       if (isSubscribed) {
         const currentStore = usePTTStore.getState();
         const userMeta = currentStore.user;
-        const displayName = userMeta?.user_metadata?.full_name || currentStore.infoText;
+        const displayName = currentStore.infoText || userMeta?.user_metadata?.full_name;
         const location = currentStore.locationText;
 
         // Only track presence if the channel is actually subscribed on the backend
@@ -323,7 +323,7 @@ export const usePTTStore = create<PTTState>((set) => ({
 
       if (activeChannelSubscription && state.isConnected) {
         const userMeta = state.user;
-        const displayName = userMeta?.user_metadata?.full_name || state.infoText;
+        const displayName = state.infoText || userMeta?.user_metadata?.full_name;
         const location = state.locationText;
 
         activeChannelSubscription.send({

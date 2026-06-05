@@ -68,10 +68,21 @@ test.describe('User Modulation Activity Simulation', () => {
   });
 
   test('user activity resilience under API/Network failure (Offline Robustness)', async ({ page }) => {
-    // 1. Force the store state to offline (isConnected = false) via exposed window.__store__
+    // 1. Force and lock the store state to offline (isConnected = false) via exposed window.__store__
     await page.evaluate(() => {
-      const store = (window as unknown as { __store__?: { setState: (s: Record<string, unknown>) => void } }).__store__;
-      if (store) store.setState({ isConnected: false });
+      const store = (window as any).__store__;
+      if (store) {
+        const original = store.setState;
+        (store as any).__originalSetState = original;
+        store.setState = (partial: any) => {
+          const nextPartial = typeof partial === 'function' ? partial(store.getState()) : partial;
+          if (nextPartial && 'isConnected' in nextPartial) {
+            nextPartial.isConnected = false;
+          }
+          original(nextPartial);
+        };
+        store.setState({ isConnected: false });
+      }
     });
 
     // 2. Verify that the app is still functional and has "Offline" badge on LCD
@@ -87,12 +98,15 @@ test.describe('User Modulation Activity Simulation', () => {
     await page.click('button:has-text("Simpan")');
 
     // 4. Verify the updated name is displayed on the LCD panel while offline
-    await expect(page.locator('text=PEBE OFFLINE TEST')).toBeVisible();
+    await expect(page.getByTestId('lcd-username')).toHaveText('Pebe Offline Test');
 
-    // 5. Restore network connection state in store
+    // 5. Restore network connection state and unlock setState in store
     await page.evaluate(() => {
-      const store = (window as unknown as { __store__?: { setState: (s: Record<string, unknown>) => void } }).__store__;
-      if (store) store.setState({ isConnected: true });
+      const store = (window as any).__store__;
+      if (store && (store as any).__originalSetState) {
+        store.setState = (store as any).__originalSetState;
+        store.setState({ isConnected: true });
+      }
     });
   });
 });

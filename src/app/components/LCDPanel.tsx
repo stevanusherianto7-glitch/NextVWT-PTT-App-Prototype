@@ -25,7 +25,7 @@ export function LCDPanel({
   const isTransmitting = usePTTStore((state) => state.isTransmitting);
   const localUserId = usePTTStore((state) => state.userId);
 
-  const localName = user?.user_metadata?.full_name || infoText || 'Pebe Herianto';
+  const localName = infoText || user?.user_metadata?.full_name || 'Pebe Herianto';
   const isReceiving = activeTransmitter && activeTransmitter.userId !== localUserId;
   const username = isTransmitting
     ? localName
@@ -145,6 +145,7 @@ export function LCDPanel({
               style={{ filter: 'drop-shadow(1px 1px 0px rgba(0,0,0,0.2))' }}
             />
             <span
+              data-testid="lcd-username"
               className="text-base -ml-1 truncate max-w-[110px]"
               style={{ fontWeight: 600, color: 'var(--lcd-label-color)' }}
             >
