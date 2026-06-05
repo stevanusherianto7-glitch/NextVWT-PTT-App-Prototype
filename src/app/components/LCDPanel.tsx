@@ -20,7 +20,18 @@ export function LCDPanel({
 }: LCDPanelProps) {
   const channelStr = channel.toString().padStart(3, '0');
   const infoText = usePTTStore((state) => state.infoText);
-  const username = infoText ? infoText.trim() : 'Pebe Herianto';
+  const user = usePTTStore((state) => state.user);
+  const activeTransmitter = usePTTStore((state) => state.activeTransmitter);
+  const isTransmitting = usePTTStore((state) => state.isTransmitting);
+  const localUserId = usePTTStore((state) => state.userId);
+
+  const localName = user?.user_metadata?.full_name || infoText || 'Pebe Herianto';
+  const isReceiving = activeTransmitter && activeTransmitter.userId !== localUserId;
+  const username = isTransmitting
+    ? `TX: ${localName}`
+    : isReceiving
+      ? `RX: ${activeTransmitter?.displayName}`
+      : localName;
 
   // Signal strength simulator (fluctuates 1-4 bars when online, 0 when offline)
   const [signalBars, setSignalBars] = useState(4);

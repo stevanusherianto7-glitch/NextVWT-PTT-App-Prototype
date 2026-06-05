@@ -8,6 +8,78 @@ import { usePTTStore } from './store/usePTTStore';
 import { SettingsPanel } from './components/SettingsPanel';
 import { Toaster } from './components/ui/sonner';
 import { UserListModal } from './components/UserListModal';
+import { supabase } from './utils/supabase';
+
+function LoginGate({ onLogin }: { onLogin: () => void }) {
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    setLoading(true);
+    await onLogin();
+  };
+
+  return (
+    <div className="size-full flex flex-col items-center justify-center bg-gradient-to-b from-[#1a1c23] to-[#0e1013] px-6 text-center select-none relative overflow-hidden">
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-blue-500/10 rounded-full blur-[80px]" />
+      <div className="absolute bottom-1/4 left-1/2 -translate-x-1/2 translate-y-1/2 w-48 h-48 bg-orange-500/10 rounded-full blur-[80px]" />
+
+      <div className="w-full bg-[#1e2230]/75 backdrop-blur-lg border border-white/10 rounded-[32px] p-6 shadow-[0_15px_35px_rgba(0,0,0,0.5)] z-10 flex flex-col items-center">
+        <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-red-600 to-red-800 border-2 border-[#00FF00] flex items-center justify-center shadow-[0_0_15px_rgba(255,0,0,0.4)] mb-4">
+          <span className="text-2xl font-black text-white tracking-tighter">N</span>
+          <div className="absolute -inset-0.5 rounded-2xl border border-white/10 pointer-events-none" />
+        </div>
+
+        <h1 className="text-xl font-bold text-white tracking-wide font-sans mb-1">NextVWT PTT</h1>
+        <p className="text-xs text-gray-400 font-medium mb-6 uppercase tracking-wider">
+          Virtual Walkie-Talkie
+        </p>
+
+        <div className="w-full bg-black/35 rounded-xl p-3 border border-white/5 mb-6 text-left">
+          <p className="text-[11px] text-gray-400 leading-normal">
+            Hubungkan diri Anda ke saluran frekuensi digital. Masuk menggunakan akun Google Anda
+            untuk mensinkronisasikan profil secara instan.
+          </p>
+        </div>
+
+        <button
+          onClick={handleLogin}
+          disabled={loading}
+          className="w-full h-12 bg-white text-black font-semibold rounded-full flex items-center justify-center gap-3 transition-all duration-300 active:scale-95 border border-gray-200 shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:shadow-[0_0_20px_rgba(255,255,255,0.7)] cursor-pointer disabled:opacity-50"
+        >
+          {loading ? (
+            <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <>
+              <svg className="w-5 h-5" viewBox="0 0 24 24">
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                />
+              </svg>
+              <span>Masuk dengan Google</span>
+            </>
+          )}
+        </button>
+      </div>
+
+      <div className="absolute bottom-6 left-0 right-0 text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+        NextVWT Transceiver App
+      </div>
+    </div>
+  );
+}
 
 interface ChannelItem {
   number: number;
@@ -136,15 +208,50 @@ export default function App() {
     channelDown,
     toggleScan,
     setChannelNumber,
+    user,
+    setUser,
+    signInWithGoogle,
+    updateSettings,
+    activeUsers,
+    activeTransmitter,
   } = usePTTStore();
 
   useEffect(() => {
     initializeSession();
   }, [initializeSession]);
 
-  // Simulate progress when transmitting
+  // Handle Supabase auth changes
   useEffect(() => {
-    if (isTransmitting) {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const u = session?.user || null;
+      setUser(u);
+      if (u) {
+        const name = u.user_metadata?.full_name || u.email?.split('@')[0] || 'User';
+        updateSettings({ infoText: name });
+      }
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      const u = session?.user || null;
+      setUser(u);
+      if (u) {
+        const name = u.user_metadata?.full_name || u.email?.split('@')[0] || 'User';
+        updateSettings({ infoText: name });
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [setUser, updateSettings]);
+
+  // Simulate progress when transmitting or receiving
+  useEffect(() => {
+    const isReceiving =
+      activeTransmitter && activeTransmitter.userId !== usePTTStore.getState().userId;
+    if (isTransmitting || isReceiving) {
       setProgress(50); // Start at mid
       const interval = setInterval(() => {
         // Random fluctuation between 30% and 100% to simulate voice modulation
@@ -154,7 +261,7 @@ export default function App() {
     } else {
       setProgress(0); // Go to 0 when not transmitting
     }
-  }, [isTransmitting]);
+  }, [isTransmitting, activeTransmitter, setProgress]);
 
   // Scanning effect
   useEffect(() => {
@@ -189,9 +296,18 @@ export default function App() {
     }
   };
 
+  const activeChannelObj = STATIC_CHANNELS.find((ch) => ch.number === channel);
+
+  const dynamicUserCount =
+    isConnected && activeUsers.length > 0 ? activeUsers.length : getChannelUserCount(channel);
+
+  const dynamicUserList =
+    isConnected && activeUsers.length > 0
+      ? activeUsers.map((u) => u.displayName)
+      : activeChannelObj?.users || [];
+
   const displayUser = infoText ? infoText.toUpperCase() : 'USER';
   const displayLoc = locationText ? locationText.toUpperCase() : 'BANDUNG, JAWA BARAT';
-  const activeChannelObj = STATIC_CHANNELS.find((ch) => ch.number === channel);
   const channelNameStr = activeChannelObj ? activeChannelObj.name.toUpperCase() : 'STANDBY CHANNEL';
   const marqueeText = `CHANNEL ${channel} • ${channelNameStr} • ${displayUser} (${displayLoc}) • STANDBY • READY`;
 
@@ -217,7 +333,9 @@ export default function App() {
           boxShadow: 'inset 0 0 0 2px rgba(255,255,255,0.1)',
         }}
       >
-        {isSettingsOpen ? (
+        {user === null ? (
+          <LoginGate onLogin={signInWithGoogle} />
+        ) : isSettingsOpen ? (
           <SettingsPanel onClose={() => setIsSettingsOpen(false)} />
         ) : (
           <div
@@ -508,7 +626,7 @@ export default function App() {
                 <UserListModal
                   channel={channel}
                   channelName={channelNameStr}
-                  users={activeChannelObj?.users || []}
+                  users={dynamicUserList}
                   onClose={() => setIsUserListOpen(false)}
                 />
               ) : (
@@ -526,7 +644,7 @@ export default function App() {
                   <div className="transition-opacity duration-300 flex justify-center w-full">
                     <LCDPanel
                       channel={channel}
-                      userCount={getChannelUserCount(channel)}
+                      userCount={dynamicUserCount}
                       isOffline={!isConnected}
                       isPowerOn={isPowerOn}
                       onUserCountClick={() => setIsUserListOpen(true)}

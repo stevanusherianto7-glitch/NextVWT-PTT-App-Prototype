@@ -593,6 +593,8 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
     fullDuplex,
     themeText,
     updateSettings,
+    user,
+    signOut,
   } = usePTTStore();
 
   const [isPhraseModalOpen, setIsPhraseModalOpen] = useState(false);
@@ -650,7 +652,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
   const setFullDuplex = (val: boolean) => updateSettings({ fullDuplex: val });
   const setThemeText = (val: string) => updateSettings({ themeText: val });
 
-  const emailText = 'stevanusherianto6@gmail.com';
+  const emailText = user?.email || 'Guest User';
 
   const handleSave = () => {
     toast.success('Pengaturan berhasil disimpan!', {
@@ -884,7 +886,10 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
           {/* Square Profile Image Casing */}
           <div className="w-[120px] h-[140px] border border-gray-300 relative overflow-hidden bg-[#e0e0e0] flex items-center justify-center mb-3 shadow-inner">
             <img
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
+              src={
+                user?.user_metadata?.avatar_url ||
+                'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'
+              }
               alt="Account Profile Avatar"
               className="w-full h-full object-cover"
               onError={(e) => {
@@ -901,11 +906,32 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
 
           {/* Account action buttons */}
           <div className="w-full flex flex-col gap-2">
-            <button className="w-full text-center py-2 text-sm font-semibold bg-[#e2e8f0] hover:bg-[#cbd5e1] border border-gray-300 rounded cursor-pointer">
-              Ubah Kata Sandi
-            </button>
-            <button className="w-full text-center py-2 text-sm font-semibold bg-[#f3d9d9] hover:bg-[#e6c1c1] text-[#9c2424] border border-[#d6a5a5] rounded cursor-pointer">
-              Keluar
+            {!user?.app_metadata?.provider && (
+              <button className="w-full text-center py-2 text-sm font-semibold bg-[#e2e8f0] hover:bg-[#cbd5e1] border border-gray-300 rounded cursor-pointer">
+                Ubah Kata Sandi
+              </button>
+            )}
+            <button
+              onClick={() => {
+                signOut();
+                onClose();
+              }}
+              className="w-full text-center py-2 text-sm font-semibold border rounded cursor-pointer transition-all duration-300 text-slate-700 hover:text-black"
+              style={{
+                background: 'linear-gradient(to bottom, #ffffff 0%, #cbd5e1 100%)',
+                borderColor: '#94a3b8',
+                boxShadow: '0 0 8px rgba(255, 255, 255, 0.8), 0 2px 4px rgba(148, 163, 184, 0.2)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow =
+                  '0 0 15px rgba(255, 255, 255, 0.9), 0 4px 8px rgba(148, 163, 184, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow =
+                  '0 0 8px rgba(255, 255, 255, 0.8), 0 2px 4px rgba(148, 163, 184, 0.2)';
+              }}
+            >
+              Keluar dari Akun Google
             </button>
           </div>
 
