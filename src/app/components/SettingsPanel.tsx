@@ -1243,11 +1243,20 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
               type="text"
               readOnly
               value={getThemeLabel(themeText)}
-              onClick={() => setIsThemeModalOpen(true)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsThemeModalOpen(true);
+              }}
               className="flex-1 border border-gray-300 rounded px-2.5 py-1.5 text-sm bg-white text-black font-semibold outline-none focus:border-blue-500 cursor-pointer"
             />
             <button
-              onClick={() => setIsThemeModalOpen(true)}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsThemeModalOpen(true);
+              }}
               className="px-4 py-1.5 text-sm font-semibold bg-[#e2e8f0] hover:bg-[#cbd5e1] border border-gray-300 rounded cursor-pointer transition-colors"
             >
               Ganti
