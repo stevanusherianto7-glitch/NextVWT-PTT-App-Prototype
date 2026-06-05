@@ -141,7 +141,7 @@ export function LCDPanel({
             <img
               src={usernameIcon}
               alt="Username Icon"
-              className="h-[58px] w-auto object-contain -mt-3.5 -ml-1"
+              className="h-[48px] w-[46px] object-contain -mt-2 -ml-1"
               style={{ filter: 'drop-shadow(1px 1px 0px rgba(0,0,0,0.2))' }}
             />
             <span
