@@ -90,6 +90,8 @@ export interface PTTState {
   fullDuplex: boolean;
   themeText: string;
   builtInEcho: boolean;
+  isKaraokePlayerOpen: boolean;
+  echoFeedback: number;
 
   // Actions
   setPower: (power: boolean) => void;
@@ -104,6 +106,7 @@ export interface PTTState {
   setUser: (user: User | null) => void;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
+  setKaraokePlayerOpen: (open: boolean) => void;
 
   // Control actions
   channelUp: () => void;
@@ -145,6 +148,8 @@ const PERSISTED_KEYS: Array<keyof PTTState> = [
   'fullDuplex',
   'themeText',
   'builtInEcho',
+  'isKaraokePlayerOpen',
+  'echoFeedback',
 ];
 
 function pickPersistedState(state: Partial<PTTState>): Partial<PTTState> {
@@ -180,6 +185,8 @@ const DEFAULT_SETTINGS = {
   fullDuplex: false,
   themeText: 'theme-classic',
   builtInEcho: true,
+  isKaraokePlayerOpen: false,
+  echoFeedback: 35,
 };
 
 interface PresenceMeta {
@@ -329,6 +336,7 @@ export const usePTTStore = create<PTTState>((set) => ({
 
   onVoiceChunkReceived: null,
   setOnVoiceChunkReceived: (callback) => set({ onVoiceChunkReceived: callback }),
+  setKaraokePlayerOpen: (open) => set({ isKaraokePlayerOpen: open }),
   broadcastVoiceChunk: (base64Chunk) => {
     const state = usePTTStore.getState();
     if (activeChannelSubscription && state.isConnected && state.isPowerOn) {

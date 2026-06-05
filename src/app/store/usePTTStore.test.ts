@@ -86,6 +86,8 @@ function resetStore() {
     fullDuplex: false,
     themeText: 'Monokrom',
     builtInEcho: true,
+    isKaraokePlayerOpen: false,
+    echoFeedback: 35,
   });
 }
 
