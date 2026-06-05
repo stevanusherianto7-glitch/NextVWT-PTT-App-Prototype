@@ -283,7 +283,7 @@ export function LCDPanel({
                 onUserCountClick();
               }
             }}
-            className={`flex items-end gap-0.5 mr-4 relative transition-[opacity,transform] duration-150 ${_isPowerOn && onUserCountClick ? 'cursor-pointer hover:opacity-75 active:scale-95' : ''}`}
+            className={`flex items-end gap-2 mr-4 relative transition-[opacity,transform] duration-150 ${_isPowerOn && onUserCountClick ? 'cursor-pointer hover:opacity-75 active:scale-95' : ''}`}
             style={{ paddingBottom: '5px' }}
           >
             <div className="flex items-center justify-center">
@@ -294,7 +294,7 @@ export function LCDPanel({
                 style={{ filter: 'drop-shadow(1px 1px 0px rgba(0,0,0,0.2))' }}
               />
             </div>
-            <div className="w-[28px] flex justify-end">
+            <div className="w-[32px] flex justify-start">
               <span
                 className="text-2xl font-medium tracking-tight leading-none"
                 style={{
