@@ -113,6 +113,11 @@ export interface PTTState {
   onVoiceChunkReceived: ((base64Chunk: string) => void) | null;
   setOnVoiceChunkReceived: (callback: ((base64Chunk: string) => void) | null) => void;
   broadcastVoiceChunk: (base64Chunk: string) => void;
+
+  // WebRTC signaling actions
+  onWebRTCSignalingReceived: ((payload: any) => void) | null;
+  setOnWebRTCSignalingReceived: (callback: ((payload: any) => void) | null) => void;
+  broadcastWebRTCSignaling: (payload: any) => void;
 }
 
 // ─── Persisted Settings Keys ──────────────────────────────────────────────────
@@ -258,7 +263,14 @@ function subscribeToChannel(channelNum: number) {
             state.onVoiceChunkReceived(payload.base64);
           }
         }
-      );
+      )
+      .on('broadcast', { event: 'webrtc_signaling' }, ({ payload }: { payload: any }) => {
+        if (activeChannelSubscription !== channelInstance) return;
+        const state = usePTTStore.getState();
+        if (payload.senderUserId !== state.userId && state.onWebRTCSignalingReceived) {
+          state.onWebRTCSignalingReceived(payload);
+        }
+      });
 
     channelInstance.subscribe((status: string) => {
       if (activeChannelSubscription !== channelInstance) return;
@@ -324,6 +336,19 @@ export const usePTTStore = create<PTTState>((set) => ({
           userId: state.userId,
           base64: base64Chunk,
         },
+      });
+    }
+  },
+
+  onWebRTCSignalingReceived: null,
+  setOnWebRTCSignalingReceived: (callback) => set({ onWebRTCSignalingReceived: callback }),
+  broadcastWebRTCSignaling: (payload) => {
+    const state = usePTTStore.getState();
+    if (activeChannelSubscription && state.isConnected && state.isPowerOn) {
+      activeChannelSubscription.send({
+        type: 'broadcast',
+        event: 'webrtc_signaling',
+        payload,
       });
     }
   },
