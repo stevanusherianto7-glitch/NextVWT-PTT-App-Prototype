@@ -266,7 +266,17 @@ export default function App() {
     updateSettings,
     activeUsers,
     activeTransmitter,
+    themeText,
   } = usePTTStore();
+
+  const getThemeClass = (theme: string) => {
+    const t = theme?.toLowerCase() || '';
+    if (t === 'theme-v3' || t.includes('v3')) return 'theme-v3';
+    if (t === 'theme-v4' || t.includes('v4')) return 'theme-v4';
+    if (t === 'theme-v5' || t.includes('v5')) return 'theme-v5';
+    if (t === 'theme-monokrom' || t.includes('monokrom') || t === 'mono') return 'theme-monokrom';
+    return ''; // Default/V2
+  };
 
   useEffect(() => {
     initializeSession();
@@ -380,7 +390,7 @@ export default function App() {
     >
       {/* Mobile Device Wrapper - Responsive to fit Android/iOS viewports and mock device on Desktop */}
       <div
-        className="w-full h-full min-h-screen sm:min-h-0 sm:w-[360px] sm:h-[800px] bg-white sm:rounded-[40px] overflow-hidden relative sm:shadow-[0_20px_50px_rgba(0,0,0,0.5)] sm:border-[8px] sm:border-[#2a2d36] flex-shrink-0 flex flex-col"
+        className={`w-full h-full min-h-screen sm:min-h-0 sm:w-[360px] sm:h-[800px] bg-white sm:rounded-[40px] overflow-hidden relative sm:shadow-[0_20px_50px_rgba(0,0,0,0.5)] sm:border-[8px] sm:border-[#2a2d36] flex-shrink-0 flex flex-col ${getThemeClass(themeText)}`}
         style={{
           boxShadow: 'inset 0 0 0 2px rgba(255,255,255,0.1)',
         }}
@@ -407,10 +417,11 @@ export default function App() {
           <SettingsPanel onClose={() => setIsSettingsOpen(false)} />
         ) : (
           <div
-            className="size-full flex flex-col items-center bg-gradient-to-b from-[#f5f6f8] to-[#9eb1ca] overflow-hidden relative"
+            className="size-full flex flex-col items-center overflow-hidden relative transition-all duration-300"
             style={{
-              boxShadow:
-                'inset 0 8px 15px rgba(0,0,0,0.04), inset 0 -25px 50px rgba(0,0,0,0.25), inset 20px 0 40px rgba(0,0,0,0.1), inset -20px 0 40px rgba(0,0,0,0.1)',
+              background: 'var(--device-bg)',
+              boxShadow: 'var(--device-shadow)',
+              border: 'var(--device-border)',
             }}
           >
             <style>{`

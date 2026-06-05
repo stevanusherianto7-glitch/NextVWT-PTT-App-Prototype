@@ -103,17 +103,16 @@ export function LCDPanel({
 
   return (
     <div
-      className="relative w-[300px] h-[155px] rounded-3xl mx-auto transition-colors duration-300"
+      className="relative w-[300px] h-[155px] rounded-3xl mx-auto transition-all duration-300"
       style={{
-        background: 'linear-gradient(to bottom, #FF9500 0%, #d87d00 100%)',
-        boxShadow:
-          'inset 0 4px 10px rgba(0,0,0,0.5), inset 0 -2px 5px rgba(255,255,255,0.2), 0 8px 20px rgba(0,0,0,0.25)',
+        background: 'var(--lcd-bg)',
+        boxShadow: 'var(--lcd-glow)',
         borderWidth: '10px',
         borderStyle: 'solid',
-        borderTopColor: '#f4d59a',
-        borderRightColor: '#c2954f',
-        borderBottomColor: '#8c5d26',
-        borderLeftColor: '#e6ba70', // 3D gold border effect
+        borderTopColor: 'var(--lcd-border-top)',
+        borderRightColor: 'var(--lcd-border-right)',
+        borderBottomColor: 'var(--lcd-border-bottom)',
+        borderLeftColor: 'var(--lcd-border-left)',
       }}
     >
       {/* 3D Gold Bezel Emboss Overlay */}
@@ -262,7 +261,7 @@ export function LCDPanel({
                 fontWeight: 'bold',
                 lineHeight: 0.75,
                 marginLeft: '-2px',
-                textShadow: '0 0 10px rgba(255,255,255,0.8), 2px 2px 4px rgba(0,0,0,0.4)',
+                textShadow: 'var(--lcd-glow)',
                 paddingBottom: '5px',
               }}
             >

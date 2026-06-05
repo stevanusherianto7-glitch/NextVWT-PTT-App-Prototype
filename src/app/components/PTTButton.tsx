@@ -294,19 +294,19 @@ export function PTTButton({ onPressStart, onPressEnd, isActive = false }: PTTBut
           background: !isPowerOn
             ? 'linear-gradient(to bottom, #a3a3a3 0%, #737373 100%)' // Gray when power is off
             : isActive
-              ? 'linear-gradient(to bottom, #d62828 0%, #a01010 100%)' // Red when active
-              : 'linear-gradient(to bottom, #2cdb66 0%, #19ba42 100%)', // Brighter base to look more convex
+              ? 'var(--ptt-bg-active)' // Red when active
+              : 'var(--ptt-bg-idle)', // Themed base
           boxShadow: isDepressed
-            ? 'inset 0 8px 12px rgba(0,0,0,0.85), inset 0 -2px 3px rgba(0,0,0,0.2)'
+            ? 'var(--ptt-glow-active)'
             : isActive
               ? 'inset 0 3px 6px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.2), 0 4px 6px rgba(0,0,0,0.3)'
-              : 'inset 0 3px 6px rgba(255,255,255,0.8), inset 0 -2px 4px rgba(0,0,0,0.15), 0 4px 6px rgba(0,0,0,0.25)',
+              : 'var(--ptt-glow)',
           transform: isDepressed ? 'translateY(4px)' : 'translateY(0)',
           border: !isPowerOn
             ? '1px solid #666666'
             : isActive
-              ? '1px solid #730e0e'
-              : '1px solid #149c35',
+              ? 'var(--ptt-border-active)'
+              : 'var(--ptt-border)',
           transition: 'transform 0.06s ease-in-out, box-shadow 0.06s ease-in-out',
         }}
       >
