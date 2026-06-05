@@ -13,6 +13,16 @@ import { test, expect } from '@playwright/test';
 test.describe('App Boot & Initial State', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
+    // Automatically bypass LoginGate if visible
+    const guestBtn = page.locator('button:has-text("Masuk sebagai Tamu")');
+    const pttBtn = page.locator('button:has-text("PTT")');
+    await Promise.race([
+      guestBtn.waitFor({ state: 'visible', timeout: 3000 }).catch(() => {}),
+      pttBtn.waitFor({ state: 'visible', timeout: 3000 }).catch(() => {}),
+    ]);
+    if (await guestBtn.isVisible()) {
+      await guestBtn.click();
+    }
     // Wait for main app shell to be visible
     await page.waitForSelector('text=NextVWT', { timeout: 10_000 });
   });

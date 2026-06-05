@@ -25,6 +25,16 @@ async function isPowerOn(page: import('@playwright/test').Page): Promise<boolean
 test.describe('Power Toggle & Graceful Degradation', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
+    // Automatically bypass LoginGate if visible
+    const guestBtn = page.locator('button:has-text("Masuk sebagai Tamu")');
+    const pttBtn = page.locator('button:has-text("PTT")');
+    await Promise.race([
+      guestBtn.waitFor({ state: 'visible', timeout: 3000 }).catch(() => {}),
+      pttBtn.waitFor({ state: 'visible', timeout: 3000 }).catch(() => {}),
+    ]);
+    if (await guestBtn.isVisible()) {
+      await guestBtn.click();
+    }
     // Wait for the visible toggle label to appear
     await page.waitForSelector('label.toggle-switch', { timeout: 10_000 });
   });
