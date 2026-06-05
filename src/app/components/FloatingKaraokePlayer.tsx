@@ -116,26 +116,30 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
     };
   }, [isMinimized]);
 
-  if (isMinimized) {
-    // Minimized Floating Bubble Mode
-    return (
-      <div
-        ref={playerRef}
-        onTouchStart={onTouchStart}
-        onMouseDown={onMouseDown}
-        className="drag-handle absolute z-50 flex items-center justify-center cursor-move"
-        style={{
-          left: `${position.x}px`,
-          top: `${position.y}px`,
-          width: '64px',
-          height: '64px',
-          borderRadius: '50%',
-          background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)',
-          boxShadow: '0 0 20px rgba(99, 102, 241, 0.6), inset 0 0 10px rgba(255, 255, 255, 0.2)',
-          border: '2px solid #6366f1',
-          transition: isDragging.current ? 'none' : 'transform 0.1s ease',
-        }}
-      >
+  // Render single container structure that scales dynamically without unmounting the YouTube iframe (which stops the music)
+  return (
+    <div
+      ref={playerRef}
+      onMouseDown={onMouseDown}
+      onTouchStart={onTouchStart}
+      className={`absolute z-50 flex flex-col overflow-hidden transition-all duration-300 ${
+        isMinimized
+          ? 'w-[64px] h-[64px] rounded-full border-2 border-indigo-500 shadow-[0_0_20px_rgba(99,102,241,0.6)]'
+          : 'w-[320px] h-[420px] rounded-2xl border border-indigo-500/40 shadow-[0_10px_40px_rgba(0,0,0,0.8)] backdrop-blur-md'
+      }`}
+      style={{
+        left: `${position.x}px`,
+        top: `${position.y}px`,
+        background: isMinimized
+          ? 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)'
+          : 'rgba(2, 6, 23, 0.9)',
+        boxShadow: isMinimized
+          ? '0 0 20px rgba(99, 102, 241, 0.6), inset 0 0 10px rgba(255, 255, 255, 0.2)'
+          : '0 0 25px rgba(99,102,241,0.25)',
+      }}
+    >
+      {/* ─── BUBBLE VIEW (Only shown when minimized) ─── */}
+      {isMinimized && (
         <button
           onClick={() => setIsMinimized(false)}
           className="w-full h-full flex items-center justify-center text-white relative focus:outline-none"
@@ -152,108 +156,100 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
           </div>
           <span className="sr-only">Restore Player</span>
         </button>
-      </div>
-    );
-  }
+      )}
 
-  // Maximized Floating Glassmorphism Player Mode
-  return (
-    <div
-      ref={playerRef}
-      onMouseDown={onMouseDown}
-      onTouchStart={onTouchStart}
-      className="absolute z-50 flex flex-col w-[320px] bg-slate-950/90 text-white rounded-2xl border border-indigo-500/40 shadow-[0_10px_40px_rgba(0,0,0,0.8)] backdrop-blur-md overflow-hidden"
-      style={{
-        left: `${position.x}px`,
-        top: `${position.y}px`,
-        height: '420px',
-        boxShadow: '0 0 25px rgba(99,102,241,0.25)',
-      }}
-    >
-      {/* Header Bar */}
-      <div className="drag-handle flex items-center justify-between px-3.5 py-2.5 bg-gradient-to-r from-indigo-950 to-slate-900 border-b border-indigo-500/20 cursor-move shrink-0">
-        <div className="flex items-center gap-2">
-          <Disc
-            className="w-4 h-4 text-cyan-400 animate-spin"
-            style={{ animationDuration: '4s' }}
-          />
-          <span className="text-xs font-bold tracking-wider text-indigo-200">KARAOKE PLAYER</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => setIsMinimized(true)}
-            className="p-1 text-slate-400 hover:text-white rounded hover:bg-indigo-500/20 transition focus:outline-none"
-            title="Minimize"
-          >
-            <Minimize2 className="w-3.5 h-3.5" />
-          </button>
-          <button
-            onClick={onClose}
-            className="p-1 text-slate-400 hover:text-red-400 rounded hover:bg-red-500/10 transition focus:outline-none"
-            title="Close"
-          >
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
-
-      {/* YouTube Player Frame */}
-      <div className="w-full aspect-video bg-black shrink-0 relative border-b border-indigo-500/10">
-        <iframe
-          src={`https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1`}
-          title="YouTube Karaoke Video"
-          className="w-full h-full"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        ></iframe>
-      </div>
-
-      {/* Search Input */}
-      <div className="p-2.5 bg-slate-900/60 border-b border-indigo-500/10 flex gap-1.5 shrink-0">
-        <div className="relative flex-1">
-          <Search className="absolute left-2 top-2 w-3.5 h-3.5 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Cari lagu / paste link YouTube..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleLoadVideo(searchQuery)}
-            className="w-full pl-7.5 pr-2 py-1 bg-slate-950/80 border border-indigo-500/30 rounded-lg text-[11px] placeholder:text-slate-500 text-white font-medium focus:border-cyan-400 focus:outline-none"
-          />
-        </div>
-        <button
-          onClick={() => handleLoadVideo(searchQuery)}
-          className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 rounded-lg text-[10px] font-bold text-white transition focus:outline-none"
-        >
-          LOAD
-        </button>
-      </div>
-
-      {/* Popular Tracks & Instructions List */}
-      <div className="flex-1 overflow-y-auto p-2 bg-slate-950/40 select-none">
-        <div className="text-[10px] font-bold text-slate-400 uppercase px-1.5 py-1 tracking-wider border-b border-slate-800 mb-1">
-          Lagu Karaoke Populer (Tanpa Vokal)
-        </div>
-        <div className="space-y-0.5">
-          {POPULAR_KARAOKE_SONGS.map((song) => (
+      {/* ─── FULL PLAYER VIEW (Hidden but keeps iframe mounted when minimized) ─── */}
+      <div
+        className="flex-1 flex flex-col min-h-0"
+        style={{ display: isMinimized ? 'none' : 'flex' }}
+      >
+        {/* Header Bar */}
+        <div className="drag-handle flex items-center justify-between px-3.5 py-2.5 bg-gradient-to-r from-indigo-950 to-slate-900 border-b border-indigo-500/20 cursor-move shrink-0">
+          <div className="flex items-center gap-2">
+            <Disc
+              className="w-4 h-4 text-cyan-400 animate-spin"
+              style={{ animationDuration: '4s' }}
+            />
+            <span className="text-xs font-bold tracking-wider text-indigo-200">KARAOKE PLAYER</span>
+          </div>
+          <div className="flex items-center gap-1">
             <button
-              key={song.videoId}
-              onClick={() => setVideoId(song.videoId)}
-              className={`w-full flex items-center justify-between p-1.5 rounded-lg text-left transition text-[11px] ${
-                videoId === song.videoId
-                  ? 'bg-indigo-500/20 text-cyan-300 font-semibold border-l-2 border-cyan-400'
-                  : 'hover:bg-slate-900/80 text-slate-300'
-              }`}
+              type="button"
+              onClick={() => setIsMinimized(true)}
+              className="p-1 text-slate-400 hover:text-white rounded hover:bg-indigo-500/20 transition focus:outline-none cursor-pointer"
+              title="Minimize"
             >
-              <div className="flex flex-col truncate pr-2">
-                <span className="truncate">{song.title}</span>
-                <span className="text-[9px] text-slate-500">{song.artist}</span>
-              </div>
-              <Play
-                className={`w-3 h-3 flex-shrink-0 ${videoId === song.videoId ? 'text-cyan-300 animate-pulse' : 'text-slate-500'}`}
-              />
+              <Minimize2 className="w-3.5 h-3.5" />
             </button>
-          ))}
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-1 text-slate-400 hover:text-red-400 rounded hover:bg-red-500/10 transition focus:outline-none cursor-pointer"
+              title="Close"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+
+        {/* YouTube Player Frame */}
+        <div className="w-full aspect-video bg-black shrink-0 relative border-b border-indigo-500/10">
+          <iframe
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1`}
+            title="YouTube Karaoke Video"
+            className="w-full h-full"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
+        </div>
+
+        {/* Search Input */}
+        <div className="p-2.5 bg-slate-900/60 border-b border-indigo-500/10 flex gap-1.5 shrink-0">
+          <div className="relative flex-1">
+            <Search className="absolute left-2 top-2 w-3.5 h-3.5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Cari lagu / paste link YouTube..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleLoadVideo(searchQuery)}
+              className="w-full pl-7.5 pr-2 py-1 bg-slate-950/80 border border-indigo-500/30 rounded-lg text-[11px] placeholder:text-slate-500 text-white font-medium focus:border-cyan-400 focus:outline-none"
+            />
+          </div>
+          <button
+            onClick={() => handleLoadVideo(searchQuery)}
+            className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 rounded-lg text-[10px] font-bold text-white transition focus:outline-none"
+          >
+            LOAD
+          </button>
+        </div>
+
+        {/* Popular Tracks & Instructions List */}
+        <div className="flex-1 overflow-y-auto p-2 bg-slate-950/40 select-none">
+          <div className="text-[10px] font-bold text-slate-400 uppercase px-1.5 py-1 tracking-wider border-b border-slate-800 mb-1">
+            Lagu Karaoke Populer (Tanpa Vokal)
+          </div>
+          <div className="space-y-0.5">
+            {POPULAR_KARAOKE_SONGS.map((song) => (
+              <button
+                key={song.videoId}
+                onClick={() => setVideoId(song.videoId)}
+                className={`w-full flex items-center justify-between p-1.5 rounded-lg text-left transition text-[11px] ${
+                  videoId === song.videoId
+                    ? 'bg-indigo-500/20 text-cyan-300 font-semibold border-l-2 border-cyan-400'
+                    : 'hover:bg-slate-900/80 text-slate-300'
+                }`}
+              >
+                <div className="flex flex-col truncate pr-2">
+                  <span className="truncate">{song.title}</span>
+                  <span className="text-[9px] text-slate-500">{song.artist}</span>
+                </div>
+                <Play
+                  className={`w-3 h-3 flex-shrink-0 ${videoId === song.videoId ? 'text-cyan-300 animate-pulse' : 'text-slate-500'}`}
+                />
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>
