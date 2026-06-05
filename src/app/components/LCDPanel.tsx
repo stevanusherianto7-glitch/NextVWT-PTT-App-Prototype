@@ -294,15 +294,17 @@ export function LCDPanel({
                 style={{ filter: 'drop-shadow(1px 1px 0px rgba(0,0,0,0.2))' }}
               />
             </div>
-            <span
-              className="text-2xl font-medium tracking-tight leading-none"
-              style={{
-                textShadow: '1px 1px 1px rgba(255,255,255,0.3)',
-                color: 'var(--lcd-label-color)',
-              }}
-            >
-              {_isPowerOn ? userCount.toString().padStart(2, '0') : '00'}
-            </span>
+            <div className="w-[28px] flex justify-end">
+              <span
+                className="text-2xl font-medium tracking-tight leading-none"
+                style={{
+                  textShadow: '1px 1px 1px rgba(255,255,255,0.3)',
+                  color: 'var(--lcd-label-color)',
+                }}
+              >
+                {_isPowerOn ? userCount.toString().padStart(2, '0') : '00'}
+              </span>
+            </div>
           </div>
         </div>
       </div>
