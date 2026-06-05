@@ -283,7 +283,7 @@ export function LCDPanel({
                 onUserCountClick();
               }
             }}
-            className={`flex items-end gap-0.5 mr-4 relative transition-all duration-150 ${_isPowerOn && onUserCountClick ? 'cursor-pointer hover:opacity-75 active:scale-95' : ''}`}
+            className={`flex items-end gap-0.5 mr-4 relative transition-[opacity,transform] duration-150 ${_isPowerOn && onUserCountClick ? 'cursor-pointer hover:opacity-75 active:scale-95' : ''}`}
             style={{ paddingBottom: '5px' }}
           >
             <div className="flex items-center justify-center">
