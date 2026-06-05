@@ -13,9 +13,9 @@ export function ProgressBar({ progress }: ProgressBarProps) {
 
   return (
     <div
-      className="w-[280px] h-[14px] rounded-full overflow-hidden relative"
+      className="w-[280px] h-[14px] rounded-full overflow-hidden relative transition-all duration-300"
       style={{
-        background: '#f1f5f9',
+        background: 'var(--progress-bg)',
         boxShadow: 'inset 0 0 0 2px rgba(0,0,0,0.1), inset 0 2.5px 5px rgba(0,0,0,0.25)',
         border: '1px solid rgba(0,0,0,0.12)',
       }}

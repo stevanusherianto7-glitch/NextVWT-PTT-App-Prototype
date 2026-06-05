@@ -159,7 +159,7 @@ const DEFAULT_SETTINGS = {
   toneOnStartEnd: true,
   bgActive: true,
   fullDuplex: true,
-  themeText: 'Monokrom',
+  themeText: 'theme-classic',
 };
 
 interface PresenceMeta {

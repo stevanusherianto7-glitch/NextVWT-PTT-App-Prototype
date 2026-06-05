@@ -601,6 +601,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
   const [isUserGuideOpen, setIsUserGuideOpen] = useState(false);
   const [isProvinceModalOpen, setIsProvinceModalOpen] = useState(false);
   const [isCityModalOpen, setIsCityModalOpen] = useState(false);
+  const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
   const [selectedProvince, setSelectedProvince] = useState('');
 
   const PREDEFINED_PHRASES = [
@@ -651,6 +652,18 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
   const setBgActive = (val: boolean) => updateSettings({ bgActive: val });
   const setFullDuplex = (val: boolean) => updateSettings({ fullDuplex: val });
   const setThemeText = (val: string) => updateSettings({ themeText: val });
+
+  const getThemeLabel = (theme: string) => {
+    const t = theme?.toLowerCase() || '';
+    if (t === 'theme-classic' || t.includes('classic')) return 'Classic';
+    if (t === 'theme-v1' || t.includes('v1')) return 'Glass Crystal V1 (Premium)';
+    if (t === 'theme-v2' || t.includes('v2')) return 'Glass Crystal V2 (Premium Crystal)';
+    if (t === 'theme-v3' || t.includes('v3')) return 'Glass Crystal V3 (Soft Crystal)';
+    if (t === 'theme-v4' || t.includes('v4')) return 'Glass Crystal V4 (Smoked Crystal)';
+    if (t === 'theme-v5' || t.includes('v5')) return 'Glass Crystal V5 (Aurora Crystal)';
+    if (t === 'theme-monokrom' || t.includes('monokrom')) return 'Monokrom (Legacy)';
+    return 'Classic';
+  };
 
   const emailText = user?.email || 'Guest User';
 
@@ -1225,18 +1238,20 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
           Tema
         </div>
         <div className="bg-white p-3 border-b border-gray-200 flex flex-col gap-4">
-          <div className="flex w-full">
-            <select
-              value={themeText}
-              onChange={(e) => setThemeText(e.target.value)}
-              className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm bg-white text-black font-semibold outline-none focus:border-blue-500 cursor-pointer"
+          <div className="flex gap-2">
+            <input
+              type="text"
+              readOnly
+              value={getThemeLabel(themeText)}
+              onClick={() => setIsThemeModalOpen(true)}
+              className="flex-1 border border-gray-300 rounded px-2.5 py-1.5 text-sm bg-white text-black font-semibold outline-none focus:border-blue-500 cursor-pointer"
+            />
+            <button
+              onClick={() => setIsThemeModalOpen(true)}
+              className="px-4 py-1.5 text-sm font-semibold bg-[#e2e8f0] hover:bg-[#cbd5e1] border border-gray-300 rounded cursor-pointer transition-colors"
             >
-              <option value="Glass Crystal V2">Glass Crystal V2 (Premium Crystal)</option>
-              <option value="theme-v3">Glass Crystal V3 (Soft Crystal)</option>
-              <option value="theme-v4">Glass Crystal V4 (Smoked Crystal)</option>
-              <option value="theme-v5">Glass Crystal V5 (Aurora Crystal)</option>
-              <option value="theme-monokrom">Monokrom (Legacy)</option>
-            </select>
+              Ganti
+            </button>
           </div>
 
           {/* MAIN SIMPAN BUTTON */}
@@ -1653,6 +1668,112 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
                     {city}
                   </button>
                 ))}
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Theme Selector Modal Dialog */}
+      {isThemeModalOpen && (
+        <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="absolute inset-0" onClick={() => setIsThemeModalOpen(false)} />
+          <div className="bg-white w-[90%] max-h-[85%] rounded-lg shadow-2xl flex flex-col z-10 overflow-hidden border border-gray-300 animate-in fade-in zoom-in-95 duration-100">
+            <div className="flex items-center px-4 py-3 bg-white shrink-0 border-b border-gray-200">
+              <button
+                onClick={() => setIsThemeModalOpen(false)}
+                className="mr-2.5 text-gray-500 hover:text-gray-700 cursor-pointer focus:outline-none"
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+              <span className="text-[16px] font-bold text-gray-800">Pilih Tema</span>
+            </div>
+
+            <div className="flex-1 overflow-y-auto bg-white text-left divide-y divide-gray-100 p-2 flex flex-col gap-2">
+              {[
+                {
+                  key: 'theme-classic',
+                  label: 'Classic',
+                  desc: 'Casing plastik abu-abu solid retro (Original)',
+                  gradient: 'linear-gradient(135deg, #d5dbe1 0%, #a4b0be 100%)',
+                },
+                {
+                  key: 'theme-v1',
+                  label: 'Glass Crystal V1',
+                  desc: 'Hybrid: Casing kristal transparan, panel plastik abu-abu',
+                  gradient:
+                    'linear-gradient(135deg, rgba(230, 239, 249, 0.9) 0%, rgba(125, 162, 207, 0.9) 100%)',
+                },
+                {
+                  key: 'theme-v2',
+                  label: 'Glass Crystal V2',
+                  desc: 'Premium Crystal (Diamond Cut) - Glow biru es, LCD oranye',
+                  gradient: 'linear-gradient(135deg, #e6eff9 0%, #FF9500 100%)',
+                },
+                {
+                  key: 'theme-v3',
+                  label: 'Glass Crystal V3',
+                  desc: 'Glass Rounded (Soft Crystal) - Glow cyan, LCD biru',
+                  gradient: 'linear-gradient(135deg, #00E5FF 0%, #2979ff 100%)',
+                },
+                {
+                  key: 'theme-v4',
+                  label: 'Glass Crystal V4',
+                  desc: 'Dark Glass (Smoked Crystal) - Glow & LCD hijau neon',
+                  gradient: 'linear-gradient(135deg, #263238 0%, #00C853 100%)',
+                },
+                {
+                  key: 'theme-v5',
+                  label: 'Glass Crystal V5',
+                  desc: 'Aurora Glass (Color Crystal) - Glow & LCD ungu/pink',
+                  gradient: 'linear-gradient(135deg, #ff4081 0%, #e040fb 100%)',
+                },
+                {
+                  key: 'theme-monokrom',
+                  label: 'Monokrom',
+                  desc: 'Retro grayscale plastic body & display style',
+                  gradient: 'linear-gradient(135deg, #94a3b8 0%, #64748b 100%)',
+                },
+              ].map((themeOpt) => {
+                const isActive = themeText === themeOpt.key;
+                return (
+                  <button
+                    key={themeOpt.key}
+                    onClick={() => {
+                      setThemeText(themeOpt.key);
+                      setIsThemeModalOpen(false);
+                    }}
+                    className={`w-full flex items-center gap-3 p-3 rounded-lg border text-left cursor-pointer transition-all ${isActive ? 'bg-blue-50/50 border-blue-500 shadow-sm' : 'border-gray-200 hover:bg-gray-50'}`}
+                  >
+                    {/* Circle Color Indicator */}
+                    <div
+                      className="w-10 h-10 rounded-full border border-gray-300 shadow-inner flex-shrink-0"
+                      style={{ background: themeOpt.gradient }}
+                    />
+                    <div className="flex-1">
+                      <div className="text-sm font-bold text-gray-800">{themeOpt.label}</div>
+                      <div className="text-[11px] font-semibold text-gray-500 leading-tight mt-0.5">
+                        {themeOpt.desc}
+                      </div>
+                    </div>
+                    {isActive && (
+                      <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center text-white text-[11px] font-bold">
+                        ✓
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>

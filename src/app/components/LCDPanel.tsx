@@ -145,8 +145,8 @@ export function LCDPanel({
               style={{ filter: 'drop-shadow(1px 1px 0px rgba(0,0,0,0.2))' }}
             />
             <span
-              className="text-base text-black -ml-1 truncate max-w-[110px]"
-              style={{ fontWeight: 600 }}
+              className="text-base -ml-1 truncate max-w-[110px]"
+              style={{ fontWeight: 600, color: 'var(--lcd-label-color)' }}
             >
               {username}
             </span>
@@ -248,13 +248,18 @@ export function LCDPanel({
         <div className="flex justify-between items-end pb-0 px-1 mt-auto">
           <div className="flex items-end gap-1">
             <div
-              className="text-black relative"
-              style={{ fontSize: '20px', fontWeight: 'bold', paddingBottom: '5px' }}
+              className="relative"
+              style={{
+                fontSize: '20px',
+                fontWeight: 'bold',
+                paddingBottom: '5px',
+                color: 'var(--lcd-label-color)',
+              }}
             >
               CH
             </div>
             <div
-              className="text-white relative"
+              className="relative"
               style={{
                 fontFamily: "'DSEG7', monospace",
                 fontSize: '52px',
@@ -263,6 +268,7 @@ export function LCDPanel({
                 marginLeft: '-2px',
                 textShadow: 'var(--lcd-glow)',
                 paddingBottom: '5px',
+                color: 'var(--lcd-text-color)',
               }}
             >
               {channelStr}
@@ -289,8 +295,11 @@ export function LCDPanel({
               />
             </div>
             <span
-              className="text-2xl text-black font-medium tracking-tight leading-none"
-              style={{ textShadow: '1px 1px 1px rgba(255,255,255,0.5)' }}
+              className="text-2xl font-medium tracking-tight leading-none"
+              style={{
+                textShadow: '1px 1px 1px rgba(255,255,255,0.3)',
+                color: 'var(--lcd-label-color)',
+              }}
             >
               {_isPowerOn ? userCount.toString().padStart(2, '0') : '00'}
             </span>
