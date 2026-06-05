@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { ToggleSwitch } from './ToggleSwitch';
 import { LCDPanel } from './LCDPanel';
 import { ProgressBar } from './ProgressBar';
@@ -10,6 +10,7 @@ import { UserListModal } from './UserListModal';
 import { ChannelListModal } from './ChannelListModal';
 import { STATIC_CHANNELS, getChannelUserCount } from '../utils/constants';
 import { useAudioStreamer } from '../hooks/useAudioStreamer';
+import { toast } from 'sonner';
 
 export function RadioLayout() {
   const {
@@ -39,6 +40,10 @@ export function RadioLayout() {
   const [isUserListOpen, setIsUserListOpen] = useState(false);
 
   const { startRecording, stopRecording, playAudioChunk, flushAudioQueue } = useAudioStreamer();
+
+  const isReceiving =
+    activeTransmitter && activeTransmitter.userId !== usePTTStore.getState().userId;
+  const isBusy = !!isReceiving;
 
   const getThemeClass = (theme: string) => {
     const t = theme?.toLowerCase() || '';
@@ -81,6 +86,16 @@ export function RadioLayout() {
         }
       }).catch((err) => {
         console.error('Failed to start audio recording:', err);
+        const errMsg = err instanceof Error ? err.name : String(err);
+        if (errMsg === 'NotAllowedError' || errMsg === 'PermissionDeniedError') {
+          toast.error('Akses mikrofon ditolak. Silakan aktifkan izin mikrofon Anda.');
+        } else if (errMsg === 'NotFoundError' || errMsg === 'DevicesNotFoundError') {
+          toast.error('Perangkat mikrofon tidak ditemukan. Hubungkan mikrofon terlebih dahulu.');
+        } else {
+          toast.error(
+            'Gagal mengakses mikrofon: ' + (err instanceof Error ? err.message : String(err))
+          );
+        }
         setIsTransmitting(false);
       });
     } else {
@@ -89,7 +104,45 @@ export function RadioLayout() {
     return () => {
       stopRecording();
     };
-  }, [isTransmitting, isPowerOn, startRecording, stopRecording, playAudioChunk, flushAudioQueue, setIsTransmitting]);
+  }, [
+    isTransmitting,
+    isPowerOn,
+    startRecording,
+    stopRecording,
+    playAudioChunk,
+    flushAudioQueue,
+    setIsTransmitting,
+  ]);
+
+  const resetWatchdogRef = useRef<(() => void) | null>(null);
+
+  // Watchdog timer to automatically clear stale/silent transmitter
+  useEffect(() => {
+    let watchdogTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const resetWatchdog = () => {
+      if (watchdogTimer) clearTimeout(watchdogTimer);
+      watchdogTimer = setTimeout(() => {
+        const state = usePTTStore.getState();
+        if (state.activeTransmitter && state.activeTransmitter.userId !== state.userId) {
+          usePTTStore.setState({ activeTransmitter: null, progress: 0 });
+        }
+      }, 1500);
+    };
+
+    resetWatchdogRef.current = resetWatchdog;
+
+    if (activeTransmitter && activeTransmitter.userId !== usePTTStore.getState().userId) {
+      resetWatchdog();
+    }
+
+    return () => {
+      if (watchdogTimer) {
+        clearTimeout(watchdogTimer);
+      }
+      resetWatchdogRef.current = null;
+    };
+  }, [activeTransmitter]);
 
   const setOnVoiceChunkReceived = usePTTStore((state) => state.setOnVoiceChunkReceived);
 
@@ -98,6 +151,9 @@ export function RadioLayout() {
     setOnVoiceChunkReceived((base64) => {
       if (isPowerOn) {
         playAudioChunk(base64);
+        if (resetWatchdogRef.current) {
+          resetWatchdogRef.current();
+        }
       }
     });
     return () => {
@@ -428,6 +484,7 @@ export function RadioLayout() {
                 <div onClick={(e) => e.stopPropagation()}>
                   <PTTButton
                     isActive={isTransmitting}
+                    isBusy={isBusy}
                     onPressStart={() => isPowerOn && setIsTransmitting(true)}
                     onPressEnd={() => setIsTransmitting(false)}
                   />

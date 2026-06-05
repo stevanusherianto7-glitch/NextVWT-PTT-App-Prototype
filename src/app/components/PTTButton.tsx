@@ -5,6 +5,7 @@ interface PTTButtonProps {
   onPressStart: () => void;
   onPressEnd: () => void;
   isActive?: boolean;
+  isBusy?: boolean;
 }
 
 const createStaticNoise = (
@@ -108,7 +109,12 @@ const playRadioSound = (
   }
 };
 
-export function PTTButton({ onPressStart, onPressEnd, isActive = false }: PTTButtonProps) {
+export function PTTButton({
+  onPressStart,
+  onPressEnd,
+  isActive = false,
+  isBusy = false,
+}: PTTButtonProps) {
   const [isDepressed, setIsDepressed] = useState(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
 
@@ -144,6 +150,7 @@ export function PTTButton({ onPressStart, onPressEnd, isActive = false }: PTTBut
   };
 
   const handleMouseDown = (e: React.MouseEvent | React.TouchEvent) => {
+    if (isBusy) return;
     if (e.type === 'touchstart') {
       e.preventDefault();
     }
@@ -159,6 +166,7 @@ export function PTTButton({ onPressStart, onPressEnd, isActive = false }: PTTBut
   };
 
   const handleMouseUp = (e: React.MouseEvent | React.TouchEvent) => {
+    if (isBusy) return;
     if (e.type === 'touchend') {
       e.preventDefault();
     }
@@ -186,6 +194,7 @@ export function PTTButton({ onPressStart, onPressEnd, isActive = false }: PTTBut
   };
 
   const handleMouseLeave = () => {
+    if (isBusy) return;
     if (isDepressed && isPowerOn) {
       if (!togglePtt) {
         onPressEnd();
@@ -203,7 +212,7 @@ export function PTTButton({ onPressStart, onPressEnd, isActive = false }: PTTBut
       if (e.code === 'Space') {
         if (e.repeat) return;
         e.preventDefault(); // Prevent page scroll
-        if (!isPowerOn) return;
+        if (!isPowerOn || isBusy) return;
         setIsDepressed(true);
         triggerHaptic(15);
         initAudio();
@@ -219,7 +228,7 @@ export function PTTButton({ onPressStart, onPressEnd, isActive = false }: PTTBut
     const handleKeyUp = (e: KeyboardEvent) => {
       if (e.code === 'Space') {
         e.preventDefault(); // Prevent page scroll
-        if (!isPowerOn) return;
+        if (!isPowerOn || isBusy) return;
 
         if (isDepressed) {
           if (togglePtt) {
@@ -252,6 +261,7 @@ export function PTTButton({ onPressStart, onPressEnd, isActive = false }: PTTBut
     };
   }, [
     isPowerOn,
+    isBusy,
     isActive,
     isDepressed,
     togglePtt,
@@ -293,20 +303,26 @@ export function PTTButton({ onPressStart, onPressEnd, isActive = false }: PTTBut
           borderRadius: '48px',
           background: !isPowerOn
             ? 'linear-gradient(to bottom, #a3a3a3 0%, #737373 100%)' // Gray when power is off
-            : isActive
-              ? 'linear-gradient(to bottom, #d62828 0%, #a01010 100%)' // Red when active
-              : 'linear-gradient(to bottom, #2cdb66 0%, #19ba42 100%)', // Green when idle
+            : isBusy
+              ? 'linear-gradient(to bottom, #f97316 0%, #ea580c 100%)' // Orange when busy
+              : isActive
+                ? 'linear-gradient(to bottom, #d62828 0%, #a01010 100%)' // Red when active
+                : 'linear-gradient(to bottom, #2cdb66 0%, #19ba42 100%)', // Green when idle
           boxShadow: isDepressed
             ? 'inset 0 8px 12px rgba(0, 0, 0, 0.85), inset 0 -2px 3px rgba(0, 0, 0, 0.2)'
-            : isActive
-              ? 'inset 0 3px 6px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.2), 0 4px 6px rgba(0,0,0,0.3)'
-              : 'inset 0 3px 6px rgba(255, 255, 255, 0.8), 0 4px 10px rgba(44, 219, 102, 0.4)',
+            : isBusy
+              ? 'inset 0 3px 6px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.2), 0 4px 10px rgba(249, 115, 22, 0.4)'
+              : isActive
+                ? 'inset 0 3px 6px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.2), 0 4px 6px rgba(0,0,0,0.3)'
+                : 'inset 0 3px 6px rgba(255, 255, 255, 0.8), 0 4px 10px rgba(44, 219, 102, 0.4)',
           transform: isDepressed ? 'translateY(4px)' : 'translateY(0)',
           border: !isPowerOn
             ? '1px solid #666666'
-            : isActive
-              ? '1px solid #730e0e'
-              : '1px solid #149c35',
+            : isBusy
+              ? '1px solid #c2410c'
+              : isActive
+                ? '1px solid #730e0e'
+                : '1px solid #149c35',
           transition: 'transform 0.06s ease-in-out, box-shadow 0.06s ease-in-out',
         }}
       >
@@ -317,12 +333,13 @@ export function PTTButton({ onPressStart, onPressEnd, isActive = false }: PTTBut
             fontSize: '44px',
             fontWeight: 800,
             letterSpacing: '3px',
-            textShadow: isActive
-              ? '0 0 12px rgba(255, 255, 255, 0.6)'
-              : '1px 1px 2px rgba(0,0,0,0.3)',
+            textShadow:
+              isActive || isBusy
+                ? '0 0 12px rgba(255, 255, 255, 0.6)'
+                : '1px 1px 2px rgba(0,0,0,0.3)',
           }}
         >
-          PTT
+          {isBusy ? 'BUSY' : 'PTT'}
         </span>
 
         {/* Top inner glass highlight (convex effect) */}
