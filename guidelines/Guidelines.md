@@ -2,6 +2,7 @@
 
 1. Dilarang keras memasukan tipe data 'any' ke dalam struktur codebase.
 2. Selalu siapkan skenario 'git revert' sebelum melakukan refactor codebase agar selalu dalam posisi aman.
+3. Setiap kali ada pembuatan codebase spec baru, wajib mencatatkan dan memperbaharui dokumen spec design.
 <!--
 
 System Guidelines
