@@ -271,11 +271,14 @@ export default function App() {
 
   const getThemeClass = (theme: string) => {
     const t = theme?.toLowerCase() || '';
+    if (t === 'theme-classic' || t.includes('classic')) return 'theme-classic';
+    if (t === 'theme-v1' || t.includes('v1')) return 'theme-v1';
+    if (t === 'theme-v2' || t.includes('v2')) return 'theme-v2';
     if (t === 'theme-v3' || t.includes('v3')) return 'theme-v3';
     if (t === 'theme-v4' || t.includes('v4')) return 'theme-v4';
     if (t === 'theme-v5' || t.includes('v5')) return 'theme-v5';
     if (t === 'theme-monokrom' || t.includes('monokrom') || t === 'mono') return 'theme-monokrom';
-    return ''; // Default/V2
+    return 'theme-classic'; // Fallback to classic
   };
 
   useEffect(() => {
@@ -499,11 +502,9 @@ export default function App() {
             <div
               className="w-full h-[90px] flex items-center justify-between px-5 z-20 relative"
               style={{
-                background:
-                  'linear-gradient(to bottom, #ffffff 0%, #f0f3f6 40%, #dee4ea 85%, #cbd4de 100%)',
-                boxShadow:
-                  '0 6px 12px -6px rgba(0,0,0,0.2), 0 2px 4px -2px rgba(0,0,0,0.1), inset 0 -6px 8px -4px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,1)',
-                borderBottom: '1px solid #a4b0be',
+                background: 'var(--header-bg)',
+                boxShadow: 'var(--header-shadow)',
+                borderBottom: 'var(--header-border)',
               }}
             >
               <div
@@ -671,15 +672,19 @@ export default function App() {
                     className={`flex flex-col justify-center relative z-20 transition-all duration-300 ${isTransmitting ? 'logo-transmitting' : ''} ml-2`}
                   >
                     <span
-                      className="text-[14px] text-black font-bold leading-tight tracking-wide"
+                      className="text-[14px] font-bold leading-tight tracking-wide"
                       style={{
                         fontFamily: 'system-ui, -apple-system, sans-serif',
+                        color: 'var(--header-text-color)',
                       }}
                     >
                       NextVWT
                     </span>
                     <div className="w-[120px] overflow-hidden whitespace-nowrap relative h-[16px] mt-0.5">
-                      <div className="absolute inline-block animate-marquee text-[10px] text-gray-500 font-medium tracking-wide">
+                      <div
+                        className="absolute inline-block animate-marquee text-[10px] font-semibold tracking-wide"
+                        style={{ color: 'var(--header-text-color)', opacity: 0.65 }}
+                      >
                         {marqueeText}
                       </div>
                     </div>
@@ -709,14 +714,15 @@ export default function App() {
                   onClose={() => setIsUserListOpen(false)}
                 />
               ) : (
-                /* White Faceplate Container */
+                /* Themed Faceplate Container */
                 <div
-                  className="w-full bg-[#f0f3f6] flex flex-col items-center pt-6 pb-12 relative z-10"
+                  className="w-full flex flex-col items-center pt-6 pb-12 relative z-10 transition-all duration-300"
                   style={{
                     borderRadius: '40px 40px 200px 200px / 40px 40px 90px 90px',
-                    boxShadow:
-                      '0 18px 40px rgba(0,0,0,0.22), 0 6px 15px rgba(0,0,0,0.15), 0 -2px 4px rgba(255,255,255,0.95), inset 0 0 38px rgba(0,0,0,0.32), inset 0 8px 12px rgba(255,255,255,1), inset 0 -15px 30px rgba(0,0,0,0.24), inset 15px 0 25px rgba(0,0,0,0.08), inset -15px 0 25px rgba(0,0,0,0.08)',
-                    border: '1px solid #dbe2e9',
+                    background: 'var(--panel-bg)',
+                    boxShadow: 'var(--panel-shadow)',
+                    border: 'var(--panel-border)',
+                    backdropFilter: 'var(--panel-blur)',
                   }}
                 >
                   {/* LCD Panel */}

@@ -20,34 +20,34 @@ export function ControlButtons({
   const getButtonStyle = (btnName: string) => {
     const isPressed = pressedBtn === btnName;
     return {
-      background: 'linear-gradient(to bottom, #4a4a4a 0%, #1a1a1a 100%)',
+      background: 'var(--btn-bg)',
       boxShadow: isPressed
-        ? 'inset 0 3px 8px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.2)'
-        : 'inset 0 2px 2px rgba(255,255,255,0.2), inset 0 -2px 4px rgba(0,0,0,0.5), 0 4px 8px rgba(0,0,0,0.4)',
+        ? 'inset 0 3px 8px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.1)'
+        : 'var(--btn-shadow)',
       transform: isPressed ? 'translateY(2px)' : 'translateY(0)',
-      border: '2px solid #000',
+      border: 'var(--btn-border)',
       transition: 'all 0.05s ease',
     };
   };
 
   return (
     <div className="relative flex items-center justify-center py-4 mt-2">
-      {/* Molded white background base (D-Pad Frame) */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none drop-shadow-[0_12px_12px_rgba(0,0,0,0.2)] drop-shadow-[0_4px_4px_rgba(0,0,0,0.15)]">
+      {/* Molded backing base (D-Pad Frame) */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none drop-shadow-[0_12px_12px_rgba(0,0,0,0.15)]">
         <div
-          className="w-[290px] h-[90px] rounded-full absolute bg-gradient-to-b from-[#ffffff] to-[#e8ebf0]"
+          className="w-[290px] h-[90px] rounded-full absolute transition-all duration-300"
           style={{
-            boxShadow:
-              'inset 0 8px 12px rgba(255,255,255,1), inset 0 -6px 12px rgba(0,0,0,0.15), inset 0 0 28px rgba(0,0,0,0.28)',
-            border: '1px solid #c8d1db',
+            background: 'var(--dpad-bg)',
+            boxShadow: 'var(--dpad-shadow)',
+            border: 'var(--dpad-border)',
           }}
         />
         <div
-          className="w-[95px] h-[150px] rounded-full absolute bg-gradient-to-b from-[#ffffff] to-[#e8ebf0]"
+          className="w-[95px] h-[150px] rounded-full absolute transition-all duration-300"
           style={{
-            boxShadow:
-              'inset 0 8px 12px rgba(255,255,255,1), inset 0 -6px 12px rgba(0,0,0,0.15), inset 0 0 28px rgba(0,0,0,0.28)',
-            border: '1px solid #c8d1db',
+            background: 'var(--dpad-bg)',
+            boxShadow: 'var(--dpad-shadow)',
+            border: 'var(--dpad-border)',
           }}
         />
       </div>
@@ -79,10 +79,10 @@ export function ControlButtons({
 
         {/* Up/Down Buttons Container */}
         <div
-          className="w-[60px] h-[105px] rounded-full p-1 flex flex-col justify-between items-center relative"
+          className="w-[60px] h-[105px] rounded-full p-1 flex flex-col justify-between items-center relative transition-all duration-300"
           style={{
-            background: 'linear-gradient(to right, #2a2a2a, #1a1a1a)',
-            border: '2px solid #000',
+            background: 'var(--rocker-bg)',
+            border: 'var(--rocker-border)',
             boxShadow:
               'inset 0 2px 4px rgba(255,255,255,0.1), 0 5px 10px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3)',
           }}
@@ -97,12 +97,9 @@ export function ControlButtons({
             onMouseLeave={() => setPressedBtn(null)}
             className="w-full h-[48px] rounded-t-full text-white flex items-center justify-center relative z-10"
             style={{
-              background:
-                pressedBtn === 'up' ? '#111' : 'linear-gradient(to top, #2c2c2c, #4a4a4a)',
+              background: pressedBtn === 'up' ? 'rgba(0,0,0,0.4)' : 'var(--btn-bg)',
               boxShadow:
-                pressedBtn === 'up'
-                  ? 'inset 0 4px 6px rgba(0,0,0,0.9)'
-                  : 'inset 0 2px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.5)',
+                pressedBtn === 'up' ? 'inset 0 4px 6px rgba(0,0,0,0.8)' : 'var(--btn-shadow)',
               transition: 'all 0.05s ease',
               transform: pressedBtn === 'up' ? 'translateY(1px)' : 'translateY(0)',
             }}
@@ -125,12 +122,9 @@ export function ControlButtons({
             onMouseLeave={() => setPressedBtn(null)}
             className="w-full h-[48px] rounded-b-full text-white flex items-center justify-center relative z-10"
             style={{
-              background:
-                pressedBtn === 'down' ? '#111' : 'linear-gradient(to bottom, #2c2c2c, #4a4a4a)',
+              background: pressedBtn === 'down' ? 'rgba(0,0,0,0.4)' : 'var(--btn-bg)',
               boxShadow:
-                pressedBtn === 'down'
-                  ? 'inset 0 -4px 6px rgba(0,0,0,0.9)'
-                  : 'inset 0 -2px 2px rgba(255,255,255,0.1), inset 0 1px 2px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.5)',
+                pressedBtn === 'down' ? 'inset 0 -4px 6px rgba(0,0,0,0.8)' : 'var(--btn-shadow)',
               transition: 'all 0.05s ease',
               transform: pressedBtn === 'down' ? 'translateY(-1px)' : 'translateY(0)',
             }}
