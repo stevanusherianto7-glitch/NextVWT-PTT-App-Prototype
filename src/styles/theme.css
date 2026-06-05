@@ -272,35 +272,69 @@
 .PB-range-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 15px;
-  height: 15px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #ffffff 0%, #cbd5e1 50%, #94a3b8 100%);
-  border: 1px solid #cbd5e1;
+  background: radial-gradient(
+    circle at 35% 35%,
+    #ffffff 0%,
+    #ececec 15%,
+    #cbd5e1 45%,
+    #94a3b8 70%,
+    #475569 90%,
+    #1e293b 100%
+  );
+  border: 1.5px solid #94a3b8;
   box-shadow:
-    0 0 6px rgba(255, 255, 255, 0.8),
-    0 0 10px rgba(148, 163, 184, 0.4);
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.95),
+    inset -1px -1.5px 2px rgba(0, 0, 0, 0.45),
+    0 3px 6px rgba(15, 23, 42, 0.35);
   cursor: pointer;
-  transition: 0.3s ease-in-out;
+  transition:
+    transform 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
 }
 
 .PB-range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
   box-shadow:
-    0px 0px 0px 8px rgba(255, 255, 255, 0.25),
-    0 0 10px rgba(255, 255, 255, 0.8);
-  transition: 0.3s ease-in-out;
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.95),
+    inset -1px -1.5px 2px rgba(0, 0, 0, 0.45),
+    0 4px 10px rgba(15, 23, 42, 0.45),
+    0 0 0 6px rgba(255, 255, 255, 0.25);
 }
 
 .PB-range-slider::-moz-range-thumb {
-  width: 15px;
-  height: 15px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #ffffff 0%, #cbd5e1 50%, #94a3b8 100%);
-  border: 1px solid #cbd5e1;
+  background: radial-gradient(
+    circle at 35% 35%,
+    #ffffff 0%,
+    #ececec 15%,
+    #cbd5e1 45%,
+    #94a3b8 70%,
+    #475569 90%,
+    #1e293b 100%
+  );
+  border: 1.5px solid #94a3b8;
   box-shadow:
-    0 0 6px rgba(255, 255, 255, 0.8),
-    0 0 10px rgba(148, 163, 184, 0.4);
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.95),
+    inset -1px -1.5px 2px rgba(0, 0, 0, 0.45),
+    0 3px 6px rgba(15, 23, 42, 0.35);
   cursor: pointer;
+  transition:
+    transform 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
+}
+
+.PB-range-slider::-moz-range-thumb:hover {
+  transform: scale(1.1);
+  box-shadow:
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.95),
+    inset -1px -1.5px 2px rgba(0, 0, 0, 0.45),
+    0 4px 10px rgba(15, 23, 42, 0.45),
+    0 0 0 6px rgba(255, 255, 255, 0.25);
 }
 
 .PB-range-slider-div {
