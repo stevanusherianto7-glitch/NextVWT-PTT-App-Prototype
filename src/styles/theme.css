@@ -275,20 +275,23 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: radial-gradient(
-    circle at 35% 35%,
+  background: linear-gradient(
+    135deg,
     #ffffff 0%,
-    #ececec 15%,
-    #cbd5e1 45%,
-    #94a3b8 70%,
-    #475569 90%,
-    #1e293b 100%
+    #f8fafc 10%,
+    #cbd5e1 25%,
+    #ffffff 45%,
+    #ffffff 48%,
+    #94a3b8 55%,
+    #475569 80%,
+    #0f172a 100%
   );
-  border: 1.5px solid #94a3b8;
+  border: 1px solid #475569;
   box-shadow:
-    inset 0 1.5px 2px rgba(255, 255, 255, 0.95),
-    inset -1px -1.5px 2px rgba(0, 0, 0, 0.45),
-    0 3px 6px rgba(15, 23, 42, 0.35);
+    inset 0 2px 2px rgba(255, 255, 255, 1),
+    inset 0 -1.5px 2px rgba(0, 0, 0, 0.6),
+    0 3px 6px rgba(15, 23, 42, 0.4),
+    0 0 6px rgba(255, 255, 255, 0.8);
   cursor: pointer;
   transition:
     transform 0.15s ease-in-out,
@@ -298,30 +301,33 @@
 .PB-range-slider::-webkit-slider-thumb:hover {
   transform: scale(1.1);
   box-shadow:
-    inset 0 1.5px 2px rgba(255, 255, 255, 0.95),
-    inset -1px -1.5px 2px rgba(0, 0, 0, 0.45),
-    0 4px 10px rgba(15, 23, 42, 0.45),
-    0 0 0 6px rgba(255, 255, 255, 0.25);
+    inset 0 2px 2px rgba(255, 255, 255, 1),
+    inset 0 -1.5px 2px rgba(0, 0, 0, 0.6),
+    0 4px 10px rgba(15, 23, 42, 0.5),
+    0 0 8px rgba(255, 255, 255, 0.95);
 }
 
 .PB-range-slider::-moz-range-thumb {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: radial-gradient(
-    circle at 35% 35%,
+  background: linear-gradient(
+    135deg,
     #ffffff 0%,
-    #ececec 15%,
-    #cbd5e1 45%,
-    #94a3b8 70%,
-    #475569 90%,
-    #1e293b 100%
+    #f8fafc 10%,
+    #cbd5e1 25%,
+    #ffffff 45%,
+    #ffffff 48%,
+    #94a3b8 55%,
+    #475569 80%,
+    #0f172a 100%
   );
-  border: 1.5px solid #94a3b8;
+  border: 1px solid #475569;
   box-shadow:
-    inset 0 1.5px 2px rgba(255, 255, 255, 0.95),
-    inset -1px -1.5px 2px rgba(0, 0, 0, 0.45),
-    0 3px 6px rgba(15, 23, 42, 0.35);
+    inset 0 2px 2px rgba(255, 255, 255, 1),
+    inset 0 -1.5px 2px rgba(0, 0, 0, 0.6),
+    0 3px 6px rgba(15, 23, 42, 0.4),
+    0 0 6px rgba(255, 255, 255, 0.8);
   cursor: pointer;
   transition:
     transform 0.15s ease-in-out,
@@ -331,10 +337,10 @@
 .PB-range-slider::-moz-range-thumb:hover {
   transform: scale(1.1);
   box-shadow:
-    inset 0 1.5px 2px rgba(255, 255, 255, 0.95),
-    inset -1px -1.5px 2px rgba(0, 0, 0, 0.45),
-    0 4px 10px rgba(15, 23, 42, 0.45),
-    0 0 0 6px rgba(255, 255, 255, 0.25);
+    inset 0 2px 2px rgba(255, 255, 255, 1),
+    inset 0 -1.5px 2px rgba(0, 0, 0, 0.6),
+    0 4px 10px rgba(15, 23, 42, 0.5),
+    0 0 8px rgba(255, 255, 255, 0.95);
 }
 
 .PB-range-slider-div {
