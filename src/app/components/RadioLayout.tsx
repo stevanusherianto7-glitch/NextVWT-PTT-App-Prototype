@@ -9,6 +9,7 @@ import { SettingsPanel } from './SettingsPanel';
 import { UserListModal } from './UserListModal';
 import { ChannelListModal } from './ChannelListModal';
 import { STATIC_CHANNELS, getChannelUserCount } from '../utils/constants';
+import { useAudioStreamer } from '../hooks/useAudioStreamer';
 
 export function RadioLayout() {
   const {
@@ -37,6 +38,8 @@ export function RadioLayout() {
   const [isChannelListOpen, setIsChannelListOpen] = useState(false);
   const [isUserListOpen, setIsUserListOpen] = useState(false);
 
+  const { startRecording, stopRecording, playAudioChunk, flushAudioQueue } = useAudioStreamer();
+
   const getThemeClass = (theme: string) => {
     const t = theme?.toLowerCase() || '';
     if (t === 'theme-classic' || t.includes('classic')) return 'theme-classic';
@@ -63,6 +66,52 @@ export function RadioLayout() {
       setProgress(0);
     }
   }, [isTransmitting, activeTransmitter, setProgress]);
+
+  // Manage audio recording when transmitting
+  useEffect(() => {
+    if (isTransmitting && isPowerOn) {
+      flushAudioQueue();
+      startRecording((base64Chunk) => {
+        const isConn = usePTTStore.getState().isConnected;
+        if (isConn) {
+          usePTTStore.getState().broadcastVoiceChunk(base64Chunk);
+        } else {
+          // Local loopback offline fallback
+          playAudioChunk(base64Chunk);
+        }
+      }).catch((err) => {
+        console.error('Failed to start audio recording:', err);
+        setIsTransmitting(false);
+      });
+    } else {
+      stopRecording();
+    }
+    return () => {
+      stopRecording();
+    };
+  }, [isTransmitting, isPowerOn, startRecording, stopRecording, playAudioChunk, flushAudioQueue, setIsTransmitting]);
+
+  const setOnVoiceChunkReceived = usePTTStore((state) => state.setOnVoiceChunkReceived);
+
+  // Manage incoming audio chunks from other users
+  useEffect(() => {
+    setOnVoiceChunkReceived((base64) => {
+      if (isPowerOn) {
+        playAudioChunk(base64);
+      }
+    });
+    return () => {
+      setOnVoiceChunkReceived(null);
+    };
+  }, [isPowerOn, setOnVoiceChunkReceived, playAudioChunk]);
+
+  // Stop recording and flush queue on power off
+  useEffect(() => {
+    if (!isPowerOn) {
+      stopRecording();
+      flushAudioQueue();
+    }
+  }, [isPowerOn, stopRecording, flushAudioQueue]);
 
   // Scanning effect
   useEffect(() => {

@@ -108,6 +108,11 @@ export interface PTTState {
   channelUp: () => void;
   channelDown: () => void;
   toggleScan: () => void;
+
+  // Audio actions
+  onVoiceChunkReceived: ((base64Chunk: string) => void) | null;
+  setOnVoiceChunkReceived: (callback: ((base64Chunk: string) => void) | null) => void;
+  broadcastVoiceChunk: (base64Chunk: string) => void;
 }
 
 // ─── Persisted Settings Keys ──────────────────────────────────────────────────
@@ -241,6 +246,14 @@ function subscribeToChannel(channelNum: number) {
             usePTTStore.setState({ activeTransmitter: null });
           }
         }
+      })
+      .on('broadcast', { event: 'voice_chunk' }, ({ payload }: { payload: { userId: string; base64: string } }) => {
+        if (activeChannelSubscription !== channelInstance) return;
+        const state = usePTTStore.getState();
+        // Ignore our own broadcasted voice chunks to avoid feedback loop
+        if (payload.userId !== state.userId && state.onVoiceChunkReceived) {
+          state.onVoiceChunkReceived(payload.base64);
+        }
       });
 
     channelInstance.subscribe((status: string) => {
@@ -294,6 +307,22 @@ export const usePTTStore = create<PTTState>((set) => ({
 
   // Merge defaults – initializeSession will overlay with localStorage cache
   ...DEFAULT_SETTINGS,
+
+  onVoiceChunkReceived: null,
+  setOnVoiceChunkReceived: (callback) => set({ onVoiceChunkReceived: callback }),
+  broadcastVoiceChunk: (base64Chunk) => {
+    const state = usePTTStore.getState();
+    if (activeChannelSubscription && state.isConnected && state.isPowerOn) {
+      activeChannelSubscription.send({
+        type: 'broadcast',
+        event: 'voice_chunk',
+        payload: {
+          userId: state.userId,
+          base64: base64Chunk,
+        },
+      });
+    }
+  },
 
   setPower: (power) =>
     set((state) => {
