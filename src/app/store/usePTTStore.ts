@@ -177,7 +177,7 @@ const DEFAULT_SETTINGS = {
   vibrateOnStart: true,
   toneOnStartEnd: true,
   bgActive: true,
-  fullDuplex: true,
+  fullDuplex: false,
   themeText: 'theme-classic',
   builtInEcho: true,
 };

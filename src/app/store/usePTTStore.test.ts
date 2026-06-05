@@ -83,7 +83,7 @@ function resetStore() {
     vibrateOnStart: true,
     toneOnStartEnd: true,
     bgActive: true,
-    fullDuplex: true,
+    fullDuplex: false,
     themeText: 'Monokrom',
     builtInEcho: true,
   });

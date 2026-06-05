@@ -35,6 +35,7 @@ export function RadioLayout() {
     activeTransmitter,
     themeText,
     audioMode,
+    fullDuplex,
   } = usePTTStore();
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -46,7 +47,7 @@ export function RadioLayout() {
 
   const isReceiving =
     activeTransmitter && activeTransmitter.userId !== usePTTStore.getState().userId;
-  const isBusy = !!isReceiving;
+  const isBusy = !fullDuplex && !!isReceiving;
 
   const getThemeClass = (theme: string) => {
     const t = theme?.toLowerCase() || '';
