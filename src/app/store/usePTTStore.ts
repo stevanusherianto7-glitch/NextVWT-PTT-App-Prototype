@@ -414,21 +414,18 @@ export const usePTTStore = create<PTTState>((set) => ({
   setUser: (user) => set({ user }),
 
   signInWithGoogle: async () => {
-    // Direct client-side simulation to bypass Supabase OAuth provider checks in prototype mode
-    const mockUser = {
-      id: 'mock-google-user-id',
-      email: 'tester.google@nextvwt.local',
-      user_metadata: {
-        full_name: 'Google Tester User',
-      },
-      app_metadata: {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-      },
-      aud: 'authenticated',
-      created_at: new Date().toISOString(),
-    } as User;
-    set({ user: mockUser });
-    usePTTStore.getState().updateSettings({ infoText: 'Google Tester User' });
+        options: {
+          redirectTo: typeof window !== 'undefined' ? window.location.origin : undefined,
+        },
+      });
+      if (error) throw error;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      set({ error: message || 'Gagal masuk dengan Google' });
+    }
   },
 
   signOut: async () => {
