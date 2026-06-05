@@ -1,4 +1,7 @@
-**Add your own guidelines here**
+# Golden Rules
+
+1. Dilarang keras memasukan tipe data 'any' ke dalam struktur codebase.
+2. Selalu siapkan skenario 'git revert' sebelum melakukan refactor codebase agar selalu dalam posisi aman.
 <!--
 
 System Guidelines
