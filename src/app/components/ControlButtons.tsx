@@ -33,23 +33,81 @@ export function ControlButtons({
   return (
     <div className="relative flex items-center justify-center py-4 mt-2">
       {/* Molded backing base (D-Pad Frame) */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none drop-shadow-[0_12px_12px_rgba(0,0,0,0.15)]">
-        <div
-          className="w-[290px] h-[90px] rounded-full absolute transition-all duration-300"
-          style={{
-            background: 'var(--dpad-bg)',
-            boxShadow: 'var(--dpad-shadow)',
-            border: 'var(--dpad-border)',
-          }}
-        />
-        <div
-          className="w-[95px] h-[150px] rounded-full absolute transition-all duration-300"
-          style={{
-            background: 'var(--dpad-bg)',
-            boxShadow: 'var(--dpad-shadow)',
-            border: 'var(--dpad-border)',
-          }}
-        />
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <svg
+          width="290"
+          height="150"
+          viewBox="0 0 290 150"
+          className="absolute transition-all duration-300 drop-shadow-[0_12px_12px_rgba(0,0,0,0.15)]"
+        >
+          <defs>
+            <linearGradient id="dpad-backing-grad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="var(--dpad-bg-start)" />
+              <stop offset="100%" stopColor="var(--dpad-bg-end)" />
+            </linearGradient>
+
+            <filter id="dpad-inset-shadow" x="-10%" y="-10%" width="120%" height="120%">
+              {/* Top highlight shadow */}
+              <feOffset dx="0" dy="5" />
+              <feGaussianBlur stdDeviation="3" result="offset-blur-top" />
+              <feComposite
+                operator="out"
+                in="SourceGraphic"
+                in2="offset-blur-top"
+                result="inverse-top"
+              />
+              <feFlood
+                floodColor="white"
+                floodOpacity="var(--dpad-shadow-top-opacity)"
+                result="color-top"
+              />
+              <feComposite operator="in" in="color-top" in2="inverse-top" result="shadow-top" />
+
+              {/* Bottom shadow */}
+              <feOffset dx="0" dy="-4" />
+              <feGaussianBlur stdDeviation="4" result="offset-blur-bottom" />
+              <feComposite
+                operator="out"
+                in="SourceGraphic"
+                in2="offset-blur-bottom"
+                result="inverse-bottom"
+              />
+              <feFlood
+                floodColor="var(--dpad-shadow-bottom-color)"
+                floodOpacity="var(--dpad-shadow-bottom-opacity)"
+                result="color-bottom"
+              />
+              <feComposite
+                operator="in"
+                in="color-bottom"
+                in2="inverse-bottom"
+                result="shadow-bottom"
+              />
+
+              {/* Merge shadow layers */}
+              <feMerge>
+                <feMergeNode in="SourceGraphic" />
+                <feMergeNode in="shadow-top" />
+                <feMergeNode in="shadow-bottom" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          {/* Filled base shape with gradient and filter */}
+          <path
+            d="M 100.85 30 A 47.5 47.5 0 0 1 189.15 30 L 245 30 A 45 45 0 0 1 245 120 L 189.15 120 A 47.5 47.5 0 0 1 100.85 120 L 45 120 A 45 45 0 0 1 45 30 Z"
+            fill="url(#dpad-backing-grad)"
+            filter="url(#dpad-inset-shadow)"
+          />
+
+          {/* Clean outer border line (single path) */}
+          <path
+            d="M 100.85 30 A 47.5 47.5 0 0 1 189.15 30 L 245 30 A 45 45 0 0 1 245 120 L 189.15 120 A 47.5 47.5 0 0 1 100.85 120 L 45 120 A 45 45 0 0 1 45 30 Z"
+            fill="none"
+            stroke="var(--dpad-border-color)"
+            strokeWidth="1.5"
+          />
+        </svg>
       </div>
 
       <div className="relative z-10 flex items-center gap-6 px-4">
