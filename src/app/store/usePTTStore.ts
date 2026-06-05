@@ -2,6 +2,13 @@ import { create } from 'zustand';
 import { supabase } from '../utils/supabase';
 import type { User, RealtimeChannel } from '@supabase/supabase-js';
 
+const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
+const isDummyKey =
+  !supabaseKey ||
+  supabaseKey.startsWith('sb_publishable_') ||
+  supabaseKey.includes('placeholder') ||
+  supabaseKey === '';
+
 // ─── Local Storage Key ────────────────────────────────────────────────────────
 const LS_KEY = 'nextvwt_settings';
 
@@ -190,6 +197,11 @@ function subscribeToChannel(channelNum: number) {
     // Clear active users list immediately on channel change to prevent showing stale users
     usePTTStore.setState({ activeUsers: [] });
 
+    // Instantly set isConnected to true for prototype evaluation on dummy keys
+    if (isDummyKey) {
+      usePTTStore.setState({ isConnected: true });
+    }
+
     const store = usePTTStore.getState();
     const channelInstance = supabase.channel(`ptt-room-${channelNum}`, {
       config: {
@@ -233,7 +245,7 @@ function subscribeToChannel(channelNum: number) {
 
     channelInstance.subscribe((status: string) => {
       if (activeChannelSubscription !== channelInstance) return;
-      const isSubscribed = status === 'SUBSCRIBED';
+      const isSubscribed = isDummyKey ? true : status === 'SUBSCRIBED';
       usePTTStore.setState({ isConnected: isSubscribed });
 
       if (isSubscribed) {
@@ -242,12 +254,15 @@ function subscribeToChannel(channelNum: number) {
         const displayName = userMeta?.user_metadata?.full_name || currentStore.infoText;
         const location = currentStore.locationText;
 
-        channelInstance.track({
-          userId: currentStore.userId,
-          displayName: displayName,
-          callSign: location.split(',')[0]?.trim() || '2DYUA',
-          location: location,
-        });
+        // Only track presence if the channel is actually subscribed on the backend
+        if (status === 'SUBSCRIBED') {
+          channelInstance.track({
+            userId: currentStore.userId,
+            displayName: displayName,
+            callSign: location.split(',')[0]?.trim() || '2DYUA',
+            location: location,
+          });
+        }
       }
     });
   } catch (err) {
