@@ -29,6 +29,7 @@ import { SettingsPanel } from './components/SettingsPanel';
 import { Toaster } from './components/ui/sonner';
 import { UserListModal } from './components/UserListModal';
 import { supabase } from './utils/supabase';
+import type { User } from '@supabase/supabase-js';
 
 function LoginGate({ onLogin, onGuestLogin }: { onLogin: () => void; onGuestLogin: () => void }) {
   const [loading, setLoading] = useState(false);
@@ -254,12 +255,10 @@ export default function App() {
     showModulator,
     initializeSession,
     setPower: setIsPowerOn,
-    setConnected: setIsConnected,
     setTransmitting: setIsTransmitting,
     setProgress,
     channelUp,
     channelDown,
-    toggleScan,
     setChannelNumber,
     user,
     setUser,
@@ -399,7 +398,9 @@ export default function App() {
                 app_metadata: {
                   provider: 'guest',
                 },
-              });
+                aud: 'authenticated',
+                created_at: new Date().toISOString(),
+              } as User);
             }}
           />
         ) : isSettingsOpen ? (

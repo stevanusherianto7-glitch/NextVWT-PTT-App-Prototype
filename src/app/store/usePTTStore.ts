@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { supabase } from '../utils/supabase';
+import type { User, RealtimeChannel } from '@supabase/supabase-js';
 
 // ─── Local Storage Key ────────────────────────────────────────────────────────
 const LS_KEY = 'nextvwt_settings';
@@ -57,7 +58,7 @@ export interface PTTState {
   error: string | null;
 
   // Auth State
-  user: any | null;
+  user: User | null;
   activeTransmitter: { userId: string; displayName: string; callSign: string } | null;
   activeUsers: Array<{ userId: string; displayName: string; callSign: string; location: string }>;
 
@@ -92,7 +93,7 @@ export interface PTTState {
   setError: (err: string | null) => void;
   initializeSession: () => void;
   updateSettings: (settings: Partial<PTTState>) => void;
-  setUser: (user: any) => void;
+  setUser: (user: User | null) => void;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
 
@@ -161,9 +162,23 @@ const DEFAULT_SETTINGS = {
   themeText: 'Monokrom',
 };
 
+interface PresenceMeta {
+  userId?: string;
+  displayName?: string;
+  callSign?: string;
+  location?: string;
+}
+
+interface PttStatePayload {
+  userId: string;
+  displayName: string;
+  callSign: string;
+  isTransmitting: boolean;
+}
+
 // ─── Supabase Channel Subscription ───────────────────────────────────────────
 // Keep subscription reference in closure to avoid React rendering cycles
-let activeChannelSubscription: any = null;
+let activeChannelSubscription: RealtimeChannel | null = null;
 
 function subscribeToChannel(channelNum: number) {
   try {
@@ -185,8 +200,8 @@ function subscribeToChannel(channelNum: number) {
       .on('presence', { event: 'sync' }, () => {
         if (!activeChannelSubscription) return;
         const presenceState = activeChannelSubscription.presenceState();
-        const rawList = Object.values(presenceState).flat() as any[];
-        const users = rawList.map((p: any) => ({
+        const rawList = Object.values(presenceState).flat() as unknown as PresenceMeta[];
+        const users = rawList.map((p) => ({
           userId: p.userId || 'unknown',
           displayName: p.displayName || 'Anonim',
           callSign: p.callSign || '2DYUA',
@@ -194,7 +209,7 @@ function subscribeToChannel(channelNum: number) {
         }));
         usePTTStore.setState({ activeUsers: users });
       })
-      .on('broadcast', { event: 'ptt_state' }, ({ payload }: { payload: any }) => {
+      .on('broadcast', { event: 'ptt_state' }, ({ payload }: { payload: PttStatePayload }) => {
         if (payload.isTransmitting) {
           usePTTStore.setState({
             activeTransmitter: {
@@ -386,8 +401,9 @@ export const usePTTStore = create<PTTState>((set) => ({
         },
       });
       if (error) throw error;
-    } catch (err: any) {
-      set({ error: err.message || 'Gagal masuk dengan Google' });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      set({ error: message || 'Gagal masuk dengan Google' });
     }
   },
 
@@ -396,8 +412,9 @@ export const usePTTStore = create<PTTState>((set) => ({
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       set({ user: null, activeTransmitter: null });
-    } catch (err: any) {
-      set({ error: err.message || 'Gagal keluar akun' });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      set({ error: message || 'Gagal keluar akun' });
     }
   },
 
