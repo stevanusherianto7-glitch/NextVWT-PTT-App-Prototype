@@ -23,12 +23,129 @@ export function LoginGate({ onLogin, onGuestLogin }: LoginGateProps) {
       <div className="absolute bottom-1/4 left-1/2 -translate-x-1/2 translate-y-1/2 w-48 h-48 bg-orange-500/10 rounded-full blur-[80px]" />
 
       <div className="w-full bg-[#1e2230]/75 backdrop-blur-lg border border-white/10 rounded-[32px] p-6 shadow-[0_15px_35px_rgba(0,0,0,0.5)] z-10 flex flex-col items-center">
-        <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-red-600 to-red-800 border-2 border-[#00FF00] flex items-center justify-center shadow-[0_0_15px_rgba(255,0,0,0.4)] mb-4">
-          <span className="text-2xl font-black text-white tracking-tighter">N</span>
-          <div className="absolute -inset-0.5 rounded-2xl border border-white/10 pointer-events-none" />
-        </div>
+        <svg
+          viewBox="0 0 100 100"
+          className="h-16 w-auto mb-4"
+          style={{ filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.25))' }}
+        >
+          <defs>
+            <radialGradient id="nextvwtSphere3D" cx="32%" cy="30%" r="68%">
+              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+              <stop offset="18%" stopColor="#ff6b6b" />
+              <stop offset="50%" stopColor="#cc0000" />
+              <stop offset="80%" stopColor="#800000" />
+              <stop offset="100%" stopColor="#3d0000" />
+            </radialGradient>
+          </defs>
 
-        <h1 className="text-xl font-bold text-white tracking-wide font-sans mb-1">NextVWT PTT</h1>
+          <path
+            d="M 22 77 A 38 38 0 1 1 78 77"
+            stroke="#0a2e1a"
+            strokeWidth="6"
+            strokeLinecap="round"
+            fill="none"
+            transform="translate(1, 1.2)"
+            opacity="0.5"
+          />
+          <path
+            d="M 22 77 A 38 38 0 1 1 78 77"
+            stroke="#34D399"
+            strokeWidth="6"
+            strokeLinecap="round"
+            fill="none"
+          />
+          <path
+            d="M 22 77 A 38 38 0 1 1 78 77"
+            stroke="#a7f3d0"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            fill="none"
+            opacity="0.65"
+            transform="translate(-0.6, -0.7)"
+          />
+
+          <path
+            d="M 29 71 A 28 28 0 1 1 71 71"
+            stroke="#064e3b"
+            strokeWidth="6"
+            strokeLinecap="round"
+            fill="none"
+            transform="translate(1, 1.2)"
+            opacity="0.5"
+          />
+          <path
+            d="M 29 71 A 28 28 0 1 1 71 71"
+            stroke="#10B981"
+            strokeWidth="6"
+            strokeLinecap="round"
+            fill="none"
+          />
+          <path
+            d="M 29 71 A 28 28 0 1 1 71 71"
+            stroke="#6ee7b7"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            fill="none"
+            opacity="0.65"
+            transform="translate(-0.6, -0.7)"
+          />
+
+          <path
+            d="M 36 65 A 18 18 0 1 1 64 65"
+            stroke="#003a17"
+            strokeWidth="6"
+            strokeLinecap="round"
+            fill="none"
+            transform="translate(1, 1.2)"
+            opacity="0.5"
+          />
+          <path
+            d="M 36 65 A 18 18 0 1 1 64 65"
+            stroke="#00C853"
+            strokeWidth="6"
+            strokeLinecap="round"
+            fill="none"
+          />
+          <path
+            d="M 36 65 A 18 18 0 1 1 64 65"
+            stroke="#69f0ae"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            fill="none"
+            opacity="0.65"
+            transform="translate(-0.6, -0.7)"
+          />
+
+          <circle
+            cx="50"
+            cy="50"
+            r="11"
+            fill="#1a0000"
+            transform="translate(1.2, 1.5)"
+            opacity="0.45"
+          />
+          <circle cx="50" cy="50" r="11" fill="url(#nextvwtSphere3D)" />
+          <circle
+            cx="50"
+            cy="50"
+            r="11"
+            fill="none"
+            stroke="#ff4444"
+            strokeWidth="0.8"
+            opacity="0.4"
+          />
+          <ellipse
+            cx="46.5"
+            cy="45.5"
+            rx="3.2"
+            ry="2.2"
+            fill="white"
+            opacity="0.7"
+            transform="rotate(-25, 46.5, 45.5)"
+          />
+        </svg>
+
+        <h1 className="text-xl font-bold text-white tracking-wide font-sans mb-1">NextVWT</h1>
         <p className="text-xs text-gray-400 font-medium mb-6 uppercase tracking-wider">
           Virtual Walkie-Talkie
         </p>
@@ -74,10 +191,9 @@ export function LoginGate({ onLogin, onGuestLogin }: LoginGateProps) {
 
         <button
           onClick={onGuestLogin}
-          className="w-full h-12 mt-3 text-slate-700 font-semibold rounded-full flex items-center justify-center gap-3 transition-all duration-300 active:scale-95 border border-gray-300 hover:text-black cursor-pointer shadow-sm"
+          className="w-full h-12 mt-3 text-slate-700 font-semibold rounded-full flex items-center justify-center gap-3 transition-all duration-300 active:scale-95 border border-gray-200 hover:text-black cursor-pointer shadow-sm"
           style={{
             background: 'linear-gradient(to bottom, #ffffff 0%, #cbd5e1 100%)',
-            borderColor: '#94a3b8',
             boxShadow: '0 0 8px rgba(255, 255, 255, 0.8), 0 2px 4px rgba(148, 163, 184, 0.15)',
           }}
           onMouseEnter={(e) => {
