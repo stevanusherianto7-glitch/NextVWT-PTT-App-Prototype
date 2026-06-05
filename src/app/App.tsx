@@ -10,7 +10,7 @@ import { Toaster } from './components/ui/sonner';
 import { UserListModal } from './components/UserListModal';
 import { supabase } from './utils/supabase';
 
-function LoginGate({ onLogin }: { onLogin: () => void }) {
+function LoginGate({ onLogin, onGuestLogin }: { onLogin: () => void; onGuestLogin: () => void }) {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
@@ -71,6 +71,39 @@ function LoginGate({ onLogin }: { onLogin: () => void }) {
               <span>Masuk dengan Google</span>
             </>
           )}
+        </button>
+
+        <button
+          onClick={onGuestLogin}
+          className="w-full h-12 mt-3 text-slate-700 font-semibold rounded-full flex items-center justify-center gap-3 transition-all duration-300 active:scale-95 border border-gray-300 hover:text-black cursor-pointer shadow-sm"
+          style={{
+            background: 'linear-gradient(to bottom, #ffffff 0%, #cbd5e1 100%)',
+            borderColor: '#94a3b8',
+            boxShadow: '0 0 8px rgba(255, 255, 255, 0.8), 0 2px 4px rgba(148, 163, 184, 0.15)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.boxShadow =
+              '0 0 15px rgba(255, 255, 255, 0.9), 0 4px 8px rgba(148, 163, 184, 0.3)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow =
+              '0 0 8px rgba(255, 255, 255, 0.8), 0 2px 4px rgba(148, 163, 184, 0.15)';
+          }}
+        >
+          <svg
+            className="w-5 h-5 text-slate-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+            />
+          </svg>
+          <span>Masuk sebagai Tamu</span>
         </button>
       </div>
 
@@ -334,7 +367,21 @@ export default function App() {
         }}
       >
         {user === null ? (
-          <LoginGate onLogin={signInWithGoogle} />
+          <LoginGate
+            onLogin={signInWithGoogle}
+            onGuestLogin={() => {
+              setUser({
+                id: 'guest-session-id',
+                email: 'guest@nextvwt.local',
+                user_metadata: {
+                  full_name: infoText || 'Pebe Herianto',
+                },
+                app_metadata: {
+                  provider: 'guest',
+                },
+              });
+            }}
+          />
         ) : isSettingsOpen ? (
           <SettingsPanel onClose={() => setIsSettingsOpen(false)} />
         ) : (
