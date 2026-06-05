@@ -4,7 +4,16 @@ import { usePTTStore } from '../store/usePTTStore';
 interface UserListModalProps {
   channel: number;
   channelName: string;
-  users: string[];
+  users: Array<
+    | string
+    | {
+        userId: string;
+        displayName: string;
+        callSign: string;
+        location: string;
+        avatarUrl?: string;
+      }
+  >;
   onClose: () => void;
 }
 
@@ -363,11 +372,22 @@ export function UserListModal({
   }, [isTransmitting, users.length]);
 
   // Map user list or generate dynamic fallback
-  const allUsersMapped = users.map((username) => {
-    if (USER_PROFILES[username]) {
-      return USER_PROFILES[username];
+  const allUsersMapped = users.map((user) => {
+    if (typeof user === 'string') {
+      if (USER_PROFILES[user]) {
+        return USER_PROFILES[user];
+      }
+      return getDeterministicProfile(user);
+    } else {
+      // It's a live presence activeUser object
+      return {
+        displayName: user.displayName,
+        callSign: user.callSign,
+        location: user.location,
+        avatarColor: '#3F51B5',
+        avatarUrl: user.avatarUrl || '',
+      };
     }
-    return getDeterministicProfile(username);
   });
 
   return (

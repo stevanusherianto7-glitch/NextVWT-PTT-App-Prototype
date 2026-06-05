@@ -599,6 +599,8 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
     updateSettings,
     user,
     signOut,
+    profilePhotoOption,
+    customPhotoUrl,
   } = usePTTStore();
 
   const [isPhraseModalOpen, setIsPhraseModalOpen] = useState(false);
@@ -672,6 +674,53 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
   };
 
   const emailText = user?.email || 'Guest User';
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('File harus berupa gambar!');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 120;
+        canvas.height = 140;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          const imgRatio = img.width / img.height;
+          const targetRatio = 120 / 140;
+          let sx = 0,
+            sy = 0,
+            sw = img.width,
+            sh = img.height;
+
+          if (imgRatio > targetRatio) {
+            sw = img.height * targetRatio;
+            sx = (img.width - sw) / 2;
+          } else {
+            sh = img.width / targetRatio;
+            sy = (img.height - sh) / 2;
+          }
+
+          ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 120, 140);
+          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.75);
+          updateSettings({
+            customPhotoUrl: compressedBase64,
+            profilePhotoOption: 'custom',
+          });
+          toast.success('Foto profil berhasil diunggah!');
+        }
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleSave = () => {
     toast.success('Pengaturan berhasil disimpan!', {
@@ -906,7 +955,9 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
           <div className="w-[120px] h-[140px] border border-gray-300 relative overflow-hidden bg-[#e0e0e0] flex items-center justify-center mb-3 shadow-inner">
             <img
               src={
-                user?.user_metadata?.avatar_url ||
+                (profilePhotoOption === 'google'
+                  ? user?.user_metadata?.avatar_url
+                  : customPhotoUrl) ||
                 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'
               }
               alt="Account Profile Avatar"
@@ -918,6 +969,52 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
               }}
             />
           </div>
+
+          {/* Opsi Sumber Foto Profil */}
+          <div className="w-full max-w-[240px] flex gap-1 bg-gray-100 p-1 rounded-lg mb-3">
+            <button
+              type="button"
+              disabled={!user?.user_metadata?.avatar_url}
+              onClick={() => updateSettings({ profilePhotoOption: 'google' })}
+              className={`flex-1 py-1.5 px-2 text-[10px] font-bold rounded-md transition-all cursor-pointer ${
+                profilePhotoOption === 'google'
+                  ? 'bg-white text-indigo-600 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed'
+              }`}
+              title={
+                !user?.user_metadata?.avatar_url ? 'Hanya tersedia jika masuk dengan Google' : ''
+              }
+            >
+              Foto Google
+            </button>
+            <button
+              type="button"
+              onClick={() => updateSettings({ profilePhotoOption: 'custom' })}
+              className={`flex-1 py-1.5 px-2 text-[10px] font-bold rounded-md transition-all cursor-pointer ${
+                profilePhotoOption === 'custom'
+                  ? 'bg-white text-indigo-600 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Unggah Galeri
+            </button>
+          </div>
+
+          {/* Tombol Unggah Galeri (Hanya tampil jika opsi Galeri Lokal terpilih) */}
+          {profilePhotoOption === 'custom' && (
+            <div className="mb-3">
+              <label className="py-1.5 px-3 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-600 rounded-lg text-[10px] font-bold cursor-pointer transition block text-center">
+                Unggah dari Galeri
+                <input
+                  type="file"
+                  id="profile-photo-file-input"
+                  accept="image/*"
+                  onChange={handlePhotoUpload}
+                  className="hidden"
+                />
+              </label>
+            </div>
+          )}
 
           <div className="text-center text-xs font-semibold text-gray-700 mb-4">
             eMail ({emailText})

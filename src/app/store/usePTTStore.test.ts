@@ -88,6 +88,8 @@ function resetStore() {
     builtInEcho: true,
     isKaraokePlayerOpen: false,
     echoFeedback: 35,
+    profilePhotoOption: 'custom',
+    customPhotoUrl: '',
   });
 }
 
