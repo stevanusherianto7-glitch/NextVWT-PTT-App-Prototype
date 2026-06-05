@@ -207,9 +207,7 @@ export function RadioLayout() {
     isConnected && activeUsers.length > 0 ? activeUsers.length : getChannelUserCount(channel);
 
   const dynamicUserList =
-    isConnected && activeUsers.length > 0
-      ? activeUsers.map((u) => u.displayName)
-      : activeChannelObj?.users || [];
+    isConnected && activeUsers.length > 0 ? activeUsers : activeChannelObj?.users || [];
 
   const displayUser = infoText ? infoText.toUpperCase() : 'USER';
   const displayLoc = locationText ? locationText.toUpperCase() : 'BANDUNG, JAWA BARAT';

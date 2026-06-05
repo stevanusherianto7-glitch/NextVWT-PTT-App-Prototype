@@ -67,7 +67,13 @@ export interface PTTState {
   // Auth State
   user: User | null;
   activeTransmitter: { userId: string; displayName: string; callSign: string } | null;
-  activeUsers: Array<{ userId: string; displayName: string; callSign: string; location: string }>;
+  activeUsers: Array<{
+    userId: string;
+    displayName: string;
+    callSign: string;
+    location: string;
+    avatarUrl?: string;
+  }>;
 
   // Settings State
   infoText: string;
@@ -92,6 +98,8 @@ export interface PTTState {
   builtInEcho: boolean;
   isKaraokePlayerOpen: boolean;
   echoFeedback: number;
+  profilePhotoOption: 'google' | 'custom';
+  customPhotoUrl: string;
 
   // Actions
   setPower: (power: boolean) => void;
@@ -150,6 +158,8 @@ const PERSISTED_KEYS: Array<keyof PTTState> = [
   'builtInEcho',
   'isKaraokePlayerOpen',
   'echoFeedback',
+  'profilePhotoOption',
+  'customPhotoUrl',
 ];
 
 function pickPersistedState(state: Partial<PTTState>): Partial<PTTState> {
@@ -187,6 +197,8 @@ const DEFAULT_SETTINGS = {
   builtInEcho: true,
   isKaraokePlayerOpen: false,
   echoFeedback: 35,
+  profilePhotoOption: 'custom' as const,
+  customPhotoUrl: '',
 };
 
 interface PresenceMeta {
@@ -194,6 +206,7 @@ interface PresenceMeta {
   displayName?: string;
   callSign?: string;
   location?: string;
+  avatarUrl?: string;
 }
 
 interface PttStatePayload {
@@ -242,6 +255,7 @@ function subscribeToChannel(channelNum: number) {
           displayName: p.displayName || 'Anonim',
           callSign: p.callSign || '2DYUA',
           location: p.location || 'BANDUNG, JABAR',
+          avatarUrl: p.avatarUrl || '',
         }));
         usePTTStore.setState({ activeUsers: users });
       })
@@ -295,11 +309,17 @@ function subscribeToChannel(channelNum: number) {
 
         // Only track presence if the channel is actually subscribed on the backend
         if (status === 'SUBSCRIBED') {
+          const avatarUrl =
+            currentStore.profilePhotoOption === 'google'
+              ? userMeta?.user_metadata?.avatar_url || ''
+              : currentStore.customPhotoUrl;
+
           channelInstance.track({
             userId: currentStore.userId,
             displayName: displayName,
             callSign: location.split(',')[0]?.trim() || '2DYUA',
             location: location,
+            avatarUrl: avatarUrl,
           });
         }
       }
@@ -477,6 +497,30 @@ export const usePTTStore = create<PTTState>((set) => ({
       const next = { ...state, ...settings };
       // Delta-sync: only write settings-relevant keys to localStorage
       safeSetStorage(pickPersistedState(settings));
+
+      // Delta-sync: updates active presence tracking if settings change
+      if (next.isConnected && activeChannelSubscription) {
+        const userMeta = next.user;
+        const displayName = next.infoText || userMeta?.user_metadata?.full_name;
+        const location = next.locationText;
+        const avatarUrl =
+          next.profilePhotoOption === 'google'
+            ? userMeta?.user_metadata?.avatar_url || ''
+            : next.customPhotoUrl;
+
+        activeChannelSubscription
+          .track({
+            userId: next.userId,
+            displayName: displayName,
+            callSign: location.split(',')[0]?.trim() || '2DYUA',
+            location: location,
+            avatarUrl: avatarUrl,
+          })
+          .catch((err) => {
+            console.warn('Failed to update presence metadata on settings update:', err);
+          });
+      }
+
       return next;
     }),
 
