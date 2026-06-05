@@ -59,6 +59,7 @@ export function RadioLayout() {
     if (t === 'theme-v3' || t.includes('v3')) return 'theme-v3';
     if (t === 'theme-v4' || t.includes('v4')) return 'theme-v4';
     if (t === 'theme-v5' || t.includes('v5')) return 'theme-v5';
+    if (t === 'theme-v6' || t.includes('v6')) return 'theme-v6';
     if (t === 'theme-monokrom' || t.includes('monokrom') || t === 'mono') return 'theme-monokrom';
     return 'theme-classic';
   };
@@ -397,7 +398,7 @@ export function RadioLayout() {
                   <span
                     className="text-[14px] font-bold leading-tight tracking-wide"
                     style={{
-                      fontFamily: 'system-ui, -apple-system, sans-serif',
+                      fontFamily: "'Outfit', 'Orbitron', system-ui, -apple-system, sans-serif",
                       color: 'var(--header-text-color)',
                     }}
                   >

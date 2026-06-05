@@ -669,6 +669,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
     if (t === 'theme-v3' || t.includes('v3')) return 'Glass Crystal V3 (Soft Crystal)';
     if (t === 'theme-v4' || t.includes('v4')) return 'Glass Crystal V4 (Smoked Crystal)';
     if (t === 'theme-v5' || t.includes('v5')) return 'Glass Crystal V5 (Aurora Crystal)';
+    if (t === 'theme-v6' || t.includes('v6')) return 'Glass Crystal V6 (Live Aquarium)';
     if (t === 'theme-monokrom' || t.includes('monokrom')) return 'Monokrom (Legacy)';
     return 'Classic';
   };
@@ -1921,6 +1922,12 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
                   label: 'Glass Crystal V5',
                   desc: 'Aurora Glass (Color Crystal) - Glow & LCD ungu/pink',
                   gradient: 'linear-gradient(135deg, #ff4081 0%, #e040fb 100%)',
+                },
+                {
+                  key: 'theme-v6',
+                  label: 'Glass Crystal V6',
+                  desc: 'Live Aquarium (Ocean Crystal) - Animasi ikan hidup & terumbu karang',
+                  gradient: 'linear-gradient(135deg, #03045e 0%, #00b4d8 100%)',
                 },
                 {
                   key: 'theme-monokrom',

@@ -31,14 +31,14 @@ export function ControlButtons({
   };
 
   return (
-    <div className="relative flex items-center justify-center py-4 mt-2">
+    <div className="relative w-[290px] h-[150px] mx-auto mt-4 select-none">
       {/* Molded backing base (D-Pad Frame) */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+      <div className="absolute inset-0 pointer-events-none">
         <svg
           width="290"
           height="150"
           viewBox="0 0 290 150"
-          className="absolute transition-all duration-300 drop-shadow-[0_12px_12px_rgba(0,0,0,0.15)]"
+          className="w-full h-full transition-all duration-300 drop-shadow-[0_12px_12px_rgba(0,0,0,0.15)]"
         >
           <defs>
             <linearGradient id="dpad-backing-grad" x1="0" y1="0" x2="0" y2="1">
@@ -110,116 +110,116 @@ export function ControlButtons({
         </svg>
       </div>
 
-      <div className="relative z-10 flex items-center gap-6 px-4">
-        {/* Scan Button */}
-        <button
-          onClick={onScan}
-          onMouseDown={() => setPressedBtn('scan')}
-          onMouseUp={() => setPressedBtn(null)}
-          onMouseLeave={() => setPressedBtn(null)}
-          className="w-[75px] h-[50px] rounded-l-full rounded-r-[6px] text-white relative overflow-hidden flex items-center justify-center"
-          style={getButtonStyle('scan')}
-        >
-          <span
-            style={{
-              fontSize: '16px',
-              fontWeight: 800,
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-            }}
-          >
-            Scan
-          </span>
-          {isScanning && (
-            <div className="absolute top-2 right-3 w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse shadow-[0_0_5px_#60a5fa]" />
-          )}
-        </button>
-
-        {/* Up/Down Buttons Container */}
-        <div
-          className="w-[60px] h-[105px] rounded-full p-1 flex flex-col justify-between items-center relative transition-all duration-300"
+      {/* Scan Button */}
+      <button
+        onClick={onScan}
+        onMouseDown={() => setPressedBtn('scan')}
+        onMouseUp={() => setPressedBtn(null)}
+        onMouseLeave={() => setPressedBtn(null)}
+        className="absolute left-[16px] top-[50px] w-[75px] h-[50px] rounded-l-full rounded-r-[6px] text-white overflow-hidden flex items-center justify-center animate-all z-10"
+        style={getButtonStyle('scan')}
+      >
+        <span
           style={{
-            background: 'var(--rocker-bg)',
-            border: 'var(--rocker-border)',
-            boxShadow:
-              'inset 0 2px 4px rgba(255,255,255,0.1), 0 5px 10px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3)',
+            fontSize: '16px',
+            fontWeight: 800,
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
           }}
         >
-          {/* Decorative center pivot for rocker switch realism */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[4px] bg-black opacity-40 z-20 pointer-events-none shadow-[0_1px_1px_rgba(255,255,255,0.1)]" />
+          Scan
+        </span>
+        {isScanning && (
+          <div className="absolute top-2 right-3 w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse shadow-[0_0_5px_#60a5fa]" />
+        )}
+      </button>
 
-          <button
-            onClick={onUp}
-            onMouseDown={() => setPressedBtn('up')}
-            onMouseUp={() => setPressedBtn(null)}
-            onMouseLeave={() => setPressedBtn(null)}
-            className="w-full h-[48px] rounded-t-full text-white flex items-center justify-center relative z-10"
-            style={{
-              background: pressedBtn === 'up' ? 'rgba(0,0,0,0.4)' : 'var(--btn-bg)',
-              boxShadow:
-                pressedBtn === 'up' ? 'inset 0 4px 6px rgba(0,0,0,0.8)' : 'var(--btn-shadow)',
-              transition: 'all 0.05s ease',
-              transform: pressedBtn === 'up' ? 'translateY(1px)' : 'translateY(0)',
-            }}
-          >
-            <svg
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              style={{ filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.5))' }}
-            >
-              <path d="M12 4L22 20H2L12 4Z" />
-            </svg>
-          </button>
+      {/* Up/Down Buttons Container (Symmetric capsule rocker) */}
+      <div
+        className="absolute left-[115px] top-[22.5px] w-[60px] h-[105px] rounded-full p-1 flex flex-col justify-between items-center transition-all duration-300 z-10"
+        style={{
+          background: 'var(--rocker-bg)',
+          border: 'var(--rocker-border)',
+          boxShadow:
+            'inset 0 2px 4px rgba(255,255,255,0.1), 0 5px 10px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3)',
+        }}
+      >
+        {/* Decorative center pivot for rocker switch realism */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[4px] bg-black opacity-40 z-20 pointer-events-none shadow-[0_1px_1px_rgba(255,255,255,0.1)]" />
 
-          <button
-            onClick={onDown}
-            onMouseDown={() => setPressedBtn('down')}
-            onMouseUp={() => setPressedBtn(null)}
-            onMouseLeave={() => setPressedBtn(null)}
-            className="w-full h-[48px] rounded-b-full text-white flex items-center justify-center relative z-10"
-            style={{
-              background: pressedBtn === 'down' ? 'rgba(0,0,0,0.4)' : 'var(--btn-bg)',
-              boxShadow:
-                pressedBtn === 'down' ? 'inset 0 -4px 6px rgba(0,0,0,0.8)' : 'var(--btn-shadow)',
-              transition: 'all 0.05s ease',
-              transform: pressedBtn === 'down' ? 'translateY(-1px)' : 'translateY(0)',
-            }}
-          >
-            <svg
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              style={{ filter: 'drop-shadow(0 -2px 2px rgba(0,0,0,0.5))' }}
-            >
-              <path d="M12 20L2 4H22L12 20Z" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Set Button */}
+        {/* Up Button */}
         <button
-          onClick={onSet}
-          onMouseDown={() => setPressedBtn('set')}
+          onClick={onUp}
+          onMouseDown={() => setPressedBtn('up')}
           onMouseUp={() => setPressedBtn(null)}
           onMouseLeave={() => setPressedBtn(null)}
-          className="w-[75px] h-[50px] rounded-r-full rounded-l-[6px] text-white flex items-center justify-center"
-          style={getButtonStyle('set')}
+          className="w-full h-[48px] rounded-t-full text-white flex items-center justify-center relative z-10"
+          style={{
+            background: pressedBtn === 'up' ? 'rgba(0,0,0,0.4)' : 'var(--btn-bg)',
+            boxShadow:
+              pressedBtn === 'up' ? 'inset 0 4px 6px rgba(0,0,0,0.8)' : 'var(--btn-shadow)',
+            transition: 'all 0.05s ease',
+            transform: pressedBtn === 'up' ? 'translateY(1px)' : 'translateY(0)',
+          }}
         >
-          <span
-            style={{
-              fontSize: '16px',
-              fontWeight: 800,
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-            }}
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            style={{ filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.5))' }}
           >
-            Set
-          </span>
+            <path d="M12 4L22 20H2L12 4Z" />
+          </svg>
+        </button>
+
+        {/* Down Button */}
+        <button
+          onClick={onDown}
+          onMouseDown={() => setPressedBtn('down')}
+          onMouseUp={() => setPressedBtn(null)}
+          onMouseLeave={() => setPressedBtn(null)}
+          className="w-full h-[48px] rounded-b-full text-white flex items-center justify-center relative z-10"
+          style={{
+            background: pressedBtn === 'down' ? 'rgba(0,0,0,0.4)' : 'var(--btn-bg)',
+            boxShadow:
+              pressedBtn === 'down' ? 'inset 0 -4px 6px rgba(0,0,0,0.8)' : 'var(--btn-shadow)',
+            transition: 'all 0.05s ease',
+            transform: pressedBtn === 'down' ? 'translateY(-1px)' : 'translateY(0)',
+          }}
+        >
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            style={{ filter: 'drop-shadow(0 -2px 2px rgba(0,0,0,0.5))' }}
+          >
+            <path d="M12 20L2 4H22L12 20Z" />
+          </svg>
         </button>
       </div>
+
+      {/* Set Button */}
+      <button
+        onClick={onSet}
+        onMouseDown={() => setPressedBtn('set')}
+        onMouseUp={() => setPressedBtn(null)}
+        onMouseLeave={() => setPressedBtn(null)}
+        className="absolute left-[199px] top-[50px] w-[75px] h-[50px] rounded-r-full rounded-l-[6px] text-white flex items-center justify-center animate-all z-10"
+        style={getButtonStyle('set')}
+      >
+        <span
+          style={{
+            fontSize: '16px',
+            fontWeight: 800,
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+          }}
+        >
+          Set
+        </span>
+      </button>
     </div>
   );
 }

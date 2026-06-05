@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import twinHeadsIcon from '../../imports/ikon_kepala_kembar-2.png';
 import usernameIcon from '../../imports/ikon_username1.png';
 import { usePTTStore } from '../store/usePTTStore';
+import { AquariumCanvas } from './AquariumCanvas';
 
 interface LCDPanelProps {
   channel: number;
@@ -24,6 +25,7 @@ export function LCDPanel({
   const activeTransmitter = usePTTStore((state) => state.activeTransmitter);
   const isTransmitting = usePTTStore((state) => state.isTransmitting);
   const localUserId = usePTTStore((state) => state.userId);
+  const themeText = usePTTStore((state) => state.themeText);
 
   const localName = infoText || user?.user_metadata?.full_name || 'Pebe Herianto';
   const isReceiving = activeTransmitter && activeTransmitter.userId !== localUserId;
@@ -131,6 +133,9 @@ export function LCDPanel({
           boxShadow: 'inset 0 0 0 2px rgba(255,255,255,0.4), inset 0 0 10px rgba(0,0,0,0.6)',
         }}
       />
+
+      {/* Aquarium Canvas Backplate */}
+      {_isPowerOn && themeText === 'theme-v6' && <AquariumCanvas theme={themeText} />}
 
       {/* Content */}
       <div className="relative p-3 h-full flex flex-col justify-between transition-opacity duration-300 opacity-100">

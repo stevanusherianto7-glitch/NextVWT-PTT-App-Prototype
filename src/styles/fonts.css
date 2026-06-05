@@ -1,12 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Orbitron:wght@400;700;900&display=swap');
 
 @font-face {
   font-family: 'DSEG7';
   src:
-    url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG7-Classic-MINI/DSEG7ClassicMini-Bold.woff2')
-      format('woff2'),
-    url('https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG7-Classic-MINI/DSEG7ClassicMini-Bold.ttf')
-      format('truetype');
+    url('/fonts/DSEG7ClassicMini-Bold.woff2') format('woff2'),
+    url('/fonts/DSEG7ClassicMini-Bold.ttf') format('truetype');
   font-weight: bold;
   font-style: normal;
 }
