@@ -26,7 +26,7 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
   const [isMinimized, setIsMinimized] = useState(false);
   const [videoId, setVideoId] = useState('S2S1Vd3r3Gg'); // Default song
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   // Dragging states
   const [position, setPosition] = useState({ x: 20, y: 120 });
   const isDragging = useRef(false);
@@ -36,11 +36,11 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
   // Parse YouTube video ID from URL or input
   const handleLoadVideo = (input: string) => {
     if (!input.trim()) return;
-    
+
     // Check if it's a youtube URL
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = input.match(regExp);
-    
+
     if (match && match[2].length === 11) {
       setVideoId(match[2]);
     } else if (input.length === 11) {
@@ -58,7 +58,7 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
     isDragging.current = true;
     dragStart.current = {
       x: clientX - position.x,
-      y: clientY - position.y
+      y: clientY - position.y,
     };
   };
 
@@ -81,7 +81,7 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
   useEffect(() => {
     const handleMove = (clientX: number, clientY: number) => {
       if (!isDragging.current) return;
-      
+
       let newX = clientX - dragStart.current.x;
       let newY = clientY - dragStart.current.y;
 
@@ -141,7 +141,13 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
           className="w-full h-full flex items-center justify-center text-white relative focus:outline-none"
         >
           <Music className="w-6 h-6 animate-pulse text-cyan-400" />
-          <div className="absolute -top-1 -right-1 bg-red-500 rounded-full p-0.5 hover:bg-red-600 transition" onClick={(e) => { e.stopPropagation(); onClose(); }}>
+          <div
+            className="absolute -top-1 -right-1 bg-red-500 rounded-full p-0.5 hover:bg-red-600 transition"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }}
+          >
             <X className="w-3.5 h-3.5 text-white" />
           </div>
           <span className="sr-only">Restore Player</span>
@@ -167,7 +173,10 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
       {/* Header Bar */}
       <div className="drag-handle flex items-center justify-between px-3.5 py-2.5 bg-gradient-to-r from-indigo-950 to-slate-900 border-b border-indigo-500/20 cursor-move shrink-0">
         <div className="flex items-center gap-2">
-          <Disc className="w-4 h-4 text-cyan-400 animate-spin" style={{ animationDuration: '4s' }} />
+          <Disc
+            className="w-4 h-4 text-cyan-400 animate-spin"
+            style={{ animationDuration: '4s' }}
+          />
           <span className="text-xs font-bold tracking-wider text-indigo-200">KARAOKE PLAYER</span>
         </div>
         <div className="flex items-center gap-1">
@@ -240,7 +249,9 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
                 <span className="truncate">{song.title}</span>
                 <span className="text-[9px] text-slate-500">{song.artist}</span>
               </div>
-              <Play className={`w-3 h-3 flex-shrink-0 ${videoId === song.videoId ? 'text-cyan-300 animate-pulse' : 'text-slate-500'}`} />
+              <Play
+                className={`w-3 h-3 flex-shrink-0 ${videoId === song.videoId ? 'text-cyan-300 animate-pulse' : 'text-slate-500'}`}
+              />
             </button>
           ))}
         </div>

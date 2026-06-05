@@ -1097,8 +1097,12 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
           {audioMode === 'music' && (
             <div className="flex items-center justify-between py-2 border-t border-gray-100 mt-1">
               <div className="flex flex-col">
-                <span className="text-xs font-semibold text-gray-700">Efek Echo Built-in (Software)</span>
-                <span className="text-[10px] text-gray-500 font-normal">Matikan jika menggunakan soundcard eksternal</span>
+                <span className="text-xs font-semibold text-gray-700">
+                  Efek Echo Built-in (Software)
+                </span>
+                <span className="text-[10px] text-gray-500 font-normal">
+                  Matikan jika menggunakan soundcard eksternal
+                </span>
               </div>
               <div className="relative flex items-center">
                 <input

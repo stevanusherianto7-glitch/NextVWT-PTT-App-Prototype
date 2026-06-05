@@ -14,11 +14,13 @@ test.describe('PTT Robustness & Safeguards', () => {
     await guestBtn.click();
     await page.waitForSelector('button:has-text("PTT")', { timeout: 10_000 });
 
-    // 1. Mock that another user (User A) is currently transmitting
+    // 1. Mock that another user (User A) is currently transmitting and set Half-Duplex state
     await page.evaluate(() => {
       const store = (window as any).__store__;
       if (store) {
         store.setState({
+          audioMode: 'discussion',
+          fullDuplex: false,
           activeTransmitter: {
             userId: 'user-alfa-uuid',
             displayName: 'User Alfa',
@@ -55,11 +57,13 @@ test.describe('PTT Robustness & Safeguards', () => {
     await guestBtn.click();
     await page.waitForSelector('button:has-text("PTT")', { timeout: 10_000 });
 
-    // 1. Mock that another user (User A) starts transmitting
+    // 1. Mock that another user (User A) starts transmitting and set Half-Duplex state
     await page.evaluate(() => {
       const store = (window as any).__store__;
       if (store) {
         store.setState({
+          audioMode: 'discussion',
+          fullDuplex: false,
           activeTransmitter: {
             userId: 'user-alfa-uuid',
             displayName: 'User Alfa',
