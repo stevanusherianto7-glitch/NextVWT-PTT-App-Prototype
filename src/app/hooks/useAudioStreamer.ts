@@ -140,11 +140,9 @@ export function useAudioStreamer() {
       const localTrack =
         isTransmitting && streamRef.current
           ? streamRef.current.getAudioTracks()[0]
-          : (silent.track || null);
+          : silent.track || null;
       const localStream =
-        isTransmitting && streamRef.current
-          ? streamRef.current
-          : (silent.stream || null);
+        isTransmitting && streamRef.current ? streamRef.current : silent.stream || null;
 
       if (localTrack && localStream) {
         pc.addTrack(localTrack, localStream);
@@ -425,8 +423,8 @@ export function useAudioStreamer() {
           ? {
               echoCancellation: false, // best with headphones for karaoke to avoid music ducking
               noiseSuppression: false, // critical: do not suppress music notes
-              autoGainControl: false,  // do not compress vocal dynamics
-              channelCount: 2,         // support stereo input
+              autoGainControl: false, // do not compress vocal dynamics
+              channelCount: 2, // support stereo input
             }
           : {
               echoCancellation: true,
