@@ -187,19 +187,23 @@ function subscribeToChannel(channelNum: number) {
       activeChannelSubscription = null;
     }
 
+    // Clear active users list immediately on channel change to prevent showing stale users
+    usePTTStore.setState({ activeUsers: [] });
+
     const store = usePTTStore.getState();
-    activeChannelSubscription = supabase.channel(`ptt-room-${channelNum}`, {
+    const channelInstance = supabase.channel(`ptt-room-${channelNum}`, {
       config: {
         presence: {
           key: store.userId || 'anonymous',
         },
       },
     });
+    activeChannelSubscription = channelInstance;
 
-    activeChannelSubscription
+    channelInstance
       .on('presence', { event: 'sync' }, () => {
-        if (!activeChannelSubscription) return;
-        const presenceState = activeChannelSubscription.presenceState();
+        if (activeChannelSubscription !== channelInstance) return;
+        const presenceState = channelInstance.presenceState();
         const rawList = Object.values(presenceState).flat() as unknown as PresenceMeta[];
         const users = rawList.map((p) => ({
           userId: p.userId || 'unknown',
@@ -210,6 +214,7 @@ function subscribeToChannel(channelNum: number) {
         usePTTStore.setState({ activeUsers: users });
       })
       .on('broadcast', { event: 'ptt_state' }, ({ payload }: { payload: PttStatePayload }) => {
+        if (activeChannelSubscription !== channelInstance) return;
         if (payload.isTransmitting) {
           usePTTStore.setState({
             activeTransmitter: {
@@ -226,17 +231,18 @@ function subscribeToChannel(channelNum: number) {
         }
       });
 
-    activeChannelSubscription.subscribe((status: string) => {
+    channelInstance.subscribe((status: string) => {
+      if (activeChannelSubscription !== channelInstance) return;
       const isSubscribed = status === 'SUBSCRIBED';
       usePTTStore.setState({ isConnected: isSubscribed });
 
-      if (isSubscribed && activeChannelSubscription) {
+      if (isSubscribed) {
         const currentStore = usePTTStore.getState();
         const userMeta = currentStore.user;
         const displayName = userMeta?.user_metadata?.full_name || currentStore.infoText;
         const location = currentStore.locationText;
 
-        activeChannelSubscription.track({
+        channelInstance.track({
           userId: currentStore.userId,
           displayName: displayName,
           callSign: location.split(',')[0]?.trim() || '2DYUA',

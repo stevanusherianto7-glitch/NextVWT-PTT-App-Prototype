@@ -246,7 +246,7 @@ export function LCDPanel({
 
         {/* Center/Bottom Content */}
         <div className="flex justify-between items-end pb-0 px-1 mt-auto">
-          <div className="flex items-end gap-1">
+          <div className="flex items-end gap-1 w-[130px]">
             <div
               className="relative"
               style={{
@@ -290,7 +290,7 @@ export function LCDPanel({
               <img
                 src={twinHeadsIcon}
                 alt="User Count Icon"
-                className="h-[58px] w-auto object-contain"
+                className="h-[58px] w-[56px] object-contain"
                 style={{ filter: 'drop-shadow(1px 1px 0px rgba(0,0,0,0.2))' }}
               />
             </div>
