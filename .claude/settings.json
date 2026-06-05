@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls \"c:\\\\Users\\\\ASUS\\\\Downloads\\\\NextVWT PTT App Prototype - Backup\\\\\")",
+      "Read(//c/Users/ASUS/Downloads/**)",
+      "Bash(xargs grep -l \"interface.*State\")",
+      "Bash(xargs grep -l \"type.*Props\")",
+      "Bash(git add *)"
+    ]
+  }
+}
