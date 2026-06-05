@@ -1225,16 +1225,18 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
           Tema
         </div>
         <div className="bg-white p-3 border-b border-gray-200 flex flex-col gap-4">
-          <div className="flex gap-2">
-            <input
-              type="text"
+          <div className="flex w-full">
+            <select
               value={themeText}
               onChange={(e) => setThemeText(e.target.value)}
-              className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm bg-white text-black outline-none focus:border-blue-500"
-            />
-            <button className="px-4 py-1 text-sm font-semibold bg-[#e2e8f0] hover:bg-[#cbd5e1] border border-gray-300 rounded cursor-pointer">
-              Ganti
-            </button>
+              className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm bg-white text-black font-semibold outline-none focus:border-blue-500 cursor-pointer"
+            >
+              <option value="Glass Crystal V2">Glass Crystal V2 (Premium Crystal)</option>
+              <option value="theme-v3">Glass Crystal V3 (Soft Crystal)</option>
+              <option value="theme-v4">Glass Crystal V4 (Smoked Crystal)</option>
+              <option value="theme-v5">Glass Crystal V5 (Aurora Crystal)</option>
+              <option value="theme-monokrom">Monokrom (Legacy)</option>
+            </select>
           </div>
 
           {/* MAIN SIMPAN BUTTON */}
