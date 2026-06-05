@@ -28,9 +28,9 @@ export function LCDPanel({
   const localName = user?.user_metadata?.full_name || infoText || 'Pebe Herianto';
   const isReceiving = activeTransmitter && activeTransmitter.userId !== localUserId;
   const username = isTransmitting
-    ? `TX: ${localName}`
+    ? localName
     : isReceiving
-      ? `RX: ${activeTransmitter?.displayName}`
+      ? activeTransmitter?.displayName
       : localName;
 
   // Signal strength simulator (fluctuates 1-4 bars when online, 0 when offline)
