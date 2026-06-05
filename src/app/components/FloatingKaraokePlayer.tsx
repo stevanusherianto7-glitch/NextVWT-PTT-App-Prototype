@@ -87,7 +87,7 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
 
       // Keep inside window bounds
       newX = Math.max(0, Math.min(window.innerWidth - (isMinimized ? 200 : 320), newX));
-      newY = Math.max(0, Math.min(window.innerHeight - (isMinimized ? 112 : 420), newY));
+      newY = Math.max(0, Math.min(window.innerHeight - (isMinimized ? 134 : 420), newY));
 
       setPosition({ x: newX, y: newY });
     };
@@ -124,7 +124,7 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
       onTouchStart={onTouchStart}
       className={`absolute z-50 flex flex-col overflow-hidden border border-indigo-500/40 shadow-[0_10px_40px_rgba(0,0,0,0.8)] backdrop-blur-md transition-all duration-300 ${
         isMinimized
-          ? 'w-[200px] h-[112px] rounded-xl' // 16:9 ratio
+          ? 'w-[200px] h-[134px] rounded-xl' // 112px video + 22px solid bottom drag bar
           : 'w-[320px] h-[420px] rounded-2xl'
       }`}
       style={{
@@ -144,7 +144,7 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
               className="p-1 rounded bg-slate-950/80 hover:bg-indigo-600 text-white transition focus:outline-none cursor-pointer"
               title="Maximize"
             >
-              <Maximize2 className="w-3 h-3" />
+              <Maximize2 className="w-3.5 h-3.5" />
             </button>
           </div>
           <div className="absolute top-1.5 right-1.5 flex gap-1 pointer-events-auto">
@@ -154,11 +154,9 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
               className="p-1 rounded bg-slate-950/80 hover:bg-red-600 text-white transition focus:outline-none cursor-pointer"
               title="Close"
             >
-              <X className="w-3 h-3" />
+              <X className="w-3.5 h-3.5" />
             </button>
           </div>
-          {/* Small Drag handle overlay indicator */}
-          <div className="drag-handle absolute bottom-1.5 left-1/2 -translate-x-1/2 w-8 h-1 rounded-full bg-white/40 cursor-move pointer-events-auto" />
         </div>
       )}
 
@@ -260,6 +258,21 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
             </div>
           </div>
         </>
+      )}
+
+      {/* ─── MINI DRAG BAR (Only shown at the bottom when minimized) ─── */}
+      {isMinimized && (
+        <div className="drag-handle w-full h-[22px] bg-slate-950 border-t border-indigo-500/20 flex items-center justify-center cursor-move shrink-0 select-none pointer-events-auto">
+          {/* Visual drag indicator lines */}
+          <div className="flex gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400/60 animate-pulse" />
+            <div className="flex flex-col gap-0.5 justify-center">
+              <span className="w-6 h-[2px] rounded bg-indigo-300/60" />
+              <span className="w-6 h-[2px] rounded bg-indigo-300/60" />
+            </div>
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400/60 animate-pulse" />
+          </div>
+        </div>
       )}
     </div>
   );
