@@ -44,6 +44,9 @@ test.describe('PTT Resilience in Karaoke / Music Mode', () => {
     expect(storeState.audioMode).toBe('music');
     expect(storeState.builtInEcho).toBe(true);
 
+    // Set channel to a normal non-isolated channel (Channel 16) to allow network broadcasting to be tested
+    await page.evaluate(() => (window as any).__store__.getState().setChannelNumber(16));
+
     // 5. Click "Buka Pemutar Karaoke" button to open the player
     const openKaraokeBtn = page.locator('button:has-text("Buka Pemutar Karaoke")');
     await openKaraokeBtn.waitFor({ state: 'visible', timeout: 3000 });

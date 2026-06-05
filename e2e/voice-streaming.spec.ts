@@ -39,6 +39,10 @@ test.describe('Real-time Voice Streaming & Delivery', () => {
     await nameInputBeta.fill('Listener Beta');
     await pageBeta.click('button:has-text("Simpan")');
 
+    // Set channel to a normal non-isolated channel (Channel 16) for both users to allow network broadcasting to be tested
+    await pageAlfa.evaluate(() => (window as any).__store__.getState().setChannelNumber(16));
+    await pageBeta.evaluate(() => (window as any).__store__.getState().setChannelNumber(16));
+
     // Retrieve User IDs
     const userIdAlfa = await pageAlfa.evaluate(() => (window as any).__store__.getState().userId);
     const userIdBeta = await pageBeta.evaluate(() => (window as any).__store__.getState().userId);
