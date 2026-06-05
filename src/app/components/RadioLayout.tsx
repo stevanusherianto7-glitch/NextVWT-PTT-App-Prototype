@@ -84,10 +84,11 @@ export function RadioLayout() {
       flushAudioQueue();
       startRecording((base64Chunk) => {
         const isConn = usePTTStore.getState().isConnected;
-        if (isConn) {
+        const currentChannel = usePTTStore.getState().channelNumber;
+        if (isConn && currentChannel !== 100) {
           usePTTStore.getState().broadcastVoiceChunk(base64Chunk);
         } else {
-          // Local loopback offline fallback
+          // Local loopback offline fallback or Channel 100 check
           playAudioChunk(base64Chunk);
         }
       }).catch((err) => {
@@ -113,6 +114,7 @@ export function RadioLayout() {
   }, [
     isTransmitting,
     isPowerOn,
+    channel,
     startRecording,
     stopRecording,
     playAudioChunk,
@@ -155,7 +157,7 @@ export function RadioLayout() {
   // Manage incoming audio chunks from other users
   useEffect(() => {
     setOnVoiceChunkReceived((base64) => {
-      if (isPowerOn) {
+      if (isPowerOn && channel !== 100) {
         playAudioChunk(base64);
         if (resetWatchdogRef.current) {
           resetWatchdogRef.current();
@@ -165,7 +167,7 @@ export function RadioLayout() {
     return () => {
       setOnVoiceChunkReceived(null);
     };
-  }, [isPowerOn, setOnVoiceChunkReceived, playAudioChunk]);
+  }, [isPowerOn, channel, setOnVoiceChunkReceived, playAudioChunk]);
 
   // Stop recording and flush queue on power off
   useEffect(() => {

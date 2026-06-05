@@ -183,7 +183,7 @@ export function useAudioStreamer() {
       const { senderUserId, targetUserId, type, data } = payload;
       const store = usePTTStore.getState();
 
-      if (targetUserId !== store.userId) return;
+      if (targetUserId !== store.userId || store.channelNumber === 100) return;
 
       try {
         if (type === 'offer') {
@@ -244,9 +244,10 @@ export function useAudioStreamer() {
   const isConnected = usePTTStore((state) => state.isConnected);
   const isPowerOn = usePTTStore((state) => state.isPowerOn);
   const userId = usePTTStore((state) => state.userId);
+  const channelNumber = usePTTStore((state) => state.channelNumber);
 
   useEffect(() => {
-    if (!isPowerOn || !isConnected) {
+    if (!isPowerOn || !isConnected || channelNumber === 100) {
       const peers = Array.from(peerConnectionsRef.current.keys());
       peers.forEach(cleanupPeer);
       return;
@@ -291,7 +292,15 @@ export function useAudioStreamer() {
         }
       }
     });
-  }, [activeUsers, isConnected, isPowerOn, userId, createPeerConnection, cleanupPeer]);
+  }, [
+    activeUsers,
+    isConnected,
+    isPowerOn,
+    userId,
+    channelNumber,
+    createPeerConnection,
+    cleanupPeer,
+  ]);
 
   // Listen to WebRTC signaling events from Supabase Realtime channel
   const setOnWebRTCSignalingReceived = usePTTStore((state) => state.setOnWebRTCSignalingReceived);
