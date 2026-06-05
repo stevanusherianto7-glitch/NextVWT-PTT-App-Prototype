@@ -89,6 +89,7 @@ export interface PTTState {
   bgActive: boolean;
   fullDuplex: boolean;
   themeText: string;
+  builtInEcho: boolean;
 
   // Actions
   setPower: (power: boolean) => void;
@@ -143,6 +144,7 @@ const PERSISTED_KEYS: Array<keyof PTTState> = [
   'bgActive',
   'fullDuplex',
   'themeText',
+  'builtInEcho',
 ];
 
 function pickPersistedState(state: Partial<PTTState>): Partial<PTTState> {
@@ -177,6 +179,7 @@ const DEFAULT_SETTINGS = {
   bgActive: true,
   fullDuplex: true,
   themeText: 'theme-classic',
+  builtInEcho: true,
 };
 
 interface PresenceMeta {

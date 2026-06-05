@@ -85,6 +85,7 @@ function resetStore() {
     bgActive: true,
     fullDuplex: true,
     themeText: 'Monokrom',
+    builtInEcho: true,
   });
 }
 

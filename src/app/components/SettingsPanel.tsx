@@ -592,6 +592,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
     bgActive,
     fullDuplex,
     themeText,
+    builtInEcho,
     updateSettings,
     user,
     signOut,
@@ -652,6 +653,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
   const setBgActive = (val: boolean) => updateSettings({ bgActive: val });
   const setFullDuplex = (val: boolean) => updateSettings({ fullDuplex: val });
   const setThemeText = (val: string) => updateSettings({ themeText: val });
+  const setBuiltInEcho = (val: boolean) => updateSettings({ builtInEcho: val });
 
   const getThemeLabel = (theme: string) => {
     const t = theme?.toLowerCase() || '';
@@ -1090,6 +1092,26 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
             />
             <span className="text-xs font-semibold text-gray-700">Mode Musik & Karaoke</span>
           </label>
+
+          {/* Software Echo Toggle (Only visible in Music Mode to keep it context-aware) */}
+          {audioMode === 'music' && (
+            <div className="flex items-center justify-between py-2 border-t border-gray-100 mt-1">
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold text-gray-700">Efek Echo Built-in (Software)</span>
+                <span className="text-[10px] text-gray-500 font-normal">Matikan jika menggunakan soundcard eksternal</span>
+              </div>
+              <div className="relative flex items-center">
+                <input
+                  type="checkbox"
+                  id="toggle-builtInEcho"
+                  checked={builtInEcho}
+                  onChange={(e) => setBuiltInEcho(e.target.checked)}
+                  className="settings-checkbox-input"
+                />
+                <label htmlFor="toggle-builtInEcho" className="settings-toggle-switch"></label>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* PTT SECTION */}

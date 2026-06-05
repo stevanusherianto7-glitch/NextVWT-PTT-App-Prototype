@@ -28,6 +28,14 @@ const RTC_CONFIG = {
   iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
 };
 
+// Helper: Modify SDP to prioritize high-quality Opus stereo music stream for Karaoke mode
+const preferHighQualityOpus = (sdp: string): string => {
+  return sdp.replace(
+    /a=fmtp:(\d+) (.*)useinbandfec=1/g,
+    'a=fmtp:$1 $2useinbandfec=1;stereo=1;sprop-stereo=1;maxaveragebitrate=128000'
+  );
+};
+
 export function useAudioStreamer() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null); // Real mic stream
@@ -191,13 +199,18 @@ export function useAudioStreamer() {
           candidatesQueueRef.current.delete(senderUserId);
 
           const answer = await pc.createAnswer();
-          await pc.setLocalDescription(answer);
+          let sdp = answer.sdp;
+          if (store.audioMode === 'music' && sdp) {
+            sdp = preferHighQualityOpus(sdp);
+          }
+          const modifiedAnswer = { type: answer.type, sdp };
+          await pc.setLocalDescription(modifiedAnswer);
 
           store.broadcastWebRTCSignaling({
             senderUserId: store.userId,
             targetUserId: senderUserId,
             type: 'answer',
-            data: answer,
+            data: modifiedAnswer,
           });
         } else if (type === 'answer') {
           const pc = peerConnectionsRef.current.get(senderUserId);
@@ -260,12 +273,18 @@ export function useAudioStreamer() {
           const pc = createPeerConnection(user.userId);
           pc.createOffer()
             .then(async (offer) => {
-              await pc.setLocalDescription(offer);
-              usePTTStore.getState().broadcastWebRTCSignaling({
+              let sdp = offer.sdp;
+              const store = usePTTStore.getState();
+              if (store.audioMode === 'music' && sdp) {
+                sdp = preferHighQualityOpus(sdp);
+              }
+              const modifiedOffer = { type: offer.type, sdp };
+              await pc.setLocalDescription(modifiedOffer);
+              store.broadcastWebRTCSignaling({
                 senderUserId: userId,
                 targetUserId: user.userId,
                 type: 'offer',
-                data: offer,
+                data: modifiedOffer,
               });
             })
             .catch((err) => {
@@ -398,12 +417,25 @@ export function useAudioStreamer() {
       isRecordingRef.current = true;
 
       try {
+        const store = usePTTStore.getState();
+        const isMusicMode = store.audioMode === 'music';
+
+        // Dynamic mic constraints: disable voice filtering for high-fidelity singing/instruments in Music Mode
+        const audioConstraints = isMusicMode
+          ? {
+              echoCancellation: false, // best with headphones for karaoke to avoid music ducking
+              noiseSuppression: false, // critical: do not suppress music notes
+              autoGainControl: false,  // do not compress vocal dynamics
+              channelCount: 2,         // support stereo input
+            }
+          : {
+              echoCancellation: true,
+              noiseSuppression: true,
+              autoGainControl: true,
+            };
+
         const stream = await navigator.mediaDevices.getUserMedia({
-          audio: {
-            echoCancellation: true,
-            noiseSuppression: true,
-            autoGainControl: true,
-          },
+          audio: audioConstraints,
         });
 
         if (!isRecordingRef.current) {
@@ -413,15 +445,40 @@ export function useAudioStreamer() {
 
         streamRef.current = stream;
 
-        // Fast PTT: Swap to real mic track
-        const store = usePTTStore.getState();
+        // Fast PTT: Swap to real mic track (with software Echo if active)
         const micTrack = stream.getAudioTracks()[0];
+        let finalTrack = micTrack;
+
+        if (isMusicMode && store.builtInEcho) {
+          const ctx = getAudioContext();
+          if (ctx) {
+            const sourceNode = ctx.createMediaStreamSource(stream);
+            const destNode = ctx.createMediaStreamDestination();
+
+            // 1. Direct path (clean vocal)
+            sourceNode.connect(destNode);
+
+            // 2. Echo/Delay path (Feedback loop)
+            const delayNode = ctx.createDelay(1.0);
+            delayNode.delayTime.value = 0.25; // 250ms delay time
+            const feedbackNode = ctx.createGain();
+            feedbackNode.gain.value = 0.35; // 35% feedback volume
+
+            sourceNode.connect(delayNode);
+            delayNode.connect(feedbackNode);
+            feedbackNode.connect(delayNode); // loop feedback
+            feedbackNode.connect(destNode); // mix echo output into destination
+
+            finalTrack = destNode.stream.getAudioTracks()[0];
+          }
+        }
+
         if (store.isConnected) {
           for (const pc of peerConnectionsRef.current.values()) {
             const senders = pc.getSenders();
             const sender = senders.find((s) => s.track?.kind === 'audio');
             if (sender) {
-              await sender.replaceTrack(micTrack);
+              await sender.replaceTrack(finalTrack);
             }
           }
           startVAD(stream, micTrack);
