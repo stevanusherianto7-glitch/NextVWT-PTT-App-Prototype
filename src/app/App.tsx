@@ -1,3 +1,23 @@
+/**
+ * @file App.tsx
+ * @description Main application component for NextVWT PTT App Prototype.
+ * Handles user authentication via Google OAuth, manages real-time state updates using Supabase Presence and Broadcast,
+ * and coordinates all UI rendering through a centralized state management system with Zustand.
+ *
+ * Features:
+ * - Authentication state management
+ * - Real-time presence tracking
+ * - Broadcast messaging
+ * - UI state coordination
+ * - Error handling and loading states
+ *
+ * @dependencies
+ * - React (v18.2.0)
+ * - @supabase/supabase-js (v2.39.0)
+ * - Zustand (v4.5.0)
+ * - React Router DOM (v6.21.0)
+ */
+
 import { useEffect, useState } from 'react';
 import { ToggleSwitch } from './components/ToggleSwitch';
 import { LCDPanel } from './components/LCDPanel';

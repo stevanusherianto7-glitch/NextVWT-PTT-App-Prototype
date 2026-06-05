@@ -1,11 +1,13 @@
 {
-  "name": "@figma/my-make-file",
+  "name": "nextvwt-ptt-app-prototype",
+  "description": "NextVWT PTT (Push-to-Talk) App Prototype - Real-time communication platform",
   "private": true,
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "build": "vite build",
     "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "test": "vitest run",
     "clean": "node -e \"const fs=require('fs');['dist','tmp'].forEach(d=>{try{fs.rmSync(d,{recursive:true,force:true});console.log('Cleaned: '+d);}catch(e){}});\"",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
@@ -13,7 +15,8 @@
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix",
     "test:integration": "vitest run --reporter=verbose",
-    "test:e2e:playwright": "dotenv -e .env -- playwright test"
+    "test:e2e:playwright": "dotenv -e .env -- playwright test",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",
