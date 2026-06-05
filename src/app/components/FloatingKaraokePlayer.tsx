@@ -194,7 +194,7 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
       {/* ─── YOUTUBE PLAYER FRAME (Always visible, fits the container) ─── */}
       <div
         className={`bg-black shrink-0 relative ${
-          isMinimized ? 'w-full h-full' : 'w-full aspect-video border-b border-indigo-500/10'
+          isMinimized ? 'w-full h-[112px]' : 'w-full aspect-video border-b border-indigo-500/10'
         }`}
       >
         <iframe
