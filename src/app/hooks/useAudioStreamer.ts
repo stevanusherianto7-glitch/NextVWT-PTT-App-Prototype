@@ -460,7 +460,7 @@ export function useAudioStreamer() {
             const delayNode = ctx.createDelay(1.0);
             delayNode.delayTime.value = 0.25; // 250ms delay time
             const feedbackNode = ctx.createGain();
-            feedbackNode.gain.value = 0.35; // 35% feedback volume
+            feedbackNode.gain.value = store.echoFeedback / 100; // dynamic feedback volume from store
 
             sourceNode.connect(delayNode);
             delayNode.connect(feedbackNode);

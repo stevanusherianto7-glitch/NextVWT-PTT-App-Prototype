@@ -593,6 +593,9 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
     fullDuplex,
     themeText,
     builtInEcho,
+    isKaraokePlayerOpen,
+    echoFeedback,
+    setKaraokePlayerOpen: setIsKaraokePlayerOpen,
     updateSettings,
     user,
     signOut,
@@ -654,6 +657,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
   const setFullDuplex = (val: boolean) => updateSettings({ fullDuplex: val });
   const setThemeText = (val: string) => updateSettings({ themeText: val });
   const setBuiltInEcho = (val: boolean) => updateSettings({ builtInEcho: val });
+  const setEchoFeedback = (val: number) => updateSettings({ echoFeedback: val });
 
   const getThemeLabel = (theme: string) => {
     const t = theme?.toLowerCase() || '';
@@ -1114,6 +1118,54 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
                 />
                 <label htmlFor="toggle-builtInEcho" className="settings-toggle-switch"></label>
               </div>
+            </div>
+          )}
+
+          {/* Software Echo Slider (Only when built-in echo is enabled) */}
+          {audioMode === 'music' && builtInEcho && (
+            <div className="flex flex-col gap-1 py-2 border-t border-gray-100 mt-1">
+              <div className="text-xs font-semibold text-gray-700">
+                Intensitas Gema (Echo Level)
+              </div>
+              <div className="PB-range-slider-div">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={echoFeedback}
+                  onChange={(e) => setEchoFeedback(Number(e.target.value))}
+                  className="PB-range-slider"
+                />
+                <span className="PB-range-slidervalue">{echoFeedback}%</span>
+              </div>
+            </div>
+          )}
+
+          {/* Open/Close Karaoke Player Button */}
+          {audioMode === 'music' && (
+            <div className="flex flex-col gap-2 py-2 border-t border-gray-100 mt-1">
+              <button
+                type="button"
+                onClick={() => setIsKaraokePlayerOpen(!isKaraokePlayerOpen)}
+                className="w-full py-2 px-4 rounded-lg bg-gradient-to-tr from-indigo-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-bold text-xs shadow-md hover:shadow-indigo-500/20 active:scale-[0.98] transition flex items-center justify-center gap-2 focus:outline-none cursor-pointer"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="white"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className={isKaraokePlayerOpen ? 'animate-pulse' : ''}
+                >
+                  <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                  <line x1="12" y1="19" x2="12" y2="22" />
+                </svg>
+                {isKaraokePlayerOpen ? 'Tutup Pemutar Karaoke' : 'Buka Pemutar Karaoke'}
+              </button>
             </div>
           )}
         </div>
