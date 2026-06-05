@@ -247,14 +247,18 @@ function subscribeToChannel(channelNum: number) {
           }
         }
       })
-      .on('broadcast', { event: 'voice_chunk' }, ({ payload }: { payload: { userId: string; base64: string } }) => {
-        if (activeChannelSubscription !== channelInstance) return;
-        const state = usePTTStore.getState();
-        // Ignore our own broadcasted voice chunks to avoid feedback loop
-        if (payload.userId !== state.userId && state.onVoiceChunkReceived) {
-          state.onVoiceChunkReceived(payload.base64);
+      .on(
+        'broadcast',
+        { event: 'voice_chunk' },
+        ({ payload }: { payload: { userId: string; base64: string } }) => {
+          if (activeChannelSubscription !== channelInstance) return;
+          const state = usePTTStore.getState();
+          // Ignore our own broadcasted voice chunks to avoid feedback loop
+          if (payload.userId !== state.userId && state.onVoiceChunkReceived) {
+            state.onVoiceChunkReceived(payload.base64);
+          }
         }
-      });
+      );
 
     channelInstance.subscribe((status: string) => {
       if (activeChannelSubscription !== channelInstance) return;

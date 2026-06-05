@@ -180,6 +180,19 @@ export function LCDPanel({
             </div>
           )}
 
+          {/* BUSY Badge */}
+          {!isOffline && isReceiving && (
+            <div
+              data-testid="lcd-busy-badge"
+              className="absolute left-1/2 -translate-x-1/2 top-3 px-2 py-0.5 rounded-full bg-[#f97316] flex items-center gap-1"
+              style={{ boxShadow: '0 2px 4px rgba(0,0,0,0.3)', border: '1px solid #ea580c' }}
+            >
+              <span className="text-[10px] text-white font-bold tracking-wide uppercase animate-pulse">
+                Busy
+              </span>
+            </div>
+          )}
+
           {/* Signal Bar */}
           <div
             onClick={handleSignalClick}
