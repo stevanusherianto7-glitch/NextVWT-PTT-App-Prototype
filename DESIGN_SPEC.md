@@ -529,3 +529,25 @@ Sistem streaming audio diimplementasikan via React Hook (`src/app/hooks/useAudio
 - **DSEG7 Classic Mini Bold**: Digunakan khusus untuk angka channel digital LCD agar memberikan nuansa walkie-talkie retro-modern yang autentik.
 - **Outfit**: Digunakan untuk teks judul brand **NextVWT** dan teks status utama.
 - **Inter**: Digunakan untuk elemen antarmuka umum seperti detail pengguna, modal daftar nama staf/anggota tim, dan panel pengaturan.
+
+---
+
+## 📱 8. Viewport & Mobile Responsive Specifications
+
+Untuk memastikan antarmuka Walkie-Talkie tidak terpotong di perangkat seluler (mobile browser) akibat bilah navigasi dinamis (dynamic toolbar/URL bar):
+
+1. **Dynamic Viewport Height (`100dvh`)**:
+   - Seluruh kontainer sasis utama (`App.tsx` dan `RadioLayout.tsx`) wajib menggunakan tinggi dinamis `h-[100dvh]` sebagai pengganti `min-h-screen` atau `100vh`.
+   - Ini memastikan aplikasi selalu menempati tepat 100% dari ruang pandang aktif tanpa memicu scrollbar vertikal liar saat bilah alamat browser seluler bergeser.
+2. **Layout Constraint**:
+   - Layout dikunci pada mode portrait dengan lebar kontainer maksimal `w-full max-w-md` atau proporsi fisik sasis, memastikan elemen kontrol dan visual tetap berada di area jangkauan satu tangan (one-hand operation area) dan bebas dari Layout Shift (CLS < 0.1).
+
+---
+
+## 📝 9. Riwayat Perubahan Dokumen (Changelog)
+
+| Versi | Tanggal | Deskripsi Perubahan | Penulis |
+| :--- | :--- | :--- | :--- |
+| **v2.1.0** | 2026-06-06 | Menambahkan spesifikasi viewport dinamis (`100dvh`) untuk ketahanan mobile browser (Seksi 8). | Senior System Architect |
+| **v2.2.0** | 2026-06-06 | Memperbarui titik transisi D-Pad menjadi integer bulat (`100`, `190`), radius (`48.75`), serta penyesuaian gap simetris `15px` (Seksi 3.B). | Senior System Architect |
+| **v2.3.0** | 2026-06-06 | Penyesuaian kedalaman parit PTT menggunakan latar belakang `rgba(0, 0, 0, 0.12)` dan sepasang bayangan dalam atas-bawah (`inset 0 6px 10px`, `inset 0 -4px 8px`) (Seksi 3.C.1). | Senior System Architect |
