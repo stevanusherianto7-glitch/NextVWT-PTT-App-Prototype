@@ -243,13 +243,15 @@ export function RadioLayout() {
         >
           {/* Top Bar */}
           <div
-            className="w-full h-[90px] flex items-center justify-between px-5 z-20 relative"
+            className="w-full h-[90px] flex items-center justify-between px-5 z-20 relative overflow-hidden"
             style={{
               background: 'var(--header-bg)',
               boxShadow: 'var(--header-shadow)',
               borderBottom: 'var(--header-border)',
             }}
           >
+            {/* Top Glossy Reflection */}
+            <div className="absolute top-0 left-0 right-0 h-[40%] bg-gradient-to-b from-white/35 to-transparent pointer-events-none z-10" />
             <div
               onClick={() => {
                 if (isPowerOn) {
@@ -450,6 +452,15 @@ export function RadioLayout() {
                   backdropFilter: 'var(--panel-blur)',
                 }}
               >
+                {/* 3D Faceplate Outer Highlight and Shadow Overlay */}
+                <div
+                  className="absolute inset-0 pointer-events-none z-20"
+                  style={{
+                    borderRadius: '40px 40px 200px 200px / 40px 40px 90px 90px',
+                    boxShadow:
+                      'inset 0 2.5px 3px rgba(255, 255, 255, 0.95), inset 0 -2.5px 3px rgba(0, 0, 0, 0.4)',
+                  }}
+                />
                 {/* LCD Panel */}
                 <div className="transition-opacity duration-300 flex justify-center w-full">
                   <LCDPanel

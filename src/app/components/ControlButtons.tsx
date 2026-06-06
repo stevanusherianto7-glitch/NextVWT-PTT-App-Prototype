@@ -141,11 +141,11 @@ export function ControlButtons({
           background: 'var(--rocker-bg)',
           border: 'var(--rocker-border)',
           boxShadow:
-            'inset 0 2px 4px rgba(255,255,255,0.1), 0 5px 10px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3)',
+            'inset 0 3px 5px rgba(255,255,255,0.2), inset 0 -3px 5px rgba(0,0,0,0.45), 0 6px 12px rgba(0,0,0,0.45), 0 2px 4px rgba(0,0,0,0.35)',
         }}
       >
         {/* Decorative center pivot for rocker switch realism */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[4px] bg-black opacity-40 z-20 pointer-events-none shadow-[0_1px_1px_rgba(255,255,255,0.1)]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[5px] bg-[#1a1a1a] opacity-65 z-20 pointer-events-none shadow-[0_1px_1px_rgba(255,255,255,0.25)]" />
 
         {/* Up Button */}
         <button
@@ -157,7 +157,9 @@ export function ControlButtons({
           style={{
             background: pressedBtn === 'up' ? 'rgba(0,0,0,0.4)' : 'var(--btn-bg)',
             boxShadow:
-              pressedBtn === 'up' ? 'inset 0 4px 6px rgba(0,0,0,0.8)' : 'var(--btn-shadow)',
+              pressedBtn === 'up'
+                ? 'inset 0 5px 8px rgba(0,0,0,0.85), inset 0 0 10px rgba(0,0,0,0.6)'
+                : 'var(--btn-shadow)',
             transition: 'all 0.05s ease',
             transform: pressedBtn === 'up' ? 'translateY(1px)' : 'translateY(0)',
           }}
@@ -183,7 +185,9 @@ export function ControlButtons({
           style={{
             background: pressedBtn === 'down' ? 'rgba(0,0,0,0.4)' : 'var(--btn-bg)',
             boxShadow:
-              pressedBtn === 'down' ? 'inset 0 -4px 6px rgba(0,0,0,0.8)' : 'var(--btn-shadow)',
+              pressedBtn === 'down'
+                ? 'inset 0 -5px 8px rgba(0,0,0,0.85), inset 0 0 10px rgba(0,0,0,0.6)'
+                : 'var(--btn-shadow)',
             transition: 'all 0.05s ease',
             transform: pressedBtn === 'down' ? 'translateY(-1px)' : 'translateY(0)',
           }}
