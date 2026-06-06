@@ -234,7 +234,7 @@ export function LCDPanel({
               )}
 
               {/* Signal Bars SVG approach */}
-              <div className="flex items-end gap-[1.5px] h-full pb-[2px] relative">
+              <div className="flex items-end gap-[0.5px] h-full pb-[2px] relative">
                 {[1, 2, 3, 4].map((bar) => {
                   const isActive = bar <= signalBars;
                   let barBackground =
