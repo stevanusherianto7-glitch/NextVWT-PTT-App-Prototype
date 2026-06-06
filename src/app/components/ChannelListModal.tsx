@@ -9,6 +9,7 @@ interface ChannelListModalProps {
 
 export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [visibleCount, setVisibleCount] = useState(15);
   const [activePrivateChannel, setActivePrivateChannel] = useState<ChannelItem | null>(null);
   const [restrictedChannel, setRestrictedChannel] = useState<ChannelItem | null>(null);
   const [infoChannel, setInfoChannel] = useState<ChannelItem | null>(null);
@@ -20,7 +21,7 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
   );
 
   return (
-    <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-50">
+    <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-50 pt-4 pb-4 px-3">
       {/* Backdrop Dismiss */}
       <div
         data-testid="modal-backdrop"
@@ -189,7 +190,10 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
             type="text"
             placeholder="Cari channel..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setVisibleCount(15);
+            }}
             className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-xs bg-white text-black outline-none focus:border-blue-500 font-semibold"
           />
         </div>
@@ -197,51 +201,64 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
         {/* List */}
         <div className="flex-1 overflow-y-auto bg-white text-left divide-y divide-gray-200">
           {filteredChannels.length > 0 ? (
-            filteredChannels.map((ch) => {
-              let bgClass = 'bg-gradient-to-b from-[#9E9E9E] to-[#616161]'; // Default gray
-              if (ch.type === 'green') {
-                if (ch.number === 0 || ch.number === 100) {
-                  bgClass = 'bg-gradient-to-b from-[#1b5e20] to-[#0e3b12]';
-                } else {
-                  bgClass = 'bg-gradient-to-b from-[#66bb6a] to-[#388e3c]';
+            <>
+              {filteredChannels.slice(0, visibleCount).map((ch) => {
+                let bgClass = 'bg-gradient-to-b from-[#9E9E9E] to-[#616161]'; // Default gray
+                if (ch.type === 'green') {
+                  if (ch.number === 0 || ch.number === 100) {
+                    bgClass = 'bg-gradient-to-b from-[#1b5e20] to-[#0e3b12]';
+                  } else {
+                    bgClass = 'bg-gradient-to-b from-[#66bb6a] to-[#388e3c]';
+                  }
+                } else if (ch.type === 'red') {
+                  bgClass = 'bg-gradient-to-b from-[#e53935] to-[#c62828]';
                 }
-              } else if (ch.type === 'red') {
-                bgClass = 'bg-gradient-to-b from-[#e53935] to-[#c62828]';
-              }
 
-              const activeUserCount = ch.users.length;
-              let activeUsersStr =
-                activeUserCount > 0
-                  ? `${activeUserCount} PENGGUNA • ${ch.users.join(', ')}`
-                  : '0 PENGGUNA';
+                const activeUserCount = ch.users.length;
+                let activeUsersStr =
+                  activeUserCount > 0
+                    ? `${activeUserCount} PENGGUNA • ${ch.users.join(', ')}`
+                    : '0 PENGGUNA';
 
-              if (ch.number === 0) {
-                activeUsersStr = 'WWW.NEXTVWT.ID';
-              }
+                if (ch.number === 0) {
+                  activeUsersStr = 'WWW.NEXTVWT.ID';
+                }
 
-              return (
-                <button
-                  key={ch.number}
-                  onClick={() => {
-                    setActivePrivateChannel(ch);
-                  }}
-                  className="w-full flex items-center p-0 hover:bg-gray-50 active:bg-gray-100 text-left cursor-pointer select-none focus:outline-none"
-                >
-                  <div
-                    className={`w-[55px] py-2.5 flex items-center justify-center text-white font-bold text-sm shrink-0 ${bgClass} border-t-[2px] border-l-[2px] border-t-white/45 border-l-white/45 border-r-[2px] border-b-[2px] border-r-black/45 border-b-black/45 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.3)]`}
-                    style={{ textShadow: '1px 1px 1px rgba(0,0,0,0.6)' }}
+                return (
+                  <button
+                    key={ch.number}
+                    onClick={() => {
+                      setActivePrivateChannel(ch);
+                    }}
+                    className="w-full flex items-center p-0 hover:bg-gray-50 active:bg-gray-100 text-left cursor-pointer select-none focus:outline-none"
                   >
-                    {ch.number.toString().padStart(3, '0')}
-                  </div>
-                  <div className="ml-3 pr-3 flex-1 min-w-0 py-1">
-                    <div className="text-xs font-bold text-black truncate">{ch.name}</div>
-                    <div className="text-[10px] text-gray-500 font-semibold truncate mt-0.5 uppercase">
-                      {activeUsersStr}
+                    <div
+                      className={`w-[55px] py-2.5 flex items-center justify-center text-white font-bold text-sm shrink-0 ${bgClass} border-t-[2px] border-l-[2px] border-t-white/45 border-l-white/45 border-r-[2px] border-b-[2px] border-r-black/45 border-b-black/45 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.3)]`}
+                      style={{ textShadow: '1px 1px 1px rgba(0,0,0,0.6)' }}
+                    >
+                      {ch.number.toString().padStart(3, '0')}
                     </div>
+                    <div className="ml-3 pr-3 flex-1 min-w-0 py-1">
+                      <div className="text-xs font-bold text-black truncate">{ch.name}</div>
+                      <div className="text-[10px] text-gray-500 font-semibold truncate mt-0.5 uppercase">
+                        {activeUsersStr}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+              {filteredChannels.length > visibleCount && (
+                <button
+                  onClick={() => setVisibleCount((prev) => prev + 15)}
+                  className="w-full flex items-center p-0 hover:bg-gray-50 active:bg-gray-100 text-left border-b border-gray-200 cursor-pointer select-none focus:outline-none"
+                >
+                  <div className="w-[55px] py-2.5 bg-gradient-to-b from-[#616161] to-[#424242] border-t-[2px] border-l-[2px] border-t-white/30 border-l-white/30 border-r-[2px] border-b-[2px] border-r-black/45 border-b-black/45 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.15)] shrink-0 self-stretch flex items-center justify-center" />
+                  <div className="ml-3 pr-3 flex-1 min-w-0 py-1">
+                    <div className="text-xs font-bold text-gray-700">Selanjutnya..</div>
                   </div>
                 </button>
-              );
-            })
+              )}
+            </>
           ) : (
             <div className="p-6 text-center text-xs text-gray-500 font-medium">
               Tidak ada channel ditemukan
