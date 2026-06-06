@@ -579,7 +579,19 @@ export function useAudioStreamer() {
         const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
 
         const now = ctx.currentTime;
-        if (nextPlaybackTimeRef.current < now) {
+
+        // Limit queue size to prevent latency accumulation (Option A: Reset to live)
+        const maxQueueVal = parseInt(store.maxQueue, 10) || 99999;
+        const queueSize = Math.max(
+          0,
+          Math.round((nextPlaybackTimeRef.current - now) / audioBuffer.duration)
+        );
+        if (queueSize >= maxQueueVal) {
+          console.warn(
+            `[AudioStreamer] Audio queue size (${queueSize}) exceeded limit (${maxQueueVal}). Resetting to live.`
+          );
+          nextPlaybackTimeRef.current = now + 0.05;
+        } else if (nextPlaybackTimeRef.current < now) {
           nextPlaybackTimeRef.current = now + 0.05;
         }
 
