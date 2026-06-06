@@ -21,6 +21,7 @@ export default defineConfig(({ command: _command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
 
   return {
+    base: './',
     // Development server configuration
     server: {
       port: 5173,

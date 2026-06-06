@@ -472,10 +472,8 @@ export function UserListModal({
             return (
               <div
                 key={`${profile.callSign}-${idx}`}
-                className={`w-full flex items-center pr-4 pl-3 py-2.5 border-l-4 hover:bg-white active:bg-gray-100 transition-all duration-300 border-b border-gray-300/70 ${
-                  isSpeaking
-                    ? 'active-user-glow border-l-[#0088cc] z-10'
-                    : 'bg-[#fafbfc] border-l-transparent'
+                className={`w-full flex items-center px-4 py-2.5 hover:bg-white active:bg-gray-100 transition-all duration-300 border-b border-gray-300/70 ${
+                  isSpeaking ? 'active-user-glow z-10' : 'bg-[#fafbfc]'
                 }`}
               >
                 {/* Avatar with status overlay */}
