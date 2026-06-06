@@ -548,7 +548,7 @@ Untuk memastikan antarmuka Walkie-Talkie tidak terpotong di perangkat seluler (m
    - Spasi vertikal antara top bar header (area logo dan power toggle) dan sasis utama panel LCD dipadatkan dengan mengubah padding-top kontainer utama dari `pt-8` (32px) menjadi `pt-[14px]` (14px). Ini mengangkat sasis utama panel LCD ke atas mendekati tepi bawah top header, menghasilkan visual yang lebih padat (compact) sambil tetap memberikan breathing room yang cukup untuk teks berjalan (marquee) di atas.
 4. **Skeuomorphic Shadow Enhancements**:
    - Tepi bawah top header diperkuat dengan bayangan dalam (`inset 0 -12px 20px -6px rgba(0, 0, 0, 0.45)`) dan highlight atas (`inset 0 3px 6px rgba(255,255,255,0.4)`) untuk memberikan efek cembung (convex) yang menonjol keluar.
-   - Sasis utama panel LCD (themed faceplate container) bagian atas dan kedua sisi samping diperkuat bayangan dalamnya (`inset 0 14px 20px -6px rgba(0,0,0,0.35)`, `inset 14px 0 20px -6px rgba(0,0,0,0.32)`, `inset -14px 0 20px -6px rgba(0,0,0,0.32)`) di dalam 3D Faceplate Outer Highlight and Shadow Overlay untuk efek lubang bevel (inset recess) yang lebih dalam dan nyata.
+   - Sasis utama panel LCD (themed faceplate container) bagian atas, samping, dan bawah dikelilingi oleh bayangan dalam yang seragam dan sangat halus (`inset 0 3px 4px rgba(0,0,0,0.4)`, `inset 0 -3px 4px rgba(0,0,0,0.4)`, `inset 3px 0 4px rgba(0,0,0,0.3)`, `inset -3px 0 4px rgba(0,0,0,0.3)`) berpadu dengan subpixel top highlight (`inset 0 1.5px 2px rgba(255,255,255,0.95)`) di dalam 3D Faceplate Outer Highlight and Shadow Overlay untuk efek lubang bevel (inset recess) yang bersih dan rata.
 
 ---
 
@@ -563,3 +563,4 @@ Untuk memastikan antarmuka Walkie-Talkie tidak terpotong di perangkat seluler (m
 | **v2.5.0** | 2026-06-06 | Pemadatan spasi vertikal top header (padding-top kontainer utama dari `pt-8` ke `pt-[14px]`) untuk mendekatkan sasis utama panel LCD ke top bar header (Seksi 8). | Senior System Architect |
 | **v2.6.0** | 2026-06-06 | Penyelesaian kebocoran warna bingkai LCD atas (padding gradient bezel) dan penguatan efek skeuomorphic (gloss, shadow, bevel) di seluruh antarmuka (Seksi 3.A & 8). | Senior System Architect |
 | **v2.7.0** | 2026-06-06 | Penguatan bayangan dalam (inner shadow) sisi samping/atas sasis faceplate utama dan tepi bawah top header untuk visual 3D skeuomorphic lebih cembung/inset (Seksi 8). | Senior System Architect |
+| **v2.8.0** | 2026-06-06 | Penyempurnaan & pelembutan bayangan dalam sasis faceplate utama (mengganti bayangan atas yang tebal/kasar dengan bayangan setebal 3px/4px yang seragam menyamai karakter tepi bawah) (Seksi 8). | Senior System Architect |hic lebih cembung/inset (Seksi 8). | Senior System Architect |
