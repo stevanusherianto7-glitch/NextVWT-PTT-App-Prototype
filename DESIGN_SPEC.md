@@ -6,10 +6,10 @@ Dokumen ini mendefinisikan seluruh spesifikasi desain visual, token kegayaan, ta
 
 ## 🏗️ 1. Project Architecture & File Stack
 
-* **Frontend**: React (v18.3) + TypeScript + Vite + Tailwind CSS.
-* **Database & Realtime**: Supabase (Single Source of Truth, postgresql snake_case).
-* **State Management**: Zustand dengan persistensi `localStorage`.
-* **Deployment & CI/CD**: Vercel & GitHub Actions (Conventional Commits enforcement).
+- **Frontend**: React (v18.3) + TypeScript + Vite + Tailwind CSS.
+- **Database & Realtime**: Supabase (Single Source of Truth, postgresql snake_case).
+- **State Management**: Zustand dengan persistensi `localStorage`.
+- **Deployment & CI/CD**: Vercel & GitHub Actions (Conventional Commits enforcement).
 
 ---
 
@@ -18,95 +18,107 @@ Dokumen ini mendefinisikan seluruh spesifikasi desain visual, token kegayaan, ta
 Seluruh token visual disimpan dalam variabel CSS di berkas `src/styles/theme.css` dan dikendalikan melalui kelas selektor tema.
 
 ### A. Classic Theme (`.theme-classic` / `:root`)
-* **Device Chassis Background**: `linear-gradient(to bottom, #d5dbe1 0%, #a4b0be 100%)`
-* **Device Border**: `1px solid #c8d1db`
-* **LCD Background**: `linear-gradient(to bottom, #ff9500 0%, #d87d00 100%)` (Amber Glow)
-* **LCD Glow**: `0 0 10px rgba(255, 255, 255, 0.8)`
-* **LCD Text (Channel Number)**: `#ffffff`
-* **LCD Label & Icons**: `#1a1a1a`
-* **PTT Button (Idle)**: `linear-gradient(to bottom, #2cdb66 0%, #19ba42 100%)`
-* **PTT Button (Active)**: `linear-gradient(to bottom, #d62828 0%, #a01010 100%)`
-* **D-Pad Base Background**: `linear-gradient(to bottom, #ffffff, #e8ebf0)`
+
+- **Device Chassis Background**: `linear-gradient(to bottom, #d5dbe1 0%, #a4b0be 100%)`
+- **Device Border**: `1px solid #c8d1db`
+- **LCD Background**: `linear-gradient(to bottom, #ff9500 0%, #d87d00 100%)` (Amber Glow)
+- **LCD Glow**: `0 0 10px rgba(255, 255, 255, 0.8)`
+- **LCD Text (Channel Number)**: `#ffffff`
+- **LCD Label & Icons**: `#1a1a1a`
+- **PTT Button (Idle)**: `linear-gradient(to bottom, #2cdb66 0%, #19ba42 100%)`
+- **PTT Button (Active)**: `linear-gradient(to bottom, #d62828 0%, #a01010 100%)`
+- **D-Pad Base Background**: `linear-gradient(to bottom, #ffffff, #e8ebf0)`
 
 ### B. Glass Crystal V1 (`.theme-v1`)
-* **Device Chassis Background**: Semi-transparent light blue gradient.
-* **LCD Background**: Amber gradient (`#ff9500 → #d87d00`).
-* **LCD Text**: `#ffffff` (Putih).
-* **LCD Label**: `#1a1a1a` (Abu-abu gelap).
+
+- **Device Chassis Background**: Semi-transparent light blue gradient.
+- **LCD Background**: Amber gradient (`#ff9500 → #d87d00`).
+- **LCD Text**: `#ffffff` (Putih).
+- **LCD Label**: `#1a1a1a` (Abu-abu gelap).
 
 ### C. Glass Crystal V2 (Premium Goldfish - `.theme-v2`)
-* **Device Chassis**: Transparent glass-morphic panel (`blur(12px)`).
-* **LCD Background**: Warm amber/gold.
-* **LCD Text**: `#ffffff` (Putih).
-* **LCD Label**: `#ffffff` (Putih kontras tinggi).
-* **Aquarium Content**: Ikan Mas Koki (Goldfish) berenang lambat secara organic.
+
+- **Device Chassis**: Transparent glass-morphic panel (`blur(12px)`).
+- **LCD Background**: Warm amber/gold.
+- **LCD Text**: `#ffffff` (Putih).
+- **LCD Label**: `#ffffff` (Putih kontras tinggi).
+- **Aquarium Content**: Ikan Mas Koki (Goldfish) berenang lambat secara organic.
 
 ### D. Glass Rounded (Soft Crystal - `.theme-v3`)
-* **Device Chassis Background**: `linear-gradient(135deg, #e0f2f1 0%, #80deea 50%, #4dd0e1 100%)`
-* **LCD Background**: Cyan gradient (`#00e5ff → #00b0ff`).
-* **LCD Text**: `#ffffff` (Putih).
-* **LCD Label**: `#ffffff` (Putih).
-* **Aquarium Content**: Ikan Cupang Biru (Blue Betta) dengan sirip melambai lambat.
+
+- **Device Chassis Background**: `linear-gradient(135deg, #e0f2f1 0%, #80deea 50%, #4dd0e1 100%)`
+- **LCD Background**: Cyan gradient (`#00e5ff → #00b0ff`).
+- **LCD Text**: `#ffffff` (Putih).
+- **LCD Label**: `#ffffff` (Putih).
+- **Aquarium Content**: Ikan Cupang Biru (Blue Betta) dengan sirip melambai lambat.
 
 ### E. Dark Glass (Smoked Crystal - `.theme-v4`)
-* **Device Chassis Background**: Deep charcoal gradient (`#263238 → #151a1d → #0d1012`).
-* **LCD Background**: Neon Emerald Green gradient (`#00c853 → #007c31`).
-* **LCD Text**: `#ffffff` (Putih).
-* **LCD Label**: `#ffffff` (Putih).
-* **Aquarium Content**: Ikan Neon Tetra kecil berenang berkelompok secara lincah.
+
+- **Device Chassis Background**: Deep charcoal gradient (`#263238 → #151a1d → #0d1012`).
+- **LCD Background**: Neon Emerald Green gradient (`#00c853 → #007c31`).
+- **LCD Text**: `#ffffff` (Putih).
+- **LCD Label**: `#ffffff` (Putih).
+- **Aquarium Content**: Ikan Neon Tetra kecil berenang berkelompok secara lincah.
 
 ### F. Aurora Glass (Color Crystal - `.theme-v5`)
-* **Device Chassis Background**: Purple Magenta gradient (`#f3e5f5 → #ce93d8 → #ab47bc`).
-* **LCD Background**: Hot Pink/Magenta gradient (`#ff4081 → #e040fb`).
-* **LCD Text**: `#ffffff` (Putih).
-* **LCD Label**: `#ffffff` (Putih).
-* **Aquarium Content**: Ikan Cupang Pink/Magenta (Pink Betta) berenang anggun.
+
+- **Device Chassis Background**: Purple Magenta gradient (`#f3e5f5 → #ce93d8 → #ab47bc`).
+- **LCD Background**: Hot Pink/Magenta gradient (`#ff4081 → #e040fb`).
+- **LCD Text**: `#ffffff` (Putih).
+- **LCD Label**: `#ffffff` (Putih).
+- **Aquarium Content**: Ikan Cupang Pink/Magenta (Pink Betta) berenang anggun.
 
 ### G. Glass Crystal V6 (Live Aquarium - `.theme-v6`)
-* **Device Chassis Background**: Ocean Navy gradient (`#03045e 0%, #0077b6 50%, #0096c7 100%`).
-* **LCD Background**: Deep Sea Blue gradient (`#03045e 0%, #023e8a 100%`).
-* **LCD Glow**: `0 0 15px rgba(0, 180, 216, 0.55)` (Ambient Cyan).
-* **LCD Text**: `#ffffff` (Putih).
-* **LCD Label**: `#90e0ef` (Cyan muda).
-* **Aquarium Content**: Campuran spesies ikan (Goldfish, Betta, Neon Tetra) berenang bersama.
+
+- **Device Chassis Background**: Ocean Navy gradient (`#03045e 0%, #0077b6 50%, #0096c7 100%`).
+- **LCD Background**: Deep Sea Blue gradient (`#03045e 0%, #023e8a 100%`).
+- **LCD Glow**: `0 0 15px rgba(0, 180, 216, 0.55)` (Ambient Cyan).
+- **LCD Text**: `#ffffff` (Putih).
+- **LCD Label**: `#90e0ef` (Cyan muda).
+- **Aquarium Content**: Campuran spesies ikan (Goldfish, Betta, Neon Tetra) berenang bersama.
 
 ### H. Monokrom (Legacy Retro - `.theme-monokrom`)
-* **Device Chassis Background**: Cool slate gray gradient (`#f1f5f9 → #cbd5e1`).
-* **LCD Background**: Retro Slate Green gradient (`#94a3b8 → #64748b`).
-* **LCD Text**: `#ffffff` (Putih).
-* **LCD Label**: `#1a1a1a` (Abu-abu gelap).
+
+- **Device Chassis Background**: Cool slate gray gradient (`#f1f5f9 → #cbd5e1`).
+- **LCD Background**: Retro Slate Green gradient (`#94a3b8 → #64748b`).
+- **LCD Text**: `#ffffff` (Putih).
+- **LCD Label**: `#1a1a1a` (Abu-abu gelap).
 
 ---
 
 ## 📱 3. Component UI Specifications
 
 ### A. LCD Display Panel Component (`LCDPanel.tsx`)
+
 Komponen utama penampil status radio. Menggunakan styling kaca (glassmorphism) bertingkat yang diatur dalam struktur elemen berikut:
 
 #### 1. Sasis Utama (Outer Chassis Container)
-* **Dimensi Fisik**: Lebar tetap `300px`, tinggi tetap `155px`, `border-radius: 24px` (`rounded-3xl`), margin horizontal otomatis (`mx-auto`).
-* **Latar Belakang & Efek Sinar**:
+
+- **Dimensi Fisik**: Lebar tetap `300px`, tinggi tetap `155px`, `border-radius: 24px` (`rounded-3xl`), margin horizontal otomatis (`mx-auto`).
+- **Latar Belakang & Efek Sinar**:
   - Warna Backlight: Menggunakan variabel `--lcd-bg` (berupa `linear-gradient` vertikal).
   - Ambient Glow: Menggunakan variabel `--lcd-glow` (misal `.theme-v6` memakai `0 0 15px rgba(0, 180, 216, 0.55), 2px 2px 4px rgba(0, 0, 0, 0.3)`).
-* **Bezel Tepi 3D (3D Border Bezel)**:
+- **Bezel Tepi 3D (3D Border Bezel)**:
   - Tebal bezel: `10px` padat (`border-style: solid`).
   - Gradasi Warna Tepi (Top/Right/Bottom/Left): Diatur secara individual melalui variabel `--lcd-border-top`, `--lcd-border-right`, `--lcd-border-bottom`, dan `--lcd-border-left`.
 
 #### 2. Lapisan Efek Kedalaman Bezel & Kaca (Depth & Glass Layers)
-* **3D Gold Bezel Emboss Overlay**:
+
+- **3D Gold Bezel Emboss Overlay**:
   - Elemen: `div` absolute dengan penempatan negatif `-inset-[10px]` dan `border-radius: 24px` (`rounded-3xl`).
   - Efek Bayangan: `box-shadow: inset 0 0 0 1px rgba(0,0,0,0.22), inset 0 3.5px 6px rgba(255,255,255,0.45), inset 0 -3.5px 6px rgba(0,0,0,0.45), inset 0 0 10px rgba(0,0,0,0.15)`.
-* **3D Inner Border Overlay**:
+- **3D Inner Border Overlay**:
   - Elemen: `div` absolute pengisi penuh `inset-0` dengan `border-radius: 16px` (`rounded-2xl`).
   - Efek Bayangan: `box-shadow: inset 0 0 0 2px rgba(255,255,255,0.4), inset 0 0 10px rgba(0,0,0,0.6)`.
 
 #### 3. Konten Baris Atas (Top Status Bar)
-* **Struktur Tata Letak**: Flexbox horizontal (`flex items-start justify-between`), padding dalam `p-3` (`12px`) untuk menyelaraskan status.
-* **Bagian Informasi Username (Kiri)**:
+
+- **Struktur Tata Letak**: Flexbox horizontal (`flex items-start justify-between`), padding dalam `p-3` (`12px`) untuk menyelaraskan status.
+- **Bagian Informasi Username (Kiri)**:
   - Wadah: Flexbox horizontal (`flex items-center gap-1.5 pt-1`).
   - Ikon Kepala Username (`usernameIcon`): Tinggi `48px`, lebar `46px`, `object-contain`, pergeseran margin `-mt-2 -ml-1` (`margin-top: -8px`, `margin-left: -4px`), filter bayangan `filter: drop-shadow(1px 1px 0px rgba(0,0,0,0.2))`.
   - Teks Username: Ukuran `16px` (`text-base`), tebal `semibold` (600), margin-left `-ml-1` (`-4px`), lebar maksimal `110px` (`max-w-[110px]`), pemotongan teks otomatis jika melebihi batas (`truncate`). Warna teks diatur menggunakan variabel `color: var(--lcd-label-color)`.
-* **Bagian Batang Sinyal (Kanan)**:
+- **Bagian Batang Sinyal (Kanan)**:
   - Wadah: Flexbox horizontal penyelarasan bawah (`flex items-end h-[28px] relative gap-1 mt-1 mr-1 cursor-pointer select-none`).
   - Ikon Silang Sinyal Offline: Tampil jika offline, warna merah `#d32f2f`, font `bold` / `black`, diposisikan secara absolute di `left: -8px` (`-left-2`), `top: 0`, filter bayangan `drop-shadow(1px 1px 0px rgba(255,255,255,0.6))`.
   - Tooltip Latensi: Muncul di atas batang sinyal ketika diklik, posisi absolute `bottom-full right-0 mb-1.5` (`margin-bottom: 6px`), padding `px-2 py-0.5` (`8px horizontal, 2px vertical`), latar belakang hitam `#000000`, teks putih `#ffffff` berukuran `10px`, bergaris tepi tipis dengan bayangan `box-shadow: 0 4px 6px -1px rgba(0,0,0,0.5), 0 2px 4px -1px rgba(0,0,0,0.3)`.
@@ -119,120 +131,134 @@ Komponen utama penampil status radio. Menggunakan styling kaca (glassmorphism) b
     - Gradasi Warna Inaktif (Kosong): `linear-gradient(to bottom, #ffffff 0%, #e5e5e5 50%, #cccccc 100%)`.
 
 #### 4. Lencana Status Mengambang (Floating Badges)
+
 Diposisikan melayang absolute di tengah atas (`left-1/2 -translate-x-1/2 top-3` / `top: 12px`):
-* **Lencana Offline**:
+
+- **Lencana Offline**:
   - Latar Belakang: `#E53935` (Merah), garis tepi `1px solid #d32f2f`, `box-shadow: 0 2px 4px rgba(0,0,0,0.3)`.
   - Ikon SVG: `width: 12px`, `height: 12px`, `stroke-width: 3`, warna putih.
   - Teks: Ukuran `10px`, warna putih, tebal `bold` (700), huruf kapital.
-* **Lencana Busy**:
+- **Lencana Busy**:
   - Latar Belakang: `#f97316` (Oranye), garis tepi `1px solid #ea580c`, `box-shadow: 0 2px 4px rgba(0,0,0,0.3)`.
   - Teks: Ukuran `10px`, warna putih, tebal `bold` (700), huruf kapital, berkedip (`animate-pulse`).
 
 #### 5. Konten Baris Bawah (Channel & Staf Count)
-* **Struktur Tata Letak**: Wadah pembungkus horizontal (`flex justify-between items-end pb-0 px-1 mt-auto`).
-* **Wadah Label & Nomor Channel (Kiri)**:
+
+- **Struktur Tata Letak**: Wadah pembungkus horizontal (`flex justify-between items-end pb-0 px-1 mt-auto`).
+- **Wadah Label & Nomor Channel (Kiri)**:
   - Wadah: Flexbox horizontal (`flex items-end gap-1 w-[115px]`).
   - Label **CH**: Posisi `relative`, `font-size: 20px`, tebal `bold`, `padding-bottom: 5px`, warna teks `var(--lcd-label-color)`.
   - Angka Channel (3 digit): Posisi `relative`, `font-family: 'DSEG7', monospace` (LED digital), `font-size: 52px`, tebal `bold`, `line-height: 0.75`, `margin-left: -2px`, `padding-bottom: 5px`, text-glow `text-shadow: var(--lcd-glow)`. Warna teks dipaksa putih bersih melalui variabel `color: var(--lcd-text-color)` (nilai `#ffffff` di semua tema).
-* **Wadah Staf/User Count (Kanan)**:
+- **Wadah Staf/User Count (Kanan)**:
   - Wadah: Flexbox horizontal (`flex items-end gap-2 mr-1 relative transition-[opacity,transform] duration-150 cursor-pointer hover:opacity-75 active:scale-95`), `padding-bottom: 5px`.
   - Ikon Kepala Kembar (`twinHeadsIcon`): Tinggi `48px`, lebar `46px`, `object-contain`, filter bayangan `filter: drop-shadow(1px 1px 0px rgba(0,0,0,0.2))`.
   - Nomor Jumlah Staf (2 digit): Wadah pembungkus lebar `24px` (`w-[24px]`) dengan perataan kanan (`flex justify-end`) agar angka lurus sejajar di bawah signal bar di pojok kanan atas LCD. Ukuran font `24px` (`text-2xl`), tebal `medium` (500), `line-height: none`, warna teks `var(--lcd-label-color)`, bayangan teks `text-shadow: 1px 1px 1px rgba(255,255,255,0.3)`.
 
 ### B. D-Pad Control Buttons Component (`ControlButtons.tsx`)
+
 Papan kontrol utama yang diposisikan secara absolute di atas pelat belakang cetakan D-pad untuk menjamin keselarasan simetris tanpa adanya pergeseran browser (Layout Shifts).
-* **Ukuran Frame Utama**: `290px` (Lebar) × `150px` (Tinggi), margin otomatis horizontal, margin atas `16px` (`mt-4`).
-* **Molded Backing Base SVG**:
+
+- **Ukuran Frame Utama**: `290px` (Lebar) × `150px` (Tinggi), margin otomatis horizontal, margin atas `16px` (`mt-4`).
+- **Molded Backing Base SVG**:
   - Digambar menggunakan path SVG viewBox `0 0 290 150` agar muat presisi di dalam kontainer utama.
   - Memiliki filter `dpad-inset-shadow` untuk memberikan efek lubang tombol yang menjorok ke dalam body walkie-talkie.
-* **Scan Button (Kiri)**:
+- **Scan Button (Kiri)**:
   - Posisi: `left: 16px`, `top: 50px`.
   - Ukuran: `85px` (Lebar) × `50px` (Tinggi) (diperlebar untuk meminimalkan celah).
   - Tepi luar melingkar penuh (`rounded-l-full`), tepi dalam agak kotak (`rounded-r-[6px]`).
-* **Set Button (Kanan)**:
+- **Set Button (Kanan)**:
   - Posisi: `left: 189px` (digeser mendekati panah tengah, menyisakan margin kanan tepat `16px`).
   - Ukuran: `85px` (Lebar) × `50px` (Tinggi) (diperlebar untuk meminimalkan celah).
   - Tepi luar melingkar penuh (`rounded-r-full`), tepi dalam agak kotak (`rounded-l-[6px]`).
-* **Up/Down Buttons Container (Rocker Kapsul Tengah)**:
+- **Up/Down Buttons Container (Rocker Kapsul Tengah)**:
   - Posisi: `left: 115px`, `top: 22.5px` (celah jarak renggang ke Scan dan Set dikurangi secara simetris dari `24px` menjadi `14px`).
   - Ukuran: `60px` (Lebar) × `105px` (Tinggi), `border-radius: rounded-full`, padding `p-1`.
   - **Up Button**: Tinggi `48px`, `rounded-t-full`.
   - **Down Button**: Tinggi `48px`, `rounded-b-full`.
   - **Center Divider Line (Pivot)**: Garis horizontal absolute tebal `4px`, `opacity: 0.4`, warna hitam, dipasang tepat di tengah (`top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2`) untuk menyimulasikan poros ayun rocker fisik.
-* **Efek Bayangan Tombol D-Pad (SCAN/SET)**:
+- **Efek Bayangan Tombol D-Pad (SCAN/SET)**:
   - Posisi Normal (Idle): Memiliki bayangan ekstrusi 3D solid hitam setebal `2.5px` (`box-shadow: 0 2.5px 0 #000000, var(--btn-shadow)`) agar tombol terlihat timbul namun tetap rata menghadap tegak lurus ke pengguna.
   - Posisi Ditekan (Pressed): Menggunakan translasi turun `translateY(2px)` dengan `box-shadow: inset 0 3px 8px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.1)`.
 
 ### C. PTT Button Component (`PTTButton.tsx`)
+
 Tombol kirim suara berukuran besar di bagian bawah. Menggunakan double-container 3D tactile feedback:
 
 #### 1. Soket Bingkai Luar (Outer Bezel Socket Container)
-* **Ukuran Sasis**: Lebar `338px`, tinggi `108px`, `border-radius: 54px` (lingkaran penuh).
-* **Posisi Dinamis & Skala**:
+
+- **Ukuran Sasis**: Lebar `338px`, tinggi `108px`, `border-radius: 54px` (lingkaran penuh).
+- **Posisi Dinamis & Skala**:
   - Transformasi: `translateY(${yOffset}px) scale(${scaleFactor})` (laju skala berkisar antara `0.75 + (pttSize/100) * 0.5` yang memetakan ke `0.9` pada ukuran 30 dan `1.25` pada ukuran 100).
   - Kecepatan transisi transformasi: `transition: transform 0.12s ease-out, box-shadow 0.06s ease-in-out`.
-* **Efek Bayangan Soket (Trench Shadow Depth)**:
+- **Efek Bayangan Soket (Trench Shadow Depth)**:
   - Kondisi Ditekan (Depressed): `box-shadow: inset 0 0 10px rgba(0,0,0,0.4), inset 0 5px 10px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.1)`.
-  - Kondisi Idle: `box-shadow: inset 0 0 14px rgba(0,0,0,0.35), inset 0 4px 8px rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.15)`. Ditambahkan *outer drop shadow* pada parit luar untuk memperdalam efek 3D tombol yang masuk ke dalam sasis.
+  - Kondisi Idle: `box-shadow: inset 0 0 14px rgba(0,0,0,0.35), inset 0 4px 8px rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.15)`. Ditambahkan _outer drop shadow_ pada parit luar untuk memperdalam efek 3D tombol yang masuk ke dalam sasis.
 
 #### 2. Tombol Fisik Utama (Inner Active Button)
-* **Dimensi**: Lebar `326px`, tinggi `96px`, `border-radius: 48px` (pill-shape).
-* **Posisi & Efek Tekanan**:
+
+- **Dimensi**: Lebar `326px`, tinggi `96px`, `border-radius: 48px` (pill-shape).
+- **Posisi & Efek Tekanan**:
   - Pergeseran vertikal saat ditekan: `isDepressed ? 'translateY(4px)' : 'translateY(0)'` dengan transisi `transition: transform 0.06s ease-in-out, box-shadow 0.06s ease-in-out`.
-* **Garis Tepi (Border) & Warna Latar (Gradients)**:
+- **Garis Tepi (Border) & Warna Latar (Gradients)**:
   - **Power Off**: `1px solid #666666`, latar belakang `linear-gradient(to bottom, #a3a3a3 0%, #737373 100%)`.
   - **Busy (RX Busy)**: `1px solid #c2410c`, latar belakang `linear-gradient(to bottom, #f97316 0%, #ea580c 100%)`.
   - **Transmitting (TX Active)**: `1px solid #730e0e`, latar belakang `linear-gradient(to bottom, #d62828 0%, #a01010 100%)`.
   - **Idle (Power On)**: `1px solid #149c35`, latar belakang `linear-gradient(to bottom, #2cdb66 0%, #19ba42 100%)`.
-* **Efek Bayangan Tombol (Tactile 3D Shadows)**:
+- **Efek Bayangan Tombol (Tactile 3D Shadows)**:
   - **Depressed**: `box-shadow: inset 0 8px 12px rgba(0, 0, 0, 0.85), inset 0 -2px 3px rgba(0, 0, 0, 0.2)`.
   - **Busy**: `box-shadow: inset 0 3px 6px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.2), 0 4px 10px rgba(249, 115, 22, 0.4)`.
   - **Transmitting**: `box-shadow: inset 0 3px 6px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.2), 0 4px 6px rgba(0,0,0,0.3)`.
   - **Idle**: `box-shadow: inset 0 3px 6px rgba(255, 255, 255, 0.8), 0 4px 10px rgba(44, 219, 102, 0.4)`.
-* **Teks PTT / BUSY**:
+- **Teks PTT / BUSY**:
   - Kegayaan: Warna `#ffffff`, `font-size: 44px`, `font-weight: 800` (extra bold), `letter-spacing: 3px`.
   - Bayangan Teks (Active/Busy): `text-shadow: 0 0 12px rgba(255, 255, 255, 0.6)`.
   - Bayangan Teks (Idle): `text-shadow: 1px 1px 2px rgba(0,0,0,0.3)`.
-* **Convex Glass Highlight Overlay**:
+- **Convex Glass Highlight Overlay**:
   - Elemen: `div` absolute di `top-0.5 left-2 right-2` (`top: 2px, left: 8px, right: 8px`), tinggi `34px`, `border-radius: 34px`.
   - Latar Belakang: `linear-gradient(to bottom, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.0) 100%)`.
   - Opacity: `isActive && !isDepressed ? 0.6 : isDepressed ? 0.2 : 1` (transisi `transition-opacity duration-300`).
 
 ### D. Toggle Switch Component (`ToggleSwitch.tsx`)
+
 Slide switch daya utama (ON/OFF) di pojok kanan atas header. Menggunakan styling track 3D terbenam:
 
 #### 1. Jalur Slide (Track Container)
-* **Dimensi**: Lebar tetap `90px` (dikendalikan variabel `--width`), tinggi `36px` (`calc(var(--width) / 2.5)`), `border-radius: var(--width)` (`90px`), `border: 1px solid #aeb8c3`, latar belakang `#cbd2d9`.
-* **Efek Bayangan Kedalaman (Inset & Drop Shadows)**:
+
+- **Dimensi**: Lebar tetap `90px` (dikendalikan variabel `--width`), tinggi `36px` (`calc(var(--width) / 2.5)`), `border-radius: var(--width)` (`90px`), `border: 1px solid #aeb8c3`, latar belakang `#cbd2d9`.
+- **Efek Bayangan Kedalaman (Inset & Drop Shadows)**:
   - Bayangan Masuk: `box-shadow: inset 0 6px 12px rgba(0, 0, 0, 0.7), inset 0 -3px 6px rgba(255, 255, 255, 0.9), inset 4px 0 8px rgba(0, 0, 0, 0.4), inset -4px 0 8px rgba(0, 0, 0, 0.4)`.
   - Bayangan Keluar: `0 2px 2px rgba(255, 255, 255, 0.8), 0 -1px 2px rgba(0, 0, 0, 0.2)`.
 
 #### 2. Latar Status Jalur (Left & Right Indicators)
-* **Dimensi**: Lebar `40%` dari track, tinggi `60%`. Efek bayangan bersama: `box-shadow: inset 0 0 1px rgba(0,0,0,0.5), inset 0 4px 6px rgba(0,0,0,0.6)`.
-* **Indikator Kiri (Status ON - Hijau)**:
+
+- **Dimensi**: Lebar `40%` dari track, tinggi `60%`. Efek bayangan bersama: `box-shadow: inset 0 0 1px rgba(0,0,0,0.5), inset 0 4px 6px rgba(0,0,0,0.6)`.
+- **Indikator Kiri (Status ON - Hijau)**:
   - Posisi: `left: 10%`, `border-radius: 100px 0 0 100px`.
   - Latar Belakang: `linear-gradient(180deg, HSL(150deg 95% 40%) 10%, HSL(130deg 90% 45%) 60%, HSL(130deg 90% 30%))`.
-* **Indikator Kanan (Status OFF - Merah)**:
+- **Indikator Kanan (Status OFF - Merah)**:
   - Posisi: `right: 10%`, `border-radius: 0 100px 100px 0`.
   - Latar Belakang: `linear-gradient(180deg, #d32f2f 10%, #b71c1c 60%, #7f0000)`.
 
 #### 3. Knob Slider Utama (Toggle Button)
-* **Dimensi**: Lebar `50%` (`45px`), tinggi `90%` (`32.4px`).
-* **Latar Belakang**: `linear-gradient(to bottom, #ffffff 0%, #e4e9f0 40%, #c4cdd6 100%)`, `border: 1px solid #aeb8c3`.
-* **Bayangan Knob**: `box-shadow: inset 0 3px 5px rgba(255,255,255,1), inset 0 -3px 5px rgba(0, 0, 0, 0.3), 0 4px 6px rgba(0, 0, 0, 0.5), 0 8px 12px rgba(0, 0, 0, 0.3)`.
-* **Groove Garis Tactile (2 garis vertikal)**:
+
+- **Dimensi**: Lebar `50%` (`45px`), tinggi `90%` (`32.4px`).
+- **Latar Belakang**: `linear-gradient(to bottom, #ffffff 0%, #e4e9f0 40%, #c4cdd6 100%)`, `border: 1px solid #aeb8c3`.
+- **Bayangan Knob**: `box-shadow: inset 0 3px 5px rgba(255,255,255,1), inset 0 -3px 5px rgba(0, 0, 0, 0.3), 0 4px 6px rgba(0, 0, 0, 0.5), 0 8px 12px rgba(0, 0, 0, 0.3)`.
+- **Groove Garis Tactile (2 garis vertikal)**:
   - Dua alur (`::before` & `::after`) dipasang di `top: 15%`, lebar `15%`, tinggi `70%`, `border-radius: 100px`, warna `#ffffff`, `box-shadow: inset 1px 1px 2px rgba(0,0,0,0.3), 1px 1px 1px rgba(255,255,255,0.8)`. Posisi horizontal masing-masing di `left: 25%` dan `right: 25%`.
-* **Posisi Transisi Dinamis**:
+- **Posisi Transisi Dinamis**:
   - OFF: `left: 5%` (`4.5px`).
   - ON (checked): `left: 45%` (`40.5px`).
   - Transisi gerakan: `transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)`.
 
 ### E. Brand Logo & Header Section (`RadioLayout.tsx`)
+
 Spesifikasi visual logo 3D bulat dan identitas brand di bagian atas perangkat:
 
 #### 1. Logo NextVWT 3D Bulat (Logo Sphere)
-* **Dimensi**: Tinggi `55px`, lebar otomatis (`w-auto`), posisi `relative z-20`, transisi `transition-all duration-300`, bayangan `filter: drop-shadow(0 3px 6px rgba(0,0,0,0.25))`.
-* **Vektor Sinyal Melingkar (3 Arus Arsitektur Hijau)**:
+
+- **Dimensi**: Tinggi `55px`, lebar otomatis (`w-auto`), posisi `relative z-20`, transisi `transition-all duration-300`, bayangan `filter: drop-shadow(0 3px 6px rgba(0,0,0,0.25))`.
+- **Vektor Sinyal Melingkar (3 Arus Arsitektur Hijau)**:
   - **Sinyal Luar**: Path `d="M 22 77 A 38 38 0 1 1 78 77"`.
     - Bayangan (Shadow): `stroke: #0a2e1a`, `stroke-width: 6`, `opacity: 0.5`, `transform: translate(1px, 1.2px)`.
     - Isi (Fill): `stroke: #34D399` (Hijau muda), `stroke-width: 6`.
@@ -245,7 +271,7 @@ Spesifikasi visual logo 3D bulat dan identitas brand di bagian atas perangkat:
     - Bayangan (Shadow): `stroke: #003a17`, `stroke-width: 6`, `opacity: 0.5`, `transform: translate(1px, 1.2px)`.
     - Isi (Fill): `stroke: #00C853` (Hijau pekat), `stroke-width: 6`.
     - Kilau (Glow): `stroke: #69f0ae`, `stroke-width: 1.5`, `opacity: 0.65`, `transform: translate(-0.6px, -0.7px)`.
-* **Bola Tengah 3D (3D Sphere)**:
+- **Bola Tengah 3D (3D Sphere)**:
   - Bola dasar: `cx: 50, cy: 50, r: 11`.
   - Bayangan bola: `fill: #1a0000`, `opacity: 0.45`, `transform: translate(1.2px, 1.5px)`.
   - Gradasi Radial Bola 3D (`nextvwtSphere3D`): `cx="32%" cy="30%" r="68%"`.
@@ -258,35 +284,41 @@ Spesifikasi visual logo 3D bulat dan identitas brand di bagian atas perangkat:
   - Kilau cahaya bola (Specular Highlight): Oval `cx: 46.5, cy: 45.5, rx: 3.2, ry: 2.2`, warna putih `#ffffff`, `opacity: 0.7`, rotasi `rotate(-25, 46.5, 45.5)`.
 
 #### 2. Gelombang Pemancar Logo (TX Broadcast Ripple)
+
 Hanya muncul ketika status mengirim suara (`isTransmitting === true`):
-* **Wadah Absolute**: `absolute inset-0`, tinggi/lebar ripple `75px × 75px` (`logo-transmitting-bg`), efek pulsasi radial membesar dengan transisi lambat.
+
+- **Wadah Absolute**: `absolute inset-0`, tinggi/lebar ripple `75px × 75px` (`logo-transmitting-bg`), efek pulsasi radial membesar dengan transisi lambat.
 
 #### 3. Teks Brand & Marquee
-* **Nama Brand (NextVWT)**: Font `Outfit`/`Orbitron`, ukuran `14px`, tebal `bold`, `letter-spacing: wide`, warna `var(--header-text-color)`.
-* **Status Bar Marquee**:
+
+- **Nama Brand (NextVWT)**: Font `Outfit`/`Orbitron`, ukuran `14px`, tebal `bold`, `letter-spacing: wide`, warna `var(--header-text-color)`.
+- **Status Bar Marquee**:
   - Wadah: Lebar `120px`, tinggi `16px`, margin-top `2px` (`mt-0.5`), `overflow-hidden`, `whitespace-nowrap`.
   - Teks Berjalan: Kecepatan animasi marquee, ukuran font `10px`, tebal `semibold`, warna `var(--header-text-color)`, `opacity: 0.65`.
 
 ### F. Progress Bar Component (`ProgressBar.tsx`)
-* **Ukuran**: `100%` lebar dalam panel, tinggi `10px`, `rounded-full`.
-* **Glow Fill**: Gradien hijau neon dengan bayangan bersinar (`box-shadow: 0 0 10px rgba(74,222,128,0.5)`).
+
+- **Ukuran**: `100%` lebar dalam panel, tinggi `10px`, `rounded-full`.
+- **Glow Fill**: Gradien hijau neon dengan bayangan bersinar (`box-shadow: 0 0 10px rgba(74,222,128,0.5)`).
 
 ### G. User List Modal Component (`UserListModal.tsx`)
+
 Modal overlay daftar pengguna/staf aktif yang diposisikan di bawah LCD Display Panel untuk menyelaraskan alur visual perangkat.
-* **Sasis Utama (Outer Container)**:
+
+- **Sasis Utama (Outer Container)**:
   - Dimensi: Lebar penuh s.d maksimum `340px` (`w-full max-w-[340px]`), margin-top negatif `-32px` (`-mt-8`) untuk merapat di bawah sasis LCD, padding bawah `16px` (`pb-4`).
   - Latar Belakang & Garis Tepi: Warna latar putih (`#ffffff`), border kiri, kanan, dan bawah `1px solid #d1d5db` (`border-gray-300`).
   - Bentuk Bezel: Sudut bawah membulat `16px` (`rounded-b-2xl`).
   - Tata Letak: Flexbox vertikal (`flex flex-col`), tinggi responsif (tinggi `350px` pada layar `<700px`, tinggi `485px` pada layar $\ge 700px$).
   - Animasi transisi masuk: `animate-in fade-in duration-200`.
-* **Area Gulir List (Scrollable Area)**:
+- **Area Gulir List (Scrollable Area)**:
   - Latar Belakang: `#fafbfc`, dengan pembagi baris abu-abu tipis (`divide-y divide-gray-100`).
   - Custom Scrollbar: Lebar `-webkit-scrollbar` `1px`, warna thumb `#cbd5e1`, Firefox memakai `scrollbar-width: thin`.
-* **Baris Server Utama (Server Row)**:
+- **Baris Server Utama (Server Row)**:
   - Wadah: Flexbox horizontal, padding `16px` horizontal, `10px` vertikal, background `#f4f7f6`, border-bottom `1px solid #f3f4f6`.
   - Ikon Server: Lingkaran diameter `44px` (`w-11 h-11`), gradasi `linear-gradient(to bottom right, #fbbf24, #f59e0b)` (`from-amber-400 to-amber-500`), dengan shadow-inner dan ikon bintang SVG kuning `24px × 24px` di tengah.
   - Teks Server: Judul `"Server"` (font-size `14px`, tebal `500` / `medium`, warna `#111827`), subtitle `"SERVER NextVWT"` (font-size `10px`, tebal `400`, warna `#6b7280`, huruf kapital, tracking wide).
-* **Baris Detail Pengguna (User Row)**:
+- **Baris Detail Pengguna (User Row)**:
   - Wadah: Flexbox horizontal, padding `16px` horizontal, `10px` vertikal.
   - Warna Latar: Default `#fafbfc`, border-bottom `1px solid rgba(209, 213, 219, 0.7)` (`border-gray-300/70`).
   - Efek Hover & Aktif: `hover:bg-white`, `active:bg-gray-100` dengan transisi warna.
@@ -305,15 +337,17 @@ Modal overlay daftar pengguna/staf aktif yang diposisikan di bawah LCD Display P
     - Kegayaan: Ikon SVG Toa `20px × 20px` berwarna abu-abu `#6b7280` dengan efek berkedip (`animate-pulse`).
 
 ### H. Channel List Modal Component (`ChannelListModal.tsx`)
+
 Overlay dialog penuh untuk menampilkan semua daftar saluran (static channels) yang tersedia di NextVWT.
-* **Lapisan Tirai Belakang (Backdrop Overlay)**:
+
+- **Lapisan Tirai Belakang (Backdrop Overlay)**:
   - Posisi: Absolute pengisi penuh `inset-0`, warna latar hitam transparan `rgba(0, 0, 0, 0.6)` (`bg-black/60`), flexbox memusatkan konten (`items-center justify-center`), padding `16px` (`p-4`), z-index `50`.
-* **Wadah Dialog Modal (Modal Container)**:
+- **Wadah Dialog Modal (Modal Container)**:
   - Dimensi: Lebar penuh s.d maksimum `340px` (`w-full max-w-[340px]`), tinggi maksimum `80%` dari viewport, border-radius `8px` (`rounded-lg`).
   - Latar Belakang & Bayangan: Putih (`#ffffff`), border `1px solid #d1d5db` (`border-gray-300`), bayangan `shadow-2xl`.
   - Animasi transisi masuk: `animate-in fade-in zoom-in-95 duration-100`.
   - Tata Letak: Flexbox vertikal (`flex flex-col`), overflow tersembunyi (`overflow-hidden`).
-* **Header Dialog**:
+- **Header Dialog**:
   - Wadah: Flexbox vertikal, items-center, padding `16px` (`p-4`), border-bottom `1px solid #e5e7eb` (`border-gray-200`), relative.
   - Tombol Silang Tutup (Close Button): Absolute `top-3 right-3 p-1.5 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 active:scale-95 transition-all focus:outline-none cursor-pointer`. Memuat SVG silang `20px × 20px` dengan stroke-width `2.5`.
   - Logo Brand Dialog (NextVWT Center Grid):
@@ -330,10 +364,10 @@ Overlay dialog penuh untuk menampilkan semua daftar saluran (static channels) ya
         - Sinyal Tengah: stroke `#10B981` (shadow `#083818` translate `0.8, 1`, highlight `#ffffff` opacity `0.7` translate `-0.5, -0.6` stroke-width `1.2`).
         - Sinyal Dalam: stroke `#00C853` (shadow `#0a3c10` translate `0.8, 1`, highlight `#ffffff` opacity `0.7` translate `-0.5, -0.6` stroke-width `1.2`).
   - Subtitle Header: Teks `"NEXT VIRTUAL WALKIE TALKIE"` berukuran `9px` s.d `10px`, warna merah `#e53935`, font-weight `900` (`font-black`), tracking `0.18em`, margin-top `6px`.
-* **Kolom Pencarian (Search Input)**:
+- **Kolom Pencarian (Search Input)**:
   - Wadah: Padding `12px` (`p-3`), background abu-abu terang `#f9fafb` (`bg-gray-50`), border-bottom `1px solid #f3f4f6`.
   - Kolom Input: Lebar penuh, border `1px solid #d1d5db`, rounded `6px`, px `12px`, py `6px` (`py-1.5`), text-xs, outline-none, focus border `#3b82f6`, font-weight `600`.
-* **Daftar Saluran Gulir (Scrollable Channel List)**:
+- **Daftar Saluran Gulir (Scrollable Channel List)**:
   - Wadah: `flex-1 overflow-y-auto bg-white divide-y divide-gray-200`.
   - Tombol Pilihan Saluran (Channel Row Item):
     - flex items-center, hover:bg-gray-50, active:bg-gray-100, transition, cursor-pointer.
@@ -353,17 +387,17 @@ Overlay dialog penuh untuk menampilkan semua daftar saluran (static channels) ya
       - Wadah: `ml-3 pr-3 flex-1 min-w-0 py-1`.
       - Nama Saluran: `text-xs font-bold text-black truncate`.
       - Jumlah/Daftar Anggota: `text-[10px] text-gray-500 font-semibold truncate mt-0.5 uppercase`. (Format: `"[Jumlah] PENGGUNA • [Daftar nama]"` / `"0 PENGGUNA"`. Khusus Saluran 0 tertulis `"WWW.NEXTVWT.ID"`).
-* **Overlay Konfirmasi Akses Saluran (Active Channel Overlay)**:
+- **Overlay Konfirmasi Akses Saluran (Active Channel Overlay)**:
   - Dimensi Dialog: Lebar `85%` dari wadah modal, maks `280px`, rounded `8px`, `shadow-2xl`, border `#f3f4f6`.
   - Pilihan Tombol:
     - `"Menuju Channel [Number]"`: px `20px`, py `18px`, hover:bg-gray-50, active:bg-gray-100, text `16px`, warna `#1f2937`, tebal `500` (`font-medium`), border-bottom `1px solid #f3f4f6`.
     - `"Info Channel [Number]"`: px `20px`, py `18px`, hover:bg-gray-50, active:bg-gray-100, text `16px`, warna `#1f2937`, tebal `500`.
-* **Overlay Peringatan Terbatas (Restricted Warning Overlay)**:
+- **Overlay Peringatan Terbatas (Restricted Warning Overlay)**:
   - Dimensi Dialog: Lebar `85%` dari wadah modal, maks `300px`, rounded `16px` (`rounded-2xl`), `shadow-2xl`, padding `24px` (`p-6`).
   - Judul: `"Channel [Number] terbatas"`, font-size `17px`, tebal `bold` (700), warna `#1f2937`.
   - Deskripsi: `"Channel ini terbatas hanya untuk anggota channel"`, font-size `14px`, warna `#4b5563`, leading-relaxed, mt `10px`.
   - Tombol Tutup: `text-[15px] font-bold text-[#0c62a8] hover:text-[#0b5490] px-6 py-2 cursor-pointer focus:outline-none`.
-* **Overlay Informasi Detail Saluran (Info Channel Overlay)**:
+- **Overlay Informasi Detail Saluran (Info Channel Overlay)**:
   - Dimensi Dialog: Lebar `85%` dari wadah modal, maks `300px`, rounded `16px`, padding `20px` (`p-5`), border `#f3f4f6`.
   - Judul Header: flex items-center gap `8px`, padding bottom `10px`. Ikon info SVG warna biru `#0c62a8` tebal `2.5`, judul `"Channel [Number]"` (font `16px`, tebal `bold`).
   - Render Bola Logo 3D: Tinggi `75px` w-auto, menggunakan Radial Gradient id `#glossyRedInfo` (identik dengan spesifikasi logo mini).
@@ -372,6 +406,29 @@ Overlay dialog penuh untuk menampilkan semua daftar saluran (static channels) ya
     - Baris Info: border-top & border-bottom `1px solid #f3f4f6`, py `14px`, text `14px`. Label `"Info"` (lebar `56px`, font-bold, text-gray-400), Nilai Info (font-semibold, text-gray-700).
   - Tombol Tutup: `text-[15px] font-bold text-[#0c62a8] hover:text-[#0b5490] px-6 py-2 cursor-pointer focus:outline-none`, mt `20px`.
 
+### I. Settings Panel Component (`SettingsPanel.tsx`)
+
+Panel layar penuh yang diposisikan absolute di atas kontainer utama.
+
+- **Header Bar Atas**:
+  - Ukuran: Tinggi `55px`, padding `px-4`, background `white`, border-bottom `1px solid #cbd5e1`, shadow `0 2px 4px rgba(0,0,0,0.05)`.
+  - Tombol Kembali: Ikon chevron kembali (`stroke-width: 2.5`), warna `#0066cc`.
+  - Judul Header: `"Pengaturan"`, font `16px` (`text-[16px]`), tebal `bold`.
+- **Formulir Gulir (Scrollable Body)**:
+  - Pembatas Seksi (Section Divider): Latar belakang `#e2e8f0`, py `4px`, px `12px`, font-size `11px`, tebal `bold` (700), warna teks `#475569`, huruf besar.
+  - Baris Item: Latar belakang `white`, padding `12px` s.d `16px`, border-bottom `1px solid #e2e8f0`.
+- **Seksi Editor Foto Profil (Akun)**:
+  - Casing Foto: Kotak tegak persegi panjang `120px` × `140px`, border `#cbd5e1`, latar belakang `#e0e0e0`, shadow-inner.
+  - Kontrol Sumber Foto (Segmented Switch): Lebar maks `240px`, latar `#f3f4f6`, rounded-lg.
+    - Tombol tab "Foto Google": Latar putih (`bg-white`), text indigo `#4f46e5`, shadow-sm jika aktif; jika tidak login Google disetel disable dengan opacity `40%`.
+    - Tombol tab "Unggah Galeri": Menggunakan React `useRef` untuk memicu dialog pemilihan file secara langsung tanpa menampilkan tombol unggah tambahan di bawahnya.
+- **Toggle Switch Kustom**:
+  - Dimensi: Lebar `50px`, tinggi `25px`, rounded `12.5px`, latar `#c7c7c7` (Unchecked).
+  - Knob Bulat: Diameter `25px`, latar gradien logam melingkar (conic-gradient), bayangan `2px 1px 3px rgba(8,8,8,0.3)`.
+  - Animasi Checked: Bergeser ke kanan `25px` (`translateX(100%)`) dengan durasi `0.3s`, warna latar belakang switch berubah menjadi `#cbd5e1`.
+
+_Catatan: Rincian spesifikasi desain lengkap untuk komponen panel pengaturan, user list modal, dan channel list modal telah dipisahkan ke dalam berkas khusus [DESIGN_SPEC_MODALS_PANELS.md](file:///c:/Users/ASUS/Downloads/NextVWT%20PTT%20App%20Prototype%20-%20Clone/DESIGN_SPEC_MODALS_PANELS.md)._
+
 ---
 
 ## 🐟 4. Aquarium Canvas Simulation Engine (`AquariumCanvas.tsx`)
@@ -379,38 +436,45 @@ Overlay dialog penuh untuk menampilkan semua daftar saluran (static channels) ya
 Merupakan mesin visual simulasi akuarium 4K ultra-realistic yang memanfaatkan HTML5 Canvas 2D berkinerja tinggi.
 
 ### A. High-DPI (Retina) Scaling
+
 Untuk mencegah visual ikan bergerigi pada layar resolusi tinggi:
+
 1. Mendapatkan `devicePixelRatio` perangkat (biasanya `2` atau `3` pada ponsel cerdas).
 2. Menskalakan ukuran internal kanvas (`canvas.width` dan `canvas.height`) sebanyak piksel rasio tersebut.
 3. Mempertahankan ukuran CSS kanvas tetap `300px × 155px` (`style.width` dan `style.height`).
 4. Melakukan penskalaan kuas gambar `ctx.scale(ratio, ratio)`.
 
 ### B. Perilaku & Fisika Pergerakan Ikan
-* **Steering Force**: Pergerakan ikan dihitung berbasis vektor posisi, kecepatan, dan percepatan. Menggunakan algoritma wandering acak dengan batasan radius belok halus agar ikan tidak berputar secara patah.
-* **Wiggling Tail (Kibasan Ekor)**: Digambar menggunakan kurva Bezier kompleks. Kibasan ekor dihasilkan oleh parameter dinamis:
+
+- **Steering Force**: Pergerakan ikan dihitung berbasis vektor posisi, kecepatan, dan percepatan. Menggunakan algoritma wandering acak dengan batasan radius belok halus agar ikan tidak berputar secara patah.
+- **Wiggling Tail (Kibasan Ekor)**: Digambar menggunakan kurva Bezier kompleks. Kibasan ekor dihasilkan oleh parameter dinamis:
   $$\theta = \sin(\text{time} \times \text{speed}) \times \text{maxAngle}$$
   Kecepatan kibasan ekor berbanding lurus dengan kecepatan laju berenang ikan.
-* **3D Depth & Bayangan**:
+- **3D Depth & Bayangan**:
   Ikan digambar dengan drop shadow internal kanvas untuk menciptakan kedalaman air (efek 3D):
   `ctx.shadowColor = 'rgba(0,0,0,0.55)'`, `ctx.shadowBlur = 10`, `ctx.shadowOffsetX = 8`.
 
 ### C. Spesies Ikan & Parameter Visual
+
 1. **Goldfish (Mas Koki - Tema V2 & V6)**: Tubuh gemuk oranye-emas (`#ff7f00`), sirip ekor lebar berumbai transparan, gerakan lambat berputar.
 2. **Blue Betta (Cupang Biru - Tema V3 & V6)**: Tubuh biru tua langsing (`#005f73`), sirip ekor melambai sangat lebar (`#0a9396` transparan), lambaian lembut.
-3. **Neon Tetra (Tema V4 & V6)**: Ukuran sangat kecil (panjang 15px), tubuh bergaris biru neon (`#00f5d4`) dan ekor merah (`#ff0054`), berenang cepat secara bergerombol (*schooling behavior*).
+3. **Neon Tetra (Tema V4 & V6)**: Ukuran sangat kecil (panjang 15px), tubuh bergaris biru neon (`#00f5d4`) dan ekor merah (`#ff0054`), berenang cepat secara bergerombol (_schooling behavior_).
 4. **Pink Betta (Cupang Pink - Tema V5 & V6)**: Tubuh magenta anggun, sirip merah muda lembut melambai lebar.
 
 ### D. Sistem Partikel
-* **Elastisitas Gelembung (Bubble Wobble)**:
-  Gelembung udara naik ke atas dengan kecepatan acak dan goyangan sinus horizontal. Agar gelembung tampak realistis elastis, diameter gelembung disimulasikan menggunakan distorsi elips (*squash & stretch*):
+
+- **Elastisitas Gelembung (Bubble Wobble)**:
+  Gelembung udara naik ke atas dengan kecepatan acak dan goyangan sinus horizontal. Agar gelembung tampak realistis elastis, diameter gelembung disimulasikan menggunakan distorsi elips (_squash & stretch_):
   $$\text{scaleX} = 1 + \sin(\text{phase}) \times 0.08, \quad \text{scaleY} = 1 - \sin(\text{phase}) \times 0.08$$
-  Gelembung juga memiliki titik kilau cahaya (*specular highlight*) di pojok kiri atas lingkaran gelembung.
-* **Plankton & Mikro-Partikel**: 10-15 partikel plankton melayang acak berukuran 1px - 2px dengan opacity sangat tipis (`0.15`) untuk menyimulasikan kedalaman air alami.
-* **Rumput Laut (Water Plant)**:
+  Gelembung juga memiliki titik kilau cahaya (_specular highlight_) di pojok kiri atas lingkaran gelembung.
+- **Plankton & Mikro-Partikel**: 10-15 partikel plankton melayang acak berukuran 1px - 2px dengan opacity sangat tipis (`0.15`) untuk menyimulasikan kedalaman air alami.
+- **Rumput Laut (Water Plant)**:
   Digambar di bagian bawah kanvas dengan tinggi bervariasi. Memiliki **12 segmen kurva** agar lambaian tanaman terlihat meliuk kontinu dan lembut, terpengaruh gelombang sinus arus global.
 
 ### E. Evasion System (Sentuhan Interaktif)
+
 Ketika pengguna mengeklik/mengetuk area LCD Panel:
+
 1. Posisi klik `(x, y)` ditangkap.
 2. Gelombang riak air lingkaran (`ripple`) dipancarkan di lokasi sentuhan.
 3. Seluruh ikan dalam radius `80px` akan menghitung vektor menjauh dari pusat sentuhan, meningkatkan kecepatan laju mereka secara drastis (efek terkejut), lalu berangsur-angsur melambat kembali ke kecepatan jelajah normal.
@@ -432,6 +496,6 @@ Aplikasi menggunakan Zustand store (`src/app/store/usePTTStore.ts`) yang dilengk
 
 ## 🔤 6. Typography System
 
-* **DSEG7 Classic Mini Bold**: Digunakan khusus untuk angka channel digital LCD agar memberikan nuansa walkie-talkie retro-modern yang autentik.
-* **Outfit**: Digunakan untuk teks judul brand **NextVWT** dan teks status utama.
-* **Inter**: Digunakan untuk elemen antarmuka umum seperti detail pengguna, modal daftar nama staf/anggota tim, dan panel pengaturan.
+- **DSEG7 Classic Mini Bold**: Digunakan khusus untuk angka channel digital LCD agar memberikan nuansa walkie-talkie retro-modern yang autentik.
+- **Outfit**: Digunakan untuk teks judul brand **NextVWT** dan teks status utama.
+- **Inter**: Digunakan untuk elemen antarmuka umum seperti detail pengguna, modal daftar nama staf/anggota tim, dan panel pengaturan.
