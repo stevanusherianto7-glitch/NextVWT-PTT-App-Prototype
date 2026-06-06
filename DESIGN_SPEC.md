@@ -541,6 +541,8 @@ Untuk memastikan antarmuka Walkie-Talkie tidak terpotong di perangkat seluler (m
    - Ini memastikan aplikasi selalu menempati tepat 100% dari ruang pandang aktif tanpa memicu scrollbar vertikal liar saat bilah alamat browser seluler bergeser.
 2. **Layout Constraint**:
    - Layout dikunci pada mode portrait dengan lebar kontainer maksimal `w-full max-w-md` atau proporsi fisik sasis, memastikan elemen kontrol dan visual tetap berada di area jangkauan satu tangan (one-hand operation area) dan bebas dari Layout Shift (CLS < 0.1).
+3. **Top Header Spacing Compression**:
+   - Spasi vertikal antara top bar header (area logo dan power toggle) dan sasis utama panel LCD dipadatkan dengan mengubah padding-top kontainer utama dari `pt-8` (32px) menjadi `pt-[14px]` (14px). Ini mengangkat sasis utama panel LCD ke atas mendekati tepi bawah top header, menghasilkan visual yang lebih padat (compact) sambil tetap memberikan breathing room yang cukup untuk teks berjalan (marquee) di atas.
 
 ---
 
@@ -552,3 +554,4 @@ Untuk memastikan antarmuka Walkie-Talkie tidak terpotong di perangkat seluler (m
 | **v2.2.0** | 2026-06-06 | Memperbarui titik transisi D-Pad menjadi integer bulat (`100`, `190`), radius (`48.75`), serta penyesuaian gap simetris `15px` (Seksi 3.B). | Senior System Architect |
 | **v2.3.0** | 2026-06-06 | Penyesuaian kedalaman parit PTT menggunakan latar belakang `rgba(0, 0, 0, 0.12)` dan sepasang bayangan dalam atas-bawah (`inset 0 6px 10px`, `inset 0 -4px 8px`) (Seksi 3.C.1). | Senior System Architect |
 | **v2.4.0** | 2026-06-06 | Pengurangan spasi vertikal layout (D-Pad margin-top ke `mt-2`, padding-bottom sasis ke `pb-7`, PTT ke `bottom-[72px]`) (Seksi 3.B & 8). | Senior System Architect |
+| **v2.5.0** | 2026-06-06 | Pemadatan spasi vertikal top header (padding-top kontainer utama dari `pt-8` ke `pt-[14px]`) untuk mendekatkan sasis utama panel LCD ke top bar header (Seksi 8). | Senior System Architect |
