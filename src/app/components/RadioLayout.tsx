@@ -444,7 +444,7 @@ export function RadioLayout() {
             ) : (
               /* Themed Faceplate Container */
               <div
-                className="w-full flex flex-col items-center pt-6 pb-7 relative z-10 transition-all duration-300"
+                className="w-full flex flex-col items-center pt-6 pb-3 relative z-10 transition-all duration-300"
                 style={{
                   borderRadius: '40px 40px 200px 200px / 40px 40px 90px 90px',
                   background: 'var(--panel-bg)',
@@ -484,7 +484,7 @@ export function RadioLayout() {
 
                 {/* Control Buttons */}
                 <div
-                  className={`mt-2 mb-2 flex justify-center transition-opacity duration-300 w-full ${isPowerOn ? '' : 'pointer-events-none'}`}
+                  className={`mt-1 mb-0.5 flex justify-center transition-opacity duration-300 w-full ${isPowerOn ? '' : 'pointer-events-none'}`}
                 >
                   <ControlButtons
                     onScan={() => setIsChannelListOpen(true)}
