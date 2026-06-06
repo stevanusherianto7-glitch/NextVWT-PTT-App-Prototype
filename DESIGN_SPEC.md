@@ -170,7 +170,10 @@ Papan kontrol utama yang diposisikan secara absolute di atas pelat belakang ceta
   - Digambar menggunakan path SVG viewBox `0 0 290 150` agar muat presisi di dalam kontainer utama.
   - Path: `d="M 100 30 A 48.75 48.75 0 0 1 190 30 L 245 30 A 45 45 0 0 1 245 120 L 190 120 A 48.75 48.75 0 0 1 100 120 L 45 120 A 45 45 0 0 1 45 30 Z"`
   - Menggunakan koordinat integer presisi (`100`, `190`, `245`, `45`) dengan radius lengkungan tengah `48.75` untuk menyentuh tepat batas atas `y=0` dan bawah `y=150`.
-  - Memiliki filter `dpad-inset-shadow` untuk memberikan efek lubang tombol yang menjorok ke dalam body walkie-talkie.
+  - Memiliki filter `dpad-inset-shadow` yang dioptimalkan dengan pergeseran diagonal (`dx="1.5" dy="2"` untuk highlight top-left, dan `dx="-2" dy="-2.5"` untuk shadow bottom-right) serta peningkatan opacity shadow menjadi `0.45` untuk memberikan efek cembung/timbul yang kontras.
+  - Dilengkapi dua layer stroke bevel manual di atas base path:
+    - **Top-Left Highlight Stroke**: `stroke="rgba(255, 255, 255, 0.45)"`, `strokeWidth="2.5"`, digeser `translate(-1px, -1px)` dengan filter blur `0.5px` untuk kilau tepi atas-kiri.
+    - **Bottom-Right Shadow Stroke**: `stroke="rgba(0, 0, 0, 0.4)"`, `strokeWidth="2.5"`, digeser `translate(1px, 1.2px)` dengan filter blur `0.5px` untuk bayangan tepi bawah-kanan.
 - **Scan Button (Kiri)**:
   - Posisi: `left: 15px`, `top: 50px`.
   - Ukuran: `85px` (Lebar) × `50px` (Tinggi).
@@ -565,3 +568,4 @@ Untuk memastikan antarmuka Walkie-Talkie tidak terpotong di perangkat seluler (m
 | **v2.7.0** | 2026-06-06 | Penguatan bayangan dalam (inner shadow) sisi samping/atas sasis faceplate utama dan tepi bawah top header untuk visual 3D skeuomorphic lebih cembung/inset (Seksi 8). | Senior System Architect |
 | **v2.8.0** | 2026-06-06 | Penyempurnaan & pelembutan bayangan dalam sasis faceplate utama (mengganti bayangan atas yang tebal/kasar dengan bayangan setebal 3px/4px yang seragam menyamai karakter tepi bawah) (Seksi 8). | Senior System Architect |
 | **v2.9.0** | 2026-06-06 | Peningkatan visual batang sinyal LCD (lebar 10.5px, border 1.5px solid #000000, gradasi warna neon super-vibrant, dan inner 3D highlights dipertebal) serta perapatan gap antar batang menjadi 0.5px (Seksi 3.A.3). | Senior System Architect |
+| **v3.0.0** | 2026-06-06 | Implementasi D-Pad Bezel Plate 3D Convex Bevel & Shadow menggunakan filter SVG diagonal dan dua layer stroke bevel manual ganda (highlight white & shadow black) (Seksi 3.B). | Senior System Architect |

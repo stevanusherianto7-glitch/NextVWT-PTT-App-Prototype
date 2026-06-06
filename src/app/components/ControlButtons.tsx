@@ -47,9 +47,9 @@ export function ControlButtons({
             </linearGradient>
 
             <filter id="dpad-inset-shadow" x="-10%" y="-10%" width="120%" height="120%">
-              {/* Top highlight shadow */}
-              <feOffset dx="0" dy="5" />
-              <feGaussianBlur stdDeviation="3" result="offset-blur-top" />
+              {/* Highlight at Top-Left */}
+              <feOffset dx="1.5" dy="2" />
+              <feGaussianBlur stdDeviation="1.5" result="offset-blur-top" />
               <feComposite
                 operator="out"
                 in="SourceGraphic"
@@ -63,9 +63,9 @@ export function ControlButtons({
               />
               <feComposite operator="in" in="color-top" in2="inverse-top" result="shadow-top" />
 
-              {/* Bottom shadow */}
-              <feOffset dx="0" dy="-4" />
-              <feGaussianBlur stdDeviation="4" result="offset-blur-bottom" />
+              {/* Shadow at Bottom-Right */}
+              <feOffset dx="-2" dy="-2.5" />
+              <feGaussianBlur stdDeviation="2" result="offset-blur-bottom" />
               <feComposite
                 operator="out"
                 in="SourceGraphic"
@@ -74,7 +74,7 @@ export function ControlButtons({
               />
               <feFlood
                 floodColor="var(--dpad-shadow-bottom-color)"
-                floodOpacity="var(--dpad-shadow-bottom-opacity)"
+                floodOpacity="0.45"
                 result="color-bottom"
               />
               <feComposite
@@ -98,6 +98,26 @@ export function ControlButtons({
             d="M 100 30 A 48.75 48.75 0 0 1 190 30 L 245 30 A 45 45 0 0 1 245 120 L 190 120 A 48.75 48.75 0 0 1 100 120 L 45 120 A 45 45 0 0 1 45 30 Z"
             fill="url(#dpad-backing-grad)"
             filter="url(#dpad-inset-shadow)"
+          />
+
+          {/* Top-Left Bevel Highlight (for embossed illusion) */}
+          <path
+            d="M 100 30 A 48.75 48.75 0 0 1 190 30 L 245 30 A 45 45 0 0 1 245 120 L 190 120 A 48.75 48.75 0 0 1 100 120 L 45 120 A 45 45 0 0 1 45 30 Z"
+            fill="none"
+            stroke="rgba(255, 255, 255, 0.45)"
+            strokeWidth="2.5"
+            className="pointer-events-none"
+            style={{ transform: 'translate(-1px, -1px)', filter: 'blur(0.5px)' }}
+          />
+
+          {/* Bottom-Right Bevel Shadow (for embossed illusion) */}
+          <path
+            d="M 100 30 A 48.75 48.75 0 0 1 190 30 L 245 30 A 45 45 0 0 1 245 120 L 190 120 A 48.75 48.75 0 0 1 100 120 L 45 120 A 45 45 0 0 1 45 30 Z"
+            fill="none"
+            stroke="rgba(0, 0, 0, 0.4)"
+            strokeWidth="2.5"
+            className="pointer-events-none"
+            style={{ transform: 'translate(1px, 1.2px)', filter: 'blur(0.5px)' }}
           />
 
           {/* Clean outer border line (single path) */}
