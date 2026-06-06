@@ -98,22 +98,25 @@ Komponen utama penampil status radio. Menggunakan styling kaca (glassmorphism) b
 
 #### 1. Sasis Utama (Outer Chassis Container)
 
-- **Dimensi Fisik**: Lebar tetap `300px`, tinggi tetap `155px`, `border-radius: 24px` (`rounded-3xl`), margin horizontal otomatis (`mx-auto`).
+- **Dimensi Fisik**: Lebar tetap `300px`, tinggi tetap `155px`, `border-radius: 24px` (`rounded-3xl`), margin horizontal otomatis (`mx-auto`), padding `p-[10px]` untuk bingkai.
 - **Latar Belakang & Efek Sinar**:
-  - Warna Backlight: Menggunakan variabel `--lcd-bg` (berupa `linear-gradient` vertikal).
+  - Warna Backlight: Menggunakan variabel `--lcd-bg` (berupa `linear-gradient` vertikal) pada kontainer layar dalam.
   - Ambient Glow: Menggunakan variabel `--lcd-glow` (misal `.theme-v6` memakai `0 0 15px rgba(0, 180, 216, 0.55), 2px 2px 4px rgba(0, 0, 0, 0.3)`).
-- **Bezel Tepi 3D (3D Border Bezel)**:
-  - Tebal bezel: `10px` padat (`border-style: solid`).
-  - Gradasi Warna Tepi (Top/Right/Bottom/Left): Diatur secara individual melalui variabel `--lcd-border-top`, `--lcd-border-right`, `--lcd-border-bottom`, dan `--lcd-border-left`.
+- **Bezel Tepi 3D Emas Bebas Bocor**:
+  - Dibuat menggunakan paduan `linear-gradient(135deg, ...)` warna emas/tembaga (`--lcd-border-top` ke `--lcd-border-bottom`) sebagai background sasis utama dengan padding `10px`, menghilangkan garis join border diagonal browser agar bebas bocor.
 
 #### 2. Lapisan Efek Kedalaman Bezel & Kaca (Depth & Glass Layers)
 
 - **3D Gold Bezel Emboss Overlay**:
-  - Elemen: `div` absolute dengan penempatan negatif `-inset-[10px]` dan `border-radius: 24px` (`rounded-3xl`).
-  - Efek Bayangan: `box-shadow: inset 0 0 0 1px rgba(0,0,0,0.22), inset 0 3.5px 6px rgba(255,255,255,0.45), inset 0 -3.5px 6px rgba(0,0,0,0.45), inset 0 0 10px rgba(0,0,0,0.15)`.
-- **3D Inner Border Overlay**:
-  - Elemen: `div` absolute pengisi penuh `inset-0` dengan `border-radius: 16px` (`rounded-2xl`).
-  - Efek Bayangan: `box-shadow: inset 0 0 0 2px rgba(255,255,255,0.4), inset 0 0 10px rgba(0,0,0,0.6)`.
+  - Elemen: `div` absolute dengan penempatan `inset-0` dan `border-radius: 24px` (`rounded-3xl`).
+  - Efek Bayangan: `box-shadow: inset 0 0 0 1.5px rgba(0,0,0,0.28), inset 0 3.5px 6px rgba(255,255,255,0.55), inset 0 -3.5px 6px rgba(0,0,0,0.55), inset 0 0 14px rgba(0,0,0,0.22)`.
+- **Inner Screen Container (Kontainer Layar Dalam)**:
+  - Elemen: `div` dengan `rounded-[14px]` dan `overflow-hidden` untuk memotong elemen di dalamnya (seperti AquariumCanvas).
+- **3D Inner Border/Glass Highlight Overlay**:
+  - Elemen: `div` absolute pengisi penuh `inset-0` dengan `border-radius: 14px`.
+  - Efek Bayangan: `box-shadow: inset 0 0 0 2px rgba(255,255,255,0.45), inset 0 0 12px rgba(0,0,0,0.65)`.
+- **Glossy Screen Shine Overlay**:
+  - Elemen: `div` absolute di bagian atas layar `h-[45%]` dengan gradasi `linear-gradient(to bottom, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%)` untuk simulasi kilau kaca fisik.
 
 #### 3. Konten Baris Atas (Top Status Bar)
 
@@ -555,3 +558,4 @@ Untuk memastikan antarmuka Walkie-Talkie tidak terpotong di perangkat seluler (m
 | **v2.3.0** | 2026-06-06 | Penyesuaian kedalaman parit PTT menggunakan latar belakang `rgba(0, 0, 0, 0.12)` dan sepasang bayangan dalam atas-bawah (`inset 0 6px 10px`, `inset 0 -4px 8px`) (Seksi 3.C.1). | Senior System Architect |
 | **v2.4.0** | 2026-06-06 | Pengurangan spasi vertikal layout (D-Pad margin-top ke `mt-2`, padding-bottom sasis ke `pb-7`, PTT ke `bottom-[72px]`) (Seksi 3.B & 8). | Senior System Architect |
 | **v2.5.0** | 2026-06-06 | Pemadatan spasi vertikal top header (padding-top kontainer utama dari `pt-8` ke `pt-[14px]`) untuk mendekatkan sasis utama panel LCD ke top bar header (Seksi 8). | Senior System Architect |
+| **v2.6.0** | 2026-06-06 | Penyelesaian kebocoran warna bingkai LCD atas (padding gradient bezel) dan penguatan efek skeuomorphic (gloss, shadow, bevel) di seluruh antarmuka (Seksi 3.A & 8). | Senior System Architect |
