@@ -164,13 +164,13 @@ export const CHANNELS: ChannelConfigItem[] = [
 export const VISUAL_CONFIG = {
   // Primary color palette
   colors: {
-    primary: '#00C853',      // Primary green (PTT button, highlights)
-    secondary: '#FF9800',    // Secondary orange (LCD panel default)
-    accent: '#FF3D00',       // Accent red (danger, TX indicator)
-    success: '#22C55E',      // Success green (progress bar)
-    warning: '#FFA500',      // Warning orange
-    error: '#FF3D00',        // Error red
-    muted: '#999999',        // Muted gray
+    primary: '#00C853', // Primary green (PTT button, highlights)
+    secondary: '#FF9800', // Secondary orange (LCD panel default)
+    accent: '#FF3D00', // Accent red (danger, TX indicator)
+    success: '#22C55E', // Success green (progress bar)
+    warning: '#FFA500', // Warning orange
+    error: '#FF3D00', // Error red
+    muted: '#999999', // Muted gray
   },
 
   // Shadow definitions for 3D effects
@@ -179,7 +179,7 @@ export const VISUAL_CONFIG = {
     medium: '0 6px 12px rgba(0,0,0,0.3)',
     large: '0 8px 16px rgba(0,0,0,0.4)',
     inner: 'inset 0 4px 8px rgba(0,0,0,0.2)',
-    button3D: '0 6px 0 #000000',      // 3D button effect
+    button3D: '0 6px 0 #000000', // 3D button effect
   },
 
   // Border radius values
@@ -188,7 +188,7 @@ export const VISUAL_CONFIG = {
     medium: '12dp',
     large: '16dp',
     extraLarge: '24dp',
-    pill: '999dp',              // Fully rounded (buttons, toggles)
+    pill: '999dp', // Fully rounded (buttons, toggles)
   },
 
   // Animation/transition timings
@@ -205,8 +205,8 @@ export const VISUAL_CONFIG = {
     width: '280dp',
     height: '160dp',
     gradient: {
-      from: '#FFC966',        // Light amber
-      to: '#FFA500',          // Dark amber
+      from: '#FFC966', // Light amber
+      to: '#FFA500', // Dark amber
     },
   },
 
@@ -214,8 +214,8 @@ export const VISUAL_CONFIG = {
   pttButton: {
     width: '280dp',
     height: '100dp',
-    gradientIdle: ['#76FF03', '#00C853'],      // Light green to dark green
-    gradientActive: ['#00E676', '#00C853'],    // Bright green when active
+    gradientIdle: ['#76FF03', '#00C853'], // Light green to dark green
+    gradientActive: ['#00E676', '#00C853'], // Bright green when active
     cornerRadius: '50dp',
   },
 };
@@ -227,22 +227,22 @@ export const VISUAL_CONFIG = {
 export const AUDIO_CONFIG = {
   // Audio codec and quality settings
   codec: {
-    type: 'opus',            // WebRTC audio codec
-    bitrate: '128kbps',      // High-quality stereo
-    sampleRate: 48000,       // Hz
-    channels: 2,             // Stereo
+    type: 'opus', // WebRTC audio codec
+    bitrate: '128kbps', // High-quality stereo
+    sampleRate: 48000, // Hz
+    channels: 2, // Stereo
   },
 
   // Fallback Base64 chunking when WebRTC unavailable
   fallback: {
-    chunkDurationMs: 255,    // 255ms audio chunks
-    base64Encoding: true,    // Use base64 for transport
+    chunkDurationMs: 255, // 255ms audio chunks
+    base64Encoding: true, // Use base64 for transport
   },
 
   // Alert tones (Motorola-style)
   tones: {
-    clickStart: { frequency: 1380, duration: 50 },    // Physical click sound
-    rogerBeep: { frequency: 1380, duration: 100 },    // Roger confirmation
+    clickStart: { frequency: 1380, duration: 50 }, // Physical click sound
+    rogerBeep: { frequency: 1380, duration: 100 }, // Roger confirmation
   },
 
   // Default volume settings (0-100)
@@ -254,22 +254,22 @@ export const AUDIO_CONFIG = {
 
   // Vibration settings (Android Capacitor)
   vibration: {
-    onPressStart: 15,        // 15ms vibration
-    onPressEnd: 10,          // 10ms vibration
+    onPressStart: 15, // 15ms vibration
+    onPressEnd: 10, // 10ms vibration
     enabled: true,
   },
 
   // Echo and feedback settings
   echo: {
     builtInEcho: true,
-    echoFeedbackDefault: 35,  // 0-100 scale
+    echoFeedbackDefault: 35, // 0-100 scale
     fullDuplexDefault: false,
   },
 
   // Audio mode preferences
   modes: {
-    discussion: 'discussion',  // Half-duplex mode (only transmit)
-    music: 'music',            // Full-duplex mode (simultaneous RX/TX)
+    discussion: 'discussion', // Half-duplex mode (only transmit)
+    music: 'music', // Full-duplex mode (simultaneous RX/TX)
   },
 };
 
