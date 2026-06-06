@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { supabase } from '../utils/supabase';
 import type { User, RealtimeChannel } from '@supabase/supabase-js';
+import { BRAND } from '../utils/config';
 
 const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
 const isDummyKey =
@@ -193,7 +194,7 @@ const DEFAULT_SETTINGS = {
   toneOnStartEnd: true,
   bgActive: true,
   fullDuplex: false,
-  themeText: 'theme-classic',
+  themeText: BRAND.defaultTheme,
   builtInEcho: true,
   isKaraokePlayerOpen: false,
   echoFeedback: 35,
@@ -236,7 +237,7 @@ function subscribeToChannel(channelNum: number) {
     }
 
     const store = usePTTStore.getState();
-    const channelInstance = supabase.channel(`ptt-room-${channelNum}`, {
+    const channelInstance = supabase.channel(`${BRAND.supabaseRoomPrefix}${channelNum}`, {
       config: {
         presence: {
           key: store.userId || 'anonymous',
@@ -341,8 +342,8 @@ export const usePTTStore = create<PTTState>((set) => ({
   isTransmitting: false,
   isScanning: false,
   progress: 0,
-  channelNumber: 100,
-  channelId: getChannelUUID(100),
+  channelNumber: BRAND.defaultChannel,
+  channelId: getChannelUUID(BRAND.defaultChannel),
   userId: '',
   error: null,
 
