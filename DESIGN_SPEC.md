@@ -318,7 +318,7 @@ Hanya muncul ketika status mengirim suara (`isTransmitting === true`):
 Modal overlay daftar pengguna/staf aktif yang diposisikan di bawah LCD Display Panel untuk menyelaraskan alur visual perangkat.
 
 - **Sasis Utama (Outer Container)**:
-  - Dimensi: Lebar penuh s.d maksimum `340px` (`w-full max-w-[340px]`), margin-top negatif `-32px` (`-mt-8`) untuk merapat di bawah sasis LCD, padding bawah `16px` (`pb-4`).
+  - Dimensi: Lebar penuh s.d maksimum `340px` (`w-full max-w-[340px]`), margin-top negatif `-mt-[14px]` untuk menyelaraskan batas atas modal tepat berimpit di bawah header bar tanpa kebocoran warna transparan, padding bawah `16px` (`pb-4`).
   - Latar Belakang & Garis Tepi: Warna latar putih (`#ffffff`), border kiri, kanan, dan bawah `1px solid #d1d5db` (`border-gray-300`).
   - Bentuk Bezel: Sudut bawah membulat `16px` (`rounded-b-2xl`).
   - Tata Letak: Flexbox vertikal (`flex flex-col`), tinggi responsif (tinggi `350px` pada layar `<700px`, tinggi `485px` pada layar $\ge 700px$).
