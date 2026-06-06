@@ -234,7 +234,7 @@ export function LCDPanel({
               )}
 
               {/* Signal Bars SVG approach */}
-              <div className="flex items-end gap-0 h-full pb-[2px] relative">
+              <div className="flex items-end gap-[1.5px] h-full pb-[2px] relative">
                 {[1, 2, 3, 4].map((bar) => {
                   const isActive = bar <= signalBars;
                   let barBackground =
@@ -243,13 +243,13 @@ export function LCDPanel({
                   if (isActive) {
                     if (signalBars >= 3) {
                       barBackground =
-                        'linear-gradient(to bottom, #a2f3a5 0%, #00e64d 40%, #009c34 100%)';
+                        'linear-gradient(to bottom, #c6ffc2 0%, #00ff55 45%, #008f1f 100%)';
                     } else if (signalBars === 2) {
                       barBackground =
-                        'linear-gradient(to bottom, #ffea85 0%, #ffbb00 40%, #cc9600 100%)';
+                        'linear-gradient(to bottom, #fff3a1 0%, #ffcc00 45%, #b88600 100%)';
                     } else if (signalBars === 1) {
                       barBackground =
-                        'linear-gradient(to bottom, #ff9999 0%, #ff3333 40%, #b31a1a 100%)';
+                        'linear-gradient(to bottom, #ffc4c4 0%, #ff1133 45%, #a80000 100%)';
                     }
                   }
 
@@ -258,13 +258,13 @@ export function LCDPanel({
                       key={bar}
                       className="flex-shrink-0"
                       style={{
-                        width: '9px',
+                        width: '10.5px',
                         height: `${bar * 6 + 3}px`,
                         background: barBackground,
-                        border: '1px solid #1a1a1a',
+                        border: '1.5px solid #000000',
                         borderRadius: '1.5px',
                         boxShadow:
-                          'inset 1px 1.5px 0.5px rgba(255,255,255,0.5), inset -1px -1px 0.5px rgba(0,0,0,0.3)',
+                          'inset 1.5px 2px 1px rgba(255,255,255,0.7), inset -1.5px -1.5px 1px rgba(0,0,0,0.5)',
                         opacity: 1,
                         transition: 'background 0.2s ease-in-out',
                       }}
