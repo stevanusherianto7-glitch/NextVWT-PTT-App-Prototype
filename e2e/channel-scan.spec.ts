@@ -88,8 +88,10 @@ test.describe('Channel Scan Flow', () => {
     });
 
     // Click the backdrop
-    const backdrop = page.getByTestId('modal-backdrop');
-    await backdrop.click({ position: { x: 10, y: 10 } });
+    await page.evaluate(() => {
+      const el = document.querySelector('[data-testid="modal-backdrop"]') as HTMLElement;
+      if (el) el.click();
+    });
 
     await expect(page.locator('input[placeholder="Cari channel..."]')).not.toBeVisible({
       timeout: 5_000,

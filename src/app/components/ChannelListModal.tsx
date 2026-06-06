@@ -20,7 +20,7 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
   );
 
   return (
-    <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+    <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-50">
       {/* Backdrop Dismiss */}
       <div
         data-testid="modal-backdrop"
@@ -32,7 +32,7 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
       />
 
       {/* Modal Container */}
-      <div className="bg-white app-uniform-modal rounded-lg shadow-2xl flex flex-col z-10 overflow-hidden border border-gray-300 animate-in fade-in zoom-in-95 duration-100">
+      <div className="bg-white w-full max-w-[340px] h-full pt-4 pb-4 shadow-2xl flex flex-col z-10 overflow-hidden border-x-2 border-gray-400 animate-in fade-in zoom-in-95 duration-100">
         {/* Header */}
         <div className="flex flex-col items-center px-4 py-4 bg-white shrink-0 border-b border-gray-200 relative">
           {/* Close Button */}
