@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { STATIC_CHANNELS, ChannelItem } from '../utils/constants';
-import { BRAND } from '../utils/config';
+import { NextVWTPremiumLogo } from './NextVWTPremiumLogo';
+import './ChannelListModal.css';
 
 interface ChannelListModalProps {
   onClose: () => void;
@@ -33,237 +34,104 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
       />
 
       {/* Modal Container */}
-      <div className="bg-white w-full max-w-[340px] h-full pt-4 pb-4 shadow-2xl flex flex-col z-10 overflow-hidden border-x-2 border-gray-400 animate-in fade-in zoom-in-95 duration-100">
+      <div className="channel-modal h-full shadow-2xl flex flex-col z-10 overflow-hidden border-x-2 border-gray-400 animate-in fade-in zoom-in-95 duration-100">
         {/* Header */}
-        <div className="flex flex-col items-center px-4 py-4 bg-white shrink-0 border-b border-gray-200 relative">
-          {/* Close Button */}
-          <button
-            onClick={onClose}
-            className="absolute top-3 right-3 p-1.5 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 active:scale-95 transition-all focus:outline-none cursor-pointer"
-            aria-label="Tutup"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2.5}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+        <div className="channel-modal-header shrink-0">
+          <button onClick={onClose} className="modal-close-btn" aria-label="Tutup">
+            ×
           </button>
-          <div className="flex items-center justify-center gap-1.5 w-full px-2 py-1">
-            <span
-              className="text-[30px] sm:text-[34px] font-black tracking-tighter uppercase"
-              style={{
-                background: 'linear-gradient(to top, #14532d 0%, #4ecb71 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                display: 'inline-block',
-                filter: 'drop-shadow(1px 1px 0px rgba(21, 128, 61, 0.4))',
-              }}
-            >
-              {BRAND.titlePart1}
-            </span>
-            <svg
-              viewBox="0 0 100 100"
-              className="h-[36px] sm:h-[42px] w-auto shrink-0 mx-0.5 translate-y-[2px]"
-              style={{
-                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))',
-              }}
-            >
-              <defs>
-                <radialGradient id="glossyRedModal" cx="35%" cy="35%" r="65%">
-                  <stop offset="0%" stopColor="#ffffff" />
-                  <stop offset="25%" stopColor="#ff1a1a" />
-                  <stop offset="70%" stopColor="#b30000" />
-                  <stop offset="100%" stopColor="#4a0000" />
-                </radialGradient>
-              </defs>
-
-              <circle
-                cx="50"
-                cy="50"
-                r="10"
-                fill="#2d0a0a"
-                transform="translate(0.8, 1)"
-                opacity="0.4"
-              />
-              <circle cx="50" cy="50" r="10" fill="url(#glossyRedModal)" />
-
-              <path
-                d="M 37.3 62.7 A 18 18 0 1 1 62.7 62.7"
-                stroke="#0a3c10"
-                strokeWidth="5.5"
-                strokeLinecap="round"
-                fill="none"
-                transform="translate(0.8, 1)"
-              />
-              <path
-                d="M 37.3 62.7 A 18 18 0 1 1 62.7 62.7"
-                stroke="#00C853"
-                strokeWidth="5.5"
-                strokeLinecap="round"
-                fill="none"
-              />
-              <path
-                d="M 37.3 62.7 A 18 18 0 1 1 62.7 62.7"
-                stroke="#ffffff"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-                fill="none"
-                opacity="0.7"
-                transform="translate(-0.5, -0.6)"
-              />
-
-              <path
-                d="M 30.2 69.8 A 28 28 0 1 1 69.8 69.8"
-                stroke="#083818"
-                strokeWidth="5.5"
-                strokeLinecap="round"
-                fill="none"
-                transform="translate(0.8, 1)"
-              />
-              <path
-                d="M 30.2 69.8 A 28 28 0 1 1 69.8 69.8"
-                stroke="#10B981"
-                strokeWidth="5.5"
-                strokeLinecap="round"
-                fill="none"
-              />
-              <path
-                d="M 30.2 69.8 A 28 28 0 1 1 69.8 69.8"
-                stroke="#ffffff"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-                fill="none"
-                opacity="0.7"
-                transform="translate(-0.5, -0.6)"
-              />
-
-              <path
-                d="M 23.1 76.9 A 38 38 0 1 1 76.9 76.9"
-                stroke="#0c351c"
-                strokeWidth="5.5"
-                strokeLinecap="round"
-                fill="none"
-                transform="translate(0.8, 1)"
-              />
-              <path
-                d="M 23.1 76.9 A 38 38 0 1 1 76.9 76.9"
-                stroke="#34D399"
-                strokeWidth="5.5"
-                strokeLinecap="round"
-                fill="none"
-              />
-              <path
-                d="M 23.1 76.9 A 38 38 0 1 1 76.9 76.9"
-                stroke="#ffffff"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-                fill="none"
-                opacity="0.7"
-                transform="translate(-0.5, -0.6)"
-              />
-            </svg>
-            <span
-              className="text-[30px] sm:text-[34px] font-black tracking-tighter uppercase"
-              style={{
-                background: 'linear-gradient(to top, #14532d 0%, #4ecb71 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                display: 'inline-block',
-                filter: 'drop-shadow(1px 1px 0px rgba(21, 128, 61, 0.4))',
-              }}
-            >
-              {BRAND.titlePart2}
-            </span>
+          <NextVWTPremiumLogo />
+          <div className="premium-divider">
+            <span />
+            <i />
+            <span />
           </div>
-          <div className="text-[9px] sm:text-[10px] font-black text-[#e53935] tracking-[0.18em] mt-1.5 text-center uppercase">
-            {BRAND.slogan}
-          </div>
+          <div className="nextvwt-subtitle">NEXT VIRTUAL WALKIE TALKIE</div>
         </div>
 
-        {/* Search Bar */}
-        <div className="p-3 bg-gray-50 border-b border-gray-100 shrink-0">
-          <input
-            type="text"
-            placeholder="Cari channel..."
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setVisibleCount(15);
-            }}
-            className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-xs bg-white text-black outline-none focus:border-blue-500 font-semibold"
-          />
-        </div>
+        {/* Content Wrapper */}
+        <div className="channel-modal-content flex flex-col flex-1 overflow-hidden p-0">
+          {/* Search Bar */}
+          <div className="p-3 bg-gray-50 border-b border-gray-100 shrink-0">
+            <input
+              type="text"
+              placeholder="Cari channel..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setVisibleCount(15);
+              }}
+              className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-xs bg-white text-black outline-none focus:border-blue-500 font-semibold"
+            />
+          </div>
 
-        {/* List */}
-        <div className="flex-1 overflow-y-auto bg-white text-left divide-y divide-gray-200">
-          {filteredChannels.length > 0 ? (
-            <>
-              {filteredChannels.slice(0, visibleCount).map((ch) => {
-                let bgClass = 'bg-gradient-to-b from-[#9E9E9E] to-[#616161]'; // Default gray
-                if (ch.type === 'green') {
-                  if (ch.number === 0 || ch.number === 100) {
-                    bgClass = 'bg-gradient-to-b from-[#1b5e20] to-[#0e3b12]';
-                  } else {
-                    bgClass = 'bg-gradient-to-b from-[#66bb6a] to-[#388e3c]';
+          {/* List */}
+          <div className="flex-1 overflow-y-auto bg-white text-left divide-y divide-gray-200">
+            {filteredChannels.length > 0 ? (
+              <>
+                {filteredChannels.slice(0, visibleCount).map((ch) => {
+                  let bgClass = 'bg-gradient-to-b from-[#9E9E9E] to-[#616161]'; // Default gray
+                  if (ch.type === 'green') {
+                    if (ch.number === 0 || ch.number === 100) {
+                      bgClass = 'bg-gradient-to-b from-[#1b5e20] to-[#0e3b12]';
+                    } else {
+                      bgClass = 'bg-gradient-to-b from-[#66bb6a] to-[#388e3c]';
+                    }
+                  } else if (ch.type === 'red') {
+                    bgClass = 'bg-gradient-to-b from-[#e53935] to-[#c62828]';
                   }
-                } else if (ch.type === 'red') {
-                  bgClass = 'bg-gradient-to-b from-[#e53935] to-[#c62828]';
-                }
 
-                const activeUserCount = ch.users.length;
-                let activeUsersStr =
-                  activeUserCount > 0
-                    ? `${activeUserCount} PENGGUNA • ${ch.users.join(', ')}`
-                    : '0 PENGGUNA';
+                  const activeUserCount = ch.users.length;
+                  let activeUsersStr =
+                    activeUserCount > 0
+                      ? `${activeUserCount} PENGGUNA • ${ch.users.join(', ')}`
+                      : '0 PENGGUNA';
 
-                if (ch.number === 0) {
-                  activeUsersStr = 'WWW.NEXTVWT.ID';
-                }
+                  if (ch.number === 0) {
+                    activeUsersStr = 'WWW.NEXTVWT.ID';
+                  }
 
-                return (
-                  <button
-                    key={ch.number}
-                    onClick={() => {
-                      setActivePrivateChannel(ch);
-                    }}
-                    className="w-full flex items-center p-0 hover:bg-gray-50 active:bg-gray-100 text-left cursor-pointer select-none focus:outline-none"
-                  >
-                    <div
-                      className={`w-[55px] py-2.5 flex items-center justify-center text-white font-bold text-sm shrink-0 ${bgClass} border-t-[2px] border-l-[2px] border-t-white/45 border-l-white/45 border-r-[2px] border-b-[2px] border-r-black/45 border-b-black/45 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.3)]`}
-                      style={{ textShadow: '1px 1px 1px rgba(0,0,0,0.6)' }}
+                  return (
+                    <button
+                      key={ch.number}
+                      onClick={() => {
+                        setActivePrivateChannel(ch);
+                      }}
+                      className="w-full flex items-center p-0 hover:bg-gray-50 active:bg-gray-100 text-left cursor-pointer select-none focus:outline-none"
                     >
-                      {ch.number.toString().padStart(3, '0')}
-                    </div>
-                    <div className="ml-3 pr-3 flex-1 min-w-0 py-1">
-                      <div className="text-xs font-bold text-black truncate">{ch.name}</div>
-                      <div className="text-[10px] text-gray-500 font-semibold truncate mt-0.5 uppercase">
-                        {activeUsersStr}
+                      <div
+                        className={`w-[55px] py-2.5 flex items-center justify-center text-white font-bold text-sm shrink-0 ${bgClass} border-t-[2px] border-l-[2px] border-t-white/45 border-l-white/45 border-r-[2px] border-b-[2px] border-r-black/45 border-b-black/45 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.3)]`}
+                        style={{ textShadow: '1px 1px 1px rgba(0,0,0,0.6)' }}
+                      >
+                        {ch.number.toString().padStart(3, '0')}
                       </div>
+                      <div className="ml-3 pr-3 flex-1 min-w-0 py-1">
+                        <div className="text-xs font-bold text-black truncate">{ch.name}</div>
+                        <div className="text-[10px] text-gray-500 font-semibold truncate mt-0.5 uppercase">
+                          {activeUsersStr}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+                {filteredChannels.length > visibleCount && (
+                  <button
+                    onClick={() => setVisibleCount((prev) => prev + 15)}
+                    className="w-full flex items-center p-0 hover:bg-gray-50 active:bg-gray-100 text-left border-b border-gray-200 cursor-pointer select-none focus:outline-none"
+                  >
+                    <div className="w-[55px] py-2.5 bg-gradient-to-b from-[#616161] to-[#424242] border-t-[2px] border-l-[2px] border-t-white/30 border-l-white/30 border-r-[2px] border-b-[2px] border-r-black/45 border-b-black/45 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.15)] shrink-0 self-stretch flex items-center justify-center" />
+                    <div className="ml-3 pr-3 flex-1 min-w-0 py-1">
+                      <div className="text-xs font-bold text-gray-700">Selanjutnya..</div>
                     </div>
                   </button>
-                );
-              })}
-              {filteredChannels.length > visibleCount && (
-                <button
-                  onClick={() => setVisibleCount((prev) => prev + 15)}
-                  className="w-full flex items-center p-0 hover:bg-gray-50 active:bg-gray-100 text-left border-b border-gray-200 cursor-pointer select-none focus:outline-none"
-                >
-                  <div className="w-[55px] py-2.5 bg-gradient-to-b from-[#616161] to-[#424242] border-t-[2px] border-l-[2px] border-t-white/30 border-l-white/30 border-r-[2px] border-b-[2px] border-r-black/45 border-b-black/45 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.15)] shrink-0 self-stretch flex items-center justify-center" />
-                  <div className="ml-3 pr-3 flex-1 min-w-0 py-1">
-                    <div className="text-xs font-bold text-gray-700">Selanjutnya..</div>
-                  </div>
-                </button>
-              )}
-            </>
-          ) : (
-            <div className="p-6 text-center text-xs text-gray-500 font-medium">
-              Tidak ada channel ditemukan
-            </div>
-          )}
+                )}
+              </>
+            ) : (
+              <div className="p-6 text-center text-xs text-gray-500 font-medium">
+                Tidak ada channel ditemukan
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Overlays inside Modal */}
