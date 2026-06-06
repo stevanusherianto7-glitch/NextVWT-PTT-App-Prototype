@@ -1487,7 +1487,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
           <div className="absolute inset-0" onClick={() => setIsPhraseModalOpen(false)} />
 
           {/* Modal Container */}
-          <div className="bg-white w-[90%] max-h-[85%] rounded-lg shadow-2xl flex flex-col z-10 overflow-hidden border border-gray-300">
+          <div className="bg-white app-uniform-modal rounded-lg shadow-2xl flex flex-col z-10 overflow-hidden border border-gray-300">
             {/* Header */}
             <div className="flex items-center px-4 py-3 bg-white shrink-0 border-b border-gray-200">
               {/* Document Icon in Blue */}
@@ -1536,7 +1536,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
           <div className="absolute inset-0" onClick={() => setIsUserGuideOpen(false)} />
 
           {/* Modal Container */}
-          <div className="bg-white w-[95%] h-[85%] rounded-lg shadow-2xl flex flex-col z-10 overflow-hidden border border-gray-300">
+          <div className="bg-white app-uniform-modal rounded-lg shadow-2xl flex flex-col z-10 overflow-hidden border border-gray-300">
             {/* Header */}
             <div className="flex items-center px-4 py-3 bg-white shrink-0 border-b border-gray-200">
               <button
@@ -1764,7 +1764,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
       {isProvinceModalOpen && (
         <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
           <div className="absolute inset-0" onClick={() => setIsProvinceModalOpen(false)} />
-          <div className="bg-white w-[90%] max-h-[85%] rounded-lg shadow-2xl flex flex-col z-10 overflow-hidden border border-gray-300 animate-in fade-in zoom-in-95 duration-100">
+          <div className="bg-white app-uniform-modal rounded-lg shadow-2xl flex flex-col z-10 overflow-hidden border border-gray-300 animate-in fade-in zoom-in-95 duration-100">
             <div className="flex items-center px-4 py-3 bg-white shrink-0 border-b border-gray-200">
               <button
                 onClick={() => setIsProvinceModalOpen(false)}
@@ -1810,7 +1810,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
       {isCityModalOpen && (
         <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
           <div className="absolute inset-0" onClick={() => setIsCityModalOpen(false)} />
-          <div className="bg-white w-[90%] max-h-[85%] rounded-lg shadow-2xl flex flex-col z-10 overflow-hidden border border-gray-300 animate-in fade-in zoom-in-95 duration-100">
+          <div className="bg-white app-uniform-modal rounded-lg shadow-2xl flex flex-col z-10 overflow-hidden border border-gray-300 animate-in fade-in zoom-in-95 duration-100">
             <div className="flex items-center px-4 py-3 bg-white shrink-0 border-b border-gray-200">
               <button
                 onClick={() => {
@@ -1858,7 +1858,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
       {isThemeModalOpen && (
         <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
           <div className="absolute inset-0" onClick={() => setIsThemeModalOpen(false)} />
-          <div className="bg-white w-[90%] max-h-[85%] rounded-lg shadow-2xl flex flex-col z-10 overflow-hidden border border-gray-300 animate-in fade-in zoom-in-95 duration-100">
+          <div className="bg-white app-uniform-modal rounded-lg shadow-2xl flex flex-col z-10 overflow-hidden border border-gray-300 animate-in fade-in zoom-in-95 duration-100">
             <div className="flex items-center px-4 py-3 bg-white shrink-0 border-b border-gray-200">
               <button
                 onClick={() => setIsThemeModalOpen(false)}
