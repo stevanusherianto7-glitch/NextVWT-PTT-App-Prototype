@@ -198,9 +198,10 @@ Tombol kirim suara berukuran besar di bagian bawah. Menggunakan double-container
 - **Posisi Dinamis & Skala**:
   - Transformasi: `translateY(${yOffset}px) scale(${scaleFactor})` (laju skala berkisar antara `0.75 + (pttSize/100) * 0.5` yang memetakan ke `0.9` pada ukuran 30 dan `1.25` pada ukuran 100).
   - Kecepatan transisi transformasi: `transition: transform 0.12s ease-out, box-shadow 0.06s ease-in-out`.
+- **Latar Belakang**: `rgba(0, 0, 0, 0.12)` (parit sasis berwarna abu-abu sangat lembut).
 - **Efek Bayangan Soket (Trench Shadow Depth)**:
-  - Kondisi Ditekan (Depressed): `box-shadow: inset 0 0 10px rgba(0,0,0,0.4), inset 0 5px 10px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.1)`.
-  - Kondisi Idle: `box-shadow: inset 0 0 14px rgba(0,0,0,0.35), inset 0 4px 8px rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.15)`. Ditambahkan _outer drop shadow_ pada parit luar untuk memperdalam efek 3D tombol yang masuk ke dalam sasis.
+  - Kondisi Ditekan (Depressed): `box-shadow: inset 0 3px 6px rgba(0,0,0,0.4), inset 0 -2px 4px rgba(0,0,0,0.2), inset 0 0 10px rgba(0,0,0,0.35), 0 1px 2px rgba(0,0,0,0.08)`.
+  - Kondisi Idle: `box-shadow: inset 0 6px 10px rgba(0,0,0,0.45), inset 0 -4px 8px rgba(0,0,0,0.3), inset 0 0 14px rgba(0,0,0,0.4), 0 3px 6px rgba(0,0,0,0.12)`. Ditambahkan _outer drop shadow_ pada parit luar untuk memperdalam efek 3D tombol yang masuk ke dalam sasis.
 
 #### 2. Tombol Fisik Utama (Inner Active Button)
 
