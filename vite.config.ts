@@ -32,7 +32,17 @@ export default defineConfig(({ command: _command, mode }) => {
     // Build configuration for production
     build: {
       outDir: 'dist',
-      sourcemap: true,
+      sourcemap: false,
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true,
+        },
+        mangle: {
+          toplevel: true,
+        },
+      },
       // Optimize bundle size for production
       rollupOptions: {
         output: {

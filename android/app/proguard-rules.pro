@@ -19,3 +19,14 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Capacitor ProGuard Rules
+-keep class com.getcapacitor.** { *; }
+-keep class com.nextvwt.ptt.** { *; }
+-keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod
+
+# WebView interface mapping protection
+-keepattributes JavascriptInterface
+-keepclassmembers class * {
+    @android.webkit.JavascriptInterface <methods>;
+}
