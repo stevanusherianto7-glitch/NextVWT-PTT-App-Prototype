@@ -5,7 +5,9 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('PTT Resilience in Karaoke / Music Mode', () => {
-  test('should open Karaoke Player and modulate PTT voice streaming with built-in Echo without crashing', async ({ browser }) => {
+  test('should open Karaoke Player and modulate PTT voice streaming with built-in Echo without crashing', async ({
+    browser,
+  }) => {
     // 1. Setup browser context with microphone permission
     const context = await browser.newContext({ permissions: ['microphone'] });
     const page = await context.newPage();

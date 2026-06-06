@@ -22,7 +22,9 @@ test.describe('Channel Scan Flow', () => {
 
   test('clicking SCAN opens the Daftar Channel modal', async ({ page }) => {
     await page.click('button:has-text("SCAN")');
-    await expect(page.locator('input[placeholder="Cari channel..."]')).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('input[placeholder="Cari channel..."]')).toBeVisible({
+      timeout: 5_000,
+    });
   });
 
   test('modal shows a search input placeholder "Cari channel..."', async ({ page }) => {
@@ -45,7 +47,9 @@ test.describe('Channel Scan Flow', () => {
     await expect(page.locator('text=DUKUNGAN & BANTUAN')).not.toBeVisible();
   });
 
-  test('searching for non-existent channel shows "Tidak ada channel ditemukan"', async ({ page }) => {
+  test('searching for non-existent channel shows "Tidak ada channel ditemukan"', async ({
+    page,
+  }) => {
     await page.click('button:has-text("SCAN")');
     const searchInput = page.locator('input[placeholder="Cari channel..."]');
     await searchInput.fill('XXXXXXXXXXX');
@@ -57,28 +61,38 @@ test.describe('Channel Scan Flow', () => {
     await page.locator('button').filter({ hasText: 'KOPDAR NASIONAL UTAMA' }).click();
     // Click 'Menuju Channel' in the private channel dialog options
     await page.locator('button:has-text("Menuju Channel")').click();
-    await expect(page.locator('input[placeholder="Cari channel..."]')).not.toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('input[placeholder="Cari channel..."]')).not.toBeVisible({
+      timeout: 5_000,
+    });
   });
 
   test('closing modal with X button removes it from view', async ({ page }) => {
     await page.click('button:has-text("SCAN")');
-    await expect(page.locator('input[placeholder="Cari channel..."]')).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('input[placeholder="Cari channel..."]')).toBeVisible({
+      timeout: 5_000,
+    });
 
     // Click the X button in the header of the modal
     const closeBtn = page.locator('button[aria-label="Tutup"]');
     await closeBtn.click();
 
-    await expect(page.locator('input[placeholder="Cari channel..."]')).not.toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('input[placeholder="Cari channel..."]')).not.toBeVisible({
+      timeout: 5_000,
+    });
   });
 
   test('backdrop click on modal closes it', async ({ page }) => {
     await page.click('button:has-text("SCAN")');
-    await expect(page.locator('input[placeholder="Cari channel..."]')).toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('input[placeholder="Cari channel..."]')).toBeVisible({
+      timeout: 5_000,
+    });
 
     // Click the backdrop
     const backdrop = page.getByTestId('modal-backdrop');
     await backdrop.click({ position: { x: 10, y: 10 } });
 
-    await expect(page.locator('input[placeholder="Cari channel..."]')).not.toBeVisible({ timeout: 5_000 });
+    await expect(page.locator('input[placeholder="Cari channel..."]')).not.toBeVisible({
+      timeout: 5_000,
+    });
   });
 });
