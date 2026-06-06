@@ -449,8 +449,9 @@ export const usePTTStore = create<PTTState>((set) => ({
       const nextVal = typeof numOrFn === 'function' ? numOrFn(state.channelNumber) : numOrFn;
       const clamped = Math.max(0, Math.min(999, nextVal));
 
-      // Subscribe to the new channel
-      setTimeout(() => subscribeToChannel(clamped), 0);
+      // Subscribe to the new channel (Fast Click configures immediate or debounced delay reconnect)
+      const delay = state.fastClick ? 0 : 800;
+      setTimeout(() => subscribeToChannel(clamped), delay);
       // Persist channel selection for offline recovery
       safeSetStorage({ channelNumber: clamped });
 
@@ -558,7 +559,8 @@ export const usePTTStore = create<PTTState>((set) => ({
       if (!state.isPowerOn) return {};
       const nextVal = state.channelNumber >= 999 ? 0 : state.channelNumber + 1;
 
-      setTimeout(() => subscribeToChannel(nextVal), 0);
+      const delay = state.fastClick ? 0 : 800;
+      setTimeout(() => subscribeToChannel(nextVal), delay);
       safeSetStorage({ channelNumber: nextVal });
 
       return {
@@ -572,7 +574,8 @@ export const usePTTStore = create<PTTState>((set) => ({
       if (!state.isPowerOn) return {};
       const nextVal = state.channelNumber <= 0 ? 999 : state.channelNumber - 1;
 
-      setTimeout(() => subscribeToChannel(nextVal), 0);
+      const delay = state.fastClick ? 0 : 800;
+      setTimeout(() => subscribeToChannel(nextVal), delay);
       safeSetStorage({ channelNumber: nextVal });
 
       return {
