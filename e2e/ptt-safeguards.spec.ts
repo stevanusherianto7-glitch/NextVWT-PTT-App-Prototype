@@ -5,9 +5,11 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('PTT Robustness & Safeguards', () => {
-  test('Collision Avoidance – should disable PTT button and display BUSY when channel is occupied', async ({ page }) => {
+  test('Collision Avoidance – should disable PTT button and display BUSY when channel is occupied', async ({
+    page,
+  }) => {
     await page.goto('/');
-    
+
     // Bypass login modal
     const guestBtn = page.locator('button:has-text("Masuk sebagai Tamu")');
     await guestBtn.waitFor({ state: 'visible', timeout: 3000 });
@@ -42,15 +44,19 @@ test.describe('PTT Robustness & Safeguards', () => {
     await pttButton.dispatchEvent('mousedown');
     await page.waitForTimeout(200);
 
-    const isTransmitting = await page.evaluate(() => (window as any).__store__.getState().isTransmitting);
+    const isTransmitting = await page.evaluate(
+      () => (window as any).__store__.getState().isTransmitting
+    );
     expect(isTransmitting).toBe(false);
 
     await pttButton.dispatchEvent('mouseup');
   });
 
-  test('Watchdog Timeout – should auto-revert receiver to standby if active transmitter is silent/dead', async ({ page }) => {
+  test('Watchdog Timeout – should auto-revert receiver to standby if active transmitter is silent/dead', async ({
+    page,
+  }) => {
     await page.goto('/');
-    
+
     // Bypass login modal
     const guestBtn = page.locator('button:has-text("Masuk sebagai Tamu")');
     await guestBtn.waitFor({ state: 'visible', timeout: 3000 });
@@ -74,7 +80,9 @@ test.describe('PTT Robustness & Safeguards', () => {
     });
 
     // Verify User Alfa is initially active transmitter
-    const activeTxBefore = await page.evaluate(() => (window as any).__store__.getState().activeTransmitter);
+    const activeTxBefore = await page.evaluate(
+      () => (window as any).__store__.getState().activeTransmitter
+    );
     expect(activeTxBefore).not.toBeNull();
     expect(activeTxBefore.displayName).toBe('User Alfa');
 
@@ -82,13 +90,17 @@ test.describe('PTT Robustness & Safeguards', () => {
     await page.waitForTimeout(1800);
 
     // 3. Verify receiver auto-reverted active transmitter to null (standby)
-    const activeTxAfter = await page.evaluate(() => (window as any).__store__.getState().activeTransmitter);
+    const activeTxAfter = await page.evaluate(
+      () => (window as any).__store__.getState().activeTransmitter
+    );
     expect(activeTxAfter).toBeNull();
   });
 
-  test('Mic Permission Denial – should show toast error and reset PTT state gracefully', async ({ page }) => {
+  test('Mic Permission Denial – should show toast error and reset PTT state gracefully', async ({
+    page,
+  }) => {
     await page.goto('/');
-    
+
     // Bypass login modal
     const guestBtn = page.locator('button:has-text("Masuk sebagai Tamu")');
     await guestBtn.waitFor({ state: 'visible', timeout: 3000 });
@@ -109,10 +121,14 @@ test.describe('PTT Robustness & Safeguards', () => {
     });
 
     // 3. Verify toast message is shown and state reverts to false
-    const toastMessage = page.locator('text=Akses mikrofon ditolak. Silakan aktifkan izin mikrofon Anda.');
+    const toastMessage = page.locator(
+      'text=Akses mikrofon ditolak. Silakan aktifkan izin mikrofon Anda.'
+    );
     await expect(toastMessage).toBeVisible({ timeout: 5000 });
 
-    const isTransmitting = await page.evaluate(() => (window as any).__store__.getState().isTransmitting);
+    const isTransmitting = await page.evaluate(
+      () => (window as any).__store__.getState().isTransmitting
+    );
     expect(isTransmitting).toBe(false);
   });
 });

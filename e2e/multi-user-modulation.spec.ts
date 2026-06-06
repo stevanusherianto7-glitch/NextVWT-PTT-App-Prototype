@@ -5,7 +5,9 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Multi-User Real-time Modulation Delivery', () => {
-  test('should deliver transmission and modulation states between users in the same channel', async ({ browser }) => {
+  test('should deliver transmission and modulation states between users in the same channel', async ({
+    browser,
+  }) => {
     // 1. Instantiating Browser Context for User Alfa
     const contextAlfa = await browser.newContext();
     const pageAlfa = await contextAlfa.newPage();
@@ -57,7 +59,7 @@ test.describe('Multi-User Real-time Modulation Delivery', () => {
       const osc = ctx.createOscillator();
       osc.connect(dest);
       osc.start();
-      
+
       navigator.mediaDevices.getUserMedia = async () => {
         return dest.stream;
       };
@@ -71,37 +73,77 @@ test.describe('Multi-User Real-time Modulation Delivery', () => {
     await pageBeta.evaluate(() => (window as any).__store__.getState().setChannelNumber(16));
 
     // 5. Retrieve User IDs
-    const userIdAlfa = await pageAlfa.evaluate(() => (window as unknown as { __store__: { getState: () => { userId: string } } }).__store__.getState().userId);
-    const userIdBeta = await pageBeta.evaluate(() => (window as unknown as { __store__: { getState: () => { userId: string } } }).__store__.getState().userId);
+    const userIdAlfa = await pageAlfa.evaluate(
+      () =>
+        (
+          window as unknown as { __store__: { getState: () => { userId: string } } }
+        ).__store__.getState().userId
+    );
+    const userIdBeta = await pageBeta.evaluate(
+      () =>
+        (
+          window as unknown as { __store__: { getState: () => { userId: string } } }
+        ).__store__.getState().userId
+    );
 
     // Inject presence sync state to simulate the active user listing
     await pageAlfa.evaluate((betaId) => {
-      const store = (window as unknown as { __store__: { setState: (s: Record<string, unknown>) => void, getState: () => { userId: string } } }).__store__;
+      const store = (
+        window as unknown as {
+          __store__: {
+            setState: (s: Record<string, unknown>) => void;
+            getState: () => { userId: string };
+          };
+        }
+      ).__store__;
       if (store) {
         store.setState({
           activeUsers: [
-            { userId: store.getState().userId, displayName: 'User Alfa', callSign: 'ALFA', location: 'ALFA' },
-            { userId: betaId, displayName: 'User Beta', callSign: 'BETA', location: 'BETA' }
-          ]
+            {
+              userId: store.getState().userId,
+              displayName: 'User Alfa',
+              callSign: 'ALFA',
+              location: 'ALFA',
+            },
+            { userId: betaId, displayName: 'User Beta', callSign: 'BETA', location: 'BETA' },
+          ],
         });
       }
     }, userIdBeta);
 
     await pageBeta.evaluate((alfaId) => {
-      const store = (window as unknown as { __store__: { setState: (s: Record<string, unknown>) => void, getState: () => { userId: string } } }).__store__;
+      const store = (
+        window as unknown as {
+          __store__: {
+            setState: (s: Record<string, unknown>) => void;
+            getState: () => { userId: string };
+          };
+        }
+      ).__store__;
       if (store) {
         store.setState({
           activeUsers: [
-            { userId: store.getState().userId, displayName: 'User Beta', callSign: 'BETA', location: 'BETA' },
-            { userId: alfaId, displayName: 'User Alfa', callSign: 'ALFA', location: 'ALFA' }
-          ]
+            {
+              userId: store.getState().userId,
+              displayName: 'User Beta',
+              callSign: 'BETA',
+              location: 'BETA',
+            },
+            { userId: alfaId, displayName: 'User Alfa', callSign: 'ALFA', location: 'ALFA' },
+          ],
         });
       }
     }, userIdAlfa);
 
     // Verify Presence Synchronization (both see count = 02 on LCD)
-    const userCountAlfa = pageAlfa.locator('img[alt="User Count Icon"]').locator('xpath=../..').locator('span');
-    const userCountBeta = pageBeta.locator('img[alt="User Count Icon"]').locator('xpath=../..').locator('span');
+    const userCountAlfa = pageAlfa
+      .locator('img[alt="User Count Icon"]')
+      .locator('xpath=../..')
+      .locator('span');
+    const userCountBeta = pageBeta
+      .locator('img[alt="User Count Icon"]')
+      .locator('xpath=../..')
+      .locator('span');
 
     await expect(userCountAlfa).toHaveText('02', { timeout: 5_000 });
     await expect(userCountBeta).toHaveText('02', { timeout: 5_000 });
@@ -113,14 +155,16 @@ test.describe('Multi-User Real-time Modulation Delivery', () => {
 
     // Bridge transmission event to Beta's store
     await pageBeta.evaluate((alfaId) => {
-      const store = (window as unknown as { __store__: { setState: (s: Record<string, unknown>) => void } }).__store__;
+      const store = (
+        window as unknown as { __store__: { setState: (s: Record<string, unknown>) => void } }
+      ).__store__;
       if (store) {
         store.setState({
           activeTransmitter: {
             userId: alfaId,
             displayName: 'USER ALFA',
-            callSign: 'ALFA'
-          }
+            callSign: 'ALFA',
+          },
         });
       }
     }, userIdAlfa);
@@ -129,7 +173,10 @@ test.describe('Multi-User Real-time Modulation Delivery', () => {
 
     // 7. Verify User Beta receives User Alfa's active transmission
     // Beta's LCD username display should change to "USER ALFA"
-    await expect(pageBeta.getByTestId('lcd-username')).toHaveText('USER ALFA', { timeout: 5_000, ignoreCase: true });
+    await expect(pageBeta.getByTestId('lcd-username')).toHaveText('USER ALFA', {
+      timeout: 5_000,
+      ignoreCase: true,
+    });
 
     // Beta's progress bar (modulation) should animate and have width > 0px
     const progressBarBeta = pageBeta.locator('div.h-full.transition-all.duration-75').first();
@@ -142,7 +189,9 @@ test.describe('Multi-User Real-time Modulation Delivery', () => {
 
     // Clear transmission event from Beta's store
     await pageBeta.evaluate(() => {
-      const store = (window as unknown as { __store__: { setState: (s: Record<string, unknown>) => void } }).__store__;
+      const store = (
+        window as unknown as { __store__: { setState: (s: Record<string, unknown>) => void } }
+      ).__store__;
       if (store) {
         store.setState({ activeTransmitter: null });
       }
@@ -151,7 +200,10 @@ test.describe('Multi-User Real-time Modulation Delivery', () => {
     await pageAlfa.waitForTimeout(500);
 
     // 9. Verify User Beta returns to standby
-    await expect(pageBeta.getByTestId('lcd-username')).toHaveText('User Beta', { timeout: 5_000, ignoreCase: true });
+    await expect(pageBeta.getByTestId('lcd-username')).toHaveText('User Beta', {
+      timeout: 5_000,
+      ignoreCase: true,
+    });
     await expect(progressBarBeta).toHaveCSS('width', '0px');
 
     // 10. Close independent contexts

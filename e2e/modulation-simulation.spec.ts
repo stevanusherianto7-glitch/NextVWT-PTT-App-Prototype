@@ -7,7 +7,7 @@ import { test, expect } from '@playwright/test';
 test.describe('User Modulation Activity Simulation', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
-    
+
     // Automatically bypass LoginGate if visible
     const guestBtn = page.locator('button:has-text("Masuk sebagai Tamu")');
     const pttBtn = page.locator('button:has-text("PTT")');
@@ -29,7 +29,7 @@ test.describe('User Modulation Activity Simulation', () => {
         const osc = ctx.createOscillator();
         osc.connect(dest);
         osc.start();
-        
+
         navigator.mediaDevices.getUserMedia = async () => {
           return dest.stream;
         };
@@ -83,7 +83,9 @@ test.describe('User Modulation Activity Simulation', () => {
     await expect(progressBar).toHaveCSS('width', '0px');
   });
 
-  test('user activity resilience under API/Network failure (Offline Robustness)', async ({ page }) => {
+  test('user activity resilience under API/Network failure (Offline Robustness)', async ({
+    page,
+  }) => {
     // 1. Force and lock the store state to offline (isConnected = false) via exposed window.__store__
     await page.evaluate(() => {
       const store = (window as any).__store__;

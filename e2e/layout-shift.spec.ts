@@ -25,7 +25,9 @@ test.describe('Cumulative Layout Shift (CLS) Verification', () => {
     });
   });
 
-  test('should maintain Cumulative Layout Shift (CLS) < 0.1 during boot, modals, power toggle, and settings flow', async ({ page }) => {
+  test('should maintain Cumulative Layout Shift (CLS) < 0.1 during boot, modals, power toggle, and settings flow', async ({
+    page,
+  }) => {
     // 1. Go to page and trigger boot
     await page.goto('/');
 
@@ -42,17 +44,17 @@ test.describe('Cumulative Layout Shift (CLS) Verification', () => {
     await page.waitForSelector('button:has-text("PTT")', { timeout: 10_000 });
 
     // 2. Perform rapid UI interactions to verify stability
-    
+
     // Action A: Open settings panel (SET)
     await page.click('button:has-text("SET")');
     await page.waitForSelector('text=Pengaturan', { timeout: 3_000 });
-    
+
     // Action B: Switch source selection tabs (from Google Photo to Gallery Upload)
     const galleryTab = page.locator('button:has-text("Unggah Galeri")');
     if (await galleryTab.isVisible()) {
       await galleryTab.click();
     }
-    
+
     // Action C: Open user guide from settings
     const guideBtn = page.locator('button', { hasText: 'Panduan Pengguna' });
     if (await guideBtn.isVisible()) {
@@ -63,7 +65,7 @@ test.describe('Cumulative Layout Shift (CLS) Verification', () => {
       await backBtn.click({ force: true });
       await page.waitForSelector('text=Pengaturan', { timeout: 3_000 });
     }
-    
+
     // Action D: Close Settings
     await page.click('button:has-text("Simpan")');
     await page.waitForSelector('button:has-text("PTT")', { timeout: 3_000 });
@@ -71,17 +73,19 @@ test.describe('Cumulative Layout Shift (CLS) Verification', () => {
     // Action E: Open Channel List Modal (SCAN)
     await page.click('button:has-text("SCAN")');
     await page.waitForSelector('input[placeholder="Cari channel..."]', { timeout: 3_000 });
-    
+
     // Action F: Close Channel List Modal using aria-label="Tutup"
     const closeChannelBtn = page.locator('button[aria-label="Tutup"]');
     await closeChannelBtn.click();
-    await expect(page.locator('input[placeholder="Cari channel..."]')).not.toBeVisible({ timeout: 3_000 });
+    await expect(page.locator('input[placeholder="Cari channel..."]')).not.toBeVisible({
+      timeout: 3_000,
+    });
 
     // Action G: Open User List Modal (Click User Count Icon on LCD)
     const userCountIcon = page.locator('img[alt="User Count Icon"]');
     await userCountIcon.click();
     await page.waitForSelector('text=Server', { timeout: 3_000 });
-    
+
     // Action H: Close User List Modal using backdrop click or click outside
     const backdrop = page.getByTestId('modal-backdrop');
     if (await backdrop.isVisible()) {
@@ -90,7 +94,7 @@ test.describe('Cumulative Layout Shift (CLS) Verification', () => {
       // Click somewhere else or escape
       await page.keyboard.press('Escape');
     }
-    
+
     // Action I: Toggle Power switch (OFF and back ON)
     const powerToggle = page.locator('label.toggle-switch').first();
     await powerToggle.click();

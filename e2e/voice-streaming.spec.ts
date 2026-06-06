@@ -5,7 +5,9 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Real-time Voice Streaming & Delivery', () => {
-  test('should record audio chunks from microphone and broadcast them to channel peers', async ({ browser }) => {
+  test('should record audio chunks from microphone and broadcast them to channel peers', async ({
+    browser,
+  }) => {
     // 1. Instantiate browser contexts with microphone permissions granted
     const contextAlfa = await browser.newContext({ permissions: ['microphone'] });
     const pageAlfa = await contextAlfa.newPage();
@@ -53,9 +55,14 @@ test.describe('Real-time Voice Streaming & Delivery', () => {
       if (store) {
         store.setState({
           activeUsers: [
-            { userId: store.getState().userId, displayName: 'Speaker Alfa', callSign: 'ALFA', location: 'ALFA' },
-            { userId: betaId, displayName: 'Listener Beta', callSign: 'BETA', location: 'BETA' }
-          ]
+            {
+              userId: store.getState().userId,
+              displayName: 'Speaker Alfa',
+              callSign: 'ALFA',
+              location: 'ALFA',
+            },
+            { userId: betaId, displayName: 'Listener Beta', callSign: 'BETA', location: 'BETA' },
+          ],
         });
       }
     }, userIdBeta);
@@ -65,9 +72,14 @@ test.describe('Real-time Voice Streaming & Delivery', () => {
       if (store) {
         store.setState({
           activeUsers: [
-            { userId: store.getState().userId, displayName: 'Listener Beta', callSign: 'BETA', location: 'BETA' },
-            { userId: alfaId, displayName: 'Speaker Alfa', callSign: 'ALFA', location: 'ALFA' }
-          ]
+            {
+              userId: store.getState().userId,
+              displayName: 'Listener Beta',
+              callSign: 'BETA',
+              location: 'BETA',
+            },
+            { userId: alfaId, displayName: 'Speaker Alfa', callSign: 'ALFA', location: 'ALFA' },
+          ],
         });
       }
     }, userIdAlfa);
@@ -80,7 +92,7 @@ test.describe('Real-time Voice Streaming & Delivery', () => {
       const osc = ctx.createOscillator();
       osc.connect(dest);
       osc.start();
-      
+
       navigator.mediaDevices.getUserMedia = async () => {
         return dest.stream;
       };
@@ -104,7 +116,7 @@ test.describe('Real-time Voice Streaming & Delivery', () => {
     await pageBeta.evaluate(() => {
       (window as any).receivedVoiceChunks = [];
       const store = (window as any).__store__;
-      
+
       // Override setOnVoiceChunkReceived to capture chunks when they arrive
       const originalSet = store.getState().setOnVoiceChunkReceived;
       store.getState().setOnVoiceChunkReceived = (callback: any) => {
@@ -130,20 +142,29 @@ test.describe('Real-time Voice Streaming & Delivery', () => {
     await pageAlfa.waitForTimeout(500);
 
     // 8. Assertions: check if chunks were recorded on User Alfa
-    const recordedChunksCount = await pageAlfa.evaluate(() => (window as any).recordedVoiceChunks.length);
+    const recordedChunksCount = await pageAlfa.evaluate(
+      () => (window as any).recordedVoiceChunks.length
+    );
     expect(recordedChunksCount).toBeGreaterThan(0);
 
     // 9. Assertions: check if chunks were received on User Beta
     // Wait up to 3 seconds for WebSocket transmission to finish delivering to Beta
-    await expect.poll(async () => {
-      return await pageBeta.evaluate(() => (window as any).receivedVoiceChunks.length);
-    }, {
-      intervals: [200, 500],
-      timeout: 3000
-    }).toBeGreaterThan(0);
+    await expect
+      .poll(
+        async () => {
+          return await pageBeta.evaluate(() => (window as any).receivedVoiceChunks.length);
+        },
+        {
+          intervals: [200, 500],
+          timeout: 3000,
+        }
+      )
+      .toBeGreaterThan(0);
 
     // Confirm that the received chunk on Beta matches a Base64 format string
-    const sampleReceivedChunk = await pageBeta.evaluate(() => (window as any).receivedVoiceChunks[0]);
+    const sampleReceivedChunk = await pageBeta.evaluate(
+      () => (window as any).receivedVoiceChunks[0]
+    );
     expect(sampleReceivedChunk).not.toBeNull();
     expect(sampleReceivedChunk).toMatch(/^[A-Za-z0-9+/=]+$/);
 
