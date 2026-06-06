@@ -550,9 +550,37 @@ Untuk memastikan antarmuka Walkie-Talkie tidak terpotong di perangkat seluler (m
    - Tepi bawah top header diperkuat dengan bayangan dalam (`inset 0 -12px 20px -6px rgba(0, 0, 0, 0.45)`) dan highlight atas (`inset 0 3px 6px rgba(255,255,255,0.4)`) untuk memberikan efek cembung (convex) yang menonjol keluar.
    - Sasis utama panel LCD (themed faceplate container) bagian atas, samping, dan bawah dikelilingi oleh bayangan dalam yang seragam dan sangat halus (`inset 0 3px 4px rgba(0,0,0,0.4)`, `inset 0 -3px 4px rgba(0,0,0,0.4)`, `inset 3px 0 4px rgba(0,0,0,0.3)`, `inset -3px 0 4px rgba(0,0,0,0.3)`) berpadu dengan subpixel top highlight (`inset 0 1.5px 2px rgba(255,255,255,0.95)`) di dalam 3D Faceplate Outer Highlight and Shadow Overlay untuk efek lubang bevel (inset recess) yang bersih dan rata.
 
+## 🛡️ 9. Security & Anti-Cloning Specifications (Option C)
+
+Untuk mencegah kloning aplikasi, reverse engineering, dan pembajakan komunikasi data, sistem dilengkapi dengan lapisan proteksi berikut:
+
+### A. Obfuscation & Minification JavaScript (Terser)
+- **Minifier**: Terser (`minify: 'terser'`).
+- **Mangling**: Mengaburkan nama variabel dan fungsi tingkat atas (`mangle.toplevel = true`).
+- **Pembersihan Debugger/Console**: Secara otomatis menghapus statement `debugger` dan pemanggilan `console.*` pada versi produksi untuk menghalangi proses reverse engineering log perilaku runtime.
+- **Sourcemap**: Dinonaktifkan (`sourcemap: false`) untuk mencegah pemetaan kembali kode terkompilasi ke kode asli.
+
+### B. ProGuard Bytecode Obfuscation & Shrinking (Android Native)
+- **Minification**: Diaktifkan di build gradle Android (`minifyEnabled true`) menggunakan aturan optimasi default (`proguard-android-optimize.txt`).
+- **Bridge Protection**: Menjaga integritas refleksi jembatan komunikasi JavaScript-to-Native Capacitor:
+  ```proguard
+  -keep class com.getcapacitor.** { *; }
+  -keep class com.nextvwt.ptt.** { *; }
+  -keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod
+  -keepattributes JavascriptInterface
+  -keepclassmembers class * {
+      @android.webkit.JavascriptInterface <methods>;
+  }
+  ```
+
+### C. System-Wide SSL Pinning (Android Network Security)
+- **Target Domain**: `*.supabase.co` (Single Source of Truth).
+- **Public Key Pinning (SPKI SHA-256)**: Menetapkan sidik jari kunci publik dari sertifikat SSL target (Let's Encrypt R3/E1, Cloudflare ECC, dan ISRG Root X1 sebagai backup) secara deklaratif di `network_security_config.xml`.
+- **MitM Protection**: Menjamin seluruh WebView fetch request dan Supabase Realtime WebSocket client langsung menolak koneksi jika lalu lintas dialihkan melalui proxy tidak dikenal (sertifikat tidak cocok), mencegah pencurian API Key Supabase.
+
 ---
 
-## 📝 9. Riwayat Perubahan Dokumen (Changelog)
+## 📝 10. Riwayat Perubahan Dokumen (Changelog)
 
 | Versi | Tanggal | Deskripsi Perubahan | Penulis |
 | :--- | :--- | :--- | :--- |
@@ -566,3 +594,4 @@ Untuk memastikan antarmuka Walkie-Talkie tidak terpotong di perangkat seluler (m
 | **v2.8.0** | 2026-06-06 | Penyempurnaan & pelembutan bayangan dalam sasis faceplate utama (mengganti bayangan atas yang tebal/kasar dengan bayangan setebal 3px/4px yang seragam menyamai karakter tepi bawah) (Seksi 8). | Senior System Architect |
 | **v2.9.0** | 2026-06-06 | Peningkatan visual batang sinyal LCD (lebar 10.5px, border 1.5px solid #000000, gradasi warna neon super-vibrant, dan inner 3D highlights dipertebal) serta perapatan gap antar batang menjadi 0.5px (Seksi 3.A.3). | Senior System Architect |
 | **v3.0.0** | 2026-06-06 | Implementasi D-Pad Bezel Plate 3D Convex Bevel & Shadow menggunakan filter SVG diagonal yang disempurnakan (highlight white & shadow black) secara internal guna mencegah kebocoran visual (leak) di sekeliling tepi pelat cetakan (Seksi 3.B). | Senior System Architect |
+| **v3.1.0** | 2026-06-06 | Penerapan Opsi C: JS Terser Obfuscation (mangle toplevel, drop console/debugger, no sourcemap), ProGuard Android bytecode shrinking & bridge reflection protection, serta deklarasi SSL Pinning (*.supabase.co) via networkSecurityConfig untuk proteksi anti-cloning & MitM (Seksi 9). | Senior System Architect |
