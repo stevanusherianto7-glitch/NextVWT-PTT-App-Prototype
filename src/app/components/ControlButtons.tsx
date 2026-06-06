@@ -116,7 +116,7 @@ export function ControlButtons({
         onMouseDown={() => setPressedBtn('scan')}
         onMouseUp={() => setPressedBtn(null)}
         onMouseLeave={() => setPressedBtn(null)}
-        className="absolute left-[16px] top-[50px] w-[75px] h-[50px] rounded-l-full rounded-r-[6px] text-white overflow-hidden flex items-center justify-center animate-all z-10"
+        className="absolute left-[16px] top-[50px] w-[85px] h-[50px] rounded-l-full rounded-r-[6px] text-white overflow-hidden flex items-center justify-center animate-all z-10"
         style={getButtonStyle('scan')}
       >
         <span
@@ -206,7 +206,7 @@ export function ControlButtons({
         onMouseDown={() => setPressedBtn('set')}
         onMouseUp={() => setPressedBtn(null)}
         onMouseLeave={() => setPressedBtn(null)}
-        className="absolute left-[199px] top-[50px] w-[75px] h-[50px] rounded-r-full rounded-l-[6px] text-white flex items-center justify-center animate-all z-10"
+        className="absolute left-[189px] top-[50px] w-[85px] h-[50px] rounded-r-full rounded-l-[6px] text-white flex items-center justify-center animate-all z-10"
         style={getButtonStyle('set')}
       >
         <span
