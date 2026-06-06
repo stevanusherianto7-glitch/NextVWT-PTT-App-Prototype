@@ -38,35 +38,39 @@ Seluruh token visual disimpan dalam variabel CSS di berkas `src/styles/theme.css
 
 ### C. Glass Crystal V2 (Premium Goldfish - `.theme-v2`)
 
-- **Device Chassis**: Transparent glass-morphic panel (`blur(12px)`).
+- **Device Chassis**: Transparent glass-morphic panel (`blur(20px)`) with diamond-cut bevel border and *smooth gradient sasis* (no diagonal glossy lines).
 - **LCD Background**: Warm amber/gold.
 - **LCD Text**: `#ffffff` (Putih).
 - **LCD Label**: `#ffffff` (Putih kontras tinggi).
-- **Aquarium Content**: Ikan Mas Koki (Goldfish) berenang lambat secara organic.
+- **Aquarium Content**: Ikan Mas Koki (Goldfish) berenang lambat secara organik.
+- **D-Pad SCAN/SET & Rocker Buttons**: Sapphire Blue Bold (`#1e40af` -> `#1e3a8a`) with semi-transparent white borders.
 
 ### D. Glass Rounded (Soft Crystal - `.theme-v3`)
 
-- **Device Chassis Background**: `linear-gradient(135deg, #e0f2f1 0%, #80deea 50%, #4dd0e1 100%)`
+- **Device Chassis Background**: `linear-gradient(135deg, rgba(224,247,250,0.9) 0%, rgba(178,235,242,0.8) 40%, rgba(77,208,225,0.75) 70%, rgba(224,247,250,0.85) 100%)` (smooth gradient, no diagonal glossy lines).
 - **LCD Background**: Cyan gradient (`#00e5ff → #00b0ff`).
 - **LCD Text**: `#ffffff` (Putih).
 - **LCD Label**: `#ffffff` (Putih).
 - **Aquarium Content**: Ikan Cupang Biru (Blue Betta) dengan sirip melambai lambat.
+- **D-Pad SCAN/SET & Rocker Buttons**: Teal/Cyan Bold (`#00838f` -> `#004d40`) with semi-transparent white borders.
 
 ### E. Dark Glass (Smoked Crystal - `.theme-v4`)
 
-- **Device Chassis Background**: Deep charcoal gradient (`#263238 → #151a1d → #0d1012`).
+- **Device Chassis Background**: Deep charcoal gradient (`#263238 → #141b1e → #080c0e`) (smooth gradient, no diagonal glossy lines).
 - **LCD Background**: Neon Emerald Green gradient (`#00c853 → #007c31`).
 - **LCD Text**: `#ffffff` (Putih).
 - **LCD Label**: `#ffffff` (Putih).
 - **Aquarium Content**: Ikan Neon Tetra kecil berenang berkelompok secara lincah.
+- **D-Pad SCAN/SET & Rocker Buttons**: Forest Green Bold (`#065f46` -> `#064e3b`) with semi-transparent neon green borders.
 
 ### F. Aurora Glass (Color Crystal - `.theme-v5`)
 
-- **Device Chassis Background**: Purple Magenta gradient (`#f3e5f5 → #ce93d8 → #ab47bc`).
+- **Device Chassis Background**: Purple Magenta gradient (`#f3e5f5 → #ce93d8 → #ab47bc`) (smooth gradient, no diagonal glossy lines).
 - **LCD Background**: Hot Pink/Magenta gradient (`#ff4081 → #e040fb`).
 - **LCD Text**: `#ffffff` (Putih).
 - **LCD Label**: `#ffffff` (Putih).
 - **Aquarium Content**: Ikan Cupang Pink/Magenta (Pink Betta) berenang anggun.
+- **D-Pad SCAN/SET & Rocker Buttons**: Pink/Magenta Bold (`#d81b60` -> `#880e4f`) with semi-transparent white borders.
 
 ### G. Glass Crystal V6 (Live Aquarium - `.theme-v6`)
 
@@ -491,10 +495,31 @@ Aplikasi menggunakan Zustand store (`src/app/store/usePTTStore.ts`) yang dilengk
    Membungkus akses `localStorage` dengan penanganan pengecualian (try-catch) sehingga jika penyimpanan lokal penuh atau rusak (corrupted JSON), aplikasi tidak akan memicu layar putih kosong (white screen crash), melainkan melakukan pemulihan fallback ke konfigurasi default.
 3. **Pembersihan Otomatis Saat Power Off**:
    Jika slide daya WALKIE-TALIE dimatikan, seluruh proses active transmisi, audio queues, dan pemindaian (scanning) akan langsung dihentikan seketika untuk menghemat memori dan baterai perangkat.
+4. **Pengaturan Waktu Tunggu Saluran (Debounced Reconnect Delay)**:
+   Ketika `fastClick` dinonaktifkan (bernilai `false`), aplikasi menerapkan jeda debounce sambungan sebesar `800ms` sebelum memproses pendaftaran/langganan channel baru di Supabase. Ini berfungsi untuk mencegah pengiriman permintaan berulang-ulang yang dapat membebani server saat pemindaian cepat atau rotasi cepat tombol D-pad.
+5. **Logika Visibilitas Avatar Pengguna**:
+   Avatar foto dikontrol oleh tiga variabel setelan: `showMyPhoto` (untuk profil lokal), `showOtherPhotos` (untuk profil rekan), dan `showPhotosInList` (secara global). Jika salah satu bernilai `false`, avatar visual disembunyikan dan otomatis kembali menggunakan tampilan teks inisial berlatar warna dinamis.
+6. **Optimasi Aktivitas Animasi Layar (bgActive)**:
+   Saklar `bgActive` di pengaturan tampilan mengontrol jalannya rendering ikan di `AquariumCanvas.tsx`. Jika dinonaktifkan, siklus pembaruan animasi canvas distop guna menghemat konsumsi CPU/GPU pada perangkat berspesifikasi rendah.
 
 ---
 
-## 🔤 6. Typography System
+## 🔊 6. Audio Streamer, WebRTC & Active Queue Management
+
+Sistem streaming audio diimplementasikan via React Hook (`src/app/hooks/useAudioStreamer.ts`) dengan kemampuan perutean dinamis:
+
+1. **Active Audio Buffer Queue (maxQueue)**:
+   Saat menggunakan fallback transmisi berbasis Base64, akumulasi keterlambatan (latency) dicegah menggunakan parameter `maxQueue`. Jika ukuran antrean segmen audio melampaui nilai batas (`maxQueue`), sistem secara otomatis mereset waktu pemutaran langsung ke kondisi saat ini (`currentTime = now + 0.05`) untuk menghindari lag suara yang menumpuk.
+2. **Duplex Mode (fullDuplex)**:
+   Pengaturan `fullDuplex` mengontrol interaksi transmisi dua arah. Jika diaktifkan, pengguna dapat mendengar suara rekan pemancar lain secara realtime meskipun local PTT sedang aktif ditekan (transmitting). Jika dinonaktifkan, mode half-duplex murni diterapkan dengan mematikan decoder output saat PTT aktif.
+3. **Built-in Hardware Echo & Feedback Delay**:
+   Pada mode audio musik (`audioMode === 'music'`), jika saklar `builtInEcho` aktif, perutean audio menyuntikkan node delay (`DelayNode`) dengan waktu tunda `250ms` yang dicampur kembali via `GainNode` sesuai persentase `echoFeedback` dari pengaturan, mensimulasikan efek gema karaoke tanpa mengorbankan kualitas audio aslinya.
+4. **Voice Activity Detection (VAD)**:
+   Untuk menghemat data internet seluler, pengiriman paket audio melalui peer connection WebRTC disaring menggunakan modul VAD. Sistem akan membungkam microphone track secara otomatis jika volume RMS berada di bawah ambang batas `0.01` selama lebih dari `1.5` detik.
+
+---
+
+## 🔤 7. Typography System
 
 - **DSEG7 Classic Mini Bold**: Digunakan khusus untuk angka channel digital LCD agar memberikan nuansa walkie-talkie retro-modern yang autentik.
 - **Outfit**: Digunakan untuk teks judul brand **NextVWT** dan teks status utama.

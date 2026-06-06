@@ -82,11 +82,14 @@ Seluruh switch biner di panel pengaturan menggunakan kegayaan toggle kustom:
 
 User List Modal menampilkan daftar staf atau anggota tim aktif yang berada di channel/room yang sama secara realtime.
 
-### A. Sasis Luar & Penempatan
+### A. Sasis Luar, Penempatan & Keseragaman Dimensi
 
 - **Penempatan**: Diposisikan tepat di bawah sasis utama LCD Display Panel untuk menyelaraskan alur visual fisik. Margin-top negatif `-32px` (`-mt-8`) merapatkan jarak bezel.
-- **Dimensi**: Lebar penuh menyesuaikan wadah dengan batas maksimal `340px` (`w-full max-w-[340px]`), tinggi adaptif sesuai tinggi layar (maksimal `485px` pada layar $\ge 700px$).
-- **Bezel & Sudut**: Hanya membulat di sudut bawah sebesar `16px` (`rounded-b-2xl`), border kiri/kanan/bawah `1px solid #d1d5db` (`border-gray-300`).
+- **Keseragaman Dimensi (Acuan Utama Modal)**: 
+  Dimensi fisik `UserListModal` dijadikan sebagai acuan baku ukuran bagi seluruh modal utama di aplikasi:
+  - **Lebar**: `w-full max-w-[340px]`
+  - **Tinggi**: `350px` pada layar biasa, responsif memanjang hingga `485px` pada layar tinggi ($\ge 700px$).
+  - **Penyelarasan Global**: Seluruh modal lain (ChannelListModal, Phrase Modal, User Guide Modal, Province Selector Modal, City Selector Modal, Theme Selector Modal) menggunakan class global `.app-uniform-modal` di `theme.css` yang mewarisi ukuran ini secara identik.
 
 ### B. Desain Baris Detail Pengguna (User Row)
 
@@ -94,6 +97,7 @@ User List Modal menampilkan daftar staf atau anggota tim aktif yang berada di ch
 - **Avatar Lingkaran**:
   - Ukuran: Diameter `44px` (`w-11 h-11`), `object-cover`, border putih halus, drop shadow `0 2px 4px rgba(0,0,0,0.15)`.
   - Inisial Nama (Fallback): Teks inisial berukuran `17px`, font-bold, warna latar deterministik (indigo, pink, teal, amber, dll) dengan inner shadow `inset 0 1.5px 3px rgba(255,255,255,0.4)`.
+  - **Logika Visibilitas Foto**: Diintegrasikan secara dinamis dengan setelan `showMyPhoto` (untuk akun lokal), `showOtherPhotos` (untuk akun rekan), dan `showPhotosInList` (secara global). Jika salah satu dinonaktifkan, avatar gambar disembunyikan dan otomatis jatuh kembali (*fallback*) menggunakan inisial nama.
 - **Presence Badge (Dot Status Aktif)**:
   - Ukuran: Diameter `15px`, melayang absolute di sudut kanan-bawah lingkaran avatar.
   - Gaya: Latar biru elektrik `#0088cc`, border putih tebal `1.5px`, memuat silhouette SVG siluet kepala mini berwarna putih di dalamnya.
@@ -114,7 +118,7 @@ Channel List Modal adalah overlay dialog penuh untuk menyeleksi saluran walkie-t
 
 ### B. Kontainer Dialog (Modal Box)
 
-- **Dimensi**: Lebar maksimal `340px` (`w-full max-w-[340px]`), tinggi maksimal `80%` dari viewport, `overflow-hidden`.
+- **Dimensi**: Mewarisi kelas `.app-uniform-modal` dengan lebar maksimal `340px` (`w-full max-w-[340px]`) dan tinggi responsif `350px` / `485px` agar seragam dengan modal lainnya, `overflow-hidden`.
 - **Tepi & Bayangan**: Border `1px solid #d1d5db`, rounded `8px` (`rounded-lg`), drop shadow pekat `shadow-2xl`.
 - **Animasi Transisi Masuk**: Efek membesar memudar halus `animate-in fade-in zoom-in-95 duration-100`.
 
