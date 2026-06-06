@@ -31,7 +31,7 @@ export function ControlButtons({
   };
 
   return (
-    <div className="relative w-[290px] h-[150px] mt-4 select-none">
+    <div className="relative w-[290px] h-[150px] mt-1.5 select-none">
       {/* Molded backing base (D-Pad Frame) */}
       <div className="absolute inset-0 pointer-events-none">
         <svg
