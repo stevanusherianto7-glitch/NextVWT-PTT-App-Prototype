@@ -100,26 +100,6 @@ export function ControlButtons({
             filter="url(#dpad-inset-shadow)"
           />
 
-          {/* Top-Left Bevel Highlight (for embossed illusion) */}
-          <path
-            d="M 100 30 A 48.75 48.75 0 0 1 190 30 L 245 30 A 45 45 0 0 1 245 120 L 190 120 A 48.75 48.75 0 0 1 100 120 L 45 120 A 45 45 0 0 1 45 30 Z"
-            fill="none"
-            stroke="rgba(255, 255, 255, 0.45)"
-            strokeWidth="2.5"
-            className="pointer-events-none"
-            style={{ transform: 'translate(-1px, -1px)', filter: 'blur(0.5px)' }}
-          />
-
-          {/* Bottom-Right Bevel Shadow (for embossed illusion) */}
-          <path
-            d="M 100 30 A 48.75 48.75 0 0 1 190 30 L 245 30 A 45 45 0 0 1 245 120 L 190 120 A 48.75 48.75 0 0 1 100 120 L 45 120 A 45 45 0 0 1 45 30 Z"
-            fill="none"
-            stroke="rgba(0, 0, 0, 0.4)"
-            strokeWidth="2.5"
-            className="pointer-events-none"
-            style={{ transform: 'translate(1px, 1.2px)', filter: 'blur(0.5px)' }}
-          />
-
           {/* Clean outer border line (single path) */}
           <path
             d="M 100 30 A 48.75 48.75 0 0 1 190 30 L 245 30 A 45 45 0 0 1 245 120 L 190 120 A 48.75 48.75 0 0 1 100 120 L 45 120 A 45 45 0 0 1 45 30 Z"
