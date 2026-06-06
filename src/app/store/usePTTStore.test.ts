@@ -381,4 +381,28 @@ describe('usePTTStore – localStorage Persistence & Offline Robustness', () => 
     const result = safeGetStorage();
     expect(result).toBeNull(); // Must return null, not throw
   });
+
+  it('initializeSession generates and persists a random 5-char alphanumeric callSign if missing', () => {
+    usePTTStore.setState({ userId: '' });
+
+    const state = usePTTStore.getState();
+    state.initializeSession();
+
+    const updated = usePTTStore.getState();
+    expect(updated.callSign).toMatch(/^[A-Z0-9]{5}$/);
+
+    const cached = safeGetStorage();
+    expect(cached?.callSign).toBe(updated.callSign);
+  });
+
+  it('initializeSession restores callSign from localStorage cache', () => {
+    safeSetStorage({ callSign: 'ABC12' });
+    usePTTStore.setState({ userId: '' });
+
+    const state = usePTTStore.getState();
+    state.initializeSession();
+
+    const updated = usePTTStore.getState();
+    expect(updated.callSign).toBe('ABC12');
+  });
 });
