@@ -19,6 +19,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@capacitor/android": "^8.4.0",
+    "@capacitor/core": "^8.4.0",
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.1",
     "@mui/icons-material": "7.3.5",
@@ -78,6 +80,7 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.4.0",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.60.0",
     "@tailwindcss/vite": "4.1.12",
