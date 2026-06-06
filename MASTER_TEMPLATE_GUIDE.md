@@ -1,6 +1,6 @@
 # 📻 NextVWT - Master Ultimate Walkie-Talkie Template Guide
 
-Selamat datang di Panduan Master Ultimate Template. Repositori ini dirancang khusus sebagai arsitektur dasar (*base framework*) modular untuk membangun aplikasi komunikasi Push-to-Talk (PTT) Walkie-Talkie berkinerja tinggi, baik untuk operasional restoran terpadu (seperti Guest ➔ Waiter ➔ Kitchen pada **Pawon Salam Resto** / **Kedai Elvera 57**) maupun proyek komunikasi taktis retail lainnya.
+Selamat datang di Panduan Master Ultimate Template. Repositori ini dirancang khusus sebagai arsitektur dasar (*base framework*) modular untuk membangun aplikasi komunikasi Push-to-Talk (PTT) Walkie-Talkie berkinerja tinggi, baik untuk operasional tim terpadu (seperti Ground Crew ➔ Team Lead ➔ Command Center pada **NextVWT Tactical Comms** / **Viper Team Alpha**) maupun proyek komunikasi taktis profesional lainnya.
 
 ---
 
@@ -45,14 +45,14 @@ export const BRAND: BrandConfig = {
 ```
 
 ### B. Mengubah Daftar Channel Default
-Ubah array `CHANNELS` untuk menyesuaikan kebutuhan divisi operasional restoran Anda:
+Ubah array `CHANNELS` untuk menyesuaikan kebutuhan divisi operasional tim Anda:
 ```typescript
 export const CHANNELS: ChannelConfigItem[] = [
-  { number: 0, name: 'DUKUNGAN & KASIR', type: 'green', users: [] },
-  { number: 1, name: 'DIVISI KITCHEN (DAPUR)', type: 'green', users: [] },
-  { number: 2, name: 'DIVISI WAITER (PRAMUSAJI)', type: 'green', users: [] },
-  { number: 3, name: 'DIVISI BAR & MINUMAN', type: 'green', users: [] },
-  { number: 4, name: 'RESTRICTED ADMIN & OWNER', type: 'red', users: [] }, // Channel Terkunci
+  { number: 0, name: 'SUPPORT & LOGISTICS', type: 'green', users: [] },
+  { number: 1, name: 'FIELD OPERATIONS', type: 'green', users: [] },
+  { number: 2, name: 'TEAM LEAD COORDINATION', type: 'green', users: [] },
+  { number: 3, name: 'COMMAND CENTER', type: 'green', users: [] },
+  { number: 4, name: 'RESTRICTED ADMIN ONLY', type: 'red', users: [] }, // Channel Terkunci
 ];
 ```
 
@@ -77,42 +77,42 @@ export const VISUAL_CONFIG = {
 
 ---
 
-## 🎨 2.1. Contoh Praktis White-Labeling: Pawon Salam Resto PTT
+## 🎨 2.1. Contoh Praktis White-Labeling: NextVWT Tactical Comms
 
-Berikut adalah contoh lengkap bagaimana mengubah NextVWT menjadi aplikasi PTT untuk **Pawon Salam Resto**:
+Berikut adalah contoh lengkap bagaimana mengubah NextVWT menjadi aplikasi PTT untuk **NextVWT Tactical Comms**:
 
 ### Langkah 1: Edit `src/app/utils/config.ts`
 
 ```typescript
 // Branding
 export const BRAND: BrandConfig = {
-  name: 'PawonSalam-PTT',
-  titlePart1: 'PAWON',
-  titlePart2: 'SALAM',
-  slogan: 'PAWON SALAM RESTO PTT SYSTEM',
-  marqueeTextDefault: 'Sistem PTT Pawon Salam Resto - Koordinasi Dapur & Pramusaji Seamless',
-  supabaseRoomPrefix: 'pawonsalam-ch-',
+  name: 'NextVWT-Tactical',
+  titlePart1: 'NEXTVWT',
+  titlePart2: 'TACTICAL',
+  slogan: 'NEXTVWT TACTICAL COMMS SYSTEM',
+  marqueeTextDefault: 'Sistem PTT NextVWT Tactical - Koordinasi Tim & Komunikasi Field Ops',
+  supabaseRoomPrefix: 'nextvwt-ch-',
   defaultTheme: 'theme-v6',
   defaultChannel: 1,
 };
 
-// Channels untuk operasional restoran
+// Channels untuk operasional tim tactical
 export const CHANNELS: ChannelConfigItem[] = [
-  { number: 0, name: 'SUPPORT & KASIR (CH-00)', type: 'green', users: [] },
-  { number: 1, name: 'KITCHEN MAIN (DAPUR UTAMA)', type: 'green', users: [] },
-  { number: 2, name: 'WAITER TEAM A (LANTAI 1)', type: 'green', users: [] },
-  { number: 3, name: 'WAITER TEAM B (LANTAI 2)', type: 'green', users: [] },
-  { number: 4, name: 'BAR & BEVERAGE (MINUMAN)', type: 'green', users: [] },
-  { number: 5, name: 'DELIVERY & PACKAGE', type: 'green', users: [] },
-  { number: 99, name: 'ADMIN OWNER (TERKUNCI)', type: 'red', users: [] },
+  { number: 0, name: 'SUPPORT & LOGISTICS (CH-00)', type: 'green', users: [] },
+  { number: 1, name: 'FIELD OPERATIONS ALPHA', type: 'green', users: [] },
+  { number: 2, name: 'TEAM LEAD BRAVO', type: 'green', users: [] },
+  { number: 3, name: 'COMMAND CENTER', type: 'green', users: [] },
+  { number: 4, name: 'RECON & SURVEILLANCE', type: 'green', users: [] },
+  { number: 5, name: 'EMERGENCY RESPONSE', type: 'green', users: [] },
+  { number: 99, name: 'ADMIN ONLY (TERKUNCI)', type: 'red', users: [] },
 ];
 
-// Visual branding khusus Pawon Salam (restoran style)
+// Visual branding khusus NextVWT Tactical (tactical style)
 export const VISUAL_CONFIG = {
   colors: {
-    primary: '#D4AF37',      // Warna emas (prestige restoran)
-    secondary: '#8B4513',    // Warna cokelat (warm & elegant)
-    accent: '#FF6B6B',       // Warna merah muda (softer than NextVWT)
+    primary: '#0066CC',      // Warna biru tactical
+    secondary: '#1A1A1A',    // Warna hitam taktis
+    accent: '#FF3333',       // Warna merah darurat (tactical red)
   },
 };
 ```
@@ -132,7 +132,7 @@ npx cap open android
 
 ### Langkah 3: Distribusi
 
-Distribusikan file `.apk` ke semua staff Pawon Salam Resto untuk instalasi di perangkat Android mereka.
+Distribusikan file `.apk` ke semua anggota tim NextVWT Tactical untuk instalasi di perangkat Android mereka.
 
 ---
 
@@ -147,7 +147,7 @@ Aplikasi ini menggunakan fitur **Supabase Realtime** sebagai tulang punggung pen
 4. Di bagian **Realtime Settings**, pastikan **Broadcast** (untuk pengiriman suara instan) dan **Presence** (untuk pelacakan staf yang sedang online di saluran) dalam kondisi aktif.
 
 ### B. Struktur Tabel User Profiles (Pilihan)
-Untuk menyimpan nama staf dan penugasan meja (misal: Waiter Meja A1-A9), buat tabel `profiles` menggunakan SQL berikut di Editor SQL Supabase:
+Untuk menyimpan nama staf dan penugasan meja (misal: Team Member Meja A1-A9), buat tabel `profiles` menggunakan SQL berikut di Editor SQL Supabase:
 
 ```sql
 create table public.profiles (
@@ -174,7 +174,7 @@ create policy "Allow individual update" on public.profiles for update using (aut
 
 ### A. Alur Hybrid Suara (WebRTC + Base64 Fallback)
 1. **WebRTC Peer-to-Peer** *(Utama)*: Digunakan saat koneksi internet stabil. Suara dikirim langsung antar-perangkat secara berkapasitas stereo tinggi (128kbps Opus) menggunakan Server STUN Google bawaan.
-2. **Base64 Audio Chunking** *(Fallback)*: Jika WebRTC gagal tersambung (karena firewall restoran atau limitasi NAT), aplikasi otomatis mengirimkan potongan audio base64 berdurasi 255ms melalui Supabase Broadcast (`voice_chunk`) sehingga percakapan tidak terputus.
+2. **Base64 Audio Chunking** *(Fallback)*: Jika WebRTC gagal tersambung (karena firewall tim atau limitasi NAT), aplikasi otomatis mengirimkan potongan audio base64 berdurasi 255ms melalui Supabase Broadcast (`voice_chunk`) sehingga percakapan tidak terputus.
 
 ### B. Ketahanan Terhadap Masalah Jaringan (Zero-Data-Loss)
 *   **Penyimpanan Selektif**: Zustand store hanya menyimpan preferensi visual ke `localStorage`. Data live transmisi dibersihkan otomatis saat halaman dimuat ulang guna mencegah status gantung (*stuck*).
@@ -185,7 +185,7 @@ create policy "Allow individual update" on public.profiles for update using (aut
 
 ## 📱 5. Panduan Kompilasi Aplikasi Android (Capacitor)
 
-Untuk mengemas template web ini menjadi aplikasi Android restoran (.apk):
+Untuk mengemas template web ini menjadi aplikasi Android tim (.apk):
 
 1. **Inisialisasi Capacitor** (jika belum diinisialisasi):
    ```bash
@@ -207,7 +207,7 @@ Untuk mengemas template web ini menjadi aplikasi Android restoran (.apk):
    ```bash
    npx cap open android
    ```
-   Di Android Studio, pilih **Build** ➔ **Build Bundle(s) / APK(s)** ➔ **Build APK(s)** untuk membuat berkas instaler restoran Anda.
+   Di Android Studio, pilih **Build** ➔ **Build Bundle(s) / APK(s)** ➔ **Build APK(s)** untuk membuat berkas instaler tim Anda.
 
 ---
 
@@ -347,7 +347,7 @@ Ini otomatis melacak siapa yang online di setiap channel PTT.
 
 ## 🎯 8. Kustomisasi Lanjutan: Multi-Store & Multi-Region Deployment
 
-Jika Anda menjalankan **beberapa restoran/toko** dengan Supabase projects berbeda:
+Jika Anda menjalankan **beberapa tim/toko** dengan Supabase projects berbeda:
 
 ### A. Environment Configuration
 
@@ -414,8 +414,8 @@ CREATE POLICY "Admin full access"
     (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin'
   );
 
--- Waiter hanya bisa liat profil kitchen & other waiters, tidak bisa liat admin
-CREATE POLICY "Waiter limited view" 
+-- Team Member hanya bisa liat profil kitchen & other waiters, tidak bisa liat admin
+CREATE POLICY "Team Member limited view" 
   ON public.profiles FOR SELECT USING (
     (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'waiter' AND
     role IN ('kitchen', 'waiter', 'guest')
