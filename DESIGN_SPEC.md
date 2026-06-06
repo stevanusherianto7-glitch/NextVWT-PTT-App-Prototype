@@ -129,12 +129,12 @@ Komponen utama penampil status radio. Menggunakan styling kaca (glassmorphism) b
   - Wadah: Flexbox horizontal penyelarasan bawah (`flex items-end h-[28px] relative gap-1 mt-1 mr-1 cursor-pointer select-none`).
   - Ikon Silang Sinyal Offline: Tampil jika offline, warna merah `#d32f2f`, font `bold` / `black`, diposisikan secara absolute di `left: -8px` (`-left-2`), `top: 0`, filter bayangan `drop-shadow(1px 1px 0px rgba(255,255,255,0.6))`.
   - Tooltip Latensi: Muncul di atas batang sinyal ketika diklik, posisi absolute `bottom-full right-0 mb-1.5` (`margin-bottom: 6px`), padding `px-2 py-0.5` (`8px horizontal, 2px vertical`), latar belakang hitam `#000000`, teks putih `#ffffff` berukuran `10px`, bergaris tepi tipis dengan bayangan `box-shadow: 0 4px 6px -1px rgba(0,0,0,0.5), 0 2px 4px -1px rgba(0,0,0,0.3)`.
-  - Batang Sinyal (4 Bars): Lebar masing-masing batang `9px`. Tinggi batang ke-n dihitung dengan rumus: `bar * 6 + 3` px (Bar 1: `9px`, Bar 2: `15px`, Bar 3: `21px`, Bar 4: `27px`).
-    - Garis tepi batang: `1px solid #1a1a1a`, `border-radius: 1.5px`.
-    - Bayangan 3D batang: `box-shadow: inset 1px 1.5px 0.5px rgba(255,255,255,0.5), inset -1px -1px 0.5px rgba(0,0,0,0.3)`.
-    - Gradasi Warna Aktif (4-3 batang): `linear-gradient(to bottom, #a2f3a5 0%, #00e64d 40%, #009c34 100%)` (Hijau).
-    - Gradasi Warna Aktif (2 batang): `linear-gradient(to bottom, #ffea85 0%, #ffbb00 40%, #cc9600 100%)` (Kuning).
-    - Gradasi Warna Aktif (1 batang): `linear-gradient(to bottom, #ff9999 0%, #ff3333 40%, #b31a1a 100%)` (Merah).
+  - Batang Sinyal (4 Bars): Lebar masing-masing batang `10.5px` (gap antar batang `1.5px`). Tinggi batang ke-n dihitung dengan rumus: `bar * 6 + 3` px (Bar 1: `9px`, Bar 2: `15px`, Bar 3: `21px`, Bar 4: `27px`).
+    - Garis tepi batang: `1.5px solid #000000` (menambah ketegasan outline).
+    - Bayangan 3D batang: `box-shadow: inset 1.5px 2px 1px rgba(255,255,255,0.7), inset -1.5px -1.5px 1px rgba(0,0,0,0.5)` (efek ekstrusi 3D beveled lebih tajam).
+    - Gradasi Warna Aktif (4-3 batang): `linear-gradient(to bottom, #c6ffc2 0%, #00ff55 45%, #008f1f 100%)` (Neon Green super-vibrant).
+    - Gradasi Warna Aktif (2 batang): `linear-gradient(to bottom, #fff3a1 0%, #ffcc00 45%, #b88600 100%)` (Golden Yellow super-vibrant).
+    - Gradasi Warna Aktif (1 batang): `linear-gradient(to bottom, #ffc4c4 0%, #ff1133 45%, #a80000 100%)` (Intense Crimson Red super-vibrant).
     - Gradasi Warna Inaktif (Kosong): `linear-gradient(to bottom, #ffffff 0%, #e5e5e5 50%, #cccccc 100%)`.
 
 #### 4. Lencana Status Mengambang (Floating Badges)
@@ -563,4 +563,5 @@ Untuk memastikan antarmuka Walkie-Talkie tidak terpotong di perangkat seluler (m
 | **v2.5.0** | 2026-06-06 | Pemadatan spasi vertikal top header (padding-top kontainer utama dari `pt-8` ke `pt-[14px]`) untuk mendekatkan sasis utama panel LCD ke top bar header (Seksi 8). | Senior System Architect |
 | **v2.6.0** | 2026-06-06 | Penyelesaian kebocoran warna bingkai LCD atas (padding gradient bezel) dan penguatan efek skeuomorphic (gloss, shadow, bevel) di seluruh antarmuka (Seksi 3.A & 8). | Senior System Architect |
 | **v2.7.0** | 2026-06-06 | Penguatan bayangan dalam (inner shadow) sisi samping/atas sasis faceplate utama dan tepi bawah top header untuk visual 3D skeuomorphic lebih cembung/inset (Seksi 8). | Senior System Architect |
-| **v2.8.0** | 2026-06-06 | Penyempurnaan & pelembutan bayangan dalam sasis faceplate utama (mengganti bayangan atas yang tebal/kasar dengan bayangan setebal 3px/4px yang seragam menyamai karakter tepi bawah) (Seksi 8). | Senior System Architect |hic lebih cembung/inset (Seksi 8). | Senior System Architect |
+| **v2.8.0** | 2026-06-06 | Penyempurnaan & pelembutan bayangan dalam sasis faceplate utama (mengganti bayangan atas yang tebal/kasar dengan bayangan setebal 3px/4px yang seragam menyamai karakter tepi bawah) (Seksi 8). | Senior System Architect |
+| **v2.9.0** | 2026-06-06 | Peningkatan visual batang sinyal LCD (lebar 10.5px, border 1.5px solid #000000, gradasi warna neon super-vibrant, dan inner 3D highlights dipertebal) (Seksi 3.A.3). | Senior System Architect |
