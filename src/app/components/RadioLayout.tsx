@@ -429,7 +429,7 @@ export function RadioLayout() {
                 setIsUserListOpen(false);
               }
             }}
-            className="flex-1 w-full max-w-[400px] flex flex-col items-center pt-8 px-[10px] pb-20 relative cursor-default"
+            className="flex-1 w-full max-w-[400px] flex flex-col items-center pt-[14px] px-[10px] pb-20 relative cursor-default"
           >
             {isUserListOpen ? (
               <UserListModal
