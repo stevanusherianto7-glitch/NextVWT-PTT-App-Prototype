@@ -421,6 +421,19 @@ export function UserListModal({
         .custom-scrollbar {
           scrollbar-width: thin;
         }
+        @keyframes activeUserPulse {
+          0%, 100% {
+            background-color: rgba(239, 246, 255, 0.75);
+            box-shadow: inset 0 0 12px rgba(0, 136, 204, 0.15);
+          }
+          50% {
+            background-color: rgba(219, 234, 254, 0.95);
+            box-shadow: inset 0 0 22px rgba(0, 136, 204, 0.4), 0 0 10px rgba(0, 136, 204, 0.25);
+          }
+        }
+        .active-user-glow {
+          animation: activeUserPulse 1.5s infinite ease-in-out;
+        }
       `}</style>
 
       {/* User List Container (Scrollable) */}
@@ -459,7 +472,11 @@ export function UserListModal({
             return (
               <div
                 key={`${profile.callSign}-${idx}`}
-                className="w-full flex items-center px-4 py-2.5 hover:bg-white active:bg-gray-100 transition-colors bg-[#fafbfc] border-b border-gray-300/70"
+                className={`w-full flex items-center pr-4 pl-3 py-2.5 border-l-4 hover:bg-white active:bg-gray-100 transition-all duration-300 border-b border-gray-300/70 ${
+                  isSpeaking
+                    ? 'active-user-glow border-l-[#0088cc] z-10'
+                    : 'bg-[#fafbfc] border-l-transparent'
+                }`}
               >
                 {/* Avatar with status overlay */}
                 <div className="relative w-11 h-11 shrink-0 select-none">
@@ -491,7 +508,7 @@ export function UserListModal({
 
                 {/* Active Speaker Megaphone Toa Icon */}
                 {isSpeaking && (
-                  <div className="mr-1 flex items-center justify-center animate-pulse text-gray-500">
+                  <div className="mr-1 flex items-center justify-center animate-pulse text-[#0088cc]">
                     <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" fill="currentColor">
                       <path d="M16 5v14c0 .55-.45 1-1 1h-1l-4-4H6c-1.1 0-2-.9-2-2v-4c0-1.1.9-2 2-2h4l4-4h1c.55 0 1 .45 1 1zm3 7c0-2.03-1.02-3.82-2.58-4.88L15 8.56C16.2 9.29 17 10.55 17 12s-.8 2.71-2 3.44l1.42 1.44C17.98 15.82 19 14.03 19 12zm-3-2.28c.59.54.96 1.3.96 2.28s-.37 1.74-.96 2.28l1.42 1.42c1.07-1 1.71-2.39 1.71-3.7s-.64-2.7-1.71-3.7l-1.42 1.42z" />
                     </svg>
