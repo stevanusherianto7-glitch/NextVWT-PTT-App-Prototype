@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { STATIC_CHANNELS, ChannelItem } from '../utils/constants';
+import { BRAND } from '../utils/config';
 
 interface ChannelListModalProps {
   onClose: () => void;
@@ -58,7 +59,7 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
                 textShadow: '1px 1px 0px #16a34a, 2px 2px 0px #15803d, 2px 2px 4px rgba(0,0,0,0.5)',
               }}
             >
-              NEXT
+              {BRAND.titlePart1}
             </span>
             <svg
               viewBox="0 0 100 100"
@@ -168,11 +169,11 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
                 textShadow: '1px 1px 0px #16a34a, 2px 2px 0px #15803d, 2px 2px 4px rgba(0,0,0,0.5)',
               }}
             >
-              VWT
+              {BRAND.titlePart2}
             </span>
           </div>
           <div className="text-[9px] sm:text-[10px] font-black text-[#e53935] tracking-[0.18em] mt-1.5 text-center uppercase">
-            NEXT VIRTUAL WALKIE TALKIE
+            {BRAND.slogan}
           </div>
         </div>
 

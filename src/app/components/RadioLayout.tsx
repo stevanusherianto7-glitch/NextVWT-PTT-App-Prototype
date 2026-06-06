@@ -12,6 +12,7 @@ import { STATIC_CHANNELS, getChannelUserCount } from '../utils/constants';
 import { useAudioStreamer } from '../hooks/useAudioStreamer';
 import { toast } from 'sonner';
 import { FloatingKaraokePlayer } from './FloatingKaraokePlayer';
+import { BRAND } from '../utils/config';
 
 export function RadioLayout() {
   const {
@@ -402,7 +403,7 @@ export function RadioLayout() {
                       color: 'var(--header-text-color)',
                     }}
                   >
-                    NextVWT
+                    {BRAND.name}
                   </span>
                   <div className="w-[120px] overflow-hidden whitespace-nowrap relative h-[16px] mt-0.5">
                     <div
