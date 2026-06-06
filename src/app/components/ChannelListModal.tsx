@@ -55,8 +55,11 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
             <span
               className="text-[30px] sm:text-[34px] font-black tracking-tighter uppercase"
               style={{
-                color: '#22c55e',
-                textShadow: '1px 1px 0px #16a34a, 2px 2px 0px #15803d, 2px 2px 4px rgba(0,0,0,0.5)',
+                background: 'linear-gradient(to top, #14532d 0%, #4ecb71 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                display: 'inline-block',
+                filter: 'drop-shadow(1px 1px 0px rgba(21, 128, 61, 0.4))',
               }}
             >
               {BRAND.titlePart1}
@@ -165,8 +168,11 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
             <span
               className="text-[30px] sm:text-[34px] font-black tracking-tighter uppercase"
               style={{
-                color: '#22c55e',
-                textShadow: '1px 1px 0px #16a34a, 2px 2px 0px #15803d, 2px 2px 4px rgba(0,0,0,0.5)',
+                background: 'linear-gradient(to top, #14532d 0%, #4ecb71 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                display: 'inline-block',
+                filter: 'drop-shadow(1px 1px 0px rgba(21, 128, 61, 0.4))',
               }}
             >
               {BRAND.titlePart2}
