@@ -352,6 +352,10 @@ export function UserListModal({
   const localName = localUser?.user_metadata?.full_name || localInfoText;
   const [activeSpeakerIdx, setActiveSpeakerIdx] = useState<number | null>(null);
 
+  const showMyPhoto = usePTTStore((state) => state.showMyPhoto);
+  const showOtherPhotos = usePTTStore((state) => state.showOtherPhotos);
+  const showPhotosInList = usePTTStore((state) => state.showPhotosInList);
+
   useEffect(() => {
     if (isTransmitting) {
       setActiveSpeakerIdx(null);
@@ -443,6 +447,15 @@ export function UserListModal({
             const isSpeaking =
               (isTransmitting && isLocalUser) || (!isTransmitting && idx === activeSpeakerIdx);
 
+            let avatarUrlToUse = profile.avatarUrl;
+            if (!showPhotosInList) {
+              avatarUrlToUse = '';
+            } else if (isLocalUser && !showMyPhoto) {
+              avatarUrlToUse = '';
+            } else if (!isLocalUser && !showOtherPhotos) {
+              avatarUrlToUse = '';
+            }
+
             return (
               <div
                 key={`${profile.callSign}-${idx}`}
@@ -451,7 +464,7 @@ export function UserListModal({
                 {/* Avatar with status overlay */}
                 <div className="relative w-11 h-11 shrink-0 select-none">
                   <AvatarImage
-                    src={profile.avatarUrl}
+                    src={avatarUrlToUse}
                     displayName={profile.displayName}
                     avatarColor={profile.avatarColor}
                   />

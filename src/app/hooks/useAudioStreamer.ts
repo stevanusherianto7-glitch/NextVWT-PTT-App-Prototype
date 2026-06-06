@@ -436,7 +436,7 @@ export function useAudioStreamer() {
               channelCount: 2, // support stereo input
             }
           : {
-              echoCancellation: true,
+              echoCancellation: store.builtInEcho,
               noiseSuppression: true,
               autoGainControl: true,
             };
@@ -564,8 +564,14 @@ export function useAudioStreamer() {
   // Play an incoming Base64 voice chunk smoothly (used when WebRTC is not active)
   const playAudioChunk = useCallback(
     async (base64Chunk: string) => {
-      // Receiver-side deduplication: Mute/Ignore Base64 stream when we have an active WebRTC stream from the active transmitter
       const store = usePTTStore.getState();
+
+      // Half-duplex constraint: Mute playback when we are actively transmitting
+      if (store.isTransmitting && !store.fullDuplex) {
+        return;
+      }
+
+      // Receiver-side deduplication: Mute/Ignore Base64 stream when we have an active WebRTC stream from the active transmitter
       const activeTx = store.activeTransmitter;
       if (store.isConnected && activeTx && peerConnectionsRef.current.has(activeTx.userId)) {
         return;

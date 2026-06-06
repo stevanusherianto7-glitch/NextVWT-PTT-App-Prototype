@@ -26,6 +26,7 @@ export function LCDPanel({
   const isTransmitting = usePTTStore((state) => state.isTransmitting);
   const localUserId = usePTTStore((state) => state.userId);
   const themeText = usePTTStore((state) => state.themeText);
+  const bgActive = usePTTStore((state) => state.bgActive);
 
   const localName = infoText || user?.user_metadata?.full_name || 'Pebe Herianto';
   const isReceiving = activeTransmitter && activeTransmitter.userId !== localUserId;
@@ -135,7 +136,7 @@ export function LCDPanel({
       />
 
       {/* Aquarium Canvas Backplate */}
-      {_isPowerOn && themeText === 'theme-v6' && <AquariumCanvas theme={themeText} />}
+      {_isPowerOn && themeText === 'theme-v6' && bgActive && <AquariumCanvas theme={themeText} />}
 
       {/* Content */}
       <div className="relative p-3 h-full flex flex-col justify-between transition-opacity duration-300 opacity-100">
