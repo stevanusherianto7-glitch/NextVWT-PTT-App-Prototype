@@ -3,7 +3,7 @@
  * This file is the single source of truth for all branding, visual, and audio
  * settings for the PTT application. For white-labeling, modify this file only.
  *
- * To create a new branded variant (e.g., PawonSalam-PTT, KedaiElvera-PTT):
+ * To create a new branded variant (e.g., BrandA-PTT, BrandB-PTT):
  * 1. Update BRAND object with new company/brand names and settings
  * 2. Update CHANNELS array with new operational channels
  * 3. Optionally update VISUAL_CONFIG and AUDIO_CONFIG for brand aesthetics

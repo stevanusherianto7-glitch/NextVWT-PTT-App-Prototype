@@ -33,12 +33,12 @@ Untuk membuat aplikasi walkie-talkie baru, Anda hanya perlu memodifikasi berkas 
 Ubah objek `BRAND` untuk menyesuaikan teks dan perilaku bawaan aplikasi:
 ```typescript
 export const BRAND: BrandConfig = {
-  name: 'PawonSalam-PTT',              // Nama brand utama
-  titlePart1: 'PAWON',                 // Bagian 1 logo teks
-  titlePart2: 'SALAM',                 // Bagian 2 logo teks
-  slogan: 'PAWON SALAM RESTO PTT SYSTEM',
-  marqueeTextDefault: 'Sistem PTT Pawon Salam Resto - Komunikasi Lancar Tanpa Batas',
-  supabaseRoomPrefix: 'pawonsalam-ch-',// Namespace unik room Supabase
+  name: 'BrandA-PTT',                  // Nama brand utama
+  titlePart1: 'BRAND',                 // Bagian 1 logo teks
+  titlePart2: 'A',                     // Bagian 2 logo teks
+  slogan: 'BRAND A PTT COMMS SYSTEM',
+  marqueeTextDefault: 'Sistem PTT Brand A - Komunikasi Lancar Tanpa Batas',
+  supabaseRoomPrefix: 'branda-ch-',    // Namespace unik room Supabase
   defaultTheme: 'theme-v6',            // Tema bawaan perangkat
   defaultChannel: 1,                   // Saluran aktif bawaan
 };
@@ -147,7 +147,7 @@ Aplikasi ini menggunakan fitur **Supabase Realtime** sebagai tulang punggung pen
 4. Di bagian **Realtime Settings**, pastikan **Broadcast** (untuk pengiriman suara instan) dan **Presence** (untuk pelacakan staf yang sedang online di saluran) dalam kondisi aktif.
 
 ### B. Struktur Tabel User Profiles (Pilihan)
-Untuk menyimpan nama staf dan penugasan meja (misal: Team Member Meja A1-A9), buat tabel `profiles` menggunakan SQL berikut di Editor SQL Supabase:
+Untuk menyimpan nama pengguna dan identitas panggil (misal: Team Member / Unit ID), buat tabel `profiles` menggunakan SQL berikut di Editor SQL Supabase:
 
 ```sql
 create table public.profiles (
@@ -156,7 +156,7 @@ create table public.profiles (
   call_sign text,
   location text,
   avatar_url text,
-  role text check (role in ('guest', 'waiter', 'kitchen', 'admin')),
+  role text check (role in ('user', 'lead', 'admin')),
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
@@ -238,7 +238,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   call_sign TEXT,
   location TEXT,
   avatar_url TEXT,
-  role TEXT CHECK (role IN ('guest', 'waiter', 'kitchen', 'admin')),
+  role TEXT CHECK (role IN ('user', 'lead', 'admin')),
   phone TEXT,
   department TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()) NOT NULL,
@@ -357,13 +357,13 @@ Edit `.env`:
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_PUBLISHABLE_KEY=eyJhbGc...
 
-# Untuk multi-store, buat env files terpisah:
-# .env.pawonsalam
-# .env.kedaielvera
-# .env.kafe-sentosa
+# Untuk multi-instance, buat env files terpisah:
+# .env.brand-a
+# .env.brand-b
+# .env.brand-c
 ```
 
-### B. Build Script untuk Multi-Store
+### B. Build Script untuk Multi-Instance
 
 Buat `scripts/build-branded.sh`:
 
@@ -371,7 +371,7 @@ Buat `scripts/build-branded.sh`:
 #!/bin/bash
 
 # Build untuk berbagai brand
-declare -a BRANDS=("pawonsalam" "kedaielvera" "kafesentosa")
+declare -a BRANDS=("branda" "brandb" "brandc")
 
 for brand in "${BRANDS[@]}"
 do
@@ -405,7 +405,7 @@ echo "All brands built!"
 
 ### A. Row Level Security (RLS) Strategy
 
-Rekomendasi kebijakan untuk restauran multi-level:
+Rekomendasi kebijakan untuk organisasi/tim multi-level:
 
 ```sql
 -- Admin bisa lakukan apapun
@@ -414,18 +414,18 @@ CREATE POLICY "Admin full access"
     (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin'
   );
 
--- Team Member hanya bisa liat profil kitchen & other waiters, tidak bisa liat admin
-CREATE POLICY "Team Member limited view" 
+-- Lead hanya bisa liat user & other leads, tidak bisa liat admin
+CREATE POLICY "Lead limited view" 
   ON public.profiles FOR SELECT USING (
-    (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'waiter' AND
-    role IN ('kitchen', 'waiter', 'guest')
+    (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'lead' AND
+    role IN ('lead', 'user')
   );
 
--- Kitchen hanya bisa liat waiter & other kitchen, tidak bisa liat admin
-CREATE POLICY "Kitchen limited view" 
+-- User hanya bisa liat sesama user, tidak bisa liat admin
+CREATE POLICY "User limited view" 
   ON public.profiles FOR SELECT USING (
-    (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'kitchen' AND
-    role IN ('waiter', 'kitchen', 'guest')
+    (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'user' AND
+    role IN ('user')
   );
 ```
 
@@ -684,11 +684,11 @@ Untuk kontrol penuh atas branding, edit file-file ini:
 **File**: `src/styles/theme.css`
 
 ```css
-/* Override untuk brand Pawon Salam */
+/* Override untuk brand kustom */
 :root {
-  --color-primary: #D4AF37;      /* Gold */
-  --color-secondary: #8B4513;    /* Brown */
-  --color-accent: #FF6B6B;       /* Soft Red */
+  --color-primary: #0066CC;      /* Blue */
+  --color-secondary: #1A1A1A;    /* Charcoal */
+  --color-accent: #FF3333;       /* Red Alert */
   
   --font-family-heading: 'Poppins', sans-serif;
   --font-family-body: 'Roboto', sans-serif;
@@ -696,11 +696,11 @@ Untuk kontrol penuh atas branding, edit file-file ini:
   --shadow-3d-button: 0 6px 0 rgba(0,0,0,0.4);
 }
 
-.theme-pawonsalam {
-  --color-primary: #D4AF37;
+.theme-brand-a {
+  --color-primary: #0066CC;
 }
 
-.theme-kedaielvera {
+.theme-brand-b {
   --color-primary: #FF8C42;
 }
 ```
