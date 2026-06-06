@@ -276,7 +276,7 @@ export function LCDPanel({
           </div>
 
           {/* Center/Bottom Content */}
-          <div className="flex justify-between items-end pb-0 px-1 mt-auto">
+          <div className="flex justify-between items-end pb-2 px-1 mt-auto">
             <div className="flex items-end gap-1 w-[115px]">
               <div
                 className="relative"
