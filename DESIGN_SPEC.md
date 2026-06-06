@@ -151,7 +151,7 @@ Diposisikan melayang absolute di tengah atas (`left-1/2 -translate-x-1/2 top-3` 
 
 #### 5. Konten Baris Bawah (Channel & Staf Count)
 
-- **Struktur Tata Letak**: Wadah pembungkus horizontal (`flex justify-between items-end pb-0 px-1 mt-auto`).
+- **Struktur Tata Letak**: Wadah pembungkus horizontal (`flex justify-between items-end pb-2 px-1 mt-auto`), menggunakan padding-bottom `pb-2` (8px) untuk mencegah angka channel menempel pada bingkai/bezel bawah layar LCD.
 - **Wadah Label & Nomor Channel (Kiri)**:
   - Wadah: Flexbox horizontal (`flex items-end gap-1 w-[115px]`).
   - Label **CH**: Posisi `relative`, `font-size: 20px`, tebal `bold`, `padding-bottom: 5px`, warna teks `var(--lcd-label-color)`.
@@ -165,7 +165,7 @@ Diposisikan melayang absolute di tengah atas (`left-1/2 -translate-x-1/2 top-3` 
 
 Papan kontrol utama yang diposisikan secara absolute di atas pelat belakang cetakan D-pad untuk menjamin keselarasan simetris tanpa adanya pergeseran browser (Layout Shifts).
 
-- **Ukuran Frame Utama**: `290px` (Lebar) × `150px` (Tinggi), margin atas `8px` (`mt-2`). Penyelarasan terpusat ditangani oleh parent flexbox untuk mencegah kesalahan subpixel.
+- **Ukuran Frame Utama**: `290px` (Lebar) × `150px` (Tinggi), margin atas `6px` (`mt-1.5`) di dalam komponen `ControlButtons.tsx`, dibungkus dalam flexbox wrapper bermargin `mt-1 mb-0.5` di `RadioLayout.tsx` untuk optimalisasi kompresi tinggi sasis.
 - **Molded Backing Base SVG**:
   - Digambar menggunakan path SVG viewBox `0 0 290 150` agar muat presisi di dalam kontainer utama.
   - Path: `d="M 100 30 A 48.75 48.75 0 0 1 190 30 L 245 30 A 45 45 0 0 1 245 120 L 190 120 A 48.75 48.75 0 0 1 100 120 L 45 120 A 45 45 0 0 1 45 30 Z"`
@@ -549,6 +549,9 @@ Untuk memastikan antarmuka Walkie-Talkie tidak terpotong di perangkat seluler (m
 4. **Skeuomorphic Shadow Enhancements**:
    - Tepi bawah top header diperkuat dengan bayangan dalam (`inset 0 -12px 20px -6px rgba(0, 0, 0, 0.45)`) dan highlight atas (`inset 0 3px 6px rgba(255,255,255,0.4)`) untuk memberikan efek cembung (convex) yang menonjol keluar.
    - Sasis utama panel LCD (themed faceplate container) bagian atas, samping, dan bawah dikelilingi oleh bayangan dalam yang seragam dan sangat halus (`inset 0 3px 4px rgba(0,0,0,0.4)`, `inset 0 -3px 4px rgba(0,0,0,0.4)`, `inset 3px 0 4px rgba(0,0,0,0.3)`, `inset -3px 0 4px rgba(0,0,0,0.3)`) berpadu dengan subpixel top highlight (`inset 0 1.5px 2px rgba(255,255,255,0.95)`) di dalam 3D Faceplate Outer Highlight and Shadow Overlay untuk efek lubang bevel (inset recess) yang bersih dan rata.
+5. **Faceplate & LCD Spacing Compression**:
+   - Tinggi vertikal sasis faceplate utama dipadatkan untuk menghasilkan spasi visual dengan tombol PTT dengan mengurangi padding bawah sasis (`pb-7` ke `pb-3`), margin wrapper tombol kontrol (`mt-2 mb-2` ke `mt-1 mb-0.5`), dan margin top D-Pad (`mt-4` ke `mt-1.5`).
+   - Bagian bawah LCD Panel dinaikkan sedikit dengan menambahkan padding bawah (`pb-0` ke `pb-2`) agar baris indikator channel tidak menempel rapat pada bezel bawah.
 
 ## 🛡️ 9. Security & Anti-Cloning Specifications (Option C)
 
@@ -595,3 +598,4 @@ Untuk mencegah kloning aplikasi, reverse engineering, dan pembajakan komunikasi 
 | **v2.9.0** | 2026-06-06 | Peningkatan visual batang sinyal LCD (lebar 10.5px, border 1.5px solid #000000, gradasi warna neon super-vibrant, dan inner 3D highlights dipertebal) serta perapatan gap antar batang menjadi 0.5px (Seksi 3.A.3). | Senior System Architect |
 | **v3.0.0** | 2026-06-06 | Implementasi D-Pad Bezel Plate 3D Convex Bevel & Shadow menggunakan filter SVG diagonal yang disempurnakan (highlight white & shadow black) secara internal guna mencegah kebocoran visual (leak) di sekeliling tepi pelat cetakan (Seksi 3.B). | Senior System Architect |
 | **v3.1.0** | 2026-06-06 | Penerapan Opsi C: JS Terser Obfuscation (mangle toplevel, drop console/debugger, no sourcemap), ProGuard Android bytecode shrinking & bridge reflection protection, serta deklarasi SSL Pinning (*.supabase.co) via networkSecurityConfig untuk proteksi anti-cloning & MitM (Seksi 9). | Senior System Architect |
+| **v3.2.0** | 2026-06-07 | Kompresi tinggi sasis sasis faceplate utama (pb-7 -> pb-3, mt-2 mb-2 -> mt-1 mb-0.5, mt-4 -> mt-1.5) untuk membuat spasi dengan tombol PTT, serta penyelarasan jarak bottom row LCD Panel (pb-0 -> pb-2) agar tidak menempel ke bezel bawah (Seksi 3.A, 3.B, & 8). | Senior System Architect |
