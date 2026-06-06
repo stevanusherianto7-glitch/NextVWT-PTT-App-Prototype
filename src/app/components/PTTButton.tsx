@@ -285,8 +285,8 @@ export function PTTButton({
         borderRadius: '54px',
         background: 'transparent',
         boxShadow: isDepressed
-          ? 'inset 0 0 10px rgba(0,0,0,0.4), inset 0 5px 10px rgba(0,0,0,0.4)'
-          : 'inset 0 0 14px rgba(0,0,0,0.35), inset 0 4px 8px rgba(0,0,0,0.3)',
+          ? 'inset 0 0 10px rgba(0,0,0,0.4), inset 0 5px 10px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.1)'
+          : 'inset 0 0 14px rgba(0,0,0,0.35), inset 0 4px 8px rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.15)',
         transform: `translateY(${yOffset}px) scale(${scaleFactor})`,
         transition: 'transform 0.12s ease-out, box-shadow 0.06s ease-in-out',
       }}
