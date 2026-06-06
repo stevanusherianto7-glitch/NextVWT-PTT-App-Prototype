@@ -1,26 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Minimize2, Maximize2, Search, Disc, Play } from 'lucide-react';
+import { X, Minimize2, Maximize2, Search, Disc } from 'lucide-react';
 
 interface FloatingKaraokePlayerProps {
   onClose: () => void;
 }
-
-interface KaraokeSong {
-  title: string;
-  artist: string;
-  videoId: string;
-}
-
-const POPULAR_KARAOKE_SONGS: KaraokeSong[] = [
-  { title: 'Kopi Dangdut', artist: 'Fahmi Shahab', videoId: 'S2S1Vd3r3Gg' },
-  { title: 'Pamer Bojo (Cendol Dawet)', artist: 'Didi Kempot', videoId: '0H0tD5XvTws' },
-  { title: 'Kemesraan', artist: 'Iwan Fals', videoId: '57u_6tL98Jc' },
-  { title: 'Kangen', artist: 'Dewa 19', videoId: '9GqLgUe5w9A' },
-  { title: 'Rungkad', artist: 'Happy Asmara', videoId: '8zWqfE208rE' },
-  { title: 'Kemesraan (Acoustic)', artist: 'Karaoke Version', videoId: 'yF-yI1kP_f8' },
-  { title: 'Ku Tak Bisa', artist: 'Slank', videoId: 'bC3H09p5JIo' },
-  { title: 'Cinta Luar Biasa', artist: 'Andmesh', videoId: 'wR2m89YQd3Y' },
-];
 
 export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
   const [isMinimized, setIsMinimized] = useState(false);
@@ -87,7 +70,7 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
 
       // Keep inside window bounds
       newX = Math.max(0, Math.min(window.innerWidth - (isMinimized ? 200 : 320), newX));
-      newY = Math.max(0, Math.min(window.innerHeight - (isMinimized ? 134 : 420), newY));
+      newY = Math.max(0, Math.min(window.innerHeight - (isMinimized ? 134 : 272), newY));
 
       setPosition({ x: newX, y: newY });
     };
@@ -125,7 +108,7 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
       className={`absolute z-50 flex flex-col overflow-hidden border border-indigo-500/40 shadow-[0_10px_40px_rgba(0,0,0,0.8)] backdrop-blur-md transition-all duration-300 ${
         isMinimized
           ? 'w-[200px] h-[134px] rounded-xl' // 112px video + 22px solid bottom drag bar
-          : 'w-[320px] h-[420px] rounded-2xl'
+          : 'w-[320px] h-[272px] rounded-2xl'
       }`}
       style={{
         left: `${position.x}px`,
@@ -208,56 +191,25 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
 
       {/* ─── CONTENT INTERFACE (Hidden when minimized) ─── */}
       {!isMinimized && (
-        <>
-          {/* Search Input */}
-          <div className="p-2.5 bg-slate-900/60 border-b border-indigo-500/10 flex gap-1.5 shrink-0">
-            <div className="relative flex-1">
-              <Search className="absolute left-2 top-2 w-3.5 h-3.5 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Cari lagu / paste link YouTube..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleLoadVideo(searchQuery)}
-                className="w-full pl-7.5 pr-2 py-1 bg-slate-950/80 border border-indigo-500/30 rounded-lg text-[11px] placeholder:text-slate-500 text-white font-medium focus:border-cyan-400 focus:outline-none"
-              />
-            </div>
-            <button
-              onClick={() => handleLoadVideo(searchQuery)}
-              className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 rounded-lg text-[10px] font-bold text-white transition focus:outline-none cursor-pointer"
-            >
-              LOAD
-            </button>
+        <div className="p-2.5 bg-slate-900/60 border-b border-indigo-500/10 flex gap-1.5 shrink-0">
+          <div className="relative flex-1">
+            <Search className="absolute left-2 top-2 w-3.5 h-3.5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Cari lagu / paste link YouTube..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleLoadVideo(searchQuery)}
+              className="w-full pl-7.5 pr-2 py-1 bg-slate-950/80 border border-indigo-500/30 rounded-lg text-[11px] placeholder:text-slate-500 text-white font-medium focus:border-cyan-400 focus:outline-none"
+            />
           </div>
-
-          {/* Popular Tracks & Instructions List */}
-          <div className="flex-1 overflow-y-auto p-2 bg-slate-950/40 select-none">
-            <div className="text-[10px] font-bold text-slate-400 uppercase px-1.5 py-1 tracking-wider border-b border-slate-800 mb-1">
-              Lagu Karaoke Populer (Tanpa Vokal)
-            </div>
-            <div className="space-y-0.5">
-              {POPULAR_KARAOKE_SONGS.map((song) => (
-                <button
-                  key={song.videoId}
-                  onClick={() => setVideoId(song.videoId)}
-                  className={`w-full flex items-center justify-between p-1.5 rounded-lg text-left transition text-[11px] ${
-                    videoId === song.videoId
-                      ? 'bg-indigo-500/20 text-cyan-300 font-semibold border-l-2 border-cyan-400'
-                      : 'hover:bg-slate-900/80 text-slate-300'
-                  }`}
-                >
-                  <div className="flex flex-col truncate pr-2">
-                    <span className="truncate">{song.title}</span>
-                    <span className="text-[9px] text-slate-500">{song.artist}</span>
-                  </div>
-                  <Play
-                    className={`w-3 h-3 flex-shrink-0 ${videoId === song.videoId ? 'text-cyan-300 animate-pulse' : 'text-slate-500'}`}
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
-        </>
+          <button
+            onClick={() => handleLoadVideo(searchQuery)}
+            className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 rounded-lg text-[10px] font-bold text-white transition focus:outline-none cursor-pointer"
+          >
+            LOAD
+          </button>
+        </div>
       )}
 
       {/* ─── MINI DRAG BAR (Only shown at the bottom when minimized) ─── */}
