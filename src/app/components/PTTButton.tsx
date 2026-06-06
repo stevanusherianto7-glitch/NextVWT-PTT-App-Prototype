@@ -283,10 +283,10 @@ export function PTTButton({
         width: '338px',
         height: '108px',
         borderRadius: '54px',
-        background: 'transparent',
+        background: 'rgba(0, 0, 0, 0.12)',
         boxShadow: isDepressed
-          ? 'inset 0 0 10px rgba(0,0,0,0.4), inset 0 5px 10px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.1)'
-          : 'inset 0 0 14px rgba(0,0,0,0.35), inset 0 4px 8px rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.15)',
+          ? 'inset 0 3px 6px rgba(0,0,0,0.4), inset 0 -2px 4px rgba(0,0,0,0.2), inset 0 0 10px rgba(0,0,0,0.35), 0 1px 2px rgba(0,0,0,0.08)'
+          : 'inset 0 6px 10px rgba(0,0,0,0.45), inset 0 -4px 8px rgba(0,0,0,0.3), inset 0 0 14px rgba(0,0,0,0.4), 0 3px 6px rgba(0,0,0,0.12)',
         transform: `translateY(${yOffset}px) scale(${scaleFactor})`,
         transition: 'transform 0.12s ease-out, box-shadow 0.06s ease-in-out',
       }}
