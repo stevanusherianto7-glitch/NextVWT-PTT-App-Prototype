@@ -137,7 +137,7 @@ Diposisikan melayang absolute di tengah atas (`left-1/2 -translate-x-1/2 top-3` 
 * **Wadah Staf/User Count (Kanan)**:
   - Wadah: Flexbox horizontal (`flex items-end gap-2 mr-1 relative transition-[opacity,transform] duration-150 cursor-pointer hover:opacity-75 active:scale-95`), `padding-bottom: 5px`.
   - Ikon Kepala Kembar (`twinHeadsIcon`): Tinggi `48px`, lebar `46px`, `object-contain`, filter bayangan `filter: drop-shadow(1px 1px 0px rgba(0,0,0,0.2))`.
-  - Nomor Jumlah Staf (2 digit): Wadah pembungkus lebar `32px` (`w-[32px]`) agar tidak bergeser saat digit bertambah. Ukuran font `24px` (`text-2xl`), tebal `medium` (500), `line-height: none`, warna teks `var(--lcd-label-color)`, bayangan teks `text-shadow: 1px 1px 1px rgba(255,255,255,0.3)`.
+  - Nomor Jumlah Staf (2 digit): Wadah pembungkus lebar `24px` (`w-[24px]`) dengan perataan kanan (`flex justify-end`) agar angka lurus sejajar di bawah signal bar di pojok kanan atas LCD. Ukuran font `24px` (`text-2xl`), tebal `medium` (500), `line-height: none`, warna teks `var(--lcd-label-color)`, bayangan teks `text-shadow: 1px 1px 1px rgba(255,255,255,0.3)`.
 
 ### B. D-Pad Control Buttons Component (`ControlButtons.tsx`)
 Papan kontrol utama yang diposisikan secara absolute di atas pelat belakang cetakan D-pad untuk menjamin keselarasan simetris tanpa adanya pergeseran browser (Layout Shifts).
@@ -147,18 +147,21 @@ Papan kontrol utama yang diposisikan secara absolute di atas pelat belakang ceta
   - Memiliki filter `dpad-inset-shadow` untuk memberikan efek lubang tombol yang menjorok ke dalam body walkie-talkie.
 * **Scan Button (Kiri)**:
   - Posisi: `left: 16px`, `top: 50px`.
-  - Ukuran: `75px` (Lebar) × `50px` (Tinggi).
+  - Ukuran: `85px` (Lebar) × `50px` (Tinggi) (diperlebar untuk meminimalkan celah).
   - Tepi luar melingkar penuh (`rounded-l-full`), tepi dalam agak kotak (`rounded-r-[6px]`).
 * **Set Button (Kanan)**:
-  - Posisi: `left: 199px` (menyisakan margin kanan tepat `16px`).
-  - Ukuran: `75px` (Lebar) × `50px` (Tinggi).
+  - Posisi: `left: 189px` (digeser mendekati panah tengah, menyisakan margin kanan tepat `16px`).
+  - Ukuran: `85px` (Lebar) × `50px` (Tinggi) (diperlebar untuk meminimalkan celah).
   - Tepi luar melingkar penuh (`rounded-r-full`), tepi dalam agak kotak (`rounded-l-[6px]`).
 * **Up/Down Buttons Container (Rocker Kapsul Tengah)**:
-  - Posisi: `left: 115px`, `top: 22.5px` (jarak ke Scan dan Set tepat `24px`).
+  - Posisi: `left: 115px`, `top: 22.5px` (celah jarak renggang ke Scan dan Set dikurangi secara simetris dari `24px` menjadi `14px`).
   - Ukuran: `60px` (Lebar) × `105px` (Tinggi), `border-radius: rounded-full`, padding `p-1`.
   - **Up Button**: Tinggi `48px`, `rounded-t-full`.
   - **Down Button**: Tinggi `48px`, `rounded-b-full`.
   - **Center Divider Line (Pivot)**: Garis horizontal absolute tebal `4px`, `opacity: 0.4`, warna hitam, dipasang tepat di tengah (`top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2`) untuk menyimulasikan poros ayun rocker fisik.
+* **Efek Bayangan Tombol D-Pad (SCAN/SET)**:
+  - Posisi Normal (Idle): Memiliki bayangan ekstrusi 3D solid hitam setebal `2.5px` (`box-shadow: 0 2.5px 0 #000000, var(--btn-shadow)`) agar tombol terlihat timbul namun tetap rata menghadap tegak lurus ke pengguna.
+  - Posisi Ditekan (Pressed): Menggunakan translasi turun `translateY(2px)` dengan `box-shadow: inset 0 3px 8px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.1)`.
 
 ### C. PTT Button Component (`PTTButton.tsx`)
 Tombol kirim suara berukuran besar di bagian bawah. Menggunakan double-container 3D tactile feedback:
@@ -168,9 +171,9 @@ Tombol kirim suara berukuran besar di bagian bawah. Menggunakan double-container
 * **Posisi Dinamis & Skala**:
   - Transformasi: `translateY(${yOffset}px) scale(${scaleFactor})` (laju skala berkisar antara `0.75 + (pttSize/100) * 0.5` yang memetakan ke `0.9` pada ukuran 30 dan `1.25` pada ukuran 100).
   - Kecepatan transisi transformasi: `transition: transform 0.12s ease-out, box-shadow 0.06s ease-in-out`.
-* **Efek Bayangan Soket (Inset Shadows)**:
-  - Kondisi Ditekan (Depressed): `box-shadow: inset 0 0 10px rgba(0,0,0,0.4), inset 0 5px 10px rgba(0,0,0,0.4)`.
-  - Kondisi Idle: `box-shadow: inset 0 0 14px rgba(0,0,0,0.35), inset 0 4px 8px rgba(0,0,0,0.3)`.
+* **Efek Bayangan Soket (Trench Shadow Depth)**:
+  - Kondisi Ditekan (Depressed): `box-shadow: inset 0 0 10px rgba(0,0,0,0.4), inset 0 5px 10px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.1)`.
+  - Kondisi Idle: `box-shadow: inset 0 0 14px rgba(0,0,0,0.35), inset 0 4px 8px rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.15)`. Ditambahkan *outer drop shadow* pada parit luar untuk memperdalam efek 3D tombol yang masuk ke dalam sasis.
 
 #### 2. Tombol Fisik Utama (Inner Active Button)
 * **Dimensi**: Lebar `326px`, tinggi `96px`, `border-radius: 48px` (pill-shape).
