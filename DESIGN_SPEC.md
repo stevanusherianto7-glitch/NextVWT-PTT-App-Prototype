@@ -431,4 +431,4 @@ Aplikasi menggunakan Zustand store (`src/app/store/usePTTStore.ts`) yang dilengk
 
 * **DSEG7 Classic Mini Bold**: Digunakan khusus untuk angka channel digital LCD agar memberikan nuansa walkie-talkie retro-modern yang autentik.
 * **Outfit**: Digunakan untuk teks judul brand **NextVWT** dan teks status utama.
-* **Inter**: Digunakan untuk elemen antarmuka umum seperti detail pengguna, modal daftar nama staf/waiter, dan panel pengaturan.
+* **Inter**: Digunakan untuk elemen antarmuka umum seperti detail pengguna, modal daftar nama staf/anggota tim, dan panel pengaturan.
