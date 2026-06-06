@@ -482,7 +482,7 @@ export function UserListModal({
                     {profile.displayName}
                   </div>
                   <div className="flex items-center text-[11px] mt-0.5 truncate gap-1.5 font-medium leading-none">
-                    <span className="text-[#0088cc] font-medium tracking-wide">
+                    <span className="text-[#00C853] font-medium tracking-wide">
                       {profile.callSign}
                     </span>
                     <span className="text-gray-500 font-normal uppercase">{profile.location}</span>

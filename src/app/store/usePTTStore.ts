@@ -53,6 +53,16 @@ export function getChannelUUID(channelNum: number): string {
   return `00000000-0000-4000-8000-${padded}`;
 }
 
+// Generate random 5-character alphanumeric uppercase call sign
+export function generateRandomCallSign(): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < 5; i++) {
+    result += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return result;
+}
+
 // ─── State Interface ──────────────────────────────────────────────────────────
 export interface PTTState {
   isPowerOn: boolean;
@@ -63,6 +73,7 @@ export interface PTTState {
   channelNumber: number;
   channelId: string; // UUID v4 format
   userId: string; // UUID v4 format
+  callSign: string; // Random 5-character string (combination of 5 letters + numbers)
   error: string | null;
 
   // Auth State
@@ -139,6 +150,7 @@ const PERSISTED_KEYS: Array<keyof PTTState> = [
   'infoText',
   'locationText',
   'channelNumber',
+  'callSign',
   'showMyPhoto',
   'showOtherPhotos',
   'showPhotosInList',
@@ -318,7 +330,7 @@ function subscribeToChannel(channelNum: number) {
           channelInstance.track({
             userId: currentStore.userId,
             displayName: displayName,
-            callSign: location.split(',')[0]?.trim() || '2DYUA',
+            callSign: currentStore.callSign || '2DYUA',
             location: location,
             avatarUrl: avatarUrl,
           });
@@ -345,6 +357,7 @@ export const usePTTStore = create<PTTState>((set) => ({
   channelNumber: BRAND.defaultChannel,
   channelId: getChannelUUID(BRAND.defaultChannel),
   userId: '',
+  callSign: '',
   error: null,
 
   // Auth State
@@ -414,7 +427,6 @@ export const usePTTStore = create<PTTState>((set) => ({
       if (activeChannelSubscription && state.isConnected) {
         const userMeta = state.user;
         const displayName = state.infoText || userMeta?.user_metadata?.full_name;
-        const location = state.locationText;
 
         activeChannelSubscription.send({
           type: 'broadcast',
@@ -422,7 +434,7 @@ export const usePTTStore = create<PTTState>((set) => ({
           payload: {
             userId: state.userId,
             displayName: displayName,
-            callSign: location.split(',')[0]?.trim() || '2DYUA',
+            callSign: state.callSign || '2DYUA',
             isTransmitting: transmitting,
           },
         });
@@ -482,6 +494,13 @@ export const usePTTStore = create<PTTState>((set) => ({
         }
       }
 
+      // Restore or generate callSign
+      const newCallSign = restored.callSign || generateRandomCallSign();
+      if (!restored.callSign) {
+        safeSetStorage({ callSign: newCallSign });
+        restored.callSign = newCallSign;
+      }
+
       // Establish initial connection using restored or default channel
       const channelToJoin = (restored.channelNumber as number) ?? state.channelNumber;
       setTimeout(() => subscribeToChannel(channelToJoin), 0);
@@ -514,7 +533,7 @@ export const usePTTStore = create<PTTState>((set) => ({
           .track({
             userId: next.userId,
             displayName: displayName,
-            callSign: location.split(',')[0]?.trim() || '2DYUA',
+            callSign: next.callSign || '2DYUA',
             location: location,
             avatarUrl: avatarUrl,
           })
