@@ -162,7 +162,7 @@ Diposisikan melayang absolute di tengah atas (`left-1/2 -translate-x-1/2 top-3` 
 
 Papan kontrol utama yang diposisikan secara absolute di atas pelat belakang cetakan D-pad untuk menjamin keselarasan simetris tanpa adanya pergeseran browser (Layout Shifts).
 
-- **Ukuran Frame Utama**: `290px` (Lebar) × `150px` (Tinggi), margin atas `16px` (`mt-4`). Penyelarasan terpusat ditangani oleh parent flexbox untuk mencegah kesalahan subpixel.
+- **Ukuran Frame Utama**: `290px` (Lebar) × `150px` (Tinggi), margin atas `8px` (`mt-2`). Penyelarasan terpusat ditangani oleh parent flexbox untuk mencegah kesalahan subpixel.
 - **Molded Backing Base SVG**:
   - Digambar menggunakan path SVG viewBox `0 0 290 150` agar muat presisi di dalam kontainer utama.
   - Path: `d="M 100 30 A 48.75 48.75 0 0 1 190 30 L 245 30 A 45 45 0 0 1 245 120 L 190 120 A 48.75 48.75 0 0 1 100 120 L 45 120 A 45 45 0 0 1 45 30 Z"`
@@ -551,3 +551,4 @@ Untuk memastikan antarmuka Walkie-Talkie tidak terpotong di perangkat seluler (m
 | **v2.1.0** | 2026-06-06 | Menambahkan spesifikasi viewport dinamis (`100dvh`) untuk ketahanan mobile browser (Seksi 8). | Senior System Architect |
 | **v2.2.0** | 2026-06-06 | Memperbarui titik transisi D-Pad menjadi integer bulat (`100`, `190`), radius (`48.75`), serta penyesuaian gap simetris `15px` (Seksi 3.B). | Senior System Architect |
 | **v2.3.0** | 2026-06-06 | Penyesuaian kedalaman parit PTT menggunakan latar belakang `rgba(0, 0, 0, 0.12)` dan sepasang bayangan dalam atas-bawah (`inset 0 6px 10px`, `inset 0 -4px 8px`) (Seksi 3.C.1). | Senior System Architect |
+| **v2.4.0** | 2026-06-06 | Pengurangan spasi vertikal layout (D-Pad margin-top ke `mt-2`, padding-bottom sasis ke `pb-7`, PTT ke `bottom-[72px]`) (Seksi 3.B & 8). | Senior System Architect |

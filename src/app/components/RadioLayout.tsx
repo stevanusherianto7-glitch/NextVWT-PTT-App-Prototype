@@ -441,7 +441,7 @@ export function RadioLayout() {
             ) : (
               /* Themed Faceplate Container */
               <div
-                className="w-full flex flex-col items-center pt-6 pb-12 relative z-10 transition-all duration-300"
+                className="w-full flex flex-col items-center pt-6 pb-7 relative z-10 transition-all duration-300"
                 style={{
                   borderRadius: '40px 40px 200px 200px / 40px 40px 90px 90px',
                   background: 'var(--panel-bg)',
@@ -472,7 +472,7 @@ export function RadioLayout() {
 
                 {/* Control Buttons */}
                 <div
-                  className={`mt-4 mb-2 flex justify-center transition-opacity duration-300 w-full ${isPowerOn ? '' : 'pointer-events-none'}`}
+                  className={`mt-2 mb-2 flex justify-center transition-opacity duration-300 w-full ${isPowerOn ? '' : 'pointer-events-none'}`}
                 >
                   <ControlButtons
                     onScan={() => setIsChannelListOpen(true)}
@@ -488,7 +488,7 @@ export function RadioLayout() {
             {/* PTT Button */}
             {showPTT && (
               <div
-                className={`absolute bottom-16 left-0 right-0 w-full flex justify-center transition-opacity duration-300 opacity-100 ${isPowerOn ? '' : 'pointer-events-none'}`}
+                className={`absolute bottom-[72px] left-0 right-0 w-full flex justify-center transition-opacity duration-300 opacity-100 ${isPowerOn ? '' : 'pointer-events-none'}`}
               >
                 <div onClick={(e) => e.stopPropagation()}>
                   <PTTButton
