@@ -31,7 +31,7 @@ export function ControlButtons({
   };
 
   return (
-    <div className="relative w-[290px] h-[150px] mx-auto mt-4 select-none">
+    <div className="relative w-[290px] h-[150px] mt-4 select-none">
       {/* Molded backing base (D-Pad Frame) */}
       <div className="absolute inset-0 pointer-events-none">
         <svg
@@ -95,14 +95,14 @@ export function ControlButtons({
 
           {/* Filled base shape with gradient and filter */}
           <path
-            d="M 100.85 30 A 47.5 47.5 0 0 1 189.15 30 L 245 30 A 45 45 0 0 1 245 120 L 189.15 120 A 47.5 47.5 0 0 1 100.85 120 L 45 120 A 45 45 0 0 1 45 30 Z"
+            d="M 100 30 A 48.75 48.75 0 0 1 190 30 L 245 30 A 45 45 0 0 1 245 120 L 190 120 A 48.75 48.75 0 0 1 100 120 L 45 120 A 45 45 0 0 1 45 30 Z"
             fill="url(#dpad-backing-grad)"
             filter="url(#dpad-inset-shadow)"
           />
 
           {/* Clean outer border line (single path) */}
           <path
-            d="M 100.85 30 A 47.5 47.5 0 0 1 189.15 30 L 245 30 A 45 45 0 0 1 245 120 L 189.15 120 A 47.5 47.5 0 0 1 100.85 120 L 45 120 A 45 45 0 0 1 45 30 Z"
+            d="M 100 30 A 48.75 48.75 0 0 1 190 30 L 245 30 A 45 45 0 0 1 245 120 L 190 120 A 48.75 48.75 0 0 1 100 120 L 45 120 A 45 45 0 0 1 45 30 Z"
             fill="none"
             stroke="var(--dpad-border-color)"
             strokeWidth="1.5"
@@ -116,7 +116,7 @@ export function ControlButtons({
         onMouseDown={() => setPressedBtn('scan')}
         onMouseUp={() => setPressedBtn(null)}
         onMouseLeave={() => setPressedBtn(null)}
-        className="absolute left-[16px] top-[50px] w-[85px] h-[50px] rounded-l-full rounded-r-[6px] text-white overflow-hidden flex items-center justify-center animate-all z-10"
+        className="absolute left-[15px] top-[50px] w-[85px] h-[50px] rounded-l-full rounded-r-[6px] text-white overflow-hidden flex items-center justify-center animate-all z-10"
         style={getButtonStyle('scan')}
       >
         <span
@@ -206,7 +206,7 @@ export function ControlButtons({
         onMouseDown={() => setPressedBtn('set')}
         onMouseUp={() => setPressedBtn(null)}
         onMouseLeave={() => setPressedBtn(null)}
-        className="absolute left-[189px] top-[50px] w-[85px] h-[50px] rounded-r-full rounded-l-[6px] text-white flex items-center justify-center animate-all z-10"
+        className="absolute left-[190px] top-[50px] w-[85px] h-[50px] rounded-r-full rounded-l-[6px] text-white overflow-hidden flex items-center justify-center animate-all z-10"
         style={getButtonStyle('set')}
       >
         <span
