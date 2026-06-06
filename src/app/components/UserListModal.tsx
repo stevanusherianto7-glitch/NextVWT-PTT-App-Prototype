@@ -397,7 +397,7 @@ export function UserListModal({
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      className="w-full max-w-[340px] user-list-modal -mt-[14px] pb-4 bg-white border-x border-b border-gray-300 rounded-b-2xl flex flex-col overflow-hidden animate-in fade-in duration-200"
+      className="w-full max-w-[340px] user-list-modal -mt-[14px] pb-4 bg-white border-x-2 border-b-2 border-gray-400 rounded-b-2xl flex flex-col overflow-hidden animate-in fade-in duration-200"
     >
       <style>{`
         .user-list-modal {
