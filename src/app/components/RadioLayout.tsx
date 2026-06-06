@@ -246,7 +246,8 @@ export function RadioLayout() {
             className="w-full h-[90px] flex items-center justify-between px-5 z-20 relative overflow-hidden"
             style={{
               background: 'var(--header-bg)',
-              boxShadow: 'var(--header-shadow)',
+              boxShadow:
+                'var(--header-shadow), inset 0 -12px 20px -6px rgba(0, 0, 0, 0.45), inset 0 3px 6px rgba(255, 255, 255, 0.4)',
               borderBottom: 'var(--header-border)',
             }}
           >
@@ -458,7 +459,7 @@ export function RadioLayout() {
                   style={{
                     borderRadius: '40px 40px 200px 200px / 40px 40px 90px 90px',
                     boxShadow:
-                      'inset 0 2.5px 3px rgba(255, 255, 255, 0.95), inset 0 -2.5px 3px rgba(0, 0, 0, 0.4)',
+                      'inset 0 2.5px 3px rgba(255, 255, 255, 0.95), inset 0 -2.5px 3px rgba(0, 0, 0, 0.4), inset 0 14px 20px -6px rgba(0,0,0,0.35), inset 14px 0 20px -6px rgba(0,0,0,0.32), inset -14px 0 20px -6px rgba(0,0,0,0.32)',
                   }}
                 />
                 {/* LCD Panel */}
