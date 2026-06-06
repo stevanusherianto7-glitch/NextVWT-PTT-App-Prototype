@@ -883,3 +883,15 @@
   --rocker-border: 1px solid #475569;
   --progress-bg: #e2e8f0;
 }
+
+/* Uniform Modal Sizing (based on UserListModal) */
+.app-uniform-modal {
+  width: 100% !important;
+  max-width: 340px !important;
+  height: 350px !important;
+}
+@media (min-height: 700px) {
+  .app-uniform-modal {
+    height: 485px !important;
+  }
+}

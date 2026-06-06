@@ -32,7 +32,7 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
       />
 
       {/* Modal Container */}
-      <div className="bg-white w-full max-w-[340px] max-h-[80%] rounded-lg shadow-2xl flex flex-col z-10 overflow-hidden border border-gray-300 animate-in fade-in zoom-in-95 duration-100">
+      <div className="bg-white app-uniform-modal rounded-lg shadow-2xl flex flex-col z-10 overflow-hidden border border-gray-300 animate-in fade-in zoom-in-95 duration-100">
         {/* Header */}
         <div className="flex flex-col items-center px-4 py-4 bg-white shrink-0 border-b border-gray-200 relative">
           {/* Close Button */}
