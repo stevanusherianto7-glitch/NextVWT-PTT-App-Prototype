@@ -223,7 +223,7 @@ export function LCDPanel({
               {/* Latency Tooltip */}
               {showLatency && (
                 <div
-                  className="absolute bottom-full right-0 mb-1.5 px-2 py-0.5 rounded bg-black text-white text-[10px] font-sans font-medium border border-neutral-800 shadow-lg whitespace-nowrap z-50 animate-in fade-in zoom-in-95 duration-150"
+                  className="absolute right-full top-1/2 -translate-y-1/2 mr-2 px-2 py-0.5 rounded bg-black text-white text-[10px] font-sans font-medium border border-neutral-800 shadow-lg whitespace-nowrap z-50 animate-in fade-in zoom-in-95 duration-150"
                   style={{
                     boxShadow:
                       '0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3)',
