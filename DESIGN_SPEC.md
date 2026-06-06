@@ -162,20 +162,24 @@ Diposisikan melayang absolute di tengah atas (`left-1/2 -translate-x-1/2 top-3` 
 
 Papan kontrol utama yang diposisikan secara absolute di atas pelat belakang cetakan D-pad untuk menjamin keselarasan simetris tanpa adanya pergeseran browser (Layout Shifts).
 
-- **Ukuran Frame Utama**: `290px` (Lebar) × `150px` (Tinggi), margin otomatis horizontal, margin atas `16px` (`mt-4`).
+- **Ukuran Frame Utama**: `290px` (Lebar) × `150px` (Tinggi), margin atas `16px` (`mt-4`). Penyelarasan terpusat ditangani oleh parent flexbox untuk mencegah kesalahan subpixel.
 - **Molded Backing Base SVG**:
   - Digambar menggunakan path SVG viewBox `0 0 290 150` agar muat presisi di dalam kontainer utama.
+  - Path: `d="M 100 30 A 48.75 48.75 0 0 1 190 30 L 245 30 A 45 45 0 0 1 245 120 L 190 120 A 48.75 48.75 0 0 1 100 120 L 45 120 A 45 45 0 0 1 45 30 Z"`
+  - Menggunakan koordinat integer presisi (`100`, `190`, `245`, `45`) dengan radius lengkungan tengah `48.75` untuk menyentuh tepat batas atas `y=0` dan bawah `y=150`.
   - Memiliki filter `dpad-inset-shadow` untuk memberikan efek lubang tombol yang menjorok ke dalam body walkie-talkie.
 - **Scan Button (Kiri)**:
-  - Posisi: `left: 16px`, `top: 50px`.
-  - Ukuran: `85px` (Lebar) × `50px` (Tinggi) (diperlebar untuk meminimalkan celah).
+  - Posisi: `left: 15px`, `top: 50px`.
+  - Ukuran: `85px` (Lebar) × `50px` (Tinggi).
   - Tepi luar melingkar penuh (`rounded-l-full`), tepi dalam agak kotak (`rounded-r-[6px]`).
+  - Memiliki kelas `overflow-hidden` untuk memotong kliping border/shadow yang berlebih.
 - **Set Button (Kanan)**:
-  - Posisi: `left: 189px` (digeser mendekati panah tengah, menyisakan margin kanan tepat `16px`).
-  - Ukuran: `85px` (Lebar) × `50px` (Tinggi) (diperlebar untuk meminimalkan celah).
+  - Posisi: `left: 190px` (menyisakan margin kanan tepat `15px`).
+  - Ukuran: `85px` (Lebar) × `50px` (Tinggi).
   - Tepi luar melingkar penuh (`rounded-r-full`), tepi dalam agak kotak (`rounded-l-[6px]`).
+  - Memiliki kelas `overflow-hidden` agar simetris dengan tombol Scan.
 - **Up/Down Buttons Container (Rocker Kapsul Tengah)**:
-  - Posisi: `left: 115px`, `top: 22.5px` (celah jarak renggang ke Scan dan Set dikurangi secara simetris dari `24px` menjadi `14px`).
+  - Posisi: `left: 115px`, `top: 22.5px` (celah jarak renggang ke Scan dan Set disetel simetris masing-masing tepat `15px`).
   - Ukuran: `60px` (Lebar) × `105px` (Tinggi), `border-radius: rounded-full`, padding `p-1`.
   - **Up Button**: Tinggi `48px`, `rounded-t-full`.
   - **Down Button**: Tinggi `48px`, `rounded-b-full`.
