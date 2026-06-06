@@ -23,7 +23,7 @@ export function ControlButtons({
       background: 'var(--btn-bg)',
       boxShadow: isPressed
         ? 'inset 0 3px 8px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.1)'
-        : 'var(--btn-shadow)',
+        : '0 2.5px 0 #000000, var(--btn-shadow)',
       transform: isPressed ? 'translateY(2px)' : 'translateY(0)',
       border: 'var(--btn-border)',
       transition: 'all 0.05s ease',
