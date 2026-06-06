@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { usePTTStore } from '../store/usePTTStore';
 import { toast } from 'sonner';
 
@@ -609,6 +609,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
   const [isCityModalOpen, setIsCityModalOpen] = useState(false);
   const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
   const [selectedProvince, setSelectedProvince] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const PREDEFINED_PHRASES = [
     '1 ❤️ BERBAGI MODULASI NEXTVWT TETAP DI HATI',
@@ -990,7 +991,10 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
             </button>
             <button
               type="button"
-              onClick={() => updateSettings({ profilePhotoOption: 'custom' })}
+              onClick={() => {
+                updateSettings({ profilePhotoOption: 'custom' });
+                fileInputRef.current?.click();
+              }}
               className={`flex-1 py-1.5 px-2 text-[10px] font-bold rounded-md transition-all cursor-pointer ${
                 profilePhotoOption === 'custom'
                   ? 'bg-white text-indigo-600 shadow-sm'
@@ -1001,21 +1005,14 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
             </button>
           </div>
 
-          {/* Tombol Unggah Galeri (Hanya tampil jika opsi Galeri Lokal terpilih) */}
-          {profilePhotoOption === 'custom' && (
-            <div className="mb-3">
-              <label className="py-1.5 px-3 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-600 rounded-lg text-[10px] font-bold cursor-pointer transition block text-center">
-                Unggah dari Galeri
-                <input
-                  type="file"
-                  id="profile-photo-file-input"
-                  accept="image/*"
-                  onChange={handlePhotoUpload}
-                  className="hidden"
-                />
-              </label>
-            </div>
-          )}
+          <input
+            type="file"
+            ref={fileInputRef}
+            id="profile-photo-file-input"
+            accept="image/*"
+            onChange={handlePhotoUpload}
+            className="hidden"
+          />
 
           <div className="text-center text-xs font-semibold text-gray-700 mb-4">
             eMail ({emailText})
