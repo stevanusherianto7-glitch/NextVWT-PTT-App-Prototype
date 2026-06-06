@@ -225,7 +225,7 @@ export function RadioLayout() {
           setIsUserListOpen(false);
         }
       }}
-      className={`w-full h-full min-h-screen sm:min-h-0 sm:w-[360px] sm:h-[800px] bg-white sm:rounded-[40px] overflow-hidden relative sm:shadow-[0_20px_50px_rgba(0,0,0,0.5)] sm:border-[8px] sm:border-[#2a2d36] flex-shrink-0 flex flex-col ${getThemeClass(themeText)}`}
+      className={`w-full h-[100dvh] sm:w-[360px] sm:h-[800px] bg-white sm:rounded-[40px] overflow-hidden relative sm:shadow-[0_20px_50px_rgba(0,0,0,0.5)] sm:border-[8px] sm:border-[#2a2d36] flex-shrink-0 flex flex-col ${getThemeClass(themeText)}`}
       style={{
         boxShadow: 'inset 0 0 0 2px rgba(255,255,255,0.1)',
       }}
