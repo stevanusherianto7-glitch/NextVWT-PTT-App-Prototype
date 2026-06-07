@@ -23,24 +23,26 @@ export const arrayBufferToBase64 = (buffer: ArrayBuffer): string => {
   return window.btoa(binary);
 };
 
+// Global Singleton Audio Context to prevent memory leak on unmounts
+let globalAudioCtx: AudioContext | null = null;
+
 export function useAudioPlayback() {
-  const audioCtxRef = useRef<AudioContext | null>(null);
   const nextPlaybackTimeRef = useRef<number>(0);
 
   // Initialize Audio Context lazily
   const getAudioContext = useCallback(() => {
-    if (!audioCtxRef.current) {
+    if (!globalAudioCtx) {
       const AudioContextClass =
         window.AudioContext ||
         (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
       if (AudioContextClass) {
-        audioCtxRef.current = new AudioContextClass();
+        globalAudioCtx = new AudioContextClass();
       }
     }
-    if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
-      audioCtxRef.current.resume();
+    if (globalAudioCtx && globalAudioCtx.state === 'suspended') {
+      globalAudioCtx.resume();
     }
-    return audioCtxRef.current;
+    return globalAudioCtx;
   }, []);
 
   // Play an incoming Base64 voice chunk smoothly (used when WebRTC is not active)

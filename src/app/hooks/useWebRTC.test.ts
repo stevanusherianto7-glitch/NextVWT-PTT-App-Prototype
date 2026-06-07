@@ -8,7 +8,7 @@
  *   3. handleSignaling offer → creates answer dan broadcasts kembali
  *   4. handleSignaling answer → memanggil setRemoteDescription
  *   5. handleSignaling skip jika targetUserId bukan userId kita
- *   6. handleSignaling skip jika channel === 100 (isolated channel)
+ *   6. handleSignaling skip jika channel === BRAND.isolatedChannels[0] (isolated channel)
  *   7. cleanupPeer menutup PeerConnection dan membersihkan audio element
  *   8. cleanupAllPeers membersihkan semua peers sekaligus
  */
@@ -17,6 +17,7 @@ import { renderHook, act } from '@testing-library/react';
 import { useWebRTC } from './useWebRTC';
 import { usePTTStore } from '../store/usePTTStore';
 import type { WebRTCSignalingPayload } from '../store/usePTTStore';
+import { BRAND } from '../utils/config';
 
 // ─── Mock Supabase (offline-capable) ─────────────────────────────────────────
 vi.mock('../utils/supabase', () => ({
@@ -320,8 +321,8 @@ describe('useWebRTC', () => {
     expect(mockPc.setRemoteDescription).not.toHaveBeenCalled();
   });
 
-  it('should skip signaling when channelNumber === 100 (isolated channel)', async () => {
-    usePTTStore.setState({ channelNumber: 100 });
+  it('should skip signaling when channelNumber === BRAND.isolatedChannels[0] (isolated channel)', async () => {
+    usePTTStore.setState({ channelNumber: BRAND.isolatedChannels[0] });
     const { result } = setupHook();
 
     const payload: WebRTCSignalingPayload = {

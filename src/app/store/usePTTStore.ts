@@ -1,38 +1,8 @@
 import { create } from 'zustand';
+import { PTTState, WebRTCSignalingPayload } from './types';
 import { getSupabase } from '../utils/supabase';
-import type { User, RealtimeChannel } from '@supabase/supabase-js';
-
-export interface GuestUser {
-  id: string;
-  isGuest: true;
-  email?: string;
-  user_metadata: { full_name: string; avatar_url?: string };
-  app_metadata: { provider: string };
-  aud: string;
-  created_at: string;
-}
-
-export type AppUser = User | GuestUser;
-import { BRAND, CHANNELS, fetchChannels as fetchChannelsFromConfig } from '../utils/config';
-import {
-  pttRateLimiter,
-  channelSwitchRateLimiter,
-  broadcastRateLimiter,
-} from '../utils/rateLimiter';
-
-export interface ChannelItem {
-  number: number;
-  name: string;
-  type: 'green' | 'red' | 'gray';
-  users: string[];
-}
-
-export interface WebRTCSignalingPayload {
-  senderUserId: string;
-  targetUserId?: string;
-  type: 'offer' | 'answer' | 'candidate';
-  data: RTCSessionDescriptionInit | RTCIceCandidateInit;
-}
+export type { AppUser, ChannelItem, WebRTCSignalingPayload, GuestUser, PTTState } from './types';
+import { BRAND } from '../utils/config';
 
 const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
 const isDummyKey =
@@ -96,96 +66,9 @@ export function generateRandomCallSign(): string {
   return result;
 }
 
-// ─── State Interface ──────────────────────────────────────────────────────────
-export interface PTTState {
-  isPowerOn: boolean;
-  isConnected: boolean;
-  isTransmitting: boolean;
-  isScanning: boolean;
-  progress: number;
-  channelNumber: number;
-  channelId: string; // UUID v4 format
-  userId: string; // UUID v4 format
-  callSign: string; // Random 5-character string (combination of 5 letters + numbers)
-  error: string | null;
-
-  // Auth State
-  user: AppUser | null;
-  activeTransmitter: { userId: string; displayName: string; callSign: string } | null;
-  activeUsers: Array<{
-    userId: string;
-    displayName: string;
-    callSign: string;
-    location: string;
-    avatarUrl?: string;
-  }>;
-
-  // Settings State
-  infoText: string;
-  locationText: string;
-  showMyPhoto: boolean;
-  showOtherPhotos: boolean;
-  showPhotosInList: boolean;
-  fastClick: boolean;
-  showModulator: boolean;
-  showPTT: boolean;
-  maxQueue: string;
-  audioMode: 'discussion' | 'music';
-  pttSize: number;
-  pttBottom: number;
-  togglePtt: boolean;
-  pttVolume: number;
-  vibrateOnStart: boolean;
-  toneOnStartEnd: boolean;
-  bgActive: boolean;
-  fullDuplex: boolean;
-  themeText: string;
-  builtInEcho: boolean;
-  isKaraokePlayerOpen: boolean;
-  echoFeedback: number;
-  profilePhotoOption: 'google' | 'custom';
-  customPhotoUrl: string;
-
-  // Actions
-  setPower: (power: boolean) => void;
-  setConnected: (connected: boolean) => void;
-  setTransmitting: (transmitting: boolean) => void;
-  setScanning: (scanning: boolean) => void;
-  setProgress: (progress: number) => void;
-  setChannelNumber: (numOrFn: number | ((prev: number) => number)) => void;
-  setError: (err: string | null) => void;
-  initializeSession: () => void;
-  updateSettings: (settings: Partial<PTTState>) => void;
-  setUser: (user: AppUser | null) => void;
-  signInWithGoogle: () => Promise<void>;
-  signOut: () => Promise<void>;
-  setKaraokePlayerOpen: (open: boolean) => void;
-
-  // Control actions
-  channelUp: () => void;
-  channelDown: () => void;
-  toggleScan: () => void;
-
-  // Audio actions
-  onVoiceChunkReceived: ((base64Chunk: string) => void) | null;
-  setOnVoiceChunkReceived: (callback: ((base64Chunk: string) => void) | null) => void;
-  broadcastVoiceChunk: (base64Chunk: string) => void;
-
-  // WebRTC signaling actions
-  onWebRTCSignalingReceived: ((payload: WebRTCSignalingPayload) => void) | null;
-  setOnWebRTCSignalingReceived: (
-    callback: ((payload: WebRTCSignalingPayload) => void) | null
-  ) => void;
-  broadcastWebRTCSignaling: (payload: WebRTCSignalingPayload) => void;
-
-  // Channels online DB actions
-  channels: ChannelItem[];
-  fetchChannels: () => Promise<void>;
-}
-
 // ─── Persisted Settings Keys ──────────────────────────────────────────────────
 // Only these keys are persisted to localStorage (volatile runtime state is excluded)
-const PERSISTED_KEYS: Array<keyof PTTState> = [
+export const PERSISTED_KEYS: Array<keyof PTTState> = [
   'infoText',
   'locationText',
   'channelNumber',
@@ -214,7 +97,7 @@ const PERSISTED_KEYS: Array<keyof PTTState> = [
   'customPhotoUrl',
 ];
 
-function pickPersistedState(state: Partial<PTTState>): Partial<PTTState> {
+export function pickPersistedState(state: Partial<PTTState>): Partial<PTTState> {
   const result: Partial<PTTState> = {};
   for (const key of PERSISTED_KEYS) {
     if (key in state) {
@@ -224,34 +107,6 @@ function pickPersistedState(state: Partial<PTTState>): Partial<PTTState> {
   }
   return result;
 }
-
-// ─── Default Settings ─────────────────────────────────────────────────────────
-const DEFAULT_SETTINGS = {
-  infoText: '',
-  locationText: 'BANDUNG, JAWA BARAT',
-  showMyPhoto: true,
-  showOtherPhotos: true,
-  showPhotosInList: true,
-  fastClick: true,
-  showModulator: true,
-  showPTT: true,
-  maxQueue: '99999',
-  audioMode: 'music' as const,
-  pttSize: 30,
-  pttBottom: 50,
-  togglePtt: true,
-  pttVolume: 70,
-  vibrateOnStart: true,
-  toneOnStartEnd: true,
-  bgActive: true,
-  fullDuplex: false,
-  themeText: BRAND.defaultTheme,
-  builtInEcho: true,
-  isKaraokePlayerOpen: false,
-  echoFeedback: 35,
-  profilePhotoOption: 'custom' as const,
-  customPhotoUrl: '',
-};
 
 interface PresenceMeta {
   userId?: string;
@@ -268,16 +123,15 @@ interface PttStatePayload {
   isTransmitting: boolean;
 }
 
+import { activeChannelSubscription, setActiveChannelSubscription } from './subscription';
 // ─── Supabase Channel Subscription ───────────────────────────────────────────
-// Keep subscription reference in closure to avoid React rendering cycles
-let activeChannelSubscription: RealtimeChannel | null = null;
 
 function subscribeToChannel(channelNum: number, retryCount = 0) {
   (async () => {
     try {
       if (activeChannelSubscription) {
         activeChannelSubscription.unsubscribe();
-        activeChannelSubscription = null;
+        setActiveChannelSubscription(null);
       }
 
       // Clear active users list immediately on channel change to prevent showing stale users
@@ -297,7 +151,7 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
         },
       },
     });
-    activeChannelSubscription = channelInstance;
+    setActiveChannelSubscription(channelInstance);
 
     channelInstance
       .on('presence', { event: 'sync' }, () => {
@@ -400,292 +254,21 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
   })();
 }
 
+import { createAuthSlice } from './slices/createAuthSlice';
+import { createUISlice } from './slices/createUISlice';
+import { createChannelSlice } from './slices/createChannelSlice';
+import { createSettingsSlice } from './slices/createSettingsSlice';
+import { createWebRTCSlice } from './slices/createWebRTCSlice';
+
 // ─── Store ────────────────────────────────────────────────────────────────────
-export const usePTTStore = create<PTTState>((set) => ({
-  isPowerOn: true,
-  isConnected: false,
-  isTransmitting: false,
-  isScanning: false,
-  progress: 0,
-  channelNumber: BRAND.defaultChannel,
-  channelId: getChannelUUID(BRAND.defaultChannel),
-  userId: '',
-  callSign: '',
-  error: null,
+export const usePTTStore = create<PTTState>()((set, get, store) => ({
+  ...createAuthSlice(set, get, store),
+  ...createUISlice(set, get, store),
+  ...createChannelSlice(set, get, store),
+  ...createSettingsSlice(set, get, store),
+  ...createWebRTCSlice(set, get, store),
 
-  // Auth State
-  user: null,
-  activeTransmitter: null,
-  activeUsers: [],
-  channels: CHANNELS as ChannelItem[],
-  fetchChannels: async () => {
-    try {
-      const dbChannels = await fetchChannelsFromConfig();
-      set({ channels: dbChannels as ChannelItem[] });
-    } catch (err) {
-      console.warn('Failed to fetch channels in store:', err);
-    }
+  subscribeToChannel: (channelNum: number) => {
+    subscribeToChannel(channelNum, 0);
   },
-
-  // Merge defaults – initializeSession will overlay with localStorage cache
-  ...DEFAULT_SETTINGS,
-
-  onVoiceChunkReceived: null,
-  setOnVoiceChunkReceived: (callback) => set({ onVoiceChunkReceived: callback }),
-  setKaraokePlayerOpen: (open) => set({ isKaraokePlayerOpen: open }),
-  broadcastVoiceChunk: (base64Chunk) => {
-    const state = usePTTStore.getState();
-    if (activeChannelSubscription && state.isConnected && state.isPowerOn) {
-      if (!broadcastRateLimiter.canProceed()) {
-        console.warn('[Rate Limit] Voice chunk broadcast dropped due to flood control');
-        return;
-      }
-      activeChannelSubscription.send({
-        type: 'broadcast',
-        event: 'voice_chunk',
-        payload: {
-          userId: state.userId,
-          base64: base64Chunk,
-        },
-      });
-    }
-  },
-
-  onWebRTCSignalingReceived: null,
-  setOnWebRTCSignalingReceived: (callback) => set({ onWebRTCSignalingReceived: callback }),
-  broadcastWebRTCSignaling: (payload: WebRTCSignalingPayload) => {
-    const state = usePTTStore.getState();
-    if (activeChannelSubscription && state.isConnected && state.isPowerOn) {
-      activeChannelSubscription.send({
-        type: 'broadcast',
-        event: 'webrtc_signaling',
-        payload,
-      });
-    }
-  },
-
-  setPower: (power) =>
-    set((state) => {
-      if (!power) {
-        if (activeChannelSubscription) {
-          activeChannelSubscription.unsubscribe();
-          activeChannelSubscription = null;
-        }
-        return {
-          isPowerOn: false,
-          isConnected: false,
-          isTransmitting: false,
-          isScanning: false,
-          progress: 0,
-        };
-      }
-      // Re-establish subscription on power on
-      setTimeout(() => subscribeToChannel(state.channelNumber), 0);
-      return { isPowerOn: true };
-    }),
-
-  setConnected: (connected) => set({ isConnected: connected }),
-
-  setTransmitting: (transmitting) =>
-    set((state) => {
-      if (!state.isPowerOn) return {};
-
-      if (transmitting && !pttRateLimiter.canProceed()) {
-        console.warn('[Rate Limit] PTT transmission toggle ignored due to flood control');
-        return {};
-      }
-
-      if (activeChannelSubscription && state.isConnected) {
-        const userMeta = state.user;
-        const displayName = state.infoText || userMeta?.user_metadata?.full_name;
-
-        activeChannelSubscription.send({
-          type: 'broadcast',
-          event: 'ptt_state',
-          payload: {
-            userId: state.userId,
-            displayName: displayName,
-            callSign: state.callSign || '2DYUA',
-            isTransmitting: transmitting,
-          },
-        });
-      }
-
-      return { isTransmitting: transmitting, progress: transmitting ? 50 : 0 };
-    }),
-
-  setScanning: (scanning) =>
-    set((state) => {
-      if (!state.isPowerOn) return {};
-      return { isScanning: scanning };
-    }),
-
-  setProgress: (progress) =>
-    set((state) => {
-      if (!state.isPowerOn) return {};
-      return { progress };
-    }),
-
-  setChannelNumber: (numOrFn) =>
-    set((state) => {
-      if (!state.isPowerOn) return {};
-      if (!channelSwitchRateLimiter.canProceed()) {
-        console.warn('[Rate Limit] Channel switch ignored due to flood control');
-        return {};
-      }
-      const nextVal = typeof numOrFn === 'function' ? numOrFn(state.channelNumber) : numOrFn;
-      const clamped = Math.max(0, Math.min(999, nextVal));
-
-      // Subscribe to the new channel (Fast Click configures immediate or debounced delay reconnect)
-      const delay = state.fastClick ? 0 : 800;
-      setTimeout(() => subscribeToChannel(clamped), delay);
-      // Persist channel selection for offline recovery
-      safeSetStorage({ channelNumber: clamped });
-
-      return {
-        channelNumber: clamped,
-        channelId: getChannelUUID(clamped),
-      };
-    }),
-
-  setError: (err) => set({ error: err }),
-
-  initializeSession: () =>
-    set((state) => {
-      if (state.userId) return {}; // Already initialized
-
-      const newUserId = generateUUID();
-
-      // --- Offline Recovery: restore settings from localStorage cache ---
-      const cached = safeGetStorage();
-      const restored: Partial<PTTState> = {};
-
-      if (cached) {
-        for (const key of PERSISTED_KEYS) {
-          if (key in cached && (cached as Record<string, unknown>)[key] !== undefined) {
-            // @ts-expect-error dynamic key assignment
-            restored[key] = (cached as Record<string, unknown>)[key];
-          }
-        }
-      }
-
-      // Restore or generate callSign
-      const newCallSign = restored.callSign || generateRandomCallSign();
-      if (!restored.callSign) {
-        safeSetStorage({ callSign: newCallSign });
-        restored.callSign = newCallSign;
-      }
-
-      // Establish initial connection using restored or default channel
-      const channelToJoin = (restored.channelNumber as number) ?? state.channelNumber;
-      setTimeout(() => {
-        subscribeToChannel(channelToJoin);
-        usePTTStore.getState().fetchChannels();
-      }, 0);
-
-      return {
-        userId: newUserId,
-        ...restored,
-        // Derive channelId from restored channel number
-        channelId: getChannelUUID(channelToJoin),
-      };
-    }),
-
-  updateSettings: (settings) =>
-    set((state) => {
-      const next = { ...state, ...settings };
-      // Delta-sync: only write settings-relevant keys to localStorage
-      safeSetStorage(pickPersistedState(settings));
-
-      // Delta-sync: updates active presence tracking if settings change
-      if (next.isConnected && activeChannelSubscription) {
-        const userMeta = next.user;
-        const displayName = next.infoText || userMeta?.user_metadata?.full_name;
-        const location = next.locationText;
-        const avatarUrl =
-          next.profilePhotoOption === 'google'
-            ? userMeta?.user_metadata?.avatar_url || ''
-            : next.customPhotoUrl;
-
-        activeChannelSubscription
-          .track({
-            userId: next.userId,
-            displayName: displayName,
-            callSign: next.callSign || '2DYUA',
-            location: location,
-            avatarUrl: avatarUrl,
-          })
-          .catch((err) => {
-            console.warn('Failed to update presence metadata on settings update:', err);
-          });
-      }
-
-      return next;
-    }),
-
-  setUser: (user) => set({ user }),
-
-  signInWithGoogle: async () => {
-    try {
-      const supabase = await getSupabase();
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: typeof window !== 'undefined' ? window.location.origin : undefined,
-        },
-      });
-      if (error) throw error;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      set({ error: message || 'Gagal masuk dengan Google' });
-    }
-  },
-
-  signOut: async () => {
-    try {
-      const supabase = await getSupabase();
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      set({ user: null, activeTransmitter: null });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      set({ error: message || 'Gagal keluar akun' });
-    }
-  },
-
-  channelUp: () =>
-    set((state) => {
-      if (!state.isPowerOn) return {};
-      const nextVal = state.channelNumber >= 999 ? 0 : state.channelNumber + 1;
-
-      const delay = state.fastClick ? 0 : 800;
-      setTimeout(() => subscribeToChannel(nextVal), delay);
-      safeSetStorage({ channelNumber: nextVal });
-
-      return {
-        channelNumber: nextVal,
-        channelId: getChannelUUID(nextVal),
-      };
-    }),
-
-  channelDown: () =>
-    set((state) => {
-      if (!state.isPowerOn) return {};
-      const nextVal = state.channelNumber <= 0 ? 999 : state.channelNumber - 1;
-
-      const delay = state.fastClick ? 0 : 800;
-      setTimeout(() => subscribeToChannel(nextVal), delay);
-      safeSetStorage({ channelNumber: nextVal });
-
-      return {
-        channelNumber: nextVal,
-        channelId: getChannelUUID(nextVal),
-      };
-    }),
-
-  toggleScan: () =>
-    set((state) => {
-      if (!state.isPowerOn) return {};
-      return { isScanning: !state.isScanning };
-    }),
 }));

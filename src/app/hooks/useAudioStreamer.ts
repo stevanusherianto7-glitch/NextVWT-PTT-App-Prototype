@@ -13,6 +13,19 @@ export function useAudioStreamer() {
   const isRecordingRef = useRef<boolean>(false);
   const currentCleanupRef = useRef<(() => void) | null>(null);
 
+  // Audio Node tracking for Garbage Collection
+  const audioNodesRef = useRef<{
+    source: MediaStreamAudioSourceNode | null;
+    delay: DelayNode | null;
+    feedback: GainNode | null;
+    dest: MediaStreamAudioDestinationNode | null;
+  }>({
+    source: null,
+    delay: null,
+    feedback: null,
+    dest: null,
+  });
+
   const { startVAD, stopVAD } = useVAD();
 
   const {
@@ -158,6 +171,25 @@ export function useAudioStreamer() {
     }
     mediaRecorderRef.current = null;
 
+    // Disconnect and release Audio Nodes for Garbage Collection
+    const nodes = audioNodesRef.current;
+    if (nodes.source) {
+      nodes.source.disconnect();
+      nodes.source = null;
+    }
+    if (nodes.delay) {
+      nodes.delay.disconnect();
+      nodes.delay = null;
+    }
+    if (nodes.feedback) {
+      nodes.feedback.disconnect();
+      nodes.feedback = null;
+    }
+    if (nodes.dest) {
+      nodes.dest.disconnect();
+      nodes.dest = null;
+    }
+
     // Fast PTT: Swap back to silent track
     const store = usePTTStore.getState();
     if (store.isConnected) {
@@ -236,6 +268,14 @@ export function useAudioStreamer() {
             feedbackNode.connect(destNode); // mix echo output into destination
 
             finalTrack = destNode.stream.getAudioTracks()[0];
+
+            // Track for cleanup
+            audioNodesRef.current = {
+              source: sourceNode,
+              delay: delayNode,
+              feedback: feedbackNode,
+              dest: destNode,
+            };
           }
         }
 
