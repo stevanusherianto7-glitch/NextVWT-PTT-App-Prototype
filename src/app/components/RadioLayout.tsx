@@ -1,18 +1,31 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, lazy, Suspense } from 'react';
 import { ToggleSwitch } from './ToggleSwitch';
 import { LCDPanel } from './LCDPanel';
 import { ControlButtons } from './ControlButtons';
 import { PTTButton } from './PTTButton';
 import { ProgressBar } from './ProgressBar';
 import { usePTTStore } from '../store/usePTTStore';
-import { SettingsPanel } from './SettingsPanel';
 import { UserListModal } from './UserListModal';
 import { ChannelListModal } from './ChannelListModal';
 import { STATIC_CHANNELS, getChannelUserCount } from '../utils/constants';
 import { useAudioStreamer } from '../hooks/useAudioStreamer';
 import { toast } from 'sonner';
-import { FloatingKaraokePlayer } from './FloatingKaraokePlayer';
 import { BRAND } from '../utils/config';
+import {
+  SettingsPanelSkeleton,
+  KaraokePlayerSkeleton,
+} from './SkeletonLoaders';
+
+// [P2-2] Lazy-load komponen besar — hanya diunduh saat pertama kali dibuka
+// SettingsPanel: ~76KB → split ke chunk terpisah, tidak menambah initial bundle
+const SettingsPanel = lazy(() =>
+  import('./SettingsPanel').then((m) => ({ default: m.SettingsPanel }))
+);
+// FloatingKaraokePlayer: ~21KB → split ke chunk terpisah
+const FloatingKaraokePlayer = lazy(() =>
+  import('./FloatingKaraokePlayer').then((m) => ({ default: m.FloatingKaraokePlayer }))
+);
+
 
 export function RadioLayout() {
   const {
@@ -233,7 +246,11 @@ export function RadioLayout() {
       }}
     >
       {isSettingsOpen ? (
-        <SettingsPanel onClose={() => setIsSettingsOpen(false)} />
+        // Suspense boundary: tampilkan skeleton saat SettingsPanel sedang dimuat
+        // (hanya terjadi pada kali pertama Settings dibuka dalam sesi ini)
+        <Suspense fallback={<SettingsPanelSkeleton />}>
+          <SettingsPanel onClose={() => setIsSettingsOpen(false)} />
+        </Suspense>
       ) : (
         <div
           className="size-full flex flex-col items-center overflow-hidden relative transition-all duration-300"
@@ -474,7 +491,7 @@ export function RadioLayout() {
                     onUserCountClick={() => setIsUserListOpen(true)}
                   />
                 </div>
- 
+
                 {/* Progress Bar */}
                 {showModulator && (
                   <div
@@ -483,8 +500,6 @@ export function RadioLayout() {
                     <ProgressBar progress={progress} />
                   </div>
                 )}
-
-
 
                 {/* Control Buttons */}
                 <div
@@ -517,10 +532,12 @@ export function RadioLayout() {
               </div>
             )}
 
-            {/* Floating Karaoke Player */}
+            {/* Floating Karaoke Player — lazy-loaded, hanya mount saat mode music aktif */}
             {isPowerOn && audioMode === 'music' && isKaraokePlayerOpen && (
               <div onClick={(e) => e.stopPropagation()}>
-                <FloatingKaraokePlayer onClose={() => setIsKaraokePlayerOpen(false)} />
+                <Suspense fallback={<KaraokePlayerSkeleton />}>
+                  <FloatingKaraokePlayer onClose={() => setIsKaraokePlayerOpen(false)} />
+                </Suspense>
               </div>
             )}
           </div>

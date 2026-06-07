@@ -18,9 +18,9 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
   const QUALITY_OPTIONS = [
     { label: 'Auto', value: 'auto' },
     { label: '1080p', value: 'hd1080' },
-    { label: '720p',  value: 'hd720'  },
-    { label: '480p',  value: 'large'  },
-    { label: '360p',  value: 'medium' },
+    { label: '720p', value: 'hd720' },
+    { label: '480p', value: 'large' },
+    { label: '360p', value: 'medium' },
   ];
 
   // Change quality by reloading iframe src with vq= parameter
@@ -291,7 +291,16 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
             style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #0f172a 100%)' }}
           >
             {/* Music note icon */}
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(148,163,184,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="36"
+              height="36"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="rgba(148,163,184,0.5)"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M9 18V5l12-2v13" />
               <circle cx="6" cy="18" r="3" />
               <circle cx="18" cy="16" r="3" />
@@ -300,7 +309,9 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
               className="text-center text-[11px] font-medium px-4 leading-relaxed"
               style={{ color: 'rgba(148,163,184,0.7)', fontFamily: "'Inter', sans-serif" }}
             >
-              Silahkan tempel URL link<br />video musik Anda
+              Silahkan tempel URL link
+              <br />
+              video musik Anda
             </p>
           </div>
         )}
@@ -344,7 +355,8 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
               title={isPlaying ? 'Jeda' : 'Putar'}
               className="w-12 h-12 flex items-center justify-center rounded-full transition-all duration-150 active:scale-90 focus:outline-none cursor-pointer"
               style={{
-                background: 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(200,210,225,0.85) 100%)',
+                background:
+                  'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(200,210,225,0.85) 100%)',
                 border: '1.5px solid rgba(255,255,255,0.6)',
                 boxShadow: '0 3px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.9)',
                 color: '#1e293b',
@@ -391,9 +403,7 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
                 title="Kualitas video"
                 className="w-9 h-9 flex items-center justify-center rounded-full transition-all duration-150 active:scale-90 focus:outline-none cursor-pointer hover:brightness-125"
                 style={{
-                  background: showSettings
-                    ? 'rgba(99,102,241,0.45)'
-                    : 'rgba(255,255,255,0.12)',
+                  background: showSettings ? 'rgba(99,102,241,0.45)' : 'rgba(255,255,255,0.12)',
                   border: showSettings
                     ? '1.5px solid rgba(129,140,248,0.7)'
                     : '1.5px solid rgba(255,255,255,0.18)',
@@ -412,7 +422,8 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
                 <div
                   className="absolute bottom-full mb-2 right-0 rounded-xl overflow-hidden z-30 animate-in fade-in slide-in-from-bottom-2 duration-150"
                   style={{
-                    background: 'linear-gradient(135deg, rgba(15,23,42,0.97) 0%, rgba(30,41,59,0.97) 100%)',
+                    background:
+                      'linear-gradient(135deg, rgba(15,23,42,0.97) 0%, rgba(30,41,59,0.97) 100%)',
                     border: '1px solid rgba(99,102,241,0.35)',
                     boxShadow: '0 8px 24px rgba(0,0,0,0.6)',
                     minWidth: '100px',
@@ -420,7 +431,10 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
                 >
                   <div
                     className="px-3 py-1.5 text-[9px] font-bold tracking-widest uppercase border-b"
-                    style={{ color: 'rgba(148,163,184,0.6)', borderColor: 'rgba(255,255,255,0.06)' }}
+                    style={{
+                      color: 'rgba(148,163,184,0.6)',
+                      borderColor: 'rgba(255,255,255,0.06)',
+                    }}
                   >
                     Kualitas
                   </div>
@@ -438,8 +452,21 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
                     >
                       <span>{opt.label}</span>
                       {quality === opt.value && (
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#a5b4fc' }}>
-                          <polyline points="20,6 9,17 4,12" strokeWidth="3" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                        <svg
+                          width="10"
+                          height="10"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          style={{ color: '#a5b4fc' }}
+                        >
+                          <polyline
+                            points="20,6 9,17 4,12"
+                            strokeWidth="3"
+                            stroke="currentColor"
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
                         </svg>
                       )}
                     </button>
@@ -448,7 +475,6 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
               )}
             </div>
           </div>
-
 
           {/* ─── URL INPUT + LOAD ─── */}
           <div
