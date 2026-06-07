@@ -43,10 +43,11 @@ test.describe('App Boot & Initial State', () => {
   });
 
   test('should show the LCD panel with channel number', async ({ page }) => {
-    // The LCD panel renders a 3-digit channel display
-    // Default channel is 100, displayed as "100"
-    const lcdText = await page.textContent('body');
-    expect(lcdText).toContain('100');
+    // Tunggu LCD panel termuat
+    const channelNumber = page.locator('[data-testid="lcd-channel-number"]').first();
+    await expect(channelNumber).toBeVisible({ timeout: 5_000 });
+    const lcdText = await channelNumber.textContent();
+    expect(lcdText).toContain('001');
   });
 
   test('should show the marquee text with STANDBY • READY', async ({ page }) => {

@@ -2,14 +2,23 @@ import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { getSecureConfig } from './secureConfig';
 
-const defaultUrl = import.meta.env.VITE_SUPABASE_URL || 'https://placeholder.supabase.co';
-const defaultKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'placeholder';
+let _supabaseInstance: SupabaseClient | null = null;
+let _supabaseInitializationPromise: Promise<SupabaseClient> | null = null;
 
-export let supabase: SupabaseClient = createClient(defaultUrl, defaultKey);
-
-export async function initializeSecureSupabase(): Promise<void> {
-  const config = await getSecureConfig();
-  if (config.supabaseUrl && config.supabaseKey) {
-    supabase = createClient(config.supabaseUrl, config.supabaseKey);
+export async function getSupabase(): Promise<SupabaseClient> {
+  if (_supabaseInstance) {
+    return _supabaseInstance;
   }
+
+  if (!_supabaseInitializationPromise) {
+    _supabaseInitializationPromise = (async () => {
+      const config = await getSecureConfig();
+      const url = config.supabaseUrl || 'https://placeholder.supabase.co';
+      const key = config.supabaseKey || 'placeholder';
+      _supabaseInstance = createClient(url, key);
+      return _supabaseInstance;
+    })();
+  }
+
+  return _supabaseInitializationPromise;
 }

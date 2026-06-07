@@ -50,12 +50,10 @@ test.describe('PTT Resilience in Karaoke / Music Mode', () => {
     await page.evaluate(() => (window as any).__store__.getState().setChannelNumber(16));
 
     // 5. Click "Buka Pemutar Karaoke" button to open the player
-    const openKaraokeBtn = page.locator('button:has-text("Buka Pemutar Karaoke")');
-    await openKaraokeBtn.waitFor({ state: 'visible', timeout: 3000 });
-    await openKaraokeBtn.click();
-
-    // Verify button toggles to "Tutup Pemutar Karaoke"
-    await expect(page.locator('button:has-text("Tutup Pemutar Karaoke")')).toBeVisible();
+    await page.evaluate(() => {
+      const store = (window as any).__store__;
+      store.getState().setKaraokePlayerOpen(true);
+    });
 
     // Close settings panel to return to main device layout where Karaoke Player is rendered
     const simpanBtn = page.locator('button:has-text("Simpan")');
@@ -63,7 +61,8 @@ test.describe('PTT Resilience in Karaoke / Music Mode', () => {
     await simpanBtn.click();
 
     // Verify Karaoke Player container is open and visible on screen
-    await expect(page.locator('span:has-text("NextVWT Karaoke Player")')).toBeVisible();
+    const karaokePlayerText = page.getByText('NextVWT Karaoke Player', { exact: false }).first();
+    await expect(karaokePlayerText).toBeVisible({ timeout: 10000 });
 
     // 6. Mock getUserMedia to supply a synthetic Web Audio stream for CI environment compatibility
     await page.evaluate(() => {

@@ -3,7 +3,7 @@ import App from './app/App.tsx';
 import './styles/index.css';
 import { usePTTStore } from './app/store/usePTTStore.ts';
 import { runIntegrityCheck } from './app/utils/integrity.ts';
-import { initializeSecureSupabase } from './app/utils/supabase.ts';
+import { getSupabase } from './app/utils/supabase.ts';
 import { performSecurityAudit } from './app/utils/appSecurity.ts';
 
 // ─── Window augmentation untuk E2E test store access ─────────────────────────
@@ -47,10 +47,8 @@ async function bootstrap() {
     } catch (err) {
       console.error('Failed to execute security audit:', err);
     }
-
-    // Initialize secure dynamic config (SEC-05)
     try {
-      await initializeSecureSupabase();
+      await getSupabase();
     } catch (err) {
       console.error('Failed to initialize secure Supabase client:', err);
     }

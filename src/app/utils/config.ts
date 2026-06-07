@@ -10,7 +10,7 @@
  * 4. Run: npm run build && npx cap sync android
  * 5. Distribute APK with new branding
  * ─────────────────────────────────────────────────────────────────────────────── */
-import { supabase } from './supabase';
+import { getSupabase } from './supabase';
 
 export interface BrandConfig {
   // Core branding
@@ -24,6 +24,7 @@ export interface BrandConfig {
   supabaseRoomPrefix: string;
   defaultTheme: string;
   defaultChannel: number;
+  isolatedChannels: number[];
 
   // Visual branding (optional overrides; uses VISUAL_CONFIG defaults if not set)
   brandColor?: string;
@@ -60,7 +61,10 @@ export const BRAND: BrandConfig = {
   defaultTheme: 'theme-classic',
 
   // Default channel on app startup (typically main announcement channel)
-  defaultChannel: 100,
+  defaultChannel: 1,
+
+  // Channels that disable WebRTC (e.g. for purely server-side processing or privacy)
+  isolatedChannels: [100],
 
   // ─── Optional Visual Overrides ──────────────────────────────────────────────
   // If not set, defaults from VISUAL_CONFIG below are used
@@ -307,6 +311,7 @@ interface DBChannelItem {
  */
 export async function fetchChannels(): Promise<ChannelConfigItem[]> {
   try {
+    const supabase = await getSupabase();
     const { data, error } = await supabase
       .from('channels')
       .select('number, name, type, is_restricted, info')
