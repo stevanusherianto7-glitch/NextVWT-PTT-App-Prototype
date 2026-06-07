@@ -310,7 +310,7 @@ export function LCDPanel({
                 style={{
                   fontSize: '18px',
                   fontWeight: 'bold',
-                  paddingBottom: '5px',
+                  paddingBottom: '2px',
                   color: 'var(--lcd-label-color)',
                 }}
               >
@@ -349,7 +349,7 @@ export function LCDPanel({
                 <img
                   src={twinHeadsIcon}
                   alt="User Count Icon"
-                  className="h-[52px] w-[50px] object-contain"
+                  className="h-[52px] w-[50px] object-contain -mb-[5px]"
                   style={{ filter: 'drop-shadow(1px 1px 0px rgba(0,0,0,0.2))' }}
                 />
               </div>
