@@ -739,24 +739,30 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
     <div className="w-full h-full flex flex-col bg-[#f0f0f0] select-none text-black">
       {/* Top Header Bar */}
       <div
-        className="w-full h-[55px] flex items-center px-4 bg-white z-20 relative shrink-0"
+        className="w-full h-[90px] flex items-center px-5 z-20 relative overflow-hidden shrink-0"
         style={{
-          borderBottom: '1px solid #cbd5e1',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+          background: 'var(--header-bg)',
+          boxShadow:
+            'var(--header-shadow), inset 0 -12px 20px -6px rgba(0, 0, 0, 0.45), inset 0 3px 6px rgba(255, 255, 255, 0.4)',
+          borderBottom: 'var(--header-border)',
         }}
       >
+        {/* Top Glossy Reflection */}
+        <div className="absolute top-0 left-0 right-0 h-[40%] bg-gradient-to-b from-white/35 to-transparent pointer-events-none z-10" />
+
         <button
           onClick={onClose}
-          className="flex items-center text-[#0066cc] font-medium pr-3 py-1 cursor-pointer focus:outline-none"
+          className="flex items-center font-medium pr-3 py-1 cursor-pointer focus:outline-none relative z-25"
+          style={{ color: 'var(--header-text-color)' }}
         >
           {/* Back arrow chevron */}
           <svg
-            width="20"
-            height="20"
+            width="24"
+            height="24"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2.5"
+            strokeWidth="3"
             strokeLinecap="round"
             strokeLinejoin="round"
             className="mr-1"
@@ -769,10 +775,10 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
         {/* Brand SVG logo */}
         <svg
           viewBox="0 0 100 100"
-          className="h-[40px] w-auto mr-2"
+          className="h-[55px] w-auto mr-3 relative z-25"
           style={{
             transform: 'translateZ(1px)',
-            filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))',
+            filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.25))',
           }}
         >
           <defs>
@@ -875,7 +881,15 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
           />
         </svg>
 
-        <span className="text-[16px] font-bold text-black tracking-wide">Pengaturan</span>
+        <span
+          className="text-[16px] font-bold tracking-wide relative z-25"
+          style={{
+            fontFamily: "'Outfit', 'Orbitron', system-ui, -apple-system, sans-serif",
+            color: 'var(--header-text-color)',
+          }}
+        >
+          Pengaturan
+        </span>
       </div>
 
       {/* Scrollable Form Body */}
