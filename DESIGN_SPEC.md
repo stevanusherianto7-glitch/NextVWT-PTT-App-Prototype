@@ -375,7 +375,7 @@ Overlay dialog penuh untuk menampilkan semua daftar saluran (static channels) ya
         - Sinyal Luar: stroke `#34D399` (shadow `#0c351c` translate `0.8, 1`, highlight `#ffffff` opacity `0.7` translate `-0.5, -0.6` stroke-width `1.2`).
         - Sinyal Tengah: stroke `#10B981` (shadow `#083818` translate `0.8, 1`, highlight `#ffffff` opacity `0.7` translate `-0.5, -0.6` stroke-width `1.2`).
         - Sinyal Dalam: stroke `#00C853` (shadow `#0a3c10` translate `0.8, 1`, highlight `#ffffff` opacity `0.7` translate `-0.5, -0.6` stroke-width `1.2`).
-  - Subtitle Header: Teks `"NEXT VIRTUAL WALKIE TALKIE"` berukuran `9px` s.d `10px`, warna merah `#e53935`, font-weight `900` (`font-black`), tracking `0.18em`, margin-top `6px`.
+  - Subtitle Header: Teks `"NEXT VIRTUAL WALKIE TALKIE"` berukuran `8px`, warna merah `#b81f25`, font-weight `850`, tracking `0.22em`, font-family `Montserrat/Poppins`.
 - **Kolom Pencarian (Search Input)**:
   - Wadah: Padding `12px` (`p-3`), background abu-abu terang `#f9fafb` (`bg-gray-50`), border-bottom `1px solid #f3f4f6`.
   - Kolom Input: Lebar penuh, border `1px solid #d1d5db`, rounded `6px`, px `12px`, py `6px` (`py-1.5`), text-xs, outline-none, focus border `#3b82f6`, font-weight `600`.
@@ -384,39 +384,42 @@ Overlay dialog penuh untuk menampilkan semua daftar saluran (static channels) ya
   - Tombol Pilihan Saluran (Channel Row Item):
     - flex items-center, hover:bg-gray-50, active:bg-gray-100, transition, cursor-pointer.
     - Lencana Nomor Channel (3 Digit Badge):
-      - Lebar tetap `55px`, padding vertikal `10px`, text color putih (`#ffffff`), font-size `14px`, tebal `bold` (700).
+      - Lebar tetap `55px`, padding vertikal `10px`, text color putih (`#ffffff`), font-size `14px` (`text-sm`), tebal `bold` (700).
       - Molded 3D Bezel Borders:
-        - Highlight Top-Left: `border-t-[2px] border-l-[2px] border-t-white/45 border-l-white/45`.
-        - Shadow Bottom-Right: `border-r-[2px] border-b-[2px] border-r-black/45 border-b-black/45`.
-        - Inner Shadow: `shadow-[inset_1px_1px_0px_rgba(255,255,255,0.3)]`.
-        - Text Shadow: `1px 1px 1px rgba(0,0,0,0.6)`.
-      - Warna Gradasi Latar Saluran (sesuai tipe):
-        - Saluran Hijau Utama (CH 000 & 100): `linear-gradient(to bottom, #1b5e20, #0e3b12)` (Hijau Gelap Pekat).
-        - Saluran Hijau Biasa (CH 001 - 099): `linear-gradient(to bottom, #66bb6a, #388e3c)` (Hijau Terang).
-        - Saluran Merah Terbatas: `linear-gradient(to bottom, #e53935, #c62828)` (Merah Terang).
-        - Saluran Default/Lainnya: `linear-gradient(to bottom, #9E9E9E, #616161)`.
+        - Highlight Top-Left: `border-t-[2.5px] border-l-[2.5px] border-t-white/45 border-l-white/45`.
+        - Shadow Bottom-Right: `border-r-[2.5px] border-b-[2.5px] border-r-black/55 border-b-black/55`.
+        - Inner Shadow: `shadow-[inset_1px_1px_0px_rgba(255,255,255,0.4)]`.
+        - Text Shadow: `1px 1px 1px rgba(0,0,0,0.8)`.
+      - **Efek Glossy 3D Multi-Layer**: Dua layer gradien bertumpuk per badge:
+        - Layer 1 (Overlay Refleksi): `linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.12) 48%, transparent 52%, rgba(0,0,0,0.08) 100%)`.
+        - Layer 2 (Warna Dasar): Gradien vertikal pekat sesuai tipe saluran.
+      - Warna Gradasi Latar Saluran (CSS Classes):
+        - `.badge-green-dark` — Saluran Hijau Utama (CH 000 & 100): `#2e7d32` → `#155724`.
+        - `.badge-green-light` — Saluran Hijau Biasa (CH 001 - 099): `#00e676` → `#009933`.
+        - `.badge-red` — Saluran Merah Terbatas: `#ff3333` → `#b30000`.
+        - `.badge-gray-dark` — Saluran Default/Lainnya & "Selanjutnya": `#a0a0a0` → `#505050`.
     - Nama & Keterangan Pengguna Saluran:
       - Wadah: `ml-3 pr-3 flex-1 min-w-0 py-1`.
       - Nama Saluran: `text-xs font-bold text-black truncate`.
       - Jumlah/Daftar Anggota: `text-[10px] text-gray-500 font-semibold truncate mt-0.5 uppercase`. (Format: `"[Jumlah] PENGGUNA • [Daftar nama]"` / `"0 PENGGUNA"`. Khusus Saluran 0 tertulis `"WWW.NEXTVWT.ID"`).
 - **Overlay Konfirmasi Akses Saluran (Active Channel Overlay)**:
-  - Dimensi Dialog: Lebar `85%` dari wadah modal, maks `280px`, rounded `8px`, `shadow-2xl`, border `#f3f4f6`.
+  - Dimensi Dialog: Lebar penuh `w-full max-w-[340px]`, overlay `p-0`, rounded `8px` (`rounded-lg`), `shadow-2xl`, border `#f3f4f6`.
   - Pilihan Tombol:
     - `"Menuju Channel [Number]"`: px `20px`, py `18px`, hover:bg-gray-50, active:bg-gray-100, text `16px`, warna `#1f2937`, tebal `500` (`font-medium`), border-bottom `1px solid #f3f4f6`.
     - `"Info Channel [Number]"`: px `20px`, py `18px`, hover:bg-gray-50, active:bg-gray-100, text `16px`, warna `#1f2937`, tebal `500`.
 - **Overlay Peringatan Terbatas (Restricted Warning Overlay)**:
-  - Dimensi Dialog: Lebar `85%` dari wadah modal, maks `300px`, rounded `16px` (`rounded-2xl`), `shadow-2xl`, padding `24px` (`p-6`).
+  - Dimensi Dialog: Lebar penuh `w-full max-w-[340px]`, overlay `p-0`, rounded `16px` (`rounded-2xl`), `shadow-2xl`, padding `24px` (`p-6`).
   - Judul: `"Channel [Number] terbatas"`, font-size `17px`, tebal `bold` (700), warna `#1f2937`.
   - Deskripsi: `"Channel ini terbatas hanya untuk anggota channel"`, font-size `14px`, warna `#4b5563`, leading-relaxed, mt `10px`.
   - Tombol Tutup: `text-[15px] font-bold text-[#0c62a8] hover:text-[#0b5490] px-6 py-2 cursor-pointer focus:outline-none`.
 - **Overlay Informasi Detail Saluran (Info Channel Overlay)**:
-  - Dimensi Dialog: Lebar `85%` dari wadah modal, maks `300px`, rounded `16px`, padding `20px` (`p-5`), border `#f3f4f6`.
+  - Dimensi Dialog: Lebar penuh `w-full max-w-[340px]`, overlay `p-0`, rounded `16px`, padding `20px` (`p-5`), border `#f3f4f6`.
   - Judul Header: flex items-center gap `8px`, padding bottom `10px`. Ikon info SVG warna biru `#0c62a8` tebal `2.5`, judul `"Channel [Number]"` (font `16px`, tebal `bold`).
-  - Render Bola Logo 3D: Tinggi `75px` w-auto, menggunakan Radial Gradient id `#glossyRedInfo` (identik dengan spesifikasi logo mini).
-  - Detail Row (Nama & Info):
-    - Baris Nama: border-top `1px solid #f3f4f6`, py `14px`, text `14px`. Label `"Nama"` (lebar `56px`, font-bold, text-gray-400), Nilai Nama (font-bold, text-gray-800).
-    - Baris Info: border-top & border-bottom `1px solid #f3f4f6`, py `14px`, text `14px`. Label `"Info"` (lebar `56px`, font-bold, text-gray-400), Nilai Info (font-semibold, text-gray-700).
-  - Tombol Tutup: `text-[15px] font-bold text-[#0c62a8] hover:text-[#0b5490] px-6 py-2 cursor-pointer focus:outline-none`, mt `20px`.
+  - Render Bola Logo 3D: Tinggi `75px` w-auto, area ini disiapkan untuk upload logo channel di kemudian hari.
+  - Detail Row (Nama & Info) — Layout Kompak:
+    - Baris Nama: border-top `1px solid #f3f4f6`, py `4px` (`py-1`), text `14px`. Label `"Nama"` (lebar `56px`, font-bold, text-gray-400), Nilai Nama (font-bold, text-gray-800).
+    - Baris Info: border-top & border-bottom `1px solid #f3f4f6`, py `4px` (`py-1`), text `14px`. Label `"Info"` (lebar `56px`, font-bold, text-gray-400), Nilai Info (font-semibold, text-gray-700).
+  - Tombol Tutup: `text-[15px] font-bold text-[#0c62a8] hover:text-[#0b5490] px-6 py-0.5 cursor-pointer focus:outline-none`, mt `6px` (`mt-1.5`).
 
 ### I. Settings Panel Component (`SettingsPanel.tsx`)
 

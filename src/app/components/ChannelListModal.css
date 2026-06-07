@@ -2,7 +2,7 @@
   width: 100%;
   max-width: 340px; /* Aligned with UserListModal uniform sizing w-full max-w-[340px] */
   margin: 0 auto;
-  border-radius: 22px 22px 0 0;
+  border-radius: 22px;
   background: linear-gradient(180deg, #ffffff 0%, #f7f9fb 100%);
   box-shadow:
     0 20px 55px rgba(10, 20, 35, 0.28),
@@ -51,6 +51,16 @@
   white-space: nowrap;
   user-select: none;
   pointer-events: none; /* Prevents logo text elements from intercepting close button clicks */
+}
+
+.logo-next {
+  text-align: right;
+  flex: 1;
+}
+
+.logo-vwt {
+  text-align: left;
+  flex: 1;
 }
 
 .logo-word {
@@ -207,4 +217,71 @@
 
 .channel-modal-content {
   padding: 0; /* Let list styles control search and margins */
+}
+
+.badge-red {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.5) 0%,
+      rgba(255, 255, 255, 0.12) 48%,
+      transparent 52%,
+      rgba(0, 0, 0, 0.08) 100%
+    ),
+    linear-gradient(180deg, #ff3333 0%, #b30000 100%);
+}
+
+.badge-green-light {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.5) 0%,
+      rgba(255, 255, 255, 0.12) 48%,
+      transparent 52%,
+      rgba(0, 0, 0, 0.08) 100%
+    ),
+    linear-gradient(180deg, #00e676 0%, #009933 100%);
+}
+
+.badge-green-dark {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.5) 0%,
+      rgba(255, 255, 255, 0.12) 48%,
+      transparent 52%,
+      rgba(0, 0, 0, 0.08) 100%
+    ),
+    linear-gradient(180deg, #2e7d32 0%, #155724 100%);
+}
+
+.badge-gray-dark {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.5) 0%,
+      rgba(255, 255, 255, 0.12) 48%,
+      transparent 52%,
+      rgba(0, 0, 0, 0.08) 100%
+    ),
+    linear-gradient(180deg, #a0a0a0 0%, #505050 100%);
+}
+
+/* Style scrollbar specifically for channel list — unified 1px thin style matching UserListModal */
+.channel-modal-content .overflow-y-auto::-webkit-scrollbar {
+  width: 1px !important;
+}
+
+.channel-modal-content .overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.channel-modal-content .overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #cbd5e1 !important;
+}
+
+/* Firefox support */
+.channel-modal-content .overflow-y-auto {
+  scrollbar-width: thin !important;
+  scrollbar-color: #cbd5e1 transparent !important;
 }

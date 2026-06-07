@@ -114,7 +114,8 @@ Channel List Modal adalah overlay dialog penuh untuk menyeleksi saluran walkie-t
 ### A. Tirai Latar Belakang (Backdrop Overlay)
 
 - **Gaya**: Latar belakang hitam transparan dengan opacity 60% (`bg-black/60`), z-index `50`, mengisi penuh layar (`inset-0`).
-- **Perilaku**: Flexbox memusatkan modal di tengah (`items-center justify-center`), padding luar `16px` (`p-4`).
+- **Perilaku**: Flexbox memusatkan modal di tengah (`items-center justify-center`), padding horizontal `16px` (`px-4`).
+- **Jarak Vertikal dari Bezel**: Padding atas `8px` (`pt-2`) dan padding bawah `12px` (`pb-3`) — cukup tipis agar modal hampir memenuhi layar tanpa menempel langsung pada bezel perangkat.
 
 ### B. Kontainer Dialog (Modal Box)
 
@@ -133,14 +134,58 @@ Channel List Modal adalah overlay dialog penuh untuk menyeleksi saluran walkie-t
 ### D. Bilah Pencarian & Baris Saluran (Channel Item Row)
 
 - **Bilah Pencarian**: Input text-xs, border `#d1d5db`, rounded `6px`, padding horizontal `12px`, padding vertikal `6px`, focus outline biru.
-- **Lencana Nomor Channel 3D (Badge)**:
-  - Dimensi: Lebar tetap `55px`, padding vertikal `10px`, font-size `14px`, tebal `bold` (700), warna teks putih, text-shadow `1px 1px 1px rgba(0,0,0,0.6)`.
-  - Tepi 3D Timbul (Molded Bezel):
-    - Highlight Top-Left: `border-t-[2px] border-l-[2px] border-t-white/45 border-l-white/45`.
-    - Shadow Bottom-Right: `border-r-[2px] border-b-[2px] border-r-black/45 border-b-black/45`.
-    - Bayangan Dalam: `shadow-[inset_1px_1px_0px_rgba(255,255,255,0.3)]`.
-  - Gradasi Warna Lencana (Berdasarkan Tipe Saluran):
-    - Hijau Utama (CH 000 & 100): `linear-gradient(to bottom, #1b5e20, #0e3b12)` (Pekat).
-    - Hijau Biasa (CH 001 - 099): `linear-gradient(to bottom, #66bb6a, #388e3c)`.
-    - Merah Terbatas: `linear-gradient(to bottom, #e53935, #c62828)`.
-    - Default/Abu-abu: `linear-gradient(to bottom, #9E9E9E, #616161)`.
+- **Lencana Nomor Channel 3D Glossy (Badge)**:
+   - Dimensi: Lebar tetap `55px`, padding vertikal `10px`, font-size `14px` (`text-sm`), tebal `bold` (700), warna teks putih, text-shadow `1px 1px 1px rgba(0,0,0,0.8)`.
+   - Tepi 3D Timbul (Molded Bezel):
+     - Highlight Top-Left: `border-t-[2.5px] border-l-[2.5px] border-t-white/45 border-l-white/45`.
+     - Shadow Bottom-Right: `border-r-[2.5px] border-b-[2.5px] border-r-black/55 border-b-black/55`.
+     - Bayangan Dalam: `shadow-[inset_1px_1px_0px_rgba(255,255,255,0.4)]`.
+   - **Efek Glossy 3D Multi-Layer**: Setiap badge menerapkan dua layer gradien bertumpuk:
+     - **Layer 1 (Overlay Refleksi)**: `linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.12) 48%, transparent 52%, rgba(0,0,0,0.08) 100%)` — mensimulasikan pantulan cahaya kaca pada tombol fisik.
+     - **Layer 2 (Warna Dasar)**: Gradien vertikal warna pekat sesuai tipe saluran.
+   - Gradasi Warna Lencana (Berdasarkan Tipe Saluran, CSS Classes):
+     - `.badge-green-dark` — Hijau Utama (CH 000 & 100): `#2e7d32` → `#155724`.
+     - `.badge-green-light` — Hijau Biasa (CH 001 - 099): `#00e676` → `#009933`.
+     - `.badge-red` — Merah Terbatas: `#ff3333` → `#b30000`.
+     - `.badge-gray-dark` — Default/Abu-abu & "Selanjutnya": `#a0a0a0` → `#505050`.
+
+### E. Scrollbar (Unified 1px — Seragam dengan UserListModal)
+
+Kedua modal utama (ChannelListModal & UserListModal) menggunakan scrollbar ultra-tipis **1px** yang identik:
+
+- **Webkit** (Chrome, Edge, Capacitor Android WebView):
+  - `-webkit-scrollbar` width: `1px`
+  - `-webkit-scrollbar-track` background: `transparent`
+  - `-webkit-scrollbar-thumb` background: `#cbd5e1` (slate-300)
+- **Firefox**: `scrollbar-width: thin`, `scrollbar-color: #cbd5e1 transparent`
+- **ChannelListModal**: Didefinisikan di `ChannelListModal.css` (selector `.channel-modal-content .overflow-y-auto`)
+- **UserListModal**: Didefinisikan via inline `<style>` di `UserListModal.tsx` (class `.custom-scrollbar`)
+
+### F. Area List Saluran (Scrollable Channel List)
+
+- **Container**: `flex-1 overflow-y-auto bg-white text-left divide-y divide-gray-200` — **tanpa bottom padding** agar tidak menyisakan area putih kosong di bagian bawah modal.
+- **Tombol "Selanjutnya.."**: Pagination lazy-load (`visibleCount + 15`) dengan badge abu-abu kosong di sisi kiri dan teks `"Selanjutnya.."` di sisi kanan.
+
+### G. Sub-Modal Overlay (Seragam 340px)
+
+Semua sub-modal overlay di dalam ChannelListModal menggunakan lebar yang **seragam** dengan modal induknya:
+
+| Sub-Modal | Lebar | Overlay Padding | Rounded | Z-Index |
+|---|---|---|---|---|
+| **Action Menu** (Menuju/Info Channel) | `w-full max-w-[340px]` | `p-0` | `rounded-lg` | `z-55` |
+| **Restricted Channel** (Terbatas) | `w-full max-w-[340px]` | `p-0` | `rounded-2xl` | `z-60` |
+| **Info Channel** (Detail) | `w-full max-w-[340px]` | `p-0` | `rounded-2xl` | `z-60` |
+
+- **Backdrop**: `bg-black/60`, `absolute inset-0`, `flex items-center justify-center`.
+- **Animasi**: `animate-in fade-in zoom-in-95 duration-100`.
+
+### H. Info Channel Modal — Layout Kompak (Ruang untuk Logo Channel)
+
+Area konten Info Channel dipadatkan secara vertikal agar menyisakan ruang yang cukup lebar di bagian atas untuk keperluan upload/tampilan logo channel di kemudian hari:
+
+- **Area Logo/Ikon** (atas): `py-4`, SVG sinyal tinggi `75px` — area ini akan digantikan oleh gambar logo channel.
+- **Baris Nama**: `py-1` (4px), border-top `border-gray-100`, font `14px` bold, label `"Nama"` abu-abu `w-14`.
+- **Baris Info**: `py-1` (4px), border-top & border-bottom `border-gray-100`, font `14px` semibold.
+- **Tombol Tutup**: Margin atas `mt-1.5` (6px), padding vertikal `py-0.5` (2px), font `15px` bold, warna biru `#0c62a8`.
+- **Container Padding**: `p-5` (20px) pada modal box.
+

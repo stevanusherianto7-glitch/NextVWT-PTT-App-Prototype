@@ -26,6 +26,11 @@ vi.mock('../utils/supabase', () => {
         signInWithOAuth: vi.fn(() => Promise.resolve({ error: null })),
         signOut: vi.fn(() => Promise.resolve({ error: null })),
       },
+      from: vi.fn(() => ({
+        select: vi.fn(() => ({
+          order: vi.fn(() => Promise.resolve({ data: [], error: null })),
+        })),
+      })),
     },
   };
 });
