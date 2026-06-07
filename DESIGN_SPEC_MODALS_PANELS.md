@@ -88,9 +88,9 @@ User List Modal menampilkan daftar staf atau anggota tim aktif yang berada di ch
 - **Keseragaman Dimensi (Acuan Utama Modal)**: 
   Dimensi fisik `UserListModal` dijadikan sebagai acuan baku ukuran bagi seluruh modal utama di aplikasi:
   - **Lebar**: `w-full max-w-[340px]`
-  - **Tinggi**: `350px` pada layar biasa, responsif memanjang hingga `485px` pada layar tinggi ($\ge 700px$).
+  - **Tinggi**: `400px` pada layar biasa, responsif memanjang hingga `535px` pada layar tinggi ($\ge 700px$).
   - **Penyelarasan Global**: Seluruh modal lain (ChannelListModal, Phrase Modal, User Guide Modal, Province Selector Modal, City Selector Modal, Theme Selector Modal) menggunakan class global `.app-uniform-modal` di `theme.css` yang mewarisi ukuran ini secara identik.
-
+  
 ### B. Desain Baris Detail Pengguna (User Row)
 
 - **Wadah Baris**: Flexbox horizontal (`flex items-center gap-3`), padding horizontal `16px`, padding vertikal `10px`. Latar default abu-abu sangat muda `#fafbfc` (hover: `#ffffff`, active: `#f3f4f6`). Border bawah tipis `#d1d5db/70`.
@@ -119,7 +119,7 @@ Channel List Modal adalah overlay dialog penuh untuk menyeleksi saluran walkie-t
 
 ### B. Kontainer Dialog (Modal Box)
 
-- **Dimensi**: Mewarisi kelas `.app-uniform-modal` dengan lebar maksimal `340px` (`w-full max-w-[340px]`) dan tinggi responsif `350px` / `485px` agar seragam dengan modal lainnya, `overflow-hidden`.
+- **Dimensi**: Mewarisi kelas `.app-uniform-modal` dengan lebar maksimal `340px` (`w-full max-w-[340px]`) dan tinggi responsif `400px` / `535px` agar seragam dengan modal lainnya, `overflow-hidden`.
 - **Tepi & Bayangan**: Border `1px solid #d1d5db`, rounded `8px` (`rounded-lg`), drop shadow pekat `shadow-2xl`.
 - **Animasi Transisi Masuk**: Efek membesar memudar halus `animate-in fade-in zoom-in-95 duration-100`.
 

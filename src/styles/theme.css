@@ -888,10 +888,10 @@
 .app-uniform-modal {
   width: 100% !important;
   max-width: 340px !important;
-  height: 350px !important;
+  height: 400px !important;
 }
 @media (min-height: 700px) {
   .app-uniform-modal {
-    height: 485px !important;
+    height: 535px !important;
   }
 }
