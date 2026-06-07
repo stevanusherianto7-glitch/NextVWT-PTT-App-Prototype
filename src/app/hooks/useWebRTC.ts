@@ -1,22 +1,33 @@
 import { useRef, useCallback } from 'react';
 import { usePTTStore, type WebRTCSignalingPayload } from '../store/usePTTStore';
 
-const RTC_CONFIG: RTCConfiguration = {
-  iceServers: [
+const turnUsername = import.meta.env.VITE_TURN_USERNAME || '';
+const turnCredential = import.meta.env.VITE_TURN_CREDENTIAL || '';
+
+const getIceServers = (): RTCIceServer[] => {
+  const servers: RTCIceServer[] = [
     { urls: 'stun:stun.l.google.com:19302' },
     { urls: 'stun:stun1.l.google.com:19302' },
-    // TURN server config from environment variables
-    {
-      urls: 'turn:a.relay.metered.ca:80',
-      username: import.meta.env.VITE_TURN_USERNAME || '',
-      credential: import.meta.env.VITE_TURN_CREDENTIAL || '',
-    },
-    {
-      urls: 'turn:a.relay.metered.ca:443',
-      username: import.meta.env.VITE_TURN_USERNAME || '',
-      credential: import.meta.env.VITE_TURN_CREDENTIAL || '',
-    },
-  ],
+  ];
+  if (turnUsername && turnCredential) {
+    servers.push(
+      {
+        urls: 'turn:a.relay.metered.ca:80',
+        username: turnUsername,
+        credential: turnCredential,
+      },
+      {
+        urls: 'turn:a.relay.metered.ca:443',
+        username: turnUsername,
+        credential: turnCredential,
+      }
+    );
+  }
+  return servers;
+};
+
+const RTC_CONFIG: RTCConfiguration = {
+  iceServers: getIceServers(),
   iceTransportPolicy: 'all',
 };
 
