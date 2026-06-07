@@ -221,7 +221,7 @@ export function ControlButtons({
             letterSpacing: '0.5px',
           }}
         >
-          Set
+          SET
         </span>
       </button>
     </div>
