@@ -752,20 +752,19 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
 
         <button
           onClick={onClose}
-          className="flex items-center font-medium pr-3 py-1 cursor-pointer focus:outline-none relative z-25"
+          className="mr-2.5 w-9 h-9 flex items-center justify-center rounded-full border border-slate-300 bg-gradient-to-b from-white via-[#f1f5f9] to-[#cbd5e1] shadow-[0_2px_0_#94a3b8,inset_0_1px_0_rgba(255,255,255,0.8)] active:translate-y-[1.5px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer focus:outline-none relative z-25 flex-shrink-0"
           style={{ color: 'var(--header-text-color)' }}
         >
           {/* Back arrow chevron */}
           <svg
-            width="24"
-            height="24"
+            width="20"
+            height="20"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
             strokeWidth="3"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="mr-1"
           >
             <polyline points="15 18 9 12 15 6" />
           </svg>
@@ -775,7 +774,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
         {/* Brand SVG logo */}
         <svg
           viewBox="0 0 100 100"
-          className="h-[55px] w-auto mr-3 relative z-25"
+          className="h-[55px] w-auto mr-1.5 relative z-25"
           style={{
             transform: 'translateZ(1px)',
             filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.25))',
@@ -882,7 +881,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
         </svg>
 
         <span
-          className="text-[16px] font-bold tracking-wide relative z-25"
+          className="text-[16px] font-bold tracking-wide relative z-25 ml-0.5"
           style={{
             fontFamily: "'Outfit', 'Orbitron', system-ui, -apple-system, sans-serif",
             color: 'var(--header-text-color)',
@@ -1544,20 +1543,19 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
             <div className="flex items-center px-4 py-3 bg-white shrink-0 border-b border-gray-200">
               <button
                 onClick={() => setIsUserGuideOpen(false)}
-                className="mr-2 text-gray-500 hover:text-gray-700 cursor-pointer focus:outline-none"
+                className="mr-2.5 w-9 h-9 flex items-center justify-center rounded-full border border-slate-300 bg-gradient-to-b from-white via-[#f1f5f9] to-[#cbd5e1] shadow-[0_2px_0_#94a3b8,inset_0_1px_0_rgba(255,255,255,0.8)] active:translate-y-[1.5px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer focus:outline-none text-black flex-shrink-0"
               >
                 <svg
-                  width="20"
-                  height="20"
+                  width="18"
+                  height="18"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2.5"
+                  strokeWidth="3"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <line x1="19" y1="12" x2="5" y2="12" />
-                  <polyline points="12 19 5 12 12 5" />
+                  <polyline points="15 18 9 12 15 6" />
                 </svg>
               </button>
               <span className="text-[16px] font-bold text-[#48a4df]">Panduan Pengguna</span>
@@ -1771,20 +1769,19 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
             <div className="flex items-center px-4 py-3 bg-white shrink-0 border-b border-gray-200">
               <button
                 onClick={() => setIsProvinceModalOpen(false)}
-                className="mr-2.5 text-gray-500 hover:text-gray-700 cursor-pointer focus:outline-none"
+                className="mr-2.5 w-9 h-9 flex items-center justify-center rounded-full border border-slate-300 bg-gradient-to-b from-white via-[#f1f5f9] to-[#cbd5e1] shadow-[0_2px_0_#94a3b8,inset_0_1px_0_rgba(255,255,255,0.8)] active:translate-y-[1.5px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer focus:outline-none text-black flex-shrink-0"
               >
                 <svg
-                  width="20"
-                  height="20"
+                  width="18"
+                  height="18"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2.5"
+                  strokeWidth="3"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <line x1="19" y1="12" x2="5" y2="12" />
-                  <polyline points="12 19 5 12 12 5" />
+                  <polyline points="15 18 9 12 15 6" />
                 </svg>
               </button>
               <span className="text-[16px] font-bold text-gray-800">Pilih provinsi</span>
@@ -1820,20 +1817,19 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
                   setIsCityModalOpen(false);
                   setIsProvinceModalOpen(true);
                 }}
-                className="mr-2.5 text-gray-500 hover:text-gray-700 cursor-pointer focus:outline-none"
+                className="mr-2.5 w-9 h-9 flex items-center justify-center rounded-full border border-slate-300 bg-gradient-to-b from-white via-[#f1f5f9] to-[#cbd5e1] shadow-[0_2px_0_#94a3b8,inset_0_1px_0_rgba(255,255,255,0.8)] active:translate-y-[1.5px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer focus:outline-none text-black flex-shrink-0"
               >
                 <svg
-                  width="20"
-                  height="20"
+                  width="18"
+                  height="18"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2.5"
+                  strokeWidth="3"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <line x1="19" y1="12" x2="5" y2="12" />
-                  <polyline points="12 19 5 12 12 5" />
+                  <polyline points="15 18 9 12 15 6" />
                 </svg>
               </button>
               <span className="text-[16px] font-bold text-gray-800">Pilih kota/kabupaten</span>
@@ -1865,20 +1861,19 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
             <div className="flex items-center px-4 py-3 bg-white shrink-0 border-b border-gray-200">
               <button
                 onClick={() => setIsThemeModalOpen(false)}
-                className="mr-2.5 text-gray-500 hover:text-gray-700 cursor-pointer focus:outline-none"
+                className="mr-2.5 w-9 h-9 flex items-center justify-center rounded-full border border-slate-300 bg-gradient-to-b from-white via-[#f1f5f9] to-[#cbd5e1] shadow-[0_2px_0_#94a3b8,inset_0_1px_0_rgba(255,255,255,0.8)] active:translate-y-[1.5px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer focus:outline-none text-black flex-shrink-0"
               >
                 <svg
-                  width="20"
-                  height="20"
+                  width="18"
+                  height="18"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2.5"
+                  strokeWidth="3"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
+                  <polyline points="15 18 9 12 15 6" />
                 </svg>
               </button>
               <span className="text-[16px] font-bold text-gray-800">Pilih Tema</span>
