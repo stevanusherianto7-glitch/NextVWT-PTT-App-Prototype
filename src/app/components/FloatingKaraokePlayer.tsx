@@ -177,7 +177,7 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
               className="text-xs font-bold tracking-wider"
               style={{ color: 'var(--header-text-color)', fontFamily: "'Outfit', sans-serif" }}
             >
-              KARAOKE PLAYER
+              NextVWT Karaoke Player
             </span>
           </div>
           <div className="flex items-center gap-1">
