@@ -25,7 +25,8 @@ export class RateLimiter {
    */
   canProceed(): boolean {
     const isTest =
-      (typeof process !== 'undefined' && (process.env.NODE_ENV === 'test' || process.env.VITEST === 'true')) ||
+      (typeof process !== 'undefined' &&
+        (process.env.NODE_ENV === 'test' || process.env.VITEST === 'true')) ||
       (typeof import.meta !== 'undefined' && import.meta.env?.MODE === 'test');
 
     if (isTest) {
