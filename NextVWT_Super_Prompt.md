@@ -242,6 +242,10 @@ const PERSISTED_KEYS = [
 
 **Network Security:** Jangan izinkan HTTP cleartext — gunakan `network_security_config.xml` dengan domain-config yang strict.
 
+### 9. Dokumentasi Sistem Kerja Fitur
+
+Setiap kali ada penambahan, modifikasi, atau perubahan fitur, pengembang/AI wajib menjelaskan secara detail serta mendokumentasikan sistem kerja dan alur logika fitur tersebut ke dalam file `CARA_KERJA_LOGIKA_FITUR.md` untuk menjaga keselarasan konteks dan pemahaman bersama.
+
 ---
 
 ## KONVENSI DESAIN UI
