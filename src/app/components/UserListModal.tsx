@@ -389,11 +389,11 @@ export function UserListModal({
     >
       <style>{`
         .user-list-modal {
-          height: 350px;
+          height: 400px;
         }
         @media (min-height: 700px) {
           .user-list-modal {
-            height: 485px;
+            height: 535px;
           }
         }
         .custom-scrollbar::-webkit-scrollbar {
