@@ -14,7 +14,6 @@ import { BRAND } from '../utils/config';
 import { SettingsPanelSkeleton, KaraokePlayerSkeleton } from './SkeletonLoaders';
 import { OnboardingTour } from './OnboardingTour';
 import { FeedbackModal } from './FeedbackModal';
-import { useRef } from 'react';
 
 // [P2-2] Lazy-load komponen besar — hanya diunduh saat pertama kali dibuka
 // SettingsPanel: ~76KB → split ke chunk terpisah, tidak menambah initial bundle

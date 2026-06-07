@@ -6,6 +6,12 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Settings Panel Flow', () => {
   test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem('nextvwt_settings', JSON.stringify({
+        hasCompletedOnboarding: true,
+        lastFeedbackTime: Date.now(),
+      }));
+    });
     await page.goto('/');
     // Automatically bypass LoginGate if visible
     const guestBtn = page.locator('button:has-text("Masuk sebagai Tamu")');
