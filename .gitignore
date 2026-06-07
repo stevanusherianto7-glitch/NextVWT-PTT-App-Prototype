@@ -34,3 +34,9 @@ Thumbs.db
 *.log
 npm-debug.log*
 pnpm-debug.log*
+
+# Android builds and APKs
+*.apk
+android/app/build/
+android/.gradle/
+
