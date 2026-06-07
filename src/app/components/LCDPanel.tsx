@@ -177,7 +177,7 @@ export function LCDPanel({
               <img
                 src={usernameIcon}
                 alt="Username Icon"
-                className="h-[52px] w-[50px] object-contain -mt-2.5 -ml-1.5"
+                className="h-[52px] w-[50px] object-contain -mt-[18px] -ml-1.5"
                 style={{ filter: 'drop-shadow(1px 1px 0px rgba(0,0,0,0.2))' }}
               />
               <span
@@ -260,7 +260,7 @@ export function LCDPanel({
               )}
 
               {/* Signal Bars SVG approach */}
-              <div className="flex items-end gap-[0.5px] h-full pb-[2px] relative">
+              <div className="flex items-end gap-0 h-full pb-[2px] relative">
                 {[1, 2, 3, 4].map((bar) => {
                   const isActive = bar <= signalBars;
                   let barBackground =
@@ -284,13 +284,14 @@ export function LCDPanel({
                       key={bar}
                       className="flex-shrink-0"
                       style={{
-                        width: '10.5px',
+                        width: '11px',
                         height: `${bar * 6 + 3}px`,
                         background: barBackground,
-                        border: '1.5px solid #000000',
-                        borderRadius: '1.5px',
+                        border: '1px solid #000000',
+                        borderRadius: '1px',
+                        marginRight: bar < 4 ? '-1px' : '0px',
                         boxShadow:
-                          'inset 1.5px 2px 1px rgba(255,255,255,0.7), inset -1.5px -1.5px 1px rgba(0,0,0,0.5)',
+                          'inset 1px 1.5px 1px rgba(255,255,255,0.7), inset -1px -1px 1px rgba(0,0,0,0.5)',
                         opacity: 1,
                         transition: 'background 0.2s ease-in-out',
                       }}
