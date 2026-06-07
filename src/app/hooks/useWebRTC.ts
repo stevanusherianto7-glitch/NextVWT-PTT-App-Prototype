@@ -74,8 +74,9 @@ export function useWebRTC(
   // Create Peer Connection and handle events
   const createPeerConnection = useCallback(
     (peerUserId: string) => {
-      if (peerConnectionsRef.current.has(peerUserId)) {
-        return peerConnectionsRef.current.get(peerUserId)!;
+      const existingPc = peerConnectionsRef.current.get(peerUserId);
+      if (existingPc) {
+        return existingPc;
       }
 
       const pc = new RTCPeerConnection(RTC_CONFIG);
@@ -136,7 +137,9 @@ export function useWebRTC(
       try {
         if (type === 'offer') {
           const pc = createPeerConnection(senderUserId);
-          await pc.setRemoteDescription(new RTCSessionDescription(data as RTCSessionDescriptionInit));
+          await pc.setRemoteDescription(
+            new RTCSessionDescription(data as RTCSessionDescriptionInit)
+          );
 
           const queue = candidatesQueueRef.current.get(senderUserId) || [];
           for (const candidate of queue) {
@@ -161,7 +164,9 @@ export function useWebRTC(
         } else if (type === 'answer') {
           const pc = peerConnectionsRef.current.get(senderUserId);
           if (pc) {
-            await pc.setRemoteDescription(new RTCSessionDescription(data as RTCSessionDescriptionInit));
+            await pc.setRemoteDescription(
+              new RTCSessionDescription(data as RTCSessionDescriptionInit)
+            );
 
             const queue = candidatesQueueRef.current.get(senderUserId) || [];
             for (const candidate of queue) {
@@ -174,10 +179,12 @@ export function useWebRTC(
           if (pc && pc.remoteDescription) {
             await pc.addIceCandidate(new RTCIceCandidate(data as RTCIceCandidateInit));
           } else {
-            if (!candidatesQueueRef.current.has(senderUserId)) {
-              candidatesQueueRef.current.set(senderUserId, []);
+            let queue = candidatesQueueRef.current.get(senderUserId);
+            if (!queue) {
+              queue = [];
+              candidatesQueueRef.current.set(senderUserId, queue);
             }
-            candidatesQueueRef.current.get(senderUserId)!.push(data as RTCIceCandidateInit);
+            queue.push(data as RTCIceCandidateInit);
           }
         }
       } catch (err) {
