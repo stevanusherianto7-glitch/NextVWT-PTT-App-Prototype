@@ -13,7 +13,7 @@ const APP_VERSION = '1.0.0';
 /**
  * Device fingerprint untuk tracking dan abuse prevention
  */
-function getDeviceFingerprint(): string {
+async function getDeviceFingerprint(): Promise<string> {
   const components = [
     navigator.userAgent,
     screen.width + 'x' + screen.height,
@@ -22,7 +22,14 @@ function getDeviceFingerprint(): string {
     navigator.hardwareConcurrency?.toString() || '0',
     (navigator as Navigator & { deviceMemory?: number }).deviceMemory?.toString() || '0',
   ];
-  return btoa(components.join('|')).slice(0, 32);
+  
+  const encoder = new TextEncoder();
+  const data = encoder.encode(components.join('|'));
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+  
+  return hashHex.slice(0, 32);
 }
 
 /**
@@ -44,10 +51,11 @@ export async function getSecureConfig(): Promise<SecureConfig> {
   // Di production, fetch dari secure endpoint
   if (import.meta.env.PROD) {
     try {
-      const response = await fetch('/api/config', {
+      const deviceId = await getDeviceFingerprint();
+      const response = await fetch('/api/turn-credentials', {
         headers: {
           'X-App-Version': APP_VERSION,
-          'X-Device-Id': getDeviceFingerprint(),
+          'X-Device-Id': deviceId,
         },
       });
 

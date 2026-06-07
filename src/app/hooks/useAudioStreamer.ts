@@ -3,6 +3,7 @@ import { usePTTStore, type WebRTCSignalingPayload } from '../store/usePTTStore';
 import { useWebRTC } from './useWebRTC';
 import { useVAD } from './useVAD';
 import { useAudioPlayback, arrayBufferToBase64 } from './useAudioPlayback';
+import { BRAND } from '../utils/config';
 
 export function useAudioStreamer() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -12,15 +13,20 @@ export function useAudioStreamer() {
   const isRecordingRef = useRef<boolean>(false);
   const currentCleanupRef = useRef<(() => void) | null>(null);
 
-  // Lazy init silent track
+  const { startVAD, stopVAD } = useVAD();
+
+  const {
+    getAudioContext,
+    playAudioChunk: playAudioChunkBase64,
+    flushAudioQueue,
+  } = useAudioPlayback();
+
+  // Lazy init silent track, reuse singleton AudioContext to prevent memory leaks
   const getSilentTrack = useCallback(() => {
     if (!silentTrackRef.current) {
       try {
-        const AudioContextClass =
-          window.AudioContext ||
-          (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-        if (AudioContextClass) {
-          const ctx = new AudioContextClass();
+        const ctx = getAudioContext();
+        if (ctx) {
           const dest = ctx.createMediaStreamDestination();
           silentTrackRef.current = dest.stream.getAudioTracks()[0];
           silentStreamRef.current = dest.stream;
@@ -30,7 +36,7 @@ export function useAudioStreamer() {
       }
     }
     return { track: silentTrackRef.current, stream: silentStreamRef.current };
-  }, []);
+  }, [getAudioContext]);
 
   // Use sub-hooks
   const {
@@ -41,14 +47,6 @@ export function useAudioStreamer() {
     cleanupAllPeers,
     handleSignaling,
   } = useWebRTC(getSilentTrack, streamRef);
-
-  const { startVAD, stopVAD } = useVAD();
-
-  const {
-    getAudioContext,
-    playAudioChunk: playAudioChunkBase64,
-    flushAudioQueue,
-  } = useAudioPlayback();
 
   // Helper check if a peer ID is actively connected in WebRTC map
   const hasActivePeer = useCallback(
@@ -66,7 +64,7 @@ export function useAudioStreamer() {
   const channelNumber = usePTTStore((state) => state.channelNumber);
 
   useEffect(() => {
-    if (!isPowerOn || !isConnected || channelNumber === 100) {
+    if (!isPowerOn || !isConnected || BRAND.isolatedChannels.includes(channelNumber)) {
       cleanupAllPeers();
       return;
     }

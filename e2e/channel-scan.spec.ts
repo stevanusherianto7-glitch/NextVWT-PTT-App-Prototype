@@ -35,16 +35,16 @@ test.describe('Channel Scan Flow', () => {
 
   test('modal lists channel entries with number badges', async ({ page }) => {
     await page.click('button:has-text("SCAN")');
-    await expect(page.locator('text=DUKUNGAN & BANTUAN')).toBeVisible({ timeout: 5_000 });
-    await expect(page.locator('text=KOPDAR NASIONAL UTAMA')).toBeVisible();
+    await expect(page.getByText('DUKUNGAN & BANTUAN', { exact: false }).first()).toBeVisible({ timeout: 5_000 });
+    await expect(page.getByText('KOPDAR NASIONAL UTAMA', { exact: false }).first()).toBeVisible();
   });
 
   test('search input filters channels dynamically', async ({ page }) => {
     await page.click('button:has-text("SCAN")');
     const searchInput = page.locator('input[placeholder="Cari channel..."]');
     await searchInput.fill('KOPDAR');
-    await expect(page.locator('text=KOPDAR NASIONAL UTAMA')).toBeVisible();
-    await expect(page.locator('text=DUKUNGAN & BANTUAN')).not.toBeVisible();
+    await expect(page.getByText('KOPDAR NASIONAL UTAMA', { exact: false }).first()).toBeVisible();
+    await expect(page.getByText('DUKUNGAN & BANTUAN', { exact: false }).first()).not.toBeVisible();
   });
 
   test('searching for non-existent channel shows "Tidak ada channel ditemukan"', async ({

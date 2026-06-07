@@ -1,40 +1,43 @@
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useEffect } from 'react';
 import { usePTTStore, type WebRTCSignalingPayload } from '../store/usePTTStore';
-import { getCachedConfig } from '../utils/secureConfig';
+import { getSecureConfig } from '../utils/secureConfig';
+import { BRAND } from '../utils/config';
+
+let ephemeralTurnCreds: { username: string; credential: string; expiresAt: number } | null = null;
+
+// P3-5: Fetch ephemeral TURN credentials dari backend (via secureConfig)
+export const fetchTurnCredentials = async () => {
+  if (ephemeralTurnCreds && Date.now() < ephemeralTurnCreds.expiresAt) {
+    return ephemeralTurnCreds;
+  }
+  try {
+    const config = await getSecureConfig();
+    ephemeralTurnCreds = {
+      username: config.turnUsername,
+      credential: config.turnCredential,
+      expiresAt: Date.now() + 5 * 60 * 1000, // Valid 5 menit
+    };
+    return ephemeralTurnCreds;
+  } catch (err) {
+    console.warn('[WebRTC] Failed to fetch TURN credentials', err);
+    return null;
+  }
+};
 
 const getIceServers = (): RTCIceServer[] => {
-  const config = getCachedConfig();
-  const username = config?.turnUsername || import.meta.env.VITE_TURN_USERNAME || '';
-  const credential = config?.turnCredential || import.meta.env.VITE_TURN_CREDENTIAL || '';
-  const turnUrls = config?.turnUrls || [];
-
   const servers: RTCIceServer[] = [
     { urls: 'stun:stun.l.google.com:19302' },
     { urls: 'stun:stun1.l.google.com:19302' },
   ];
 
-  if (username && credential && turnUrls.length > 0) {
-    turnUrls.forEach((url) => {
-      servers.push({
-        urls: url,
-        username,
-        credential,
-      });
+  if (ephemeralTurnCreds) {
+    servers.push({
+      urls: 'turn:turn.nextvwt.com:3478',
+      username: ephemeralTurnCreds.username,
+      credential: ephemeralTurnCreds.credential,
     });
-  } else if (username && credential) {
-    servers.push(
-      {
-        urls: 'turn:a.relay.metered.ca:80',
-        username,
-        credential,
-      },
-      {
-        urls: 'turn:a.relay.metered.ca:443',
-        username,
-        credential,
-      }
-    );
   }
+
   return servers;
 };
 
@@ -90,6 +93,11 @@ export function useWebRTC(
   }, []);
 
   // Create Peer Connection and handle events
+  // Ambil ephemeral TURN credentials secara asinkron saat hook di-mount
+  useEffect(() => {
+    fetchTurnCredentials().catch(console.error);
+  }, []);
+
   const createPeerConnection = useCallback(
     (peerUserId: string) => {
       const existingPc = peerConnectionsRef.current.get(peerUserId);
@@ -154,7 +162,7 @@ export function useWebRTC(
       const { senderUserId, targetUserId, type, data } = payload;
       const store = usePTTStore.getState();
 
-      if (targetUserId !== store.userId || store.channelNumber === 100) return;
+      if (targetUserId !== store.userId || BRAND.isolatedChannels.includes(store.channelNumber)) return;
 
       try {
         if (type === 'offer') {

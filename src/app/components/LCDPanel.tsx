@@ -300,6 +300,7 @@ export function LCDPanel({
                 CH
               </div>
               <div
+                data-testid="lcd-channel-number"
                 className="relative"
                 style={{
                   fontFamily: "'DSEG7', monospace",

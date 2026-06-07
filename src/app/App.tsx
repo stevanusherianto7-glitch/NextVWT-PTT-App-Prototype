@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
 import { usePTTStore, generateUUID } from './store/usePTTStore';
 import { Toaster } from './components/ui/sonner';
-import { supabase } from './utils/supabase';
+import { getSupabase } from './utils/supabase';
+import type { Subscription } from '@supabase/supabase-js';
+
 import { LoginGate } from './components/LoginGate';
 import { RadioLayout } from './components/RadioLayout';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import type { User } from '@supabase/supabase-js';
 
 export default function App() {
   const { initializeSession, user, setUser, infoText, updateSettings, signInWithGoogle } =
@@ -15,30 +16,44 @@ export default function App() {
     initializeSession();
   }, [initializeSession]);
 
-  // Handle Supabase auth changes
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      const u = session?.user || null;
-      setUser(u);
-      if (u) {
-        const name = u.user_metadata?.full_name || u.email?.split('@')[0] || 'User';
-        updateSettings({ infoText: name });
-      }
-    });
+    let authSubscription: Subscription | null = null;
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      const u = session?.user || null;
-      setUser(u);
-      if (u) {
-        const name = u.user_metadata?.full_name || u.email?.split('@')[0] || 'User';
-        updateSettings({ infoText: name });
-      }
+    getSupabase().then((supabase) => {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        const currentStore = usePTTStore.getState();
+        if (currentStore.user?.isGuest && !session?.user) {
+          return; // Prevent overwriting guest session with null from delayed getSession
+        }
+        const u = session?.user || null;
+        setUser(u);
+        if (u) {
+          const name = u.user_metadata?.full_name || u.email?.split('@')[0] || 'User';
+          updateSettings({ infoText: name });
+        }
+      });
+
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange((_event, session) => {
+        const currentStore = usePTTStore.getState();
+        if (currentStore.user?.isGuest && !session?.user) {
+          return;
+        }
+        const u = session?.user || null;
+        setUser(u);
+        if (u) {
+          const name = u.user_metadata?.full_name || u.email?.split('@')[0] || 'User';
+          updateSettings({ infoText: name });
+        }
+      });
+      authSubscription = subscription;
     });
 
     return () => {
-      subscription.unsubscribe();
+      if (authSubscription) {
+        authSubscription.unsubscribe();
+      }
     };
   }, [setUser, updateSettings]);
 
@@ -59,6 +74,7 @@ export default function App() {
                 const shortId = guestId.slice(-4).toUpperCase();
                 setUser({
                   id: guestId,
+                  isGuest: true,
                   email: `${guestId}@guest.nextvwt.local`,
                   user_metadata: {
                     full_name: infoText || `Tamu ${shortId}`,
@@ -68,7 +84,7 @@ export default function App() {
                   },
                   aud: 'authenticated',
                   created_at: new Date().toISOString(),
-                } as User);
+                });
               }}
             />
           </div>

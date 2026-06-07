@@ -1,6 +1,18 @@
 import { create } from 'zustand';
-import { supabase } from '../utils/supabase';
+import { getSupabase } from '../utils/supabase';
 import type { User, RealtimeChannel } from '@supabase/supabase-js';
+
+export interface GuestUser {
+  id: string;
+  isGuest: true;
+  email?: string;
+  user_metadata: { full_name: string; avatar_url?: string };
+  app_metadata: { provider: string };
+  aud: string;
+  created_at: string;
+}
+
+export type AppUser = User | GuestUser;
 import { BRAND, CHANNELS, fetchChannels as fetchChannelsFromConfig } from '../utils/config';
 import {
   pttRateLimiter,
@@ -98,7 +110,7 @@ export interface PTTState {
   error: string | null;
 
   // Auth State
-  user: User | null;
+  user: AppUser | null;
   activeTransmitter: { userId: string; displayName: string; callSign: string } | null;
   activeUsers: Array<{
     userId: string;
@@ -144,7 +156,7 @@ export interface PTTState {
   setError: (err: string | null) => void;
   initializeSession: () => void;
   updateSettings: (settings: Partial<PTTState>) => void;
-  setUser: (user: User | null) => void;
+  setUser: (user: AppUser | null) => void;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   setKaraokePlayerOpen: (open: boolean) => void;
@@ -260,23 +272,25 @@ interface PttStatePayload {
 // Keep subscription reference in closure to avoid React rendering cycles
 let activeChannelSubscription: RealtimeChannel | null = null;
 
-function subscribeToChannel(channelNum: number) {
-  try {
-    if (activeChannelSubscription) {
-      activeChannelSubscription.unsubscribe();
-      activeChannelSubscription = null;
-    }
+function subscribeToChannel(channelNum: number, retryCount = 0) {
+  (async () => {
+    try {
+      if (activeChannelSubscription) {
+        activeChannelSubscription.unsubscribe();
+        activeChannelSubscription = null;
+      }
 
-    // Clear active users list immediately on channel change to prevent showing stale users
-    usePTTStore.setState({ activeUsers: [] });
+      // Clear active users list immediately on channel change to prevent showing stale users
+      usePTTStore.setState({ activeUsers: [] });
 
-    // Instantly set isConnected to true for prototype evaluation on dummy keys
-    if (isDummyKey) {
-      usePTTStore.setState({ isConnected: true });
-    }
+      // Instantly set isConnected to true for prototype evaluation on dummy keys
+      if (isDummyKey) {
+        usePTTStore.setState({ isConnected: true });
+      }
 
-    const store = usePTTStore.getState();
-    const channelInstance = supabase.channel(`${BRAND.supabaseRoomPrefix}${channelNum}`, {
+      const store = usePTTStore.getState();
+      const supabase = await getSupabase();
+      const channelInstance = supabase.channel(`${BRAND.supabaseRoomPrefix}${channelNum}`, {
       config: {
         presence: {
           key: store.userId || 'anonymous',
@@ -345,6 +359,13 @@ function subscribeToChannel(channelNum: number) {
       const isSubscribed = isDummyKey ? true : status === 'SUBSCRIBED';
       usePTTStore.setState({ isConnected: isSubscribed });
 
+      if (status === 'CHANNEL_ERROR' && retryCount < 3) {
+        const timeout = Math.pow(2, retryCount) * 1000;
+        console.warn(`[Supabase] Channel error. Retrying in ${timeout}ms (attempt ${retryCount + 1})...`);
+        setTimeout(() => subscribeToChannel(channelNum, retryCount + 1), timeout);
+        return;
+      }
+
       if (isSubscribed) {
         const currentStore = usePTTStore.getState();
         const userMeta = currentStore.user;
@@ -368,14 +389,15 @@ function subscribeToChannel(channelNum: number) {
         }
       }
     });
-  } catch (err) {
-    console.error('Supabase room connection error:', err);
-    // Graceful Degradation: mark offline but don't crash
-    usePTTStore.setState({
-      isConnected: false,
-      error: 'Connection failed – operating in offline mode',
-    });
-  }
+    } catch (err) {
+      console.error('Supabase room connection error:', err);
+      // Graceful Degradation: mark offline but don't crash
+      usePTTStore.setState({
+        isConnected: false,
+        error: 'Connection failed – operating in offline mode',
+      });
+    }
+  })();
 }
 
 // ─── Store ────────────────────────────────────────────────────────────────────
@@ -605,6 +627,7 @@ export const usePTTStore = create<PTTState>((set) => ({
 
   signInWithGoogle: async () => {
     try {
+      const supabase = await getSupabase();
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -620,6 +643,7 @@ export const usePTTStore = create<PTTState>((set) => ({
 
   signOut: async () => {
     try {
+      const supabase = await getSupabase();
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       set({ user: null, activeTransmitter: null });
