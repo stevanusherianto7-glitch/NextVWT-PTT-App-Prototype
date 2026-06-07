@@ -48,7 +48,7 @@ export const createUISlice: StateCreator<
     }
     // Re-establish subscription on power on
     setTimeout(() => get().subscribeToChannel(state.channelNumber), 0);
-    set({ isPowerOn: true });
+    set({ isPowerOn: true, isConnected: true });
   },
 
   setConnected: (connected) => set({ isConnected: connected }),

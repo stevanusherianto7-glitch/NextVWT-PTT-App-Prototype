@@ -137,10 +137,8 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
       // Clear active users list immediately on channel change to prevent showing stale users
       usePTTStore.setState({ activeUsers: [] });
 
-      // Instantly set isConnected to true for prototype evaluation on dummy keys
-      if (isDummyKey) {
-        usePTTStore.setState({ isConnected: true });
-      }
+      // Optimistic connection state for smooth fallback and instant UX
+      usePTTStore.setState({ isConnected: true });
 
       const store = usePTTStore.getState();
       const supabase = await getSupabase();
@@ -211,7 +209,9 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
       channelInstance.subscribe((status: string) => {
         if (activeChannelSubscription !== channelInstance) return;
         const isSubscribed = isDummyKey ? true : status === 'SUBSCRIBED';
-        usePTTStore.setState({ isConnected: isSubscribed });
+        if (isSubscribed) {
+          usePTTStore.setState({ isConnected: true });
+        }
 
         if (status === 'CHANNEL_ERROR' && retryCount < 3) {
           const timeout = Math.pow(2, retryCount) * 1000;
