@@ -1522,7 +1522,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
                 <line x1="16" y1="17" x2="8" y2="17" />
                 <polyline points="10 9 9 9 8 9" />
               </svg>
-              <span className="text-[16px] font-bold text-[#48a4df]">Daftar kata/kalimat</span>
+              <span className="text-[16px] font-bold text-[#059669]">Daftar kata/kalimat</span>
             </div>
 
             {/* Phrase List */}
@@ -1796,7 +1796,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
                   <polyline points="15 18 9 12 15 6" />
                 </svg>
               </button>
-              <span className="text-[16px] font-bold text-gray-800">Pilih provinsi</span>
+              <span className="text-[16px] font-bold text-[#059669]">Pilih provinsi</span>
             </div>
 
             <div className="flex-1 overflow-y-auto bg-white text-left divide-y divide-gray-100">
