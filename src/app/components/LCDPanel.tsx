@@ -177,7 +177,7 @@ export function LCDPanel({
               <img
                 src={usernameIcon}
                 alt="Username Icon"
-                className="h-[48px] w-[46px] object-contain -mt-2 -ml-1"
+                className="h-[52px] w-[50px] object-contain -mt-2.5 -ml-1.5"
                 style={{ filter: 'drop-shadow(1px 1px 0px rgba(0,0,0,0.2))' }}
               />
               <span
@@ -307,7 +307,7 @@ export function LCDPanel({
               <div
                 className="relative"
                 style={{
-                  fontSize: '20px',
+                  fontSize: '18px',
                   fontWeight: 'bold',
                   paddingBottom: '5px',
                   color: 'var(--lcd-label-color)',
@@ -320,7 +320,7 @@ export function LCDPanel({
                 className="relative"
                 style={{
                   fontFamily: "'DSEG7', monospace",
-                  fontSize: '52px',
+                  fontSize: '46px',
                   fontWeight: 'bold',
                   lineHeight: 0.75,
                   marginLeft: '-2px',
@@ -348,7 +348,7 @@ export function LCDPanel({
                 <img
                   src={twinHeadsIcon}
                   alt="User Count Icon"
-                  className="h-[48px] w-[46px] object-contain"
+                  className="h-[52px] w-[50px] object-contain"
                   style={{ filter: 'drop-shadow(1px 1px 0px rgba(0,0,0,0.2))' }}
                 />
               </div>

@@ -440,7 +440,7 @@ export function RadioLayout() {
                   </span>
                   <div className="w-[120px] overflow-hidden whitespace-nowrap relative h-[16px] mt-0.5">
                     <div
-                      className="absolute inline-block animate-marquee text-[10px] font-semibold tracking-wide"
+                      className="absolute top-0 left-0 inline-block animate-marquee text-[10px] font-semibold tracking-wide"
                       style={{ color: 'var(--header-text-color)', opacity: 0.65 }}
                     >
                       {marqueeText}
@@ -462,7 +462,7 @@ export function RadioLayout() {
                 setIsUserListOpen(false);
               }
             }}
-            className="flex-1 w-full max-w-[400px] flex flex-col items-center pt-[14px] px-[10px] pb-20 relative cursor-default"
+            className="flex-1 min-h-0 w-full max-w-[400px] flex flex-col items-center pt-[14px] px-[10px] pb-20 relative cursor-default"
           >
             {isUserListOpen ? (
               <UserListModal
@@ -530,7 +530,7 @@ export function RadioLayout() {
             {/* PTT Button */}
             {showPTT && (
               <div
-                className={`absolute bottom-[72px] left-0 right-0 w-full flex justify-center transition-opacity duration-300 opacity-100 ${isPowerOn ? '' : 'pointer-events-none'}`}
+                className={`absolute bottom-[20px] left-0 right-0 w-full flex justify-center transition-opacity duration-300 opacity-100 ${isPowerOn ? '' : 'pointer-events-none'}`}
               >
                 <div onClick={(e) => e.stopPropagation()}>
                   <PTTButton

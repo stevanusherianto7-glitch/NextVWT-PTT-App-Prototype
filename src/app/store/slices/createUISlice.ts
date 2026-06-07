@@ -2,6 +2,7 @@ import { StateCreator } from 'zustand';
 import { PTTState } from '../types';
 import { pttRateLimiter } from '../../utils/rateLimiter';
 import { activeChannelSubscription, setActiveChannelSubscription } from '../subscription';
+import { safeSetStorage } from '../usePTTStore';
 
 export const createUISlice: StateCreator<
   PTTState,
@@ -104,7 +105,13 @@ export const createUISlice: StateCreator<
 
   setError: (error) => set({ error }),
 
-  setHasCompletedOnboarding: (completed) => set({ hasCompletedOnboarding: completed }),
+  setHasCompletedOnboarding: (completed) => {
+    safeSetStorage({ hasCompletedOnboarding: completed });
+    set({ hasCompletedOnboarding: completed });
+  },
   setShowFeedbackModal: (show) => set({ showFeedbackModal: show }),
-  setLastFeedbackTime: (time) => set({ lastFeedbackTime: time }),
+  setLastFeedbackTime: (time) => {
+    safeSetStorage({ lastFeedbackTime: time });
+    set({ lastFeedbackTime: time });
+  },
 });
