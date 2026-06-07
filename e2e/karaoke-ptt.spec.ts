@@ -63,7 +63,7 @@ test.describe('PTT Resilience in Karaoke / Music Mode', () => {
     await simpanBtn.click();
 
     // Verify Karaoke Player container is open and visible on screen
-    await expect(page.locator('span:has-text("KARAOKE PLAYER")')).toBeVisible();
+    await expect(page.locator('span:has-text("NextVWT Karaoke Player")')).toBeVisible();
 
     // 6. Mock getUserMedia to supply a synthetic Web Audio stream for CI environment compatibility
     await page.evaluate(() => {
