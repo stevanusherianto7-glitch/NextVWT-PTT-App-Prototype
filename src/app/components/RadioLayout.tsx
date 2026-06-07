@@ -14,6 +14,7 @@ import { BRAND } from '../utils/config';
 import { SettingsPanelSkeleton, KaraokePlayerSkeleton } from './SkeletonLoaders';
 import { OnboardingTour } from './OnboardingTour';
 import { FeedbackModal } from './FeedbackModal';
+import { useRef } from 'react';
 
 // [P2-2] Lazy-load komponen besar — hanya diunduh saat pertama kali dibuka
 // SettingsPanel: ~76KB → split ke chunk terpisah, tidak menambah initial bundle
@@ -58,6 +59,7 @@ export function RadioLayout() {
   const [txStartTime, setTxStartTime] = useState<number>(0);
 
   const { startRecording, stopRecording, playAudioChunk, flushAudioQueue } = useAudioStreamer();
+  const echoChunksRef = useRef<string[]>([]);
 
   const isReceiving =
     activeTransmitter && activeTransmitter.userId !== usePTTStore.getState().userId;
@@ -95,10 +97,12 @@ export function RadioLayout() {
       startRecording((base64Chunk) => {
         const isConn = usePTTStore.getState().isConnected;
         const currentChannel = usePTTStore.getState().channelNumber;
-        if (isConn && currentChannel !== 100) {
+        if (currentChannel === 100) {
+          echoChunksRef.current.push(base64Chunk);
+        } else if (isConn) {
           usePTTStore.getState().broadcastVoiceChunk(base64Chunk);
         } else {
-          // Local loopback offline fallback or Channel 100 check
+          // Local loopback offline fallback
           playAudioChunk(base64Chunk);
         }
       }).catch((err) => {
@@ -118,6 +122,19 @@ export function RadioLayout() {
       setTxStartTime(Date.now());
     } else {
       stopRecording();
+      
+      // Playback recorded chunks on Channel 100 after PTT released (Parrot Echo Test)
+      const currentChannel = usePTTStore.getState().channelNumber;
+      if (currentChannel === 100 && echoChunksRef.current.length > 0) {
+        const chunksToPlay = [...echoChunksRef.current];
+        echoChunksRef.current = [];
+        setTimeout(() => {
+          chunksToPlay.forEach((chunk) => {
+            playAudioChunk(chunk);
+          });
+        }, 350);
+      }
+
       // Logic untuk memicu FeedbackModal jika pengguna baru selesai transmit
       if (txStartTime > 0) {
         const txDuration = Date.now() - txStartTime;
@@ -251,7 +268,7 @@ export function RadioLayout() {
           setIsUserListOpen(false);
         }
       }}
-      className={`w-full h-[100dvh] sm:w-[360px] sm:h-[800px] bg-white sm:rounded-[40px] overflow-hidden relative sm:shadow-[0_20px_50px_rgba(0,0,0,0.5)] sm:border-[8px] sm:border-[#2a2d36] flex-shrink-0 flex flex-col ${getThemeClass(themeText)}`}
+      className={`w-full h-screen sm:w-[360px] sm:h-[800px] bg-white sm:rounded-[40px] overflow-hidden relative sm:shadow-[0_20px_50px_rgba(0,0,0,0.5)] sm:border-[8px] sm:border-[#2a2d36] flex-shrink-0 flex flex-col ${getThemeClass(themeText)}`}
       style={{
         boxShadow: 'inset 0 0 0 2px rgba(255,255,255,0.1)',
       }}
