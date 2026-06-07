@@ -156,13 +156,15 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
           if (activeChannelSubscription !== channelInstance) return;
           const presenceState = channelInstance.presenceState();
           const rawList = Object.values(presenceState).flat() as unknown as PresenceMeta[];
-          const users = rawList.map((p) => ({
-            userId: p.userId || 'unknown',
-            displayName: p.displayName || 'Anonim',
-            callSign: p.callSign || '2DYUA',
-            location: p.location || 'BANDUNG, JABAR',
-            avatarUrl: p.avatarUrl || '',
-          }));
+          const users = rawList
+            .filter((p) => p && typeof p === 'object')
+            .map((p) => ({
+              userId: p.userId || 'unknown',
+              displayName: p.displayName || 'Anonim',
+              callSign: p.callSign || '2DYUA',
+              location: p.location || 'BANDUNG, JABAR',
+              avatarUrl: p.avatarUrl || '',
+            }));
           usePTTStore.setState({ activeUsers: users });
         })
         .on('broadcast', { event: 'ptt_state' }, ({ payload }: { payload: PttStatePayload }) => {

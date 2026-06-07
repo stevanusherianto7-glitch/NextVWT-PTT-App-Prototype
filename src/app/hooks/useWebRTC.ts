@@ -30,7 +30,7 @@ const getIceServers = (): RTCIceServer[] => {
     { urls: 'stun:stun1.l.google.com:19302' },
   ];
 
-  if (ephemeralTurnCreds) {
+  if (ephemeralTurnCreds && ephemeralTurnCreds.username && ephemeralTurnCreds.credential) {
     servers.push({
       urls: 'turn:turn.nextvwt.com:3478',
       username: ephemeralTurnCreds.username,
