@@ -145,104 +145,106 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
       const store = usePTTStore.getState();
       const supabase = await getSupabase();
       const channelInstance = supabase.channel(`${BRAND.supabaseRoomPrefix}${channelNum}`, {
-      config: {
-        presence: {
-          key: store.userId || 'anonymous',
+        config: {
+          presence: {
+            key: store.userId || 'anonymous',
+          },
         },
-      },
-    });
-    setActiveChannelSubscription(channelInstance);
+      });
+      setActiveChannelSubscription(channelInstance);
 
-    channelInstance
-      .on('presence', { event: 'sync' }, () => {
-        if (activeChannelSubscription !== channelInstance) return;
-        const presenceState = channelInstance.presenceState();
-        const rawList = Object.values(presenceState).flat() as unknown as PresenceMeta[];
-        const users = rawList.map((p) => ({
-          userId: p.userId || 'unknown',
-          displayName: p.displayName || 'Anonim',
-          callSign: p.callSign || '2DYUA',
-          location: p.location || 'BANDUNG, JABAR',
-          avatarUrl: p.avatarUrl || '',
-        }));
-        usePTTStore.setState({ activeUsers: users });
-      })
-      .on('broadcast', { event: 'ptt_state' }, ({ payload }: { payload: PttStatePayload }) => {
-        if (activeChannelSubscription !== channelInstance) return;
-        if (payload.isTransmitting) {
-          usePTTStore.setState({
-            activeTransmitter: {
-              userId: payload.userId,
-              displayName: payload.displayName,
-              callSign: payload.callSign,
-            },
-          });
-        } else {
-          const currentTx = usePTTStore.getState().activeTransmitter;
-          if (currentTx && currentTx.userId === payload.userId) {
-            usePTTStore.setState({ activeTransmitter: null });
-          }
-        }
-      })
-      .on(
-        'broadcast',
-        { event: 'voice_chunk' },
-        ({ payload }: { payload: { userId: string; base64: string } }) => {
+      channelInstance
+        .on('presence', { event: 'sync' }, () => {
           if (activeChannelSubscription !== channelInstance) return;
-          const state = usePTTStore.getState();
-          // Ignore our own broadcasted voice chunks to avoid feedback loop
-          if (payload.userId !== state.userId && state.onVoiceChunkReceived) {
-            state.onVoiceChunkReceived(payload.base64);
-          }
-        }
-      )
-      .on(
-        'broadcast',
-        { event: 'webrtc_signaling' },
-        ({ payload }: { payload: WebRTCSignalingPayload }) => {
+          const presenceState = channelInstance.presenceState();
+          const rawList = Object.values(presenceState).flat() as unknown as PresenceMeta[];
+          const users = rawList.map((p) => ({
+            userId: p.userId || 'unknown',
+            displayName: p.displayName || 'Anonim',
+            callSign: p.callSign || '2DYUA',
+            location: p.location || 'BANDUNG, JABAR',
+            avatarUrl: p.avatarUrl || '',
+          }));
+          usePTTStore.setState({ activeUsers: users });
+        })
+        .on('broadcast', { event: 'ptt_state' }, ({ payload }: { payload: PttStatePayload }) => {
           if (activeChannelSubscription !== channelInstance) return;
-          const state = usePTTStore.getState();
-          if (payload.senderUserId !== state.userId && state.onWebRTCSignalingReceived) {
-            state.onWebRTCSignalingReceived(payload);
+          if (payload.isTransmitting) {
+            usePTTStore.setState({
+              activeTransmitter: {
+                userId: payload.userId,
+                displayName: payload.displayName,
+                callSign: payload.callSign,
+              },
+            });
+          } else {
+            const currentTx = usePTTStore.getState().activeTransmitter;
+            if (currentTx && currentTx.userId === payload.userId) {
+              usePTTStore.setState({ activeTransmitter: null });
+            }
+          }
+        })
+        .on(
+          'broadcast',
+          { event: 'voice_chunk' },
+          ({ payload }: { payload: { userId: string; base64: string } }) => {
+            if (activeChannelSubscription !== channelInstance) return;
+            const state = usePTTStore.getState();
+            // Ignore our own broadcasted voice chunks to avoid feedback loop
+            if (payload.userId !== state.userId && state.onVoiceChunkReceived) {
+              state.onVoiceChunkReceived(payload.base64);
+            }
+          }
+        )
+        .on(
+          'broadcast',
+          { event: 'webrtc_signaling' },
+          ({ payload }: { payload: WebRTCSignalingPayload }) => {
+            if (activeChannelSubscription !== channelInstance) return;
+            const state = usePTTStore.getState();
+            if (payload.senderUserId !== state.userId && state.onWebRTCSignalingReceived) {
+              state.onWebRTCSignalingReceived(payload);
+            }
+          }
+        );
+
+      channelInstance.subscribe((status: string) => {
+        if (activeChannelSubscription !== channelInstance) return;
+        const isSubscribed = isDummyKey ? true : status === 'SUBSCRIBED';
+        usePTTStore.setState({ isConnected: isSubscribed });
+
+        if (status === 'CHANNEL_ERROR' && retryCount < 3) {
+          const timeout = Math.pow(2, retryCount) * 1000;
+          console.warn(
+            `[Supabase] Channel error. Retrying in ${timeout}ms (attempt ${retryCount + 1})...`
+          );
+          setTimeout(() => subscribeToChannel(channelNum, retryCount + 1), timeout);
+          return;
+        }
+
+        if (isSubscribed) {
+          const currentStore = usePTTStore.getState();
+          const userMeta = currentStore.user;
+          const displayName = currentStore.infoText || userMeta?.user_metadata?.full_name;
+          const location = currentStore.locationText;
+
+          // Only track presence if the channel is actually subscribed on the backend
+          if (status === 'SUBSCRIBED') {
+            const avatarUrl =
+              currentStore.profilePhotoOption === 'google'
+                ? userMeta?.user_metadata?.avatar_url || ''
+                : currentStore.customPhotoUrl;
+
+            channelInstance.track({
+              userId: currentStore.userId,
+              displayName: displayName,
+              callSign: currentStore.callSign || '2DYUA',
+              location: location,
+              avatarUrl: avatarUrl,
+            });
           }
         }
-      );
-
-    channelInstance.subscribe((status: string) => {
-      if (activeChannelSubscription !== channelInstance) return;
-      const isSubscribed = isDummyKey ? true : status === 'SUBSCRIBED';
-      usePTTStore.setState({ isConnected: isSubscribed });
-
-      if (status === 'CHANNEL_ERROR' && retryCount < 3) {
-        const timeout = Math.pow(2, retryCount) * 1000;
-        console.warn(`[Supabase] Channel error. Retrying in ${timeout}ms (attempt ${retryCount + 1})...`);
-        setTimeout(() => subscribeToChannel(channelNum, retryCount + 1), timeout);
-        return;
-      }
-
-      if (isSubscribed) {
-        const currentStore = usePTTStore.getState();
-        const userMeta = currentStore.user;
-        const displayName = currentStore.infoText || userMeta?.user_metadata?.full_name;
-        const location = currentStore.locationText;
-
-        // Only track presence if the channel is actually subscribed on the backend
-        if (status === 'SUBSCRIBED') {
-          const avatarUrl =
-            currentStore.profilePhotoOption === 'google'
-              ? userMeta?.user_metadata?.avatar_url || ''
-              : currentStore.customPhotoUrl;
-
-          channelInstance.track({
-            userId: currentStore.userId,
-            displayName: displayName,
-            callSign: currentStore.callSign || '2DYUA',
-            location: location,
-            avatarUrl: avatarUrl,
-          });
-        }
-      }
-    });
+      });
     } catch (err) {
       console.error('Supabase room connection error:', err);
       // Graceful Degradation: mark offline but don't crash

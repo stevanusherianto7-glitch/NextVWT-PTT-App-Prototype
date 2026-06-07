@@ -1,7 +1,15 @@
 import { StateCreator } from 'zustand';
 import { PTTState } from '../types';
 import { BRAND } from '../../utils/config';
-import { safeSetStorage, safeGetStorage, generateUUID, generateRandomCallSign, getChannelUUID, PERSISTED_KEYS, pickPersistedState } from '../usePTTStore';
+import {
+  safeSetStorage,
+  safeGetStorage,
+  generateUUID,
+  generateRandomCallSign,
+  getChannelUUID,
+  PERSISTED_KEYS,
+  pickPersistedState,
+} from '../usePTTStore';
 import { activeChannelSubscription } from '../subscription';
 
 export const createSettingsSlice: StateCreator<

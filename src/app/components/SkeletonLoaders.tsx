@@ -40,7 +40,10 @@ export function SettingsPanelSkeleton() {
         {/* Section 1 */}
         <div className="flex flex-col gap-2">
           <SkeletonBlock className="w-24 h-3" />
-          <div className="rounded-2xl overflow-hidden flex flex-col gap-px" style={{ background: 'rgba(255,255,255,0.05)' }}>
+          <div
+            className="rounded-2xl overflow-hidden flex flex-col gap-px"
+            style={{ background: 'rgba(255,255,255,0.05)' }}
+          >
             {[1, 2, 3].map((i) => (
               <div key={i} className="flex items-center justify-between px-4 py-3.5">
                 <SkeletonBlock className="w-32 h-4" />
@@ -53,7 +56,10 @@ export function SettingsPanelSkeleton() {
         {/* Section 2 */}
         <div className="flex flex-col gap-2">
           <SkeletonBlock className="w-20 h-3" />
-          <div className="rounded-2xl overflow-hidden flex flex-col gap-px" style={{ background: 'rgba(255,255,255,0.05)' }}>
+          <div
+            className="rounded-2xl overflow-hidden flex flex-col gap-px"
+            style={{ background: 'rgba(255,255,255,0.05)' }}
+          >
             {[1, 2].map((i) => (
               <div key={i} className="flex items-center justify-between px-4 py-3.5">
                 <SkeletonBlock className="w-28 h-4" />
@@ -66,7 +72,10 @@ export function SettingsPanelSkeleton() {
         {/* Slider section */}
         <div className="flex flex-col gap-2">
           <SkeletonBlock className="w-16 h-3" />
-          <div className="rounded-2xl px-4 py-4 flex items-center gap-3" style={{ background: 'rgba(255,255,255,0.05)' }}>
+          <div
+            className="rounded-2xl px-4 py-4 flex items-center gap-3"
+            style={{ background: 'rgba(255,255,255,0.05)' }}
+          >
             <SkeletonBlock className="w-6 h-6 rounded-full" />
             <SkeletonBlock className="flex-1 h-2 rounded-full" />
           </div>
@@ -98,7 +107,9 @@ export function KaraokePlayerSkeleton() {
         </div>
         <SkeletonBlock className="w-full h-1.5 rounded-full" />
         <div className="flex justify-center gap-6">
-          {[1, 2, 3].map((i) => <SkeletonBlock key={i} className="w-9 h-9 rounded-full" />)}
+          {[1, 2, 3].map((i) => (
+            <SkeletonBlock key={i} className="w-9 h-9 rounded-full" />
+          ))}
         </div>
       </div>
     </div>

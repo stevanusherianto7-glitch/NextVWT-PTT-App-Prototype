@@ -6,7 +6,10 @@ export const createAuthSlice: StateCreator<
   PTTState,
   [],
   [],
-  Pick<PTTState, 'user' | 'activeTransmitter' | 'activeUsers' | 'setUser' | 'signInWithGoogle' | 'signOut'>
+  Pick<
+    PTTState,
+    'user' | 'activeTransmitter' | 'activeUsers' | 'setUser' | 'signInWithGoogle' | 'signOut'
+  >
 > = (set, _get) => ({
   user: null,
   activeTransmitter: null,
