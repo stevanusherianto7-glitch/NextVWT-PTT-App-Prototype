@@ -963,10 +963,10 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
         </div>
 
         {/* AKUN SECTION */}
-        <div className="w-full bg-[#e2e8f0] py-1 px-3 text-[11px] font-bold text-[#475569] uppercase tracking-wider">
+        <div className="w-full bg-[#e2e8f0] py-1.5 px-6 text-[11px] font-bold text-[#475569] uppercase tracking-wider">
           Akun
         </div>
-        <div className="bg-white p-4 border-b border-gray-200 flex flex-col items-center">
+        <div className="bg-white px-6 py-5 border-b border-gray-200 flex flex-col items-center">
           {/* Square Profile Image Casing */}
           <div className="w-[120px] h-[140px] border border-gray-300 relative overflow-hidden bg-[#e0e0e0] flex items-center justify-center mb-3 shadow-inner">
             <img
@@ -987,14 +987,14 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
           </div>
 
           {/* Opsi Sumber Foto Profil */}
-          <div className="w-full max-w-[240px] flex gap-1 bg-gray-100 p-1 rounded-lg mb-3">
+          <div className="w-full max-w-[240px] flex gap-1 bg-gray-200 p-1 rounded-lg mb-3 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] border border-gray-300/60">
             <button
               type="button"
               disabled={!user?.user_metadata?.avatar_url}
               onClick={() => updateSettings({ profilePhotoOption: 'google' })}
               className={`flex-1 py-1.5 px-2 text-[10px] font-bold rounded-md transition-all cursor-pointer ${
                 profilePhotoOption === 'google'
-                  ? 'bg-white text-indigo-600 shadow-sm'
+                  ? 'bg-gradient-to-b from-[#38bdf8] via-[#0ea5e9] to-[#0284c7] text-white border-t border-white/30 border-b border-black/20 shadow-[0_2px_0_#0284c7,inset_0_1px_0_rgba(255,255,255,0.4)]'
                   : 'text-gray-500 hover:text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed'
               }`}
               title={
@@ -1011,7 +1011,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
               }}
               className={`flex-1 py-1.5 px-2 text-[10px] font-bold rounded-md transition-all cursor-pointer ${
                 profilePhotoOption === 'custom'
-                  ? 'bg-white text-indigo-600 shadow-sm'
+                  ? 'bg-gradient-to-b from-[#38bdf8] via-[#0ea5e9] to-[#0284c7] text-white border-t border-white/30 border-b border-black/20 shadow-[0_2px_0_#0284c7,inset_0_1px_0_rgba(255,255,255,0.4)]'
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
@@ -1033,9 +1033,9 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
           </div>
 
           {/* Account action buttons */}
-          <div className="w-full flex flex-col gap-2">
+          <div className="w-full flex flex-col gap-2.5">
             {!user?.app_metadata?.provider && (
-              <button className="w-full text-center py-2 text-sm font-semibold bg-[#e2e8f0] hover:bg-[#cbd5e1] border border-gray-300 rounded cursor-pointer">
+              <button className="w-full text-center py-2.5 text-sm font-bold rounded text-slate-800 bg-gradient-to-b from-white via-[#f1f5f9] to-[#cbd5e1] border-t border-white/40 border-b border-black/20 shadow-[0_3px_0_#94a3b8,inset_0_1px_0_rgba(255,255,255,0.8)] active:translate-y-[2px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer focus:outline-none">
                 Ubah Kata Sandi
               </button>
             )}
@@ -1044,20 +1044,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
                 signOut();
                 onClose();
               }}
-              className="w-full text-center py-2 text-sm font-semibold border rounded cursor-pointer transition-all duration-300 text-slate-700 hover:text-black"
-              style={{
-                background: 'linear-gradient(to bottom, #ffffff 0%, #cbd5e1 100%)',
-                borderColor: '#94a3b8',
-                boxShadow: '0 0 8px rgba(255, 255, 255, 0.8), 0 2px 4px rgba(148, 163, 184, 0.2)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow =
-                  '0 0 15px rgba(255, 255, 255, 0.9), 0 4px 8px rgba(148, 163, 184, 0.4)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow =
-                  '0 0 8px rgba(255, 255, 255, 0.8), 0 2px 4px rgba(148, 163, 184, 0.2)';
-              }}
+              className="w-full text-center py-2.5 text-sm font-bold rounded text-white bg-gradient-to-b from-red-400 via-red-500 to-red-600 border-t border-white/40 border-b border-black/20 shadow-[0_3px_0_#991b1b,inset_0_1px_0_rgba(255,255,255,0.4)] active:translate-y-[2px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer focus:outline-none"
             >
               Keluar dari Akun Google
             </button>
