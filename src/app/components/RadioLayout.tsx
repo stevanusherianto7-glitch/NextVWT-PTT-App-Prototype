@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from 'react';
 import { ToggleSwitch } from './ToggleSwitch';
 import { LCDPanel } from './LCDPanel';
-import { ProgressBar } from './ProgressBar';
 import { ControlButtons } from './ControlButtons';
 import { PTTButton } from './PTTButton';
+import { ProgressBar } from './ProgressBar';
 import { usePTTStore } from '../store/usePTTStore';
 import { SettingsPanel } from './SettingsPanel';
 import { UserListModal } from './UserListModal';
@@ -474,7 +474,7 @@ export function RadioLayout() {
                     onUserCountClick={() => setIsUserListOpen(true)}
                   />
                 </div>
-
+ 
                 {/* Progress Bar */}
                 {showModulator && (
                   <div
@@ -483,6 +483,8 @@ export function RadioLayout() {
                     <ProgressBar progress={progress} />
                   </div>
                 )}
+
+
 
                 {/* Control Buttons */}
                 <div
