@@ -4,7 +4,7 @@
         <!-- Pinning for Supabase projects -->
         <domain includeSubdomains="true">supabase.co</domain>
         
-        <pin-set expiration="2027-01-01">
+        <pin-set expiration="2028-01-01">
             <!-- Let's Encrypt R3 Intermediate SPKI -->
             <pin digest="SHA-256">jQlsT3JgSja1Ep8Cr+Y3OPa8/1AX5k+6Cym9e7yOtTE=</pin>
             <!-- Let's Encrypt E1 Intermediate SPKI -->
