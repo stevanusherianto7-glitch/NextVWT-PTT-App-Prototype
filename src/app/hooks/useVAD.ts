@@ -11,7 +11,7 @@ export function useVAD(threshold = 0.01, silenceTimeout = 1500) {
       try {
         const AudioContextClass =
           window.AudioContext ||
-          (window as window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+          (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
         if (!AudioContextClass) return;
 
         const ctx = new AudioContextClass();
