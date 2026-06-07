@@ -6,9 +6,22 @@ import { runIntegrityCheck } from './app/utils/integrity.ts';
 import { initializeSecureSupabase } from './app/utils/supabase.ts';
 import { performSecurityAudit } from './app/utils/appSecurity.ts';
 
+// ─── Window augmentation untuk E2E test store access ─────────────────────────
+// Mengekspos usePTTStore ke window.__store__ agar Playwright dapat berinteraksi
+// langsung dengan state tanpa harus melalui UI. HANYA aktif di non-production.
+declare global {
+  interface Window {
+    __store__: typeof usePTTStore | undefined;
+  }
+}
+
 async function bootstrap() {
   if (typeof window !== 'undefined') {
-    (window as unknown as Record<string, unknown>).__store__ = usePTTStore;
+    // Expose store ke window HANYA di non-production (dev & test environment)
+    // Di production: obfuscator menghapus ini via dead code elimination
+    if (!import.meta.env.PROD) {
+      window.__store__ = usePTTStore;
+    }
 
     // Run security and DOM integrity audits on boot (SEC-02)
     const integrity = runIntegrityCheck();

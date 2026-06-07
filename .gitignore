@@ -9,6 +9,9 @@ tmp/
 .env
 .env.local
 .env.production
+.env.staging
+.env.development
+.env.*.local
 
 # Playwright test artifacts
 test-results/
@@ -35,8 +38,14 @@ Thumbs.db
 npm-debug.log*
 pnpm-debug.log*
 
-# Android builds and APKs
+# Android builds and APKs & signing keys (NEVER commit)
 *.apk
+*.aab
+*.keystore
+*.jks
 android/app/build/
 android/.gradle/
+android/local.properties
+android/app/release.keystore
+android/app/*.keystore
 
