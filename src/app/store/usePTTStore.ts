@@ -1,7 +1,14 @@
 import { create } from 'zustand';
 import { supabase } from '../utils/supabase';
 import type { User, RealtimeChannel } from '@supabase/supabase-js';
-import { BRAND } from '../utils/config';
+import { BRAND, CHANNELS } from '../utils/config';
+
+export interface ChannelItem {
+  number: number;
+  name: string;
+  type: 'green' | 'red' | 'gray';
+  users: string[];
+}
 
 export interface WebRTCSignalingPayload {
   senderUserId: string;
@@ -153,6 +160,10 @@ export interface PTTState {
     callback: ((payload: WebRTCSignalingPayload) => void) | null
   ) => void;
   broadcastWebRTCSignaling: (payload: WebRTCSignalingPayload) => void;
+
+  // Channels online DB actions
+  channels: ChannelItem[];
+  fetchChannels: () => Promise<void>;
 }
 
 // ─── Persisted Settings Keys ──────────────────────────────────────────────────
@@ -379,6 +390,21 @@ export const usePTTStore = create<PTTState>((set) => ({
   user: null,
   activeTransmitter: null,
   activeUsers: [],
+  channels: CHANNELS as ChannelItem[],
+  fetchChannels: async () => {
+    try {
+      const { data, error } = await supabase
+        .from('channels')
+        .select('number, name, type, users')
+        .order('number', { ascending: true });
+      if (error) throw error;
+      if (data && data.length > 0) {
+        set({ channels: data as unknown as ChannelItem[] });
+      }
+    } catch (err) {
+      console.warn('Failed to fetch channels from Supabase, falling back to static configurations:', err);
+    }
+  },
 
   // Merge defaults – initializeSession will overlay with localStorage cache
   ...DEFAULT_SETTINGS,
@@ -518,7 +544,10 @@ export const usePTTStore = create<PTTState>((set) => ({
 
       // Establish initial connection using restored or default channel
       const channelToJoin = (restored.channelNumber as number) ?? state.channelNumber;
-      setTimeout(() => subscribeToChannel(channelToJoin), 0);
+      setTimeout(() => {
+        subscribeToChannel(channelToJoin);
+        usePTTStore.getState().fetchChannels();
+      }, 0);
 
       return {
         userId: newUserId,

@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { STATIC_CHANNELS, ChannelItem } from '../utils/constants';
+import { ChannelItem } from '../utils/constants';
+import { usePTTStore } from '../store/usePTTStore';
 import { NextVWTPremiumLogo } from './NextVWTPremiumLogo';
 import './ChannelListModal.css';
 
@@ -15,14 +16,16 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
   const [restrictedChannel, setRestrictedChannel] = useState<ChannelItem | null>(null);
   const [infoChannel, setInfoChannel] = useState<ChannelItem | null>(null);
 
-  const filteredChannels = STATIC_CHANNELS.filter(
+  const { channels } = usePTTStore();
+
+  const filteredChannels = channels.filter(
     (ch) =>
       ch.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       ch.number.toString().includes(searchQuery)
   );
 
   return (
-    <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-50 pt-4 pb-4 px-3">
+    <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-50 pt-2 pb-3 px-4">
       {/* Backdrop Dismiss */}
       <div
         data-testid="modal-backdrop"
@@ -34,7 +37,7 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
       />
 
       {/* Modal Container */}
-      <div className="channel-modal h-full shadow-2xl flex flex-col z-10 overflow-hidden border-x-2 border-gray-400 animate-in fade-in zoom-in-95 duration-100">
+      <div className="channel-modal h-full shadow-2xl flex flex-col z-10 overflow-hidden border-2 border-gray-400 animate-in fade-in zoom-in-95 duration-100">
         {/* Header */}
         <div className="channel-modal-header shrink-0">
           <button onClick={onClose} className="modal-close-btn" aria-label="Tutup">
@@ -70,15 +73,15 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
             {filteredChannels.length > 0 ? (
               <>
                 {filteredChannels.slice(0, visibleCount).map((ch) => {
-                  let bgClass = 'bg-gradient-to-b from-[#9E9E9E] to-[#616161]'; // Default gray
+                  let badgeClass = 'badge-gray-dark'; // Default gray
                   if (ch.type === 'green') {
                     if (ch.number === 0 || ch.number === 100) {
-                      bgClass = 'bg-gradient-to-b from-[#1b5e20] to-[#0e3b12]';
+                      badgeClass = 'badge-green-dark';
                     } else {
-                      bgClass = 'bg-gradient-to-b from-[#66bb6a] to-[#388e3c]';
+                      badgeClass = 'badge-green-light';
                     }
                   } else if (ch.type === 'red') {
-                    bgClass = 'bg-gradient-to-b from-[#e53935] to-[#c62828]';
+                    badgeClass = 'badge-red';
                   }
 
                   const activeUserCount = ch.users.length;
@@ -100,8 +103,8 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
                       className="w-full flex items-center p-0 hover:bg-gray-50 active:bg-gray-100 text-left cursor-pointer select-none focus:outline-none"
                     >
                       <div
-                        className={`w-[55px] py-2.5 flex items-center justify-center text-white font-bold text-sm shrink-0 ${bgClass} border-t-[2px] border-l-[2px] border-t-white/45 border-l-white/45 border-r-[2px] border-b-[2px] border-r-black/45 border-b-black/45 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.3)]`}
-                        style={{ textShadow: '1px 1px 1px rgba(0,0,0,0.6)' }}
+                        className={`w-[55px] py-2.5 flex items-center justify-center text-white font-bold text-sm shrink-0 ${badgeClass} border-t-[2.5px] border-l-[2.5px] border-t-white/45 border-l-white/45 border-r-[2.5px] border-b-[2.5px] border-r-black/55 border-b-black/55 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.4)]`}
+                        style={{ textShadow: '1px 1px 1px rgba(0,0,0,0.8)' }}
                       >
                         {ch.number.toString().padStart(3, '0')}
                       </div>
@@ -119,7 +122,7 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
                     onClick={() => setVisibleCount((prev) => prev + 15)}
                     className="w-full flex items-center p-0 hover:bg-gray-50 active:bg-gray-100 text-left border-b border-gray-200 cursor-pointer select-none focus:outline-none"
                   >
-                    <div className="w-[55px] py-2.5 bg-gradient-to-b from-[#616161] to-[#424242] border-t-[2px] border-l-[2px] border-t-white/30 border-l-white/30 border-r-[2px] border-b-[2px] border-r-black/45 border-b-black/45 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.15)] shrink-0 self-stretch flex items-center justify-center" />
+                    <div className="w-[55px] py-2.5 badge-gray-dark border-t-[2.5px] border-l-[2.5px] border-t-white/45 border-l-white/45 border-r-[2.5px] border-b-[2.5px] border-r-black/55 border-b-black/55 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.4)] shrink-0 self-stretch flex items-center justify-center" />
                     <div className="ml-3 pr-3 flex-1 min-w-0 py-1">
                       <div className="text-xs font-bold text-gray-700">Selanjutnya..</div>
                     </div>
@@ -136,9 +139,9 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
 
         {/* Overlays inside Modal */}
         {activePrivateChannel && (
-          <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-55 p-6 animate-in fade-in duration-100">
+          <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-55 p-0 animate-in fade-in duration-100">
             <div className="absolute inset-0" onClick={() => setActivePrivateChannel(null)} />
-            <div className="bg-white w-[85%] max-w-[280px] rounded-lg shadow-2xl flex flex-col z-10 overflow-hidden border border-gray-100 animate-in fade-in zoom-in-95 duration-100">
+            <div className="bg-white w-full max-w-[340px] rounded-lg shadow-2xl flex flex-col z-10 overflow-hidden border border-gray-100 animate-in fade-in zoom-in-95 duration-100">
               <button
                 onClick={() => {
                   const ch = activePrivateChannel;
@@ -170,8 +173,8 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
         )}
 
         {restrictedChannel && (
-          <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-60 p-6 animate-in fade-in duration-100">
-            <div className="bg-white w-[85%] max-w-[300px] rounded-2xl shadow-2xl flex flex-col p-6 animate-in fade-in zoom-in-95 duration-100 text-left">
+          <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-60 p-0 animate-in fade-in duration-100">
+            <div className="bg-white w-full max-w-[340px] rounded-2xl shadow-2xl flex flex-col p-6 animate-in fade-in zoom-in-95 duration-100 text-left">
               <h3 className="text-[17px] font-bold text-gray-800">
                 Channel {restrictedChannel.number} terbatas
               </h3>
@@ -191,9 +194,9 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
         )}
 
         {infoChannel && (
-          <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-60 p-6 animate-in fade-in duration-100">
+          <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-60 p-0 animate-in fade-in duration-100">
             <div className="absolute inset-0" onClick={() => setInfoChannel(null)} />
-            <div className="bg-white w-[85%] max-w-[300px] rounded-2xl shadow-2xl flex flex-col p-5 z-10 animate-in fade-in zoom-in-95 duration-100 text-left border border-gray-100">
+            <div className="bg-white w-full max-w-[340px] rounded-2xl shadow-2xl flex flex-col p-5 z-10 animate-in fade-in zoom-in-95 duration-100 text-left border border-gray-100">
               <div className="flex items-center gap-2 pb-2.5">
                 <svg
                   className="w-5 h-5 text-[#0c62a8] shrink-0"
@@ -317,13 +320,13 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
                 </svg>
               </div>
 
-              <div className="flex border-t border-gray-100 py-3.5 text-[14px]">
+              <div className="flex border-t border-gray-100 py-1 text-[14px]">
                 <span className="w-14 font-bold text-gray-400 shrink-0">Nama</span>
                 <span className="font-bold text-gray-800 flex-1 min-w-0 break-words">
                   {infoChannel.name}
                 </span>
               </div>
-              <div className="flex border-t border-b border-gray-100 py-3.5 text-[14px]">
+              <div className="flex border-t border-b border-gray-100 py-1 text-[14px]">
                 <span className="w-14 font-bold text-gray-400 shrink-0">Info</span>
                 <span className="font-semibold text-gray-700 flex-1 min-w-0 break-words">
                   {infoChannel.users.length > 0 ? (
@@ -336,10 +339,10 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
                 </span>
               </div>
 
-              <div className="mt-5 flex justify-center">
+              <div className="mt-1.5 flex justify-center">
                 <button
                   onClick={() => setInfoChannel(null)}
-                  className="text-[15px] font-bold text-[#0c62a8] hover:text-[#0b5490] px-6 py-2 cursor-pointer focus:outline-none select-none"
+                  className="text-[15px] font-bold text-[#0c62a8] hover:text-[#0b5490] px-6 py-0.5 cursor-pointer focus:outline-none select-none"
                 >
                   Tutup
                 </button>
