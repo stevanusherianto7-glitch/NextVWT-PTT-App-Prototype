@@ -10,7 +10,30 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
   const [videoId, setVideoId] = useState(''); // Empty until user pastes URL
   const [searchQuery, setSearchQuery] = useState('');
   const [isPlaying, setIsPlaying] = useState(false); // Not playing until video is loaded
+  const [showSettings, setShowSettings] = useState(false);
+  const [quality, setQuality] = useState('auto');
   const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  // Quality options
+  const QUALITY_OPTIONS = [
+    { label: 'Auto', value: 'auto' },
+    { label: '1080p', value: 'hd1080' },
+    { label: '720p',  value: 'hd720'  },
+    { label: '480p',  value: 'large'  },
+    { label: '360p',  value: 'medium' },
+  ];
+
+  // Change quality by reloading iframe src with vq= parameter
+  const handleQualityChange = (q: string) => {
+    setQuality(q);
+    setShowSettings(false);
+    // If a video is loaded, reload iframe with chosen quality
+    if (videoId && iframeRef.current) {
+      const vq = q !== 'auto' ? `&vq=${q}` : '';
+      iframeRef.current.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1${vq}`;
+      setIsPlaying(true);
+    }
+  };
 
   // Send command to YouTube iframe via postMessage
   const sendPlayerCommand = (func: string, args: unknown[] = []) => {
@@ -53,14 +76,22 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
     // Check if it's a youtube URL
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = input.match(regExp);
+    const vq = quality !== 'auto' ? `&vq=${quality}` : '';
 
     if (match && match[2].length === 11) {
       setVideoId(match[2]);
       setIsPlaying(true);
+      // Apply quality param immediately if quality is set
+      if (iframeRef.current) {
+        iframeRef.current.src = `https://www.youtube.com/embed/${match[2]}?autoplay=1&enablejsapi=1${vq}`;
+      }
     } else if (input.length === 11) {
       // Direct video ID
       setVideoId(input);
       setIsPlaying(true);
+      if (iframeRef.current) {
+        iframeRef.current.src = `https://www.youtube.com/embed/${input}?autoplay=1&enablejsapi=1${vq}`;
+      }
     } else {
       // Otherwise, open YouTube Search in a new tab
       const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(input + ' karaoke')}`;
@@ -351,6 +382,71 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
                 <rect x="4" y="4" width="16" height="16" rx="2" />
               </svg>
             </button>
+
+            {/* ── Settings / Quality ── */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setShowSettings(!showSettings)}
+                title="Kualitas video"
+                className="w-9 h-9 flex items-center justify-center rounded-full transition-all duration-150 active:scale-90 focus:outline-none cursor-pointer hover:brightness-125"
+                style={{
+                  background: showSettings
+                    ? 'rgba(99,102,241,0.45)'
+                    : 'rgba(255,255,255,0.12)',
+                  border: showSettings
+                    ? '1.5px solid rgba(129,140,248,0.7)'
+                    : '1.5px solid rgba(255,255,255,0.18)',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15)',
+                  color: showSettings ? '#a5b4fc' : 'rgba(255,255,255,0.85)',
+                }}
+              >
+                {/* Gear icon */}
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.92c.04-.36.07-.74.07-1.08s-.03-.73-.07-1.08l2.32-1.82c.21-.16.27-.46.13-.7l-2.2-3.81c-.13-.24-.42-.32-.65-.24l-2.74 1.1c-.57-.44-1.18-.79-1.85-1.07L14.5 2.42c-.04-.27-.27-.42-.5-.42h-4c-.23 0-.46.15-.5.42l-.44 2.46c-.67.28-1.28.63-1.85 1.07L4.47 4.85c-.23-.08-.52 0-.65.24L1.62 8.9c-.14.24-.08.54.13.7l2.32 1.82C4.03 11.27 4 11.64 4 12s.03.73.07 1.08L1.75 14.9c-.21.16-.27.46-.13.7l2.2 3.81c.13.24.42.32.65.24l2.74-1.1c.57.44 1.18.79 1.85 1.07l.44 2.46c.04.27.27.42.5.42h4c.23 0 .46-.15.5-.42l.44-2.46c.67-.28 1.28-.63 1.85-1.07l2.74 1.1c.23.08.52 0 .65-.24l2.2-3.81c.14-.24.08-.54-.13-.7l-2.32-1.82Z" />
+                </svg>
+              </button>
+
+              {/* Quality dropdown panel */}
+              {showSettings && (
+                <div
+                  className="absolute bottom-full mb-2 right-0 rounded-xl overflow-hidden z-30 animate-in fade-in slide-in-from-bottom-2 duration-150"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(15,23,42,0.97) 0%, rgba(30,41,59,0.97) 100%)',
+                    border: '1px solid rgba(99,102,241,0.35)',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.6)',
+                    minWidth: '100px',
+                  }}
+                >
+                  <div
+                    className="px-3 py-1.5 text-[9px] font-bold tracking-widest uppercase border-b"
+                    style={{ color: 'rgba(148,163,184,0.6)', borderColor: 'rgba(255,255,255,0.06)' }}
+                  >
+                    Kualitas
+                  </div>
+                  {QUALITY_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => handleQualityChange(opt.value)}
+                      className="w-full text-left px-3 py-1.5 text-[11px] font-medium transition-colors focus:outline-none cursor-pointer flex items-center justify-between"
+                      style={{
+                        color: quality === opt.value ? '#a5b4fc' : 'rgba(226,232,240,0.85)',
+                        background: quality === opt.value ? 'rgba(99,102,241,0.18)' : 'transparent',
+                        fontFamily: "'Outfit', sans-serif",
+                      }}
+                    >
+                      <span>{opt.label}</span>
+                      {quality === opt.value && (
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#a5b4fc' }}>
+                          <polyline points="20,6 9,17 4,12" strokeWidth="3" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
 
