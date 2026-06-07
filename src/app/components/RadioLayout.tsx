@@ -218,11 +218,13 @@ export function RadioLayout() {
 
   const activeChannelObj = STATIC_CHANNELS.find((ch) => ch.number === channel);
 
+  const safeActiveUsers = activeUsers || [];
+
   const dynamicUserCount =
-    isConnected && activeUsers.length > 0 ? activeUsers.length : getChannelUserCount(channel);
+    isConnected && safeActiveUsers.length > 0 ? safeActiveUsers.length : getChannelUserCount(channel);
 
   const dynamicUserList =
-    isConnected && activeUsers.length > 0 ? activeUsers : activeChannelObj?.users || [];
+    isConnected && safeActiveUsers.length > 0 ? safeActiveUsers : activeChannelObj?.users || [];
 
   const displayUser = infoText ? infoText.toUpperCase() : 'USER';
   const displayLoc = locationText ? locationText.toUpperCase() : 'BANDUNG, JAWA BARAT';
