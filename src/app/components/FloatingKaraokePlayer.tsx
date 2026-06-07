@@ -7,9 +7,9 @@ interface FloatingKaraokePlayerProps {
 
 export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
   const [isMinimized, setIsMinimized] = useState(false);
-  const [videoId, setVideoId] = useState('S2S1Vd3r3Gg'); // Default song
+  const [videoId, setVideoId] = useState(''); // Empty until user pastes URL
   const [searchQuery, setSearchQuery] = useState('');
-  const [isPlaying, setIsPlaying] = useState(true); // autoplay=1 so starts playing
+  const [isPlaying, setIsPlaying] = useState(false); // Not playing until video is loaded
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   // Send command to YouTube iframe via postMessage
@@ -56,9 +56,11 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
 
     if (match && match[2].length === 11) {
       setVideoId(match[2]);
+      setIsPlaying(true);
     } else if (input.length === 11) {
       // Direct video ID
       setVideoId(input);
+      setIsPlaying(true);
     } else {
       // Otherwise, open YouTube Search in a new tab
       const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(input + ' karaoke')}`;
@@ -136,7 +138,7 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
       className={`absolute z-50 flex flex-col overflow-hidden border transition-all duration-300 ${
         isMinimized
           ? 'w-[200px] h-[134px] rounded-xl' // 112px video + 22px solid bottom drag bar
-          : 'w-[320px] h-[320px] rounded-2xl'
+          : 'w-[320px] h-auto rounded-2xl'
       }`}
       style={{
         left: `${position.x}px`,
@@ -233,23 +235,44 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
         </div>
       )}
 
-      {/* ─── YOUTUBE PLAYER FRAME (Always visible, fits the container) ─── */}
+      {/* ─── YOUTUBE PLAYER FRAME / PLACEHOLDER ─── */}
       <div
-        className={`bg-black shrink-0 relative ${
-          isMinimized ? 'w-full h-[112px]' : 'w-full aspect-video border-b'
+        className={`shrink-0 relative ${
+          isMinimized ? 'w-full h-[112px] bg-black' : 'w-full aspect-video border-b'
         }`}
         style={{
           borderColor: 'var(--panel-border)',
         }}
       >
-        <iframe
-          ref={iframeRef}
-          src={`https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1`}
-          title="YouTube Karaoke Video"
-          className="w-full h-full"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        ></iframe>
+        {videoId ? (
+          <iframe
+            ref={iframeRef}
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1`}
+            title="YouTube Karaoke Video"
+            className="w-full h-full bg-black"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
+        ) : (
+          /* Empty state placeholder */
+          <div
+            className="w-full h-full flex flex-col items-center justify-center gap-2 select-none"
+            style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #0f172a 100%)' }}
+          >
+            {/* Music note icon */}
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(148,163,184,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 18V5l12-2v13" />
+              <circle cx="6" cy="18" r="3" />
+              <circle cx="18" cy="16" r="3" />
+            </svg>
+            <p
+              className="text-center text-[11px] font-medium px-4 leading-relaxed"
+              style={{ color: 'rgba(148,163,184,0.7)', fontFamily: "'Inter', sans-serif" }}
+            >
+              Silahkan tempel URL link<br />video musik Anda
+            </p>
+          </div>
+        )}
       </div>
 
       {/* ─── CONTENT INTERFACE (Hidden when minimized) ─── */}
