@@ -3,12 +3,21 @@ import { supabase } from '../utils/supabase';
 import type { User, RealtimeChannel } from '@supabase/supabase-js';
 import { BRAND } from '../utils/config';
 
+export interface WebRTCSignalingPayload {
+  senderUserId: string;
+  targetUserId?: string;
+  type: 'offer' | 'answer' | 'candidate';
+  data: RTCSessionDescriptionInit | RTCIceCandidateInit;
+}
+
 const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
 const isDummyKey =
   !supabaseKey ||
-  supabaseKey.startsWith('sb_publishable_') ||
+  supabaseKey === 'your-supabase-key' ||
+  supabaseKey === 'placeholder' ||
   supabaseKey.includes('placeholder') ||
-  supabaseKey === '';
+  supabaseKey.includes('your-') ||
+  supabaseKey.length < 20;
 
 // ─── Local Storage Key ────────────────────────────────────────────────────────
 const LS_KEY = 'nextvwt_settings';
@@ -139,9 +148,9 @@ export interface PTTState {
   broadcastVoiceChunk: (base64Chunk: string) => void;
 
   // WebRTC signaling actions
-  onWebRTCSignalingReceived: ((payload: any) => void) | null;
-  setOnWebRTCSignalingReceived: (callback: ((payload: any) => void) | null) => void;
-  broadcastWebRTCSignaling: (payload: any) => void;
+  onWebRTCSignalingReceived: ((payload: WebRTCSignalingPayload) => void) | null;
+  setOnWebRTCSignalingReceived: (callback: ((payload: WebRTCSignalingPayload) => void) | null) => void;
+  broadcastWebRTCSignaling: (payload: WebRTCSignalingPayload) => void;
 }
 
 // ─── Persisted Settings Keys ──────────────────────────────────────────────────
@@ -188,7 +197,7 @@ function pickPersistedState(state: Partial<PTTState>): Partial<PTTState> {
 
 // ─── Default Settings ─────────────────────────────────────────────────────────
 const DEFAULT_SETTINGS = {
-  infoText: 'Pebe Herianto',
+  infoText: 'Pengguna Baru',
   locationText: 'BANDUNG, JAWA BARAT',
   showMyPhoto: true,
   showOtherPhotos: true,
@@ -301,7 +310,7 @@ function subscribeToChannel(channelNum: number) {
           }
         }
       )
-      .on('broadcast', { event: 'webrtc_signaling' }, ({ payload }: { payload: any }) => {
+      .on('broadcast', { event: 'webrtc_signaling' }, ({ payload }: { payload: WebRTCSignalingPayload }) => {
         if (activeChannelSubscription !== channelInstance) return;
         const state = usePTTStore.getState();
         if (payload.senderUserId !== state.userId && state.onWebRTCSignalingReceived) {
@@ -387,7 +396,7 @@ export const usePTTStore = create<PTTState>((set) => ({
 
   onWebRTCSignalingReceived: null,
   setOnWebRTCSignalingReceived: (callback) => set({ onWebRTCSignalingReceived: callback }),
-  broadcastWebRTCSignaling: (payload) => {
+  broadcastWebRTCSignaling: (payload: WebRTCSignalingPayload) => {
     const state = usePTTStore.getState();
     if (activeChannelSubscription && state.isConnected && state.isPowerOn) {
       activeChannelSubscription.send({
