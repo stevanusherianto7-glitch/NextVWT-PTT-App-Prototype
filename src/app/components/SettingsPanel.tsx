@@ -895,20 +895,20 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
       {/* Scrollable Form Body */}
       <div className="flex-1 overflow-y-auto w-full pb-8">
         {/* INFO SECTION */}
-        <div className="w-full bg-[#e2e8f0] py-1 px-3 text-[11px] font-bold text-[#475569] uppercase tracking-wider">
+        <div className="w-full bg-[#e2e8f0] py-1.5 px-6 text-[11px] font-bold text-[#475569] uppercase tracking-wider">
           Info
         </div>
-        <div className="bg-white p-3 border-b border-gray-200 flex gap-2">
+        <div className="bg-white px-6 py-4 border-b border-gray-200 flex gap-2">
           <input
             type="text"
             value={infoText}
             onChange={(e) => setInfoText(e.target.value)}
-            className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm bg-white text-black outline-none focus:border-blue-500"
+            className="flex-1 border border-gray-300 rounded px-2.5 py-1.5 text-sm bg-white text-black outline-none focus:border-blue-500"
             placeholder="Username / Display name..."
           />
           <button
             onClick={() => setIsPhraseModalOpen(true)}
-            className="p-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded cursor-pointer focus:outline-none"
+            className="p-2 rounded text-white font-bold bg-gradient-to-b from-[#38bdf8] via-[#0ea5e9] to-[#0284c7] border-t border-white/40 border-b border-black/20 shadow-[0_3px_0_#0369a1,inset_0_1px_0_rgba(255,255,255,0.4)] active:translate-y-[2px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer focus:outline-none"
           >
             {/* Document icon */}
             <svg
@@ -931,19 +931,19 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
         </div>
 
         {/* LOKASI SECTION */}
-        <div className="w-full bg-[#e2e8f0] py-1 px-3 text-[11px] font-bold text-[#475569] uppercase tracking-wider">
+        <div className="w-full bg-[#e2e8f0] py-1.5 px-6 text-[11px] font-bold text-[#475569] uppercase tracking-wider">
           Lokasi
         </div>
-        <div className="bg-white p-3 border-b border-gray-200 flex gap-2">
+        <div className="bg-white px-6 py-4 border-b border-gray-200 flex gap-2">
           <input
             type="text"
             value={locationText}
             onChange={(e) => setLocationText(e.target.value)}
-            className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm bg-white text-black font-semibold outline-none focus:border-blue-500"
+            className="flex-1 border border-gray-300 rounded px-2.5 py-1.5 text-sm bg-white text-black font-semibold outline-none focus:border-blue-500"
           />
           <button
             onClick={() => setIsProvinceModalOpen(true)}
-            className="p-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded cursor-pointer focus:outline-none"
+            className="p-2 rounded text-white font-bold bg-gradient-to-b from-[#38bdf8] via-[#0ea5e9] to-[#0284c7] border-t border-white/40 border-b border-black/20 shadow-[0_3px_0_#0369a1,inset_0_1px_0_rgba(255,255,255,0.4)] active:translate-y-[2px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer focus:outline-none"
           >
             {/* Search glass icon */}
             <svg
