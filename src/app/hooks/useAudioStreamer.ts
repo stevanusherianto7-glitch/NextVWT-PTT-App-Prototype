@@ -44,12 +44,19 @@ export function useAudioStreamer() {
 
   const { startVAD, stopVAD } = useVAD();
 
-  const { getAudioContext, playAudioChunk: playAudioChunkBase64, flushAudioQueue } = useAudioPlayback();
+  const {
+    getAudioContext,
+    playAudioChunk: playAudioChunkBase64,
+    flushAudioQueue,
+  } = useAudioPlayback();
 
   // Helper check if a peer ID is actively connected in WebRTC map
-  const hasActivePeer = useCallback((peerUserId: string): boolean => {
-    return peerConnectionsRef.current.has(peerUserId);
-  }, [peerConnectionsRef]);
+  const hasActivePeer = useCallback(
+    (peerUserId: string): boolean => {
+      return peerConnectionsRef.current.has(peerUserId);
+    },
+    [peerConnectionsRef]
+  );
 
   // Sync peer connections when activeUsers changes
   const activeUsers = usePTTStore((state) => state.activeUsers);
@@ -315,9 +322,12 @@ export function useAudioStreamer() {
     [stopRecording, startVAD, getAudioContext, peerConnectionsRef, streamRef]
   );
 
-  const playAudioChunk = useCallback((base64Chunk: string) => {
-    return playAudioChunkBase64(base64Chunk, hasActivePeer);
-  }, [playAudioChunkBase64, hasActivePeer]);
+  const playAudioChunk = useCallback(
+    (base64Chunk: string) => {
+      return playAudioChunkBase64(base64Chunk, hasActivePeer);
+    },
+    [playAudioChunkBase64, hasActivePeer]
+  );
 
   return {
     startRecording,
