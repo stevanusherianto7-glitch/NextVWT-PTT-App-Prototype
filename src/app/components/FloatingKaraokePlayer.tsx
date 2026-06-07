@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Minimize2, Maximize2, Search, Disc, SkipBack, Play, Pause, Square } from 'lucide-react';
+import { X, Minimize2, Maximize2, Search, Disc } from 'lucide-react';
 
 interface FloatingKaraokePlayerProps {
   onClose: () => void;
@@ -255,66 +255,81 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
       {/* ─── CONTENT INTERFACE (Hidden when minimized) ─── */}
       {!isMinimized && (
         <>
-          {/* ─── PLAYER CONTROLS: Stop / Pause / Rewind ─── */}
+          {/* ─── PLAYER CONTROLS: Rewind / Play·Pause / Stop ─── */}
           <div
-            className="flex items-center justify-center gap-2.5 px-3 py-2 shrink-0 border-b animate-in fade-in duration-300"
+            className="flex items-center justify-center gap-5 px-3 py-2.5 shrink-0 border-b animate-in fade-in duration-300"
             style={{
-              background: 'rgba(0, 0, 0, 0.12)',
-              borderColor: 'rgba(255, 255, 255, 0.06)',
+              background: 'linear-gradient(to bottom, rgba(0,0,0,0.28), rgba(0,0,0,0.18))',
+              borderColor: 'rgba(255,255,255,0.07)',
             }}
           >
-            {/* Rewind (Back to Start) */}
+            {/* ── Rewind to start ── */}
             <button
               type="button"
               onClick={handleRewind}
               title="Ulangi dari awal"
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold text-white transition active:scale-95 focus:outline-none cursor-pointer"
+              className="w-9 h-9 flex items-center justify-center rounded-full transition-all duration-150 active:scale-90 focus:outline-none cursor-pointer hover:brightness-125"
               style={{
-                background: 'linear-gradient(to bottom, #64748b, #334155)',
-                boxShadow: '0 2px 0 #1e293b, inset 0 1px 0 rgba(255,255,255,0.2)',
-                fontFamily: "'Outfit', sans-serif",
+                background: 'rgba(255,255,255,0.12)',
+                border: '1.5px solid rgba(255,255,255,0.18)',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15)',
+                color: 'rgba(255,255,255,0.85)',
               }}
             >
-              <SkipBack className="w-3 h-3" />
-              <span>REWIND</span>
+              {/* Skip-to-start: bar + filled triangle pointing left */}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="19,5 9,12 19,19" />
+                <rect x="5" y="5" width="3" height="14" rx="1.5" />
+              </svg>
             </button>
 
-            {/* Play / Pause */}
+            {/* ── Play / Pause (larger, accent) ── */}
             <button
               type="button"
               onClick={handlePlayPause}
               title={isPlaying ? 'Jeda' : 'Putar'}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-bold text-white transition active:scale-95 focus:outline-none cursor-pointer"
+              className="w-12 h-12 flex items-center justify-center rounded-full transition-all duration-150 active:scale-90 focus:outline-none cursor-pointer"
               style={{
-                background: isPlaying
-                  ? 'linear-gradient(to bottom, #f59e0b, #b45309)'
-                  : 'linear-gradient(to bottom, #22c55e, #15803d)',
-                boxShadow: isPlaying
-                  ? '0 2px 0 #78350f, inset 0 1px 0 rgba(255,255,255,0.25)'
-                  : '0 2px 0 #14532d, inset 0 1px 0 rgba(255,255,255,0.25)',
-                fontFamily: "'Outfit', sans-serif",
+                background: 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(200,210,225,0.85) 100%)',
+                border: '1.5px solid rgba(255,255,255,0.6)',
+                boxShadow: '0 3px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.9)',
+                color: '#1e293b',
               }}
             >
-              {isPlaying ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
-              <span>{isPlaying ? 'PAUSE' : 'PLAY'}</span>
+              {isPlaying ? (
+                /* Pause: two solid bars */
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <rect x="5" y="4" width="4" height="16" rx="1.5" />
+                  <rect x="15" y="4" width="4" height="16" rx="1.5" />
+                </svg>
+              ) : (
+                /* Play: filled triangle */
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="6,4 20,12 6,20" />
+                </svg>
+              )}
             </button>
 
-            {/* Stop */}
+            {/* ── Stop ── */}
             <button
               type="button"
               onClick={handleStop}
               title="Stop"
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold text-white transition active:scale-95 focus:outline-none cursor-pointer"
+              className="w-9 h-9 flex items-center justify-center rounded-full transition-all duration-150 active:scale-90 focus:outline-none cursor-pointer hover:brightness-125"
               style={{
-                background: 'linear-gradient(to bottom, #ef4444, #991b1b)',
-                boxShadow: '0 2px 0 #7f1d1d, inset 0 1px 0 rgba(255,255,255,0.2)',
-                fontFamily: "'Outfit', sans-serif",
+                background: 'rgba(255,255,255,0.12)',
+                border: '1.5px solid rgba(255,255,255,0.18)',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15)',
+                color: 'rgba(255,255,255,0.85)',
               }}
             >
-              <Square className="w-3 h-3" />
-              <span>STOP</span>
+              {/* Stop: filled square */}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="4" y="4" width="16" height="16" rx="2" />
+              </svg>
             </button>
           </div>
+
 
           {/* ─── URL INPUT + LOAD ─── */}
           <div
