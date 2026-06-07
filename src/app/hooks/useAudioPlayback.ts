@@ -32,7 +32,7 @@ export function useAudioPlayback() {
     if (!audioCtxRef.current) {
       const AudioContextClass =
         window.AudioContext ||
-        (window as window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+        (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
       if (AudioContextClass) {
         audioCtxRef.current = new AudioContextClass();
       }

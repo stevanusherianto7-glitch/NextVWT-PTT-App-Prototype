@@ -4,17 +4,28 @@
  */
 import { test, expect } from '@playwright/test';
 
+interface LayoutShiftEntry extends PerformanceEntry {
+  hadRecentInput: boolean;
+  value: number;
+}
+
+interface CustomWindow extends Window {
+  accumulatedCLS?: number;
+}
+
 test.describe('Cumulative Layout Shift (CLS) Verification', () => {
   test.beforeEach(async ({ page }) => {
     // Inject observer before page loads so it captures initial rendering layout shifts
     await page.addInitScript(() => {
-      (window as any).accumulatedCLS = 0;
+      const customWindow = window as unknown as CustomWindow;
+      customWindow.accumulatedCLS = 0;
       try {
         const observer = new PerformanceObserver((entryList) => {
           for (const entry of entryList.getEntries()) {
+            const layoutEntry = entry as unknown as LayoutShiftEntry;
             // Only count shifts that occurred without recent user input (to isolate layout instability)
-            if (!(entry as any).hadRecentInput) {
-              (window as any).accumulatedCLS += entry.value;
+            if (!layoutEntry.hadRecentInput) {
+              customWindow.accumulatedCLS = (customWindow.accumulatedCLS || 0) + layoutEntry.value;
             }
           }
         });
@@ -104,7 +115,8 @@ test.describe('Cumulative Layout Shift (CLS) Verification', () => {
 
     // 3. Extract the accumulated CLS score from the window object
     const clsScore = await page.evaluate(() => {
-      return (window as any).accumulatedCLS || 0;
+      const customWindow = window as unknown as CustomWindow;
+      return customWindow.accumulatedCLS || 0;
     });
 
     console.log(`[CLS Audit] Accumulated Cumulative Layout Shift: ${clsScore}`);

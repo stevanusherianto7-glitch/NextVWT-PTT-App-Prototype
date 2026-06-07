@@ -1,4 +1,4 @@
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig, loadEnv, type PluginOption } from 'vite'
 import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
@@ -70,7 +70,7 @@ export default defineConfig(({ command: _command, mode }) => {
       tailwindcss(),
       // Advanced JS Obfuscation for Production builds (SEC-01)
       mode === 'production' &&
-        (JavaScriptObfuscator as unknown as (options: Record<string, unknown>) => unknown)({
+        JavaScriptObfuscator({
           include: ['src/**/*.ts', 'src/**/*.tsx'],
           exclude: ['node_modules/**'],
           options: {
@@ -106,7 +106,7 @@ export default defineConfig(({ command: _command, mode }) => {
             unicodeEscapeSequence: true,
           },
         }),
-    ].filter(Boolean),
+    ].filter(Boolean) as PluginOption[],
 
     resolve: {
       alias: {
