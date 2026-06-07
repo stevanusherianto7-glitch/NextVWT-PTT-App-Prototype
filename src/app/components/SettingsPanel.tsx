@@ -1086,10 +1086,10 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
         </div>
 
         {/* TAMPILAN DAFTAR PENGGUNA SECTION */}
-        <div className="w-full bg-[#e2e8f0] py-1 px-3 text-[11px] font-bold text-[#475569] uppercase tracking-wider">
+        <div className="w-full bg-[#e2e8f0] py-1.5 px-6 text-[11px] font-bold text-[#475569] uppercase tracking-wider">
           Tampilan Daftar Pengguna
         </div>
-        <div className="bg-white p-4 border-b border-gray-200 flex flex-col gap-4">
+        <div className="bg-white px-6 py-5 border-b border-gray-200 flex flex-col gap-4">
           <div className="flex items-center justify-between w-full">
             <span className="text-xs font-semibold text-gray-700 pr-4 leading-normal">
               Tampilkan Foto (Koneksi Kembali Diharuskan)
@@ -1153,23 +1153,23 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
         </div>
 
         {/* ANTRIAN MAKSIMAL SECTION */}
-        <div className="w-full bg-[#e2e8f0] py-1 px-3 text-[11px] font-bold text-[#475569] uppercase tracking-wider">
+        <div className="w-full bg-[#e2e8f0] py-1.5 px-6 text-[11px] font-bold text-[#475569] uppercase tracking-wider">
           Antrian Maksimal Pemutar Suara (per 20ms)
         </div>
-        <div className="bg-white p-3 border-b border-gray-200">
+        <div className="bg-white px-6 py-4 border-b border-gray-200">
           <input
             type="text"
             value={maxQueue}
             onChange={(e) => setMaxQueue(e.target.value)}
-            className="w-full border border-gray-300 rounded px-2 py-1 text-sm bg-white text-black font-semibold outline-none focus:border-blue-500"
+            className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm bg-white text-black font-semibold outline-none focus:border-blue-500"
           />
         </div>
 
         {/* MODE AUDIO SECTION */}
-        <div className="w-full bg-[#e2e8f0] py-1 px-3 text-[11px] font-bold text-[#475569] uppercase tracking-wider">
+        <div className="w-full bg-[#e2e8f0] py-1.5 px-6 text-[11px] font-bold text-[#475569] uppercase tracking-wider">
           Mode Audio
         </div>
-        <div className="bg-white p-4 border-b border-gray-200 flex flex-col gap-4">
+        <div className="bg-white px-6 py-5 border-b border-gray-200 flex flex-col gap-4">
           {/* Radio Button 1 */}
           <label className="flex items-center gap-3 cursor-pointer">
             <input
@@ -1243,7 +1243,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
               <button
                 type="button"
                 onClick={() => setIsKaraokePlayerOpen(!isKaraokePlayerOpen)}
-                className="w-full py-2 px-4 rounded-lg bg-gradient-to-tr from-indigo-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-bold text-xs shadow-md hover:shadow-indigo-500/20 active:scale-[0.98] transition flex items-center justify-center gap-2 focus:outline-none cursor-pointer"
+                className="w-full py-2.5 px-4 rounded text-white font-bold text-xs bg-gradient-to-b from-[#6366f1] via-[#5b21b6] to-[#4c1d95] border-t border-white/30 border-b border-black/20 shadow-[0_3px_0_#311068,inset_0_1px_0_rgba(255,255,255,0.4)] active:translate-y-[2px] active:shadow-none hover:brightness-105 transition-all duration-100 flex items-center justify-center gap-2 focus:outline-none cursor-pointer"
               >
                 <svg
                   width="14"
@@ -1267,10 +1267,10 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
         </div>
 
         {/* PTT SECTION */}
-        <div className="w-full bg-[#e2e8f0] py-1 px-3 text-[11px] font-bold text-[#475569] uppercase tracking-wider">
+        <div className="w-full bg-[#e2e8f0] py-1.5 px-6 text-[11px] font-bold text-[#475569] uppercase tracking-wider">
           PTT
         </div>
-        <div className="bg-white p-4 border-b border-gray-200 flex flex-col gap-4">
+        <div className="bg-white px-6 py-5 border-b border-gray-200 flex flex-col gap-4">
           {/* Slider 1: Ukuran */}
           <div className="flex flex-col gap-1">
             <div className="text-xs font-semibold text-gray-700">Ukuran</div>
@@ -1402,16 +1402,16 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
             </div>
           </div>
 
-          <button className="w-full text-center py-2 text-sm font-semibold bg-[#e2e8f0] hover:bg-[#cbd5e1] border border-gray-300 rounded cursor-pointer">
+          <button className="w-full text-center py-2.5 text-sm font-bold rounded text-slate-800 bg-gradient-to-b from-white via-[#f1f5f9] to-[#cbd5e1] border-t border-white/40 border-b border-black/20 shadow-[0_3px_0_#94a3b8,inset_0_1px_0_rgba(255,255,255,0.8)] active:translate-y-[2px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer focus:outline-none">
             Tambah Tombol PTT POC
           </button>
         </div>
 
         {/* TEMA SECTION */}
-        <div className="w-full bg-[#e2e8f0] py-1 px-3 text-[11px] font-bold text-[#475569] uppercase tracking-wider">
+        <div className="w-full bg-[#e2e8f0] py-1.5 px-6 text-[11px] font-bold text-[#475569] uppercase tracking-wider">
           Tema
         </div>
-        <div className="bg-white p-3 border-b border-gray-200 flex flex-col gap-4">
+        <div className="bg-white px-6 py-5 border-b border-gray-200 flex flex-col gap-4">
           <div className="flex gap-2">
             <input
               type="text"
@@ -1431,7 +1431,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
                 e.stopPropagation();
                 setIsThemeModalOpen(true);
               }}
-              className="px-4 py-1.5 text-sm font-semibold bg-[#e2e8f0] hover:bg-[#cbd5e1] border border-gray-300 rounded cursor-pointer transition-colors"
+              className="px-4 py-1.5 text-sm font-bold rounded text-white bg-gradient-to-b from-[#38bdf8] via-[#0ea5e9] to-[#0284c7] border-t border-white/40 border-b border-black/20 shadow-[0_3px_0_#0369a1,inset_0_1px_0_rgba(255,255,255,0.4)] active:translate-y-[2px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer focus:outline-none"
             >
               Ganti
             </button>
@@ -1440,41 +1440,41 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
           {/* MAIN SIMPAN BUTTON */}
           <button
             onClick={handleSave}
-            className="w-full text-center py-2.5 text-sm font-bold bg-[#c2dec2] hover:bg-[#b0d2b0] text-[#1e3f1e] border border-[#a2cba2] rounded shadow-sm cursor-pointer transition-colors"
+            className="w-full text-center py-2.5 text-sm font-bold rounded text-white bg-gradient-to-b from-[#4ade80] via-[#22c55e] to-[#16a34a] border-t border-white/40 border-b border-black/20 shadow-[0_3px_0_#15803d,inset_0_1px_0_rgba(255,255,255,0.4)] active:translate-y-[2px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer focus:outline-none"
           >
             Simpan
           </button>
         </div>
 
         {/* TENTANG SECTION */}
-        <div className="w-full bg-[#e2e8f0] py-1 px-3 text-[11px] font-bold text-[#475569] uppercase tracking-wider">
+        <div className="w-full bg-[#e2e8f0] py-1.5 px-6 text-[11px] font-bold text-[#475569] uppercase tracking-wider">
           Tentang
         </div>
-        <div className="bg-white p-4 border-b border-gray-200 flex flex-col gap-3">
+        <div className="bg-white px-6 py-5 border-b border-gray-200 flex flex-col gap-3">
           <div className="text-xs font-semibold text-gray-700 mb-1">
             Versi: <span className="font-bold text-black">2.0.0</span>
           </div>
 
-          <div className="flex flex-col gap-2">
-            <button className="w-full text-left px-3 py-2 text-xs font-semibold bg-[#e2e8f0] hover:bg-[#cbd5e1] border border-gray-300 rounded cursor-pointer">
+          <div className="flex flex-col gap-2.5">
+            <button className="w-full text-left px-4 py-2.5 text-xs font-bold rounded text-slate-800 bg-gradient-to-b from-white via-[#f1f5f9] to-[#cbd5e1] border-t border-white/40 border-b border-black/20 shadow-[0_3px_0_#94a3b8,inset_0_1px_0_rgba(255,255,255,0.8)] active:translate-y-[2px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer focus:outline-none">
               Persyaratan & Ketentuan
             </button>
-            <button className="w-full text-left px-3 py-2 text-xs font-semibold bg-[#e2e8f0] hover:bg-[#cbd5e1] border border-gray-300 rounded cursor-pointer">
+            <button className="w-full text-left px-4 py-2.5 text-xs font-bold rounded text-slate-800 bg-gradient-to-b from-white via-[#f1f5f9] to-[#cbd5e1] border-t border-white/40 border-b border-black/20 shadow-[0_3px_0_#94a3b8,inset_0_1px_0_rgba(255,255,255,0.8)] active:translate-y-[2px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer focus:outline-none">
               Kebijakan Privasi
             </button>
             <button
               onClick={() => setIsUserGuideOpen(true)}
-              className="w-full text-left px-3 py-2 text-xs font-semibold bg-[#e2e8f0] hover:bg-[#cbd5e1] border border-gray-300 rounded cursor-pointer focus:outline-none"
+              className="w-full text-left px-4 py-2.5 text-xs font-bold rounded text-slate-800 bg-gradient-to-b from-white via-[#f1f5f9] to-[#cbd5e1] border-t border-white/40 border-b border-black/20 shadow-[0_3px_0_#94a3b8,inset_0_1px_0_rgba(255,255,255,0.8)] active:translate-y-[2px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer focus:outline-none"
             >
               Panduan Pengguna
             </button>
-            <button className="w-full text-left px-3 py-2 text-xs font-semibold bg-[#e2e8f0] hover:bg-[#cbd5e1] border border-gray-300 rounded cursor-pointer">
+            <button className="w-full text-left px-4 py-2.5 text-xs font-bold rounded text-slate-800 bg-gradient-to-b from-white via-[#f1f5f9] to-[#cbd5e1] border-t border-white/40 border-b border-black/20 shadow-[0_3px_0_#94a3b8,inset_0_1px_0_rgba(255,255,255,0.8)] active:translate-y-[2px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer focus:outline-none">
               Legal
             </button>
-            <button className="w-full text-left px-3 py-2 text-xs font-semibold bg-[#e2e8f0] hover:bg-[#cbd5e1] border border-gray-300 rounded cursor-pointer">
+            <button className="w-full text-left px-4 py-2.5 text-xs font-bold rounded text-slate-800 bg-gradient-to-b from-white via-[#f1f5f9] to-[#cbd5e1] border-t border-white/40 border-b border-black/20 shadow-[0_3px_0_#94a3b8,inset_0_1px_0_rgba(255,255,255,0.8)] active:translate-y-[2px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer focus:outline-none">
               Jika Suka Berikan Rating
             </button>
-            <button className="w-full text-left px-3 py-2 text-xs font-semibold bg-[#f3d9d9] hover:bg-[#e6c1c1] text-[#9c2424] border border-[#d6a5a5] rounded cursor-pointer mt-1">
+            <button className="w-full text-left px-4 py-2.5 text-xs font-bold rounded text-white bg-gradient-to-b from-red-400 via-red-500 to-red-600 border-t border-white/40 border-b border-black/20 shadow-[0_3px_0_#991b1b,inset_0_1px_0_rgba(255,255,255,0.4)] active:translate-y-[2px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer focus:outline-none mt-1">
               Hapus Akun Saya
             </button>
           </div>
