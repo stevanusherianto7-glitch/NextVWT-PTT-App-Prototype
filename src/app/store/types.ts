@@ -25,3 +25,90 @@ export interface WebRTCSignalingPayload {
   type: 'offer' | 'answer' | 'candidate';
   data: RTCSessionDescriptionInit | RTCIceCandidateInit;
 }
+
+export interface PTTState {
+  isPowerOn: boolean;
+  isConnected: boolean;
+  isTransmitting: boolean;
+  isScanning: boolean;
+  progress: number;
+  channelNumber: number;
+  channelId: string; // UUID v4 format
+  userId: string; // UUID v4 format
+  callSign: string; // Random 5-character string (combination of 5 letters + numbers)
+  error: string | null;
+
+  // Auth State
+  user: AppUser | null;
+  activeTransmitter: { userId: string; displayName: string; callSign: string } | null;
+  activeUsers: Array<{
+    userId: string;
+    displayName: string;
+    callSign: string;
+    location: string;
+    avatarUrl?: string;
+  }>;
+
+  // Settings State
+  infoText: string;
+  locationText: string;
+  showMyPhoto: boolean;
+  showOtherPhotos: boolean;
+  showPhotosInList: boolean;
+  fastClick: boolean;
+  showModulator: boolean;
+  showPTT: boolean;
+  maxQueue: string;
+  audioMode: 'discussion' | 'music';
+  pttSize: number;
+  pttBottom: number;
+  togglePtt: boolean;
+  pttVolume: number;
+  vibrateOnStart: boolean;
+  toneOnStartEnd: boolean;
+  bgActive: boolean;
+  fullDuplex: boolean;
+  themeText: string;
+  builtInEcho: boolean;
+  isKaraokePlayerOpen: boolean;
+  echoFeedback: number;
+  profilePhotoOption: 'google' | 'custom';
+  customPhotoUrl: string;
+
+  // Actions
+  setPower: (power: boolean) => void;
+  setConnected: (connected: boolean) => void;
+  setTransmitting: (transmitting: boolean) => void;
+  setScanning: (scanning: boolean) => void;
+  setProgress: (progress: number) => void;
+  setChannelNumber: (numOrFn: number | ((prev: number) => number)) => void;
+  setError: (err: string | null) => void;
+  initializeSession: () => void;
+  updateSettings: (settings: Partial<PTTState>) => void;
+  setUser: (user: AppUser | null) => void;
+  signInWithGoogle: () => Promise<void>;
+  signOut: () => Promise<void>;
+  setKaraokePlayerOpen: (open: boolean) => void;
+  subscribeToChannel: (channelNum: number) => void;
+
+  // Control actions
+  channelUp: () => void;
+  channelDown: () => void;
+  toggleScan: () => void;
+
+  // Audio actions
+  onVoiceChunkReceived: ((base64Chunk: string) => void) | null;
+  setOnVoiceChunkReceived: (callback: ((base64Chunk: string) => void) | null) => void;
+  broadcastVoiceChunk: (base64Chunk: string) => void;
+
+  // WebRTC signaling actions
+  onWebRTCSignalingReceived: ((payload: WebRTCSignalingPayload) => void) | null;
+  setOnWebRTCSignalingReceived: (
+    callback: ((payload: WebRTCSignalingPayload) => void) | null
+  ) => void;
+  broadcastWebRTCSignaling: (payload: WebRTCSignalingPayload) => void;
+
+  // Channels online DB actions
+  channels: ChannelItem[];
+  fetchChannels: () => Promise<void>;
+}

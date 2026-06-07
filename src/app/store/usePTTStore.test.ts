@@ -150,10 +150,10 @@ describe('usePTTStore – Core Unit Tests', () => {
   it('should support callback function updater syntax for channel transitions', () => {
     const state = usePTTStore.getState();
 
-    state.setChannelNumber((prev) => prev + 5);
+    state.setChannelNumber((prev: number) => prev + 5);
     expect(usePTTStore.getState().channelNumber).toBe(105);
 
-    state.setChannelNumber((prev) => prev - 10);
+    state.setChannelNumber((prev: number) => prev - 10);
     expect(usePTTStore.getState().channelNumber).toBe(95);
   });
 

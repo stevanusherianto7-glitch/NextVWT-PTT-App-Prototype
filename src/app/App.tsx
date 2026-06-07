@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { usePTTStore, generateUUID } from './store/usePTTStore';
+import type { GuestUser } from './store/types';
 import { Toaster } from './components/ui/sonner';
 import { getSupabase } from './utils/supabase';
 import type { Subscription } from '@supabase/supabase-js';
