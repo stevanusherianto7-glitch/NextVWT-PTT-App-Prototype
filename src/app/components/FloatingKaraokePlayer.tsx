@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Minimize2, Maximize2, Search, Disc } from 'lucide-react';
+import { X, Minimize2, Maximize2, Search, Disc, SkipBack, Play, Pause, Square } from 'lucide-react';
 
 interface FloatingKaraokePlayerProps {
   onClose: () => void;
@@ -9,6 +9,36 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
   const [isMinimized, setIsMinimized] = useState(false);
   const [videoId, setVideoId] = useState('S2S1Vd3r3Gg'); // Default song
   const [searchQuery, setSearchQuery] = useState('');
+  const [isPlaying, setIsPlaying] = useState(true); // autoplay=1 so starts playing
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  // Send command to YouTube iframe via postMessage
+  const sendPlayerCommand = (func: string, args: unknown[] = []) => {
+    iframeRef.current?.contentWindow?.postMessage(
+      JSON.stringify({ event: 'command', func, args }),
+      '*'
+    );
+  };
+
+  const handlePlayPause = () => {
+    if (isPlaying) {
+      sendPlayerCommand('pauseVideo');
+    } else {
+      sendPlayerCommand('playVideo');
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const handleStop = () => {
+    sendPlayerCommand('stopVideo');
+    setIsPlaying(false);
+  };
+
+  const handleRewind = () => {
+    sendPlayerCommand('seekTo', [0, true]);
+    sendPlayerCommand('playVideo');
+    setIsPlaying(true);
+  };
 
   // Dragging states
   const [position, setPosition] = useState({ x: 20, y: 120 });
@@ -106,7 +136,7 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
       className={`absolute z-50 flex flex-col overflow-hidden border transition-all duration-300 ${
         isMinimized
           ? 'w-[200px] h-[134px] rounded-xl' // 112px video + 22px solid bottom drag bar
-          : 'w-[320px] h-[272px] rounded-2xl'
+          : 'w-[320px] h-[320px] rounded-2xl'
       }`}
       style={{
         left: `${position.x}px`,
@@ -213,6 +243,7 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
         }}
       >
         <iframe
+          ref={iframeRef}
           src={`https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1`}
           title="YouTube Karaoke Video"
           className="w-full h-full"
@@ -223,44 +254,107 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
 
       {/* ─── CONTENT INTERFACE (Hidden when minimized) ─── */}
       {!isMinimized && (
-        <div
-          className="p-2.5 flex gap-1.5 shrink-0 border-b animate-in fade-in duration-300"
-          style={{
-            background: 'rgba(0, 0, 0, 0.08)',
-            borderColor: 'rgba(255, 255, 255, 0.05)',
-          }}
-        >
-          <div className="relative flex-1">
-            <Search
-              className="absolute left-2.5 top-2.5 w-3.5 h-3.5"
-              style={{ color: 'var(--panel-text-color)', opacity: 0.6 }}
-            />
-            <input
-              type="text"
-              placeholder="Cari lagu / paste link YouTube..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleLoadVideo(searchQuery)}
-              className="w-full pl-8 pr-2 py-1.5 bg-black/15 border rounded-lg text-[11px] placeholder:text-current placeholder:opacity-50 text-current font-medium focus:outline-none focus:ring-1 focus:ring-current"
-              style={{
-                color: 'var(--panel-text-color)',
-                borderColor: 'var(--panel-border)',
-              }}
-            />
-          </div>
-          <button
-            onClick={() => handleLoadVideo(searchQuery)}
-            className="px-2.5 py-1 text-[10px] font-bold text-white transition focus:outline-none cursor-pointer active:scale-95 flex items-center justify-center rounded-lg"
+        <>
+          {/* ─── PLAYER CONTROLS: Stop / Pause / Rewind ─── */}
+          <div
+            className="flex items-center justify-center gap-2.5 px-3 py-2 shrink-0 border-b animate-in fade-in duration-300"
             style={{
-              background: 'var(--btn-bg)',
-              border: 'var(--btn-border)',
-              boxShadow: 'var(--btn-shadow)',
-              fontFamily: "'Outfit', sans-serif",
+              background: 'rgba(0, 0, 0, 0.12)',
+              borderColor: 'rgba(255, 255, 255, 0.06)',
             }}
           >
-            LOAD
-          </button>
-        </div>
+            {/* Rewind (Back to Start) */}
+            <button
+              type="button"
+              onClick={handleRewind}
+              title="Ulangi dari awal"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold text-white transition active:scale-95 focus:outline-none cursor-pointer"
+              style={{
+                background: 'linear-gradient(to bottom, #64748b, #334155)',
+                boxShadow: '0 2px 0 #1e293b, inset 0 1px 0 rgba(255,255,255,0.2)',
+                fontFamily: "'Outfit', sans-serif",
+              }}
+            >
+              <SkipBack className="w-3 h-3" />
+              <span>REWIND</span>
+            </button>
+
+            {/* Play / Pause */}
+            <button
+              type="button"
+              onClick={handlePlayPause}
+              title={isPlaying ? 'Jeda' : 'Putar'}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-bold text-white transition active:scale-95 focus:outline-none cursor-pointer"
+              style={{
+                background: isPlaying
+                  ? 'linear-gradient(to bottom, #f59e0b, #b45309)'
+                  : 'linear-gradient(to bottom, #22c55e, #15803d)',
+                boxShadow: isPlaying
+                  ? '0 2px 0 #78350f, inset 0 1px 0 rgba(255,255,255,0.25)'
+                  : '0 2px 0 #14532d, inset 0 1px 0 rgba(255,255,255,0.25)',
+                fontFamily: "'Outfit', sans-serif",
+              }}
+            >
+              {isPlaying ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+              <span>{isPlaying ? 'PAUSE' : 'PLAY'}</span>
+            </button>
+
+            {/* Stop */}
+            <button
+              type="button"
+              onClick={handleStop}
+              title="Stop"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold text-white transition active:scale-95 focus:outline-none cursor-pointer"
+              style={{
+                background: 'linear-gradient(to bottom, #ef4444, #991b1b)',
+                boxShadow: '0 2px 0 #7f1d1d, inset 0 1px 0 rgba(255,255,255,0.2)',
+                fontFamily: "'Outfit', sans-serif",
+              }}
+            >
+              <Square className="w-3 h-3" />
+              <span>STOP</span>
+            </button>
+          </div>
+
+          {/* ─── URL INPUT + LOAD ─── */}
+          <div
+            className="p-2.5 flex gap-1.5 shrink-0 animate-in fade-in duration-300"
+            style={{
+              background: 'rgba(0, 0, 0, 0.08)',
+            }}
+          >
+            <div className="relative flex-1">
+              <Search
+                className="absolute left-2.5 top-2.5 w-3.5 h-3.5"
+                style={{ color: 'var(--panel-text-color)', opacity: 0.6 }}
+              />
+              <input
+                type="text"
+                placeholder="Cari lagu / paste link YouTube..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleLoadVideo(searchQuery)}
+                className="w-full pl-8 pr-2 py-1.5 bg-black/15 border rounded-lg text-[11px] placeholder:text-current placeholder:opacity-50 text-current font-medium focus:outline-none focus:ring-1 focus:ring-current"
+                style={{
+                  color: 'var(--panel-text-color)',
+                  borderColor: 'var(--panel-border)',
+                }}
+              />
+            </div>
+            <button
+              onClick={() => handleLoadVideo(searchQuery)}
+              className="px-2.5 py-1 text-[10px] font-bold text-white transition focus:outline-none cursor-pointer active:scale-95 flex items-center justify-center rounded-lg"
+              style={{
+                background: 'var(--btn-bg)',
+                border: 'var(--btn-border)',
+                boxShadow: 'var(--btn-shadow)',
+                fontFamily: "'Outfit', sans-serif",
+              }}
+            >
+              LOAD
+            </button>
+          </div>
+        </>
       )}
 
       {/* ─── MINI DRAG BAR (Only shown at the bottom when minimized) ─── */}
