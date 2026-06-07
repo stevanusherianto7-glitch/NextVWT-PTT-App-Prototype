@@ -176,8 +176,34 @@ export default defineConfig(({ command: _command, mode }) => {
     test: {
       include: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'src/**/*.spec.ts'],
       exclude: ['e2e/**', 'node_modules/**', 'dist/**'],
-      environment: 'node',
+      // [P2-7] jsdom agar React hooks (renderHook) dan Web APIs (window, document) tersedia
+      environment: 'jsdom',
+      // Globals: true agar vi/describe/it/expect tersedia tanpa import di tiap file test
+      globals: true,
+      setupFiles: [],
+      // [P2-7] Coverage config menggunakan @vitest/coverage-v8 (V8 native, lebih cepat dari istanbul)
+      coverage: {
+        provider: 'v8',
+        // [P2-7] Hanya fokus pada hooks yang kita test untuk sprint ini
+        include: [
+          'src/app/hooks/useVAD.ts',
+          'src/app/hooks/useAudioPlayback.ts',
+          'src/app/hooks/useWebRTC.ts',
+        ],
+        exclude: [
+          '**/*.test.ts',
+        ],
+        thresholds: {
+          lines: 70,
+          functions: 65,
+          branches: 60,
+          statements: 70,
+        },
+        reporter: ['text', 'html', 'lcov'],
+        reportsDirectory: './coverage',
+      },
     },
+
 
     // Define global constants for use in the app
     define: {

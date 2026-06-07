@@ -1,8 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import twinHeadsIcon from '../../imports/ikon_kepala_kembar-2.png';
 import usernameIcon from '../../imports/ikon_username1.png';
 import { usePTTStore } from '../store/usePTTStore';
-import { AquariumCanvas } from './AquariumCanvas';
+import { AquariumSkeleton } from './SkeletonLoaders';
+
+// [P2-2] AquariumCanvas hanya diload jika user memakai theme-v6 + bgActive
+// Ukuran: ~24KB JS + WebGL canvas — 0% users tidak memakai tema ini tidak perlu download
+const AquariumCanvas = lazy(() =>
+  import('./AquariumCanvas').then((m) => ({ default: m.AquariumCanvas }))
+);
 
 interface LCDPanelProps {
   channel: number;
@@ -145,8 +151,12 @@ export function LCDPanel({
           }}
         />
 
-        {/* Aquarium Canvas Backplate */}
-        {_isPowerOn && themeText === 'theme-v6' && bgActive && <AquariumCanvas theme={themeText} />}
+        {/* Aquarium Canvas Backplate — lazy-loaded, hanya aktif di theme-v6 */}
+        {_isPowerOn && themeText === 'theme-v6' && bgActive && (
+          <Suspense fallback={<AquariumSkeleton />}>
+            <AquariumCanvas theme={themeText} />
+          </Suspense>
+        )}
 
         {/* Content */}
         <div className="relative p-2.5 h-full flex flex-col justify-between transition-opacity duration-300 opacity-100 z-10">
