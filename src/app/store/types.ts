@@ -81,6 +81,11 @@ export interface PTTState {
   profilePhotoOption: 'google' | 'custom';
   customPhotoUrl: string;
 
+  // Fase 1: Onboarding & Feedback
+  hasCompletedOnboarding: boolean;
+  showFeedbackModal: boolean;
+  lastFeedbackTime: number;
+
   // Actions
   setPower: (power: boolean) => void;
   setConnected: (connected: boolean) => void;
@@ -96,6 +101,10 @@ export interface PTTState {
   signOut: () => Promise<void>;
   setKaraokePlayerOpen: (open: boolean) => void;
   subscribeToChannel: (channelNum: number) => void;
+
+  setHasCompletedOnboarding: (completed: boolean) => void;
+  setShowFeedbackModal: (show: boolean) => void;
+  setLastFeedbackTime: (time: number) => void;
 
   // Control actions
   channelUp: () => void;

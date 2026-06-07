@@ -191,7 +191,6 @@ export function LCDPanel({
                 <Sparkles
                   className="w-4 h-4 ml-0.5 text-yellow-400 animate-pulse flex-shrink-0"
                   style={{ filter: 'drop-shadow(0px 0px 2px rgba(250,204,21,0.8))' }}
-                  title="Pengguna Baru"
                 />
               )}
             </div>

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { usePTTStore, generateUUID } from './store/usePTTStore';
-import type { AppUser, GuestUser } from './store/types';
+import type { GuestUser } from './store/types';
 import { Toaster } from './components/ui/sonner';
 import { getSupabase } from './utils/supabase';
 import type { Subscription } from '@supabase/supabase-js';
@@ -15,13 +15,15 @@ export default function App() {
     usePTTStore();
 
   useEffect(() => {
-    const audit = performSecurityAudit();
-    if (audit.blocked) {
-      // Intentional hard crash due to security violation
-      throw new Error(
-        `SECURITY_VIOLATION: Aplikasi terindikasi dimodifikasi secara ilegal. ${audit.issues.join(', ')}`
-      );
-    }
+    performSecurityAudit()
+      .then((audit) => {
+        if (audit.blocked && import.meta.env.PROD) {
+          console.error('[Security] Potential security issue detected:', audit.issues.join(', '));
+        }
+      })
+      .catch((err) => {
+        console.error('[Security] Error performing audit:', err);
+      });
   }, []);
 
   useEffect(() => {

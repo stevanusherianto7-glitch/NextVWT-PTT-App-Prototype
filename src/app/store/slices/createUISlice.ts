@@ -21,6 +21,12 @@ export const createUISlice: StateCreator<
     | 'setScanning'
     | 'setProgress'
     | 'setError'
+    | 'hasCompletedOnboarding'
+    | 'showFeedbackModal'
+    | 'lastFeedbackTime'
+    | 'setHasCompletedOnboarding'
+    | 'setShowFeedbackModal'
+    | 'setLastFeedbackTime'
   >
 > = (set, get) => ({
   isPowerOn: true,
@@ -29,6 +35,9 @@ export const createUISlice: StateCreator<
   isScanning: false,
   progress: 0,
   error: null,
+  hasCompletedOnboarding: false,
+  showFeedbackModal: false,
+  lastFeedbackTime: 0,
 
   setPower: (power) => {
     const state = get();
@@ -94,4 +103,8 @@ export const createUISlice: StateCreator<
   },
 
   setError: (error) => set({ error }),
+
+  setHasCompletedOnboarding: (completed) => set({ hasCompletedOnboarding: completed }),
+  setShowFeedbackModal: (show) => set({ showFeedbackModal: show }),
+  setLastFeedbackTime: (time) => set({ lastFeedbackTime: time }),
 });

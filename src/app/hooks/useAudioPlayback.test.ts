@@ -76,17 +76,7 @@ let mockGainNode: {
 let mockAnalyserNode: any;
 let mockCtx: any;
 
-// TypeScript interface untuk mock type
-type MockAudioContext = {
-  state: string;
-  currentTime: number;
-  resume: ReturnType<typeof vi.fn>;
-  decodeAudioData: ReturnType<typeof vi.fn>;
-  createBufferSource: ReturnType<typeof vi.fn>;
-  createGain: ReturnType<typeof vi.fn>;
-  createAnalyser: ReturnType<typeof vi.fn>;
-  destination: object;
-};
+
 
 const setupAudioContextMock = (ctxState: 'running' | 'suspended' = 'running') => {
   mockAudioBuffer = { duration: 0.5 };

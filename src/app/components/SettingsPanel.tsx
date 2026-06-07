@@ -4,6 +4,10 @@ import { toast } from 'sonner';
 
 import { PROVINCE_CITIES } from '../data/provinceCities';
 
+interface SettingsPanelProps {
+  onClose: () => void;
+}
+
 export function SettingsPanel({ onClose }: SettingsPanelProps) {
   const {
     infoText,
