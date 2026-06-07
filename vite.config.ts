@@ -36,11 +36,16 @@ export default defineConfig(({ command: _command, mode }) => {
       outDir: 'dist',
       sourcemap: false,
       minify: 'terser',
+      // [FIX P1-5] Warn jika ada chunk > 500KB (default 500)
+      chunkSizeWarningLimit: 500,
+      // Target modern browsers yang mendukung WebRTC & AudioContext
+      target: ['es2020', 'chrome90', 'firefox90', 'safari14'],
       terserOptions: {
         compress: {
           drop_console: true,
           drop_debugger: true,
-          passes: 3,
+          // [PERF] passes: 2 sudah cukup, 3 menambah build time tanpa manfaat signifikan
+          passes: 2,
         },
         mangle: {
           toplevel: true,
@@ -49,14 +54,63 @@ export default defineConfig(({ command: _command, mode }) => {
           comments: false,
         },
       },
-      // Optimize bundle size for production
+      // [FIX P1-5] KRITIS: Logika manualChunks dibalik!
+      // Sebelumnya: production = undefined (satu giant bundle) ← SALAH
+      // Sekarang:   production = full code splitting         ← BENAR
+      // Code splitting LEBIH PENTING di production untuk:
+      //   1. Caching browser (vendor chunks jarang berubah)
+      //   2. Parallel download (HTTP/2 multiplexing)
+      //   3. Faster Time-to-Interactive (TTI)
       rollupOptions: {
         output: {
-          manualChunks: mode === 'production' ? undefined : {
-            // Split vendor chunks for better caching
-            vendor: ['react', 'react-dom'],
-            // Split UI library chunks
-            ui: ['@radix-ui/react-slot', '@radix-ui/react-dialog'],
+          manualChunks: mode !== 'production' ? undefined : {
+            // Core React runtime — paling jarang berubah, cache terlama
+            'vendor-react': ['react', 'react-dom'],
+
+            // Supabase client — dipisah karena cukup besar (~200KB)
+            'vendor-supabase': ['@supabase/supabase-js'],
+
+            // Framer Motion / animation — besar & jarang berubah
+            'vendor-motion': ['motion'],
+
+            // Lucide icons — ratusan icons, dipisah agar tree-shakeable per chunk
+            'vendor-icons': ['lucide-react'],
+
+            // Semua Radix UI primitives — UI library stabil, cache lama
+            'vendor-radix': [
+              '@radix-ui/react-accordion',
+              '@radix-ui/react-alert-dialog',
+              '@radix-ui/react-aspect-ratio',
+              '@radix-ui/react-avatar',
+              '@radix-ui/react-checkbox',
+              '@radix-ui/react-collapsible',
+              '@radix-ui/react-context-menu',
+              '@radix-ui/react-dialog',
+              '@radix-ui/react-dropdown-menu',
+              '@radix-ui/react-hover-card',
+              '@radix-ui/react-label',
+              '@radix-ui/react-menubar',
+              '@radix-ui/react-navigation-menu',
+              '@radix-ui/react-popover',
+              '@radix-ui/react-progress',
+              '@radix-ui/react-radio-group',
+              '@radix-ui/react-scroll-area',
+              '@radix-ui/react-select',
+              '@radix-ui/react-separator',
+              '@radix-ui/react-slider',
+              '@radix-ui/react-slot',
+              '@radix-ui/react-switch',
+              '@radix-ui/react-tabs',
+              '@radix-ui/react-toggle',
+              '@radix-ui/react-toggle-group',
+              '@radix-ui/react-tooltip',
+            ],
+
+            // Zustand state management
+            'vendor-zustand': ['zustand'],
+
+            // Router
+            'vendor-router': ['react-router'],
           },
         },
       },
