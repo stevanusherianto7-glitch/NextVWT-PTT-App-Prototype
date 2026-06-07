@@ -249,8 +249,8 @@ export function useAudioStreamer() {
               await sender.replaceTrack(finalTrack);
             }
           }
-          startVAD(stream, micTrack);
         }
+        startVAD(stream, micTrack);
 
         // Keep local chunking MediaRecorder for fallback loopback and E2E test asserts
         let activeRecorder: MediaRecorder | null = null;
