@@ -13,7 +13,12 @@
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useAudioPlayback, base64ToArrayBuffer, arrayBufferToBase64 } from './useAudioPlayback';
+import {
+  useAudioPlayback,
+  base64ToArrayBuffer,
+  arrayBufferToBase64,
+  __resetAudioContextForTest,
+} from './useAudioPlayback';
 import { usePTTStore } from '../store/usePTTStore';
 
 // ─── Mock Supabase (offline-capable) ─────────────────────────────────────────
@@ -68,13 +73,18 @@ let mockGainNode: {
   connect: ReturnType<typeof vi.fn>;
   gain: { value: number };
 };
-let mockCtx: {
-  state: 'running' | 'suspended';
+let mockAnalyserNode: any;
+let mockCtx: any;
+
+// TypeScript interface untuk mock type
+type MockAudioContext = {
+  state: string;
   currentTime: number;
   resume: ReturnType<typeof vi.fn>;
   decodeAudioData: ReturnType<typeof vi.fn>;
   createBufferSource: ReturnType<typeof vi.fn>;
   createGain: ReturnType<typeof vi.fn>;
+  createAnalyser: ReturnType<typeof vi.fn>;
   destination: object;
 };
 
@@ -89,6 +99,12 @@ const setupAudioContextMock = (ctxState: 'running' | 'suspended' = 'running') =>
     connect: vi.fn(),
     gain: { value: 1.0 },
   };
+  mockAnalyserNode = {
+    connect: vi.fn(),
+    fftSize: 512,
+    frequencyBinCount: 256,
+    getFloatTimeDomainData: vi.fn(),
+  };
   mockCtx = {
     state: ctxState,
     currentTime: 0,
@@ -96,6 +112,7 @@ const setupAudioContextMock = (ctxState: 'running' | 'suspended' = 'running') =>
     decodeAudioData: vi.fn(() => Promise.resolve(mockAudioBuffer)),
     createBufferSource: vi.fn(() => mockSourceNode),
     createGain: vi.fn(() => mockGainNode),
+    createAnalyser: vi.fn(() => mockAnalyserNode),
     destination: {},
   };
 
@@ -148,6 +165,7 @@ describe('useAudioPlayback', () => {
   beforeEach(() => {
     localStorageMock.clear();
     setupAudioContextMock('running');
+    __resetAudioContextForTest();
 
     // Reset store state
     usePTTStore.setState({

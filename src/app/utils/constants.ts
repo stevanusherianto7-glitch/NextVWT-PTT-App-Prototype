@@ -19,3 +19,11 @@ export function getChannelUserCount(channelNum: number): number {
   const hash = (channelNum * 13 + 7) % 37;
   return hash + 2;
 }
+
+export function checkIfNewUser(createdAt?: string): boolean {
+  if (!createdAt) return false;
+  const created = new Date(createdAt).getTime();
+  const now = Date.now();
+  const diffDays = (now - created) / (1000 * 60 * 60 * 24);
+  return diffDays <= 7;
+}

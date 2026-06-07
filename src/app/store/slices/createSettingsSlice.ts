@@ -100,6 +100,7 @@ export const createSettingsSlice: StateCreator<
             callSign: next.callSign || '2DYUA',
             location: location,
             avatarUrl: avatarUrl,
+            createdAt: userMeta?.created_at,
           })
           .catch((err) => {
             console.warn('Failed to update presence metadata on settings update:', err);

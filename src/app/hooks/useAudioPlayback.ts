@@ -25,6 +25,14 @@ export const arrayBufferToBase64 = (buffer: ArrayBuffer): string => {
 
 // Global Singleton Audio Context to prevent memory leak on unmounts
 let globalAudioCtx: AudioContext | null = null;
+let globalPlaybackAnalyser: AnalyserNode | null = null;
+let playbackAnimationFrameId: number | null = null;
+let playbackTimeoutId: NodeJS.Timeout | null = null;
+
+export const __resetAudioContextForTest = () => {
+  globalAudioCtx = null;
+  globalPlaybackAnalyser = null;
+};
 
 export function useAudioPlayback() {
   const nextPlaybackTimeRef = useRef<number>(0);
@@ -37,6 +45,9 @@ export function useAudioPlayback() {
         (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
       if (AudioContextClass) {
         globalAudioCtx = new AudioContextClass();
+        globalPlaybackAnalyser = globalAudioCtx.createAnalyser();
+        globalPlaybackAnalyser.fftSize = 512;
+        globalPlaybackAnalyser.connect(globalAudioCtx.destination);
       }
     }
     if (globalAudioCtx && globalAudioCtx.state === 'suspended') {
@@ -92,7 +103,37 @@ export function useAudioPlayback() {
         gainNode.gain.value = store.pttVolume / 100;
 
         source.connect(gainNode);
-        gainNode.connect(ctx.destination);
+        if (globalPlaybackAnalyser) {
+          gainNode.connect(globalPlaybackAnalyser);
+          if (playbackAnimationFrameId === null) {
+            const bufferLength = globalPlaybackAnalyser.frequencyBinCount;
+            const dataArray = new Float32Array(bufferLength);
+            const update = () => {
+              if (!globalPlaybackAnalyser) return;
+              globalPlaybackAnalyser.getFloatTimeDomainData(dataArray);
+              let sum = 0;
+              for (let i = 0; i < bufferLength; i++) {
+                sum += dataArray[i] * dataArray[i];
+              }
+              const rms = Math.sqrt(sum / bufferLength);
+              const scaledProgress = Math.min(100, Math.round(rms * 400));
+              usePTTStore.getState().setProgress(scaledProgress);
+              playbackAnimationFrameId = requestAnimationFrame(update);
+            };
+            update();
+          }
+
+          if (playbackTimeoutId) clearTimeout(playbackTimeoutId);
+          playbackTimeoutId = setTimeout(() => {
+            if (playbackAnimationFrameId !== null) {
+              cancelAnimationFrame(playbackAnimationFrameId);
+              playbackAnimationFrameId = null;
+              usePTTStore.getState().setProgress(0);
+            }
+          }, 500);
+        } else {
+          gainNode.connect(ctx.destination);
+        }
 
         source.start(nextPlaybackTimeRef.current);
         nextPlaybackTimeRef.current += audioBuffer.duration;

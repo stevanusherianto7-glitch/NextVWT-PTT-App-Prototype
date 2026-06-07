@@ -59,7 +59,7 @@ jobs:
         run: pnpm run type-check
 
       - name: Run Unit Tests
-        run: pnpm run test
+        run: pnpm run test -- --coverage
 
       - name: Run Integration Tests (Hybrid Flow)
         run: pnpm run test:integration

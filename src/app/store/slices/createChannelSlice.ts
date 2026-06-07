@@ -58,7 +58,13 @@ export const createChannelSlice: StateCreator<
     });
   },
 
-  channelUp: () => get().setChannelNumber((prev) => Math.min(prev + 1, 999)),
-  channelDown: () => get().setChannelNumber((prev) => Math.max(prev - 1, 0)),
+  channelUp: () => {
+    const state = get();
+    state.setChannelNumber(state.channelNumber >= 999 ? 0 : state.channelNumber + 1);
+  },
+  channelDown: () => {
+    const state = get();
+    state.setChannelNumber(state.channelNumber <= 0 ? 999 : state.channelNumber - 1);
+  },
   toggleScan: () => get().setScanning(!get().isScanning),
 });

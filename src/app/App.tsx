@@ -8,10 +8,21 @@ import type { Subscription } from '@supabase/supabase-js';
 import { LoginGate } from './components/LoginGate';
 import { RadioLayout } from './components/RadioLayout';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { performSecurityAudit } from './utils/appSecurity';
 
 export default function App() {
   const { initializeSession, user, setUser, infoText, updateSettings, signInWithGoogle } =
     usePTTStore();
+
+  useEffect(() => {
+    const audit = performSecurityAudit();
+    if (audit.blocked) {
+      // Intentional hard crash due to security violation
+      throw new Error(
+        `SECURITY_VIOLATION: Aplikasi terindikasi dimodifikasi secara ilegal. ${audit.issues.join(', ')}`
+      );
+    }
+  }, []);
 
   useEffect(() => {
     initializeSession();

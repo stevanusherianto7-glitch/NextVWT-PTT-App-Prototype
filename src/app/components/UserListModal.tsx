@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { usePTTStore } from '../store/usePTTStore';
+import { Sparkles } from 'lucide-react';
 
 interface UserListModalProps {
   channel: number;
@@ -23,6 +24,7 @@ interface UserProfile {
   location: string;
   avatarColor: string;
   avatarUrl: string;
+  isNewUser?: boolean;
 }
 
 const USER_PROFILES: Record<string, UserProfile> = {
@@ -121,6 +123,7 @@ const USER_PROFILES: Record<string, UserProfile> = {
     avatarColor: '#3F51B5',
     avatarUrl:
       'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=80&h=80&fit=crop&crop=faces',
+    isNewUser: true,
   },
   anto_bekasi: {
     displayName: 'Vida',
@@ -390,6 +393,7 @@ export function UserListModal({
         location: user.location,
         avatarColor: '#3F51B5',
         avatarUrl: user.avatarUrl || '',
+        isNewUser: (user as any).isNewUser,
       };
     }
   });
@@ -493,8 +497,15 @@ export function UserListModal({
 
                 {/* Name & Details */}
                 <div className="ml-3 flex-1 min-w-0 text-left">
-                  <div className="text-[14px] font-medium text-gray-800 truncate leading-snug">
-                    {profile.displayName}
+                  <div className="text-[14px] font-medium text-gray-800 truncate leading-snug flex items-center gap-1">
+                    <span className="truncate">{profile.displayName}</span>
+                    {profile.isNewUser && (
+                      <Sparkles
+                        className="w-3.5 h-3.5 text-yellow-500 animate-pulse flex-shrink-0"
+                        style={{ filter: 'drop-shadow(0px 0px 2px rgba(234,179,8,0.6))' }}
+                        title="Pengguna Baru"
+                      />
+                    )}
                   </div>
                   <div className="flex items-center text-[11px] mt-0.5 truncate gap-1.5 font-medium leading-none">
                     <span className="text-[#00C853] font-medium tracking-wide">

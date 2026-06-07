@@ -49,6 +49,13 @@ vi.mock('../utils/secureConfig', () => ({
     turnCredential: '',
     turnUrls: [],
   })),
+  getSecureConfig: vi.fn(() =>
+    Promise.resolve({
+      turnUsername: '',
+      turnCredential: '',
+      turnUrls: [],
+    })
+  ),
 }));
 
 // ─── Mock localStorage ────────────────────────────────────────────────────────

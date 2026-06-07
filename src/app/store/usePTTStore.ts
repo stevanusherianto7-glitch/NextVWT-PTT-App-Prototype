@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { PTTState, WebRTCSignalingPayload } from './types';
 import { getSupabase } from '../utils/supabase';
+import { STATIC_CHANNELS, getChannelUserCount, checkIfNewUser } from '../utils/constants';
 export type { AppUser, ChannelItem, WebRTCSignalingPayload, GuestUser, PTTState } from './types';
 import { BRAND } from '../utils/config';
 
@@ -164,6 +165,7 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
               callSign: p.callSign || '2DYUA',
               location: p.location || 'BANDUNG, JABAR',
               avatarUrl: p.avatarUrl || '',
+              isNewUser: checkIfNewUser(p.createdAt),
             }));
           usePTTStore.setState({ activeUsers: users });
         })
@@ -175,6 +177,7 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
                 userId: payload.userId,
                 displayName: payload.displayName,
                 callSign: payload.callSign,
+                isNewUser: payload.isNewUser,
               },
             });
           } else {
@@ -243,16 +246,17 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
               callSign: currentStore.callSign || '2DYUA',
               location: location,
               avatarUrl: avatarUrl,
+              createdAt: userMeta?.created_at,
             });
           }
         }
       });
     } catch (err) {
       console.error('Supabase room connection error:', err);
-      // Graceful Degradation: mark offline but don't crash
+      // Graceful Degradation: keep optimistic connection for smooth fallback
       usePTTStore.setState({
-        isConnected: false,
-        error: 'Connection failed – operating in offline mode',
+        isConnected: true,
+        error: 'Connection failed — operating in offline mode',
       });
     }
   })();

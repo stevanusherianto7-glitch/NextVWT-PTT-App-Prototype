@@ -176,7 +176,11 @@ export async function performSecurityAudit(): Promise<{
       // Hash sudah dikonfigurasi — lakukan verifikasi sesungguhnya
       // Di produksi nyata, hash ini harus di-fetch dari native plugin
       // Contoh: const actualHash = await Plugins.App.getSigningCertificate();
-      // Untuk sekarang, kita log bahwa check ini aktif
+      const mockActualHash = 'MOCK_CURRENT_HASH_DARI_NATIVE_PLUGIN';
+      if (mockActualHash !== EXPECTED_SIGNING_HASH) {
+        issues.push('INVALID_SIGNATURE');
+        score -= 100; // Penalty fatal: aplikasi dimodifikasi
+      }
       console.warn('[AppSecurity] Signing certificate check aktif dan terkonfigurasi.');
     }
   }
