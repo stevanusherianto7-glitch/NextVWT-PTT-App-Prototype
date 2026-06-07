@@ -149,7 +149,9 @@ export interface PTTState {
 
   // WebRTC signaling actions
   onWebRTCSignalingReceived: ((payload: WebRTCSignalingPayload) => void) | null;
-  setOnWebRTCSignalingReceived: (callback: ((payload: WebRTCSignalingPayload) => void) | null) => void;
+  setOnWebRTCSignalingReceived: (
+    callback: ((payload: WebRTCSignalingPayload) => void) | null
+  ) => void;
   broadcastWebRTCSignaling: (payload: WebRTCSignalingPayload) => void;
 }
 
@@ -310,13 +312,17 @@ function subscribeToChannel(channelNum: number) {
           }
         }
       )
-      .on('broadcast', { event: 'webrtc_signaling' }, ({ payload }: { payload: WebRTCSignalingPayload }) => {
-        if (activeChannelSubscription !== channelInstance) return;
-        const state = usePTTStore.getState();
-        if (payload.senderUserId !== state.userId && state.onWebRTCSignalingReceived) {
-          state.onWebRTCSignalingReceived(payload);
+      .on(
+        'broadcast',
+        { event: 'webrtc_signaling' },
+        ({ payload }: { payload: WebRTCSignalingPayload }) => {
+          if (activeChannelSubscription !== channelInstance) return;
+          const state = usePTTStore.getState();
+          if (payload.senderUserId !== state.userId && state.onWebRTCSignalingReceived) {
+            state.onWebRTCSignalingReceived(payload);
+          }
         }
-      });
+      );
 
     channelInstance.subscribe((status: string) => {
       if (activeChannelSubscription !== channelInstance) return;
