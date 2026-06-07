@@ -503,7 +503,6 @@ export function UserListModal({
                       <Sparkles
                         className="w-3.5 h-3.5 text-yellow-500 animate-pulse flex-shrink-0"
                         style={{ filter: 'drop-shadow(0px 0px 2px rgba(234,179,8,0.6))' }}
-                        title="Pengguna Baru"
                       />
                     )}
                   </div>

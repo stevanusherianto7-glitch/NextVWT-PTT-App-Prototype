@@ -1,4 +1,4 @@
-import { usePTTStore } from '../store/usePTTStore';
+
 
 let globalAudioCtx: AudioContext | null = null;
 
@@ -55,7 +55,7 @@ export const startStreamAnalyzer = (
     cancelAnimationFrame(animationFrameId);
     try {
       source.disconnect();
-    } catch (e) {
+    } catch {
       // ignore
     }
     onProgress(0);

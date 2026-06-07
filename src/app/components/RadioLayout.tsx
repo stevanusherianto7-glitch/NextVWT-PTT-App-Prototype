@@ -12,6 +12,8 @@ import { useAudioStreamer } from '../hooks/useAudioStreamer';
 import { toast } from 'sonner';
 import { BRAND } from '../utils/config';
 import { SettingsPanelSkeleton, KaraokePlayerSkeleton } from './SkeletonLoaders';
+import { OnboardingTour } from './OnboardingTour';
+import { FeedbackModal } from './FeedbackModal';
 
 // [P2-2] Lazy-load komponen besar — hanya diunduh saat pertama kali dibuka
 // SettingsPanel: ~76KB → split ke chunk terpisah, tidak menambah initial bundle
@@ -53,6 +55,7 @@ export function RadioLayout() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isChannelListOpen, setIsChannelListOpen] = useState(false);
   const [isUserListOpen, setIsUserListOpen] = useState(false);
+  const [txStartTime, setTxStartTime] = useState<number>(0);
 
   const { startRecording, stopRecording, playAudioChunk, flushAudioQueue } = useAudioStreamer();
 
@@ -112,8 +115,22 @@ export function RadioLayout() {
         }
         setIsTransmitting(false);
       });
+      setTxStartTime(Date.now());
     } else {
       stopRecording();
+      // Logic untuk memicu FeedbackModal jika pengguna baru selesai transmit
+      if (txStartTime > 0) {
+        const txDuration = Date.now() - txStartTime;
+        const lastFeedback = usePTTStore.getState().lastFeedbackTime;
+        const timeSinceLastFeedback = Date.now() - lastFeedback;
+        const ONE_DAY = 24 * 60 * 60 * 1000;
+        
+        // Tampilkan modal jika durasi transmisi > 3 detik dan sudah lewat 1 hari sejak prompt terakhir
+        if (txDuration > 3000 && timeSinceLastFeedback > ONE_DAY) {
+          usePTTStore.getState().setShowFeedbackModal(true);
+        }
+        setTxStartTime(0);
+      }
     }
     return () => {
       stopRecording();
@@ -545,6 +562,12 @@ export function RadioLayout() {
           onSelectChannel={(num) => setChannelNumber(num)}
         />
       )}
+
+      {/* Onboarding Tour for new users */}
+      <OnboardingTour />
+
+      {/* In-App Feedback Modal */}
+      <FeedbackModal />
     </div>
   );
 }

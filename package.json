@@ -81,7 +81,6 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "jsdom": "^29.1.1",
     "prettier": "^3.8.3",
-    "rollup-plugin-javascript-obfuscator": "^1.0.4",
     "tailwindcss": "4.1.12",
     "terser": "^5.31.0",
     "typescript-eslint": "^8.60.1",

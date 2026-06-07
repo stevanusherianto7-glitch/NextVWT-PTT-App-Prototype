@@ -45,7 +45,7 @@ export async function getSecureConfig(): Promise<SecureConfig> {
     supabaseKey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '',
     turnUsername: import.meta.env.VITE_TURN_USERNAME || '',
     turnCredential: import.meta.env.VITE_TURN_CREDENTIAL || '',
-    turnUrls: ['stun:stun.l.google.com:19302'],
+    turnUrls: import.meta.env.VITE_TURN_URL ? [import.meta.env.VITE_TURN_URL] : ['stun:stun.l.google.com:19302'],
   };
 
   // Di production, fetch dari secure endpoint

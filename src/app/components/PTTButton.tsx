@@ -143,7 +143,7 @@ export function PTTButton({
     if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
       try {
         window.navigator.vibrate(duration);
-      } catch (e) {
+      } catch {
         // Safe fallback for restricted vibration contexts
       }
     }
@@ -268,8 +268,8 @@ export function PTTButton({
     toneOnStartEnd,
     pttVolume,
     vibrateOnStart,
-    onPressStart,
     onPressEnd,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   ]);
 
   // Calculate dynamic scale factor and vertical offset

@@ -1,18 +1,10 @@
 import { create } from 'zustand';
 import { PTTState, WebRTCSignalingPayload } from './types';
 import { getSupabase } from '../utils/supabase';
-import { STATIC_CHANNELS, getChannelUserCount, checkIfNewUser } from '../utils/constants';
+import { checkIfNewUser } from '../utils/constants';
 export type { AppUser, ChannelItem, WebRTCSignalingPayload, GuestUser, PTTState } from './types';
 import { BRAND } from '../utils/config';
 
-const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
-const isDummyKey =
-  !supabaseKey ||
-  supabaseKey === 'your-supabase-key' ||
-  supabaseKey === 'placeholder' ||
-  supabaseKey.includes('placeholder') ||
-  supabaseKey.includes('your-') ||
-  supabaseKey.length < 20;
 
 // ─── Local Storage Key ────────────────────────────────────────────────────────
 const LS_KEY = 'nextvwt_settings';
@@ -96,6 +88,8 @@ export const PERSISTED_KEYS: Array<keyof PTTState> = [
   'echoFeedback',
   'profilePhotoOption',
   'customPhotoUrl',
+  'hasCompletedOnboarding',
+  'lastFeedbackTime',
 ];
 
 export function pickPersistedState(state: Partial<PTTState>): Partial<PTTState> {
@@ -115,6 +109,7 @@ interface PresenceMeta {
   callSign?: string;
   location?: string;
   avatarUrl?: string;
+  createdAt?: string;
 }
 
 interface PttStatePayload {
@@ -122,6 +117,7 @@ interface PttStatePayload {
   displayName: string;
   callSign: string;
   isTransmitting: boolean;
+  isNewUser?: boolean;
 }
 
 import { activeChannelSubscription, setActiveChannelSubscription } from './subscription';
@@ -213,7 +209,7 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
 
       channelInstance.subscribe((status: string) => {
         if (activeChannelSubscription !== channelInstance) return;
-        const isSubscribed = isDummyKey ? true : status === 'SUBSCRIBED';
+        const isSubscribed = status === 'SUBSCRIBED';
         if (isSubscribed) {
           usePTTStore.setState({ isConnected: true });
         }
