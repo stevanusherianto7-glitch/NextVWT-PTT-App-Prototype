@@ -1232,6 +1232,9 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
                   value={echoFeedback}
                   onChange={(e) => setEchoFeedback(Number(e.target.value))}
                   className="PB-range-slider"
+                  style={{
+                    background: `linear-gradient(to right, #0ea5e9 0%, #0ea5e9 ${echoFeedback}%, #d5dbe1 ${echoFeedback}%, #d5dbe1 100%)`,
+                  }}
                 />
                 <span className="PB-range-slidervalue">{echoFeedback}%</span>
               </div>
@@ -1283,6 +1286,9 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
                 value={pttSize}
                 onChange={(e) => setPttSize(Number(e.target.value))}
                 className="PB-range-slider"
+                style={{
+                  background: `linear-gradient(to right, #0ea5e9 0%, #0ea5e9 ${((pttSize - 10) / 90) * 100}%, #d5dbe1 ${((pttSize - 10) / 90) * 100}%, #d5dbe1 100%)`,
+                }}
               />
               <span className="PB-range-slidervalue">{pttSize}%</span>
             </div>
@@ -1299,6 +1305,9 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
                 value={pttBottom}
                 onChange={(e) => setPttBottom(Number(e.target.value))}
                 className="PB-range-slider"
+                style={{
+                  background: `linear-gradient(to right, #0ea5e9 0%, #0ea5e9 ${((pttBottom - 10) / 90) * 100}%, #d5dbe1 ${((pttBottom - 10) / 90) * 100}%, #d5dbe1 100%)`,
+                }}
               />
               <span className="PB-range-slidervalue">{pttBottom}%</span>
             </div>
@@ -1334,6 +1343,9 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
                 value={pttVolume}
                 onChange={(e) => setPttVolume(Number(e.target.value))}
                 className="PB-range-slider"
+                style={{
+                  background: `linear-gradient(to right, #0ea5e9 0%, #0ea5e9 ${pttVolume}%, #d5dbe1 ${pttVolume}%, #d5dbe1 100%)`,
+                }}
               />
               <span className="PB-range-slidervalue">{pttVolume}%</span>
             </div>
