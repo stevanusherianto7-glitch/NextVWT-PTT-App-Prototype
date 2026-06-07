@@ -10,6 +10,7 @@
  * 4. Run: npm run build && npx cap sync android
  * 5. Distribute APK with new branding
  * ─────────────────────────────────────────────────────────────────────────────── */
+import { supabase } from './supabase';
 
 export interface BrandConfig {
   // Core branding
@@ -292,3 +293,43 @@ export const UI_MESSAGES = {
     users: 'Pengguna',
   },
 };
+
+interface DBChannelItem {
+  number: number;
+  name: string;
+  type: string;
+  is_restricted: boolean;
+  info: string | null;
+}
+
+/**
+ * Fetch channels dari Supabase (online mode) dengan fallback statis (TINGGI-03)
+ */
+export async function fetchChannels(): Promise<ChannelConfigItem[]> {
+  try {
+    const { data, error } = await supabase
+      .from('channels')
+      .select('number, name, type, is_restricted, info')
+      .order('number', { ascending: true });
+
+    if (error || !data) return CHANNELS;
+
+    const dbData = data as unknown as DBChannelItem[];
+
+    return dbData.map((ch) => ({
+      number: ch.number,
+      name: ch.name,
+      type: (ch.type === 'red' || ch.type === 'green' || ch.type === 'gray' ? ch.type : 'gray') as
+        | 'green'
+        | 'red'
+        | 'gray',
+      users: [], // users are managed via presence dynamically
+    }));
+  } catch (err) {
+    console.warn(
+      'Failed to fetch channels from Supabase, falling back to static configurations:',
+      err
+    );
+    return CHANNELS;
+  }
+}

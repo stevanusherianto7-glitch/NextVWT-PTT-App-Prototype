@@ -2,7 +2,9 @@ packages:
   - '.'
 allowBuilds:
   '@tailwindcss/oxide': true
+  core-js: true
   esbuild: true
+  javascript-obfuscator: true
 
 overrides:
   vite: "6.3.5"

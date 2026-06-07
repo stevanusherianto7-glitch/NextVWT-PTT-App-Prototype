@@ -1,34 +1,41 @@
 import { useRef, useCallback } from 'react';
 import { usePTTStore, type WebRTCSignalingPayload } from '../store/usePTTStore';
-
-const turnUsername = import.meta.env.VITE_TURN_USERNAME || '';
-const turnCredential = import.meta.env.VITE_TURN_CREDENTIAL || '';
+import { getCachedConfig } from '../utils/secureConfig';
 
 const getIceServers = (): RTCIceServer[] => {
+  const config = getCachedConfig();
+  const username = config?.turnUsername || import.meta.env.VITE_TURN_USERNAME || '';
+  const credential = config?.turnCredential || import.meta.env.VITE_TURN_CREDENTIAL || '';
+  const turnUrls = config?.turnUrls || [];
+
   const servers: RTCIceServer[] = [
     { urls: 'stun:stun.l.google.com:19302' },
     { urls: 'stun:stun1.l.google.com:19302' },
   ];
-  if (turnUsername && turnCredential) {
+
+  if (username && credential && turnUrls.length > 0) {
+    turnUrls.forEach((url) => {
+      servers.push({
+        urls: url,
+        username,
+        credential,
+      });
+    });
+  } else if (username && credential) {
     servers.push(
       {
         urls: 'turn:a.relay.metered.ca:80',
-        username: turnUsername,
-        credential: turnCredential,
+        username,
+        credential,
       },
       {
         urls: 'turn:a.relay.metered.ca:443',
-        username: turnUsername,
-        credential: turnCredential,
+        username,
+        credential,
       }
     );
   }
   return servers;
-};
-
-const RTC_CONFIG: RTCConfiguration = {
-  iceServers: getIceServers(),
-  iceTransportPolicy: 'all',
 };
 
 // Helper to modify SDP to prioritize high-quality Opus stereo music stream for Karaoke mode
@@ -90,7 +97,11 @@ export function useWebRTC(
         return existingPc;
       }
 
-      const pc = new RTCPeerConnection(RTC_CONFIG);
+      const rtcConfig: RTCConfiguration = {
+        iceServers: getIceServers(),
+        iceTransportPolicy: 'all',
+      };
+      const pc = new RTCPeerConnection(rtcConfig);
       peerConnectionsRef.current.set(peerUserId, pc);
 
       const store = usePTTStore.getState();

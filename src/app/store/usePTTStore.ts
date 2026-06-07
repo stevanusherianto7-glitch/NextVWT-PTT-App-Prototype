@@ -1,7 +1,12 @@
 import { create } from 'zustand';
 import { supabase } from '../utils/supabase';
 import type { User, RealtimeChannel } from '@supabase/supabase-js';
-import { BRAND, CHANNELS } from '../utils/config';
+import { BRAND, CHANNELS, fetchChannels as fetchChannelsFromConfig } from '../utils/config';
+import {
+  pttRateLimiter,
+  channelSwitchRateLimiter,
+  broadcastRateLimiter,
+} from '../utils/rateLimiter';
 
 export interface ChannelItem {
   number: number;
@@ -393,16 +398,10 @@ export const usePTTStore = create<PTTState>((set) => ({
   channels: CHANNELS as ChannelItem[],
   fetchChannels: async () => {
     try {
-      const { data, error } = await supabase
-        .from('channels')
-        .select('number, name, type, users')
-        .order('number', { ascending: true });
-      if (error) throw error;
-      if (data && data.length > 0) {
-        set({ channels: data as unknown as ChannelItem[] });
-      }
+      const dbChannels = await fetchChannelsFromConfig();
+      set({ channels: dbChannels as ChannelItem[] });
     } catch (err) {
-      console.warn('Failed to fetch channels from Supabase, falling back to static configurations:', err);
+      console.warn('Failed to fetch channels in store:', err);
     }
   },
 
@@ -415,6 +414,10 @@ export const usePTTStore = create<PTTState>((set) => ({
   broadcastVoiceChunk: (base64Chunk) => {
     const state = usePTTStore.getState();
     if (activeChannelSubscription && state.isConnected && state.isPowerOn) {
+      if (!broadcastRateLimiter.canProceed()) {
+        console.warn('[Rate Limit] Voice chunk broadcast dropped due to flood control');
+        return;
+      }
       activeChannelSubscription.send({
         type: 'broadcast',
         event: 'voice_chunk',
@@ -465,6 +468,11 @@ export const usePTTStore = create<PTTState>((set) => ({
     set((state) => {
       if (!state.isPowerOn) return {};
 
+      if (transmitting && !pttRateLimiter.canProceed()) {
+        console.warn('[Rate Limit] PTT transmission toggle ignored due to flood control');
+        return {};
+      }
+
       if (activeChannelSubscription && state.isConnected) {
         const userMeta = state.user;
         const displayName = state.infoText || userMeta?.user_metadata?.full_name;
@@ -499,6 +507,10 @@ export const usePTTStore = create<PTTState>((set) => ({
   setChannelNumber: (numOrFn) =>
     set((state) => {
       if (!state.isPowerOn) return {};
+      if (!channelSwitchRateLimiter.canProceed()) {
+        console.warn('[Rate Limit] Channel switch ignored due to flood control');
+        return {};
+      }
       const nextVal = typeof numOrFn === 'function' ? numOrFn(state.channelNumber) : numOrFn;
       const clamped = Math.max(0, Math.min(999, nextVal));
 
