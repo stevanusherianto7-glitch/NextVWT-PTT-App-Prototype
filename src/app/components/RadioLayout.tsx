@@ -11,10 +11,7 @@ import { STATIC_CHANNELS, getChannelUserCount } from '../utils/constants';
 import { useAudioStreamer } from '../hooks/useAudioStreamer';
 import { toast } from 'sonner';
 import { BRAND } from '../utils/config';
-import {
-  SettingsPanelSkeleton,
-  KaraokePlayerSkeleton,
-} from './SkeletonLoaders';
+import { SettingsPanelSkeleton, KaraokePlayerSkeleton } from './SkeletonLoaders';
 
 // [P2-2] Lazy-load komponen besar — hanya diunduh saat pertama kali dibuka
 // SettingsPanel: ~76KB → split ke chunk terpisah, tidak menambah initial bundle
@@ -25,7 +22,6 @@ const SettingsPanel = lazy(() =>
 const FloatingKaraokePlayer = lazy(() =>
   import('./FloatingKaraokePlayer').then((m) => ({ default: m.FloatingKaraokePlayer }))
 );
-
 
 export function RadioLayout() {
   const {

@@ -22,14 +22,19 @@ vi.mock('../utils/supabase', () => ({
       on: vi.fn().mockReturnThis(),
       track: vi.fn(() => Promise.resolve()),
       send: vi.fn(() => Promise.resolve()),
-      subscribe: vi.fn((cb) => { cb?.('SUBSCRIBED'); return { unsubscribe: vi.fn() }; }),
+      subscribe: vi.fn((cb) => {
+        cb?.('SUBSCRIBED');
+        return { unsubscribe: vi.fn() };
+      }),
       unsubscribe: vi.fn(),
     })),
     auth: {
       getSession: vi.fn(() => Promise.resolve({ data: { session: null } })),
       onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
     },
-    from: vi.fn(() => ({ select: vi.fn(() => ({ order: vi.fn(() => Promise.resolve({ data: [], error: null })) })) })),
+    from: vi.fn(() => ({
+      select: vi.fn(() => ({ order: vi.fn(() => Promise.resolve({ data: [], error: null })) })),
+    })),
   },
 }));
 
@@ -38,9 +43,15 @@ const localStorageMock = (() => {
   let store: Record<string, string> = {};
   return {
     getItem: vi.fn((k: string) => store[k] ?? null),
-    setItem: vi.fn((k: string, v: string) => { store[k] = v; }),
-    removeItem: vi.fn((k: string) => { delete store[k]; }),
-    clear: vi.fn(() => { store = {}; }),
+    setItem: vi.fn((k: string, v: string) => {
+      store[k] = v;
+    }),
+    removeItem: vi.fn((k: string) => {
+      delete store[k];
+    }),
+    clear: vi.fn(() => {
+      store = {};
+    }),
   };
 })();
 Object.defineProperty(globalThis, 'localStorage', { value: localStorageMock, writable: true });
@@ -81,7 +92,9 @@ const setupAudioMocks = (rmsValue = 0.05) => {
   // Expose ke window agar hook bisa menemukannya
   // KRITIS: Gunakan mockImplementation agar bisa di-'new' sebagai constructor
   Object.defineProperty(globalThis, 'AudioContext', {
-    value: vi.fn().mockImplementation(function() { return mockAudioContext; }),
+    value: vi.fn().mockImplementation(function () {
+      return mockAudioContext;
+    }),
     writable: true,
     configurable: true,
   });

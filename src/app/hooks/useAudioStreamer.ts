@@ -70,7 +70,7 @@ export function useAudioStreamer() {
   );
 
   // Sync peer connections when activeUsers changes
-  const activeUsers = usePTTStore((state) => state.activeUsers);
+  const activeUsers = usePTTStore((state) => state.activeUsers) || [];
   const isConnected = usePTTStore((state) => state.isConnected);
   const isPowerOn = usePTTStore((state) => state.isPowerOn);
   const userId = usePTTStore((state) => state.userId);

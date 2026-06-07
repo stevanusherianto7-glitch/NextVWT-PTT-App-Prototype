@@ -162,7 +162,8 @@ export function useWebRTC(
       const { senderUserId, targetUserId, type, data } = payload;
       const store = usePTTStore.getState();
 
-      if (targetUserId !== store.userId || BRAND.isolatedChannels.includes(store.channelNumber)) return;
+      if (targetUserId !== store.userId || BRAND.isolatedChannels.includes(store.channelNumber))
+        return;
 
       try {
         if (type === 'offer') {

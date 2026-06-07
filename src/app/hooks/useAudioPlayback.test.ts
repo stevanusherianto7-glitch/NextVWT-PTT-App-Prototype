@@ -23,14 +23,19 @@ vi.mock('../utils/supabase', () => ({
       on: vi.fn().mockReturnThis(),
       track: vi.fn(() => Promise.resolve()),
       send: vi.fn(() => Promise.resolve()),
-      subscribe: vi.fn((cb) => { cb?.('SUBSCRIBED'); return { unsubscribe: vi.fn() }; }),
+      subscribe: vi.fn((cb) => {
+        cb?.('SUBSCRIBED');
+        return { unsubscribe: vi.fn() };
+      }),
       unsubscribe: vi.fn(),
     })),
     auth: {
       getSession: vi.fn(() => Promise.resolve({ data: { session: null } })),
       onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
     },
-    from: vi.fn(() => ({ select: vi.fn(() => ({ order: vi.fn(() => Promise.resolve({ data: [], error: null })) })) })),
+    from: vi.fn(() => ({
+      select: vi.fn(() => ({ order: vi.fn(() => Promise.resolve({ data: [], error: null })) })),
+    })),
   },
 }));
 
@@ -39,9 +44,15 @@ const localStorageMock = (() => {
   let store: Record<string, string> = {};
   return {
     getItem: vi.fn((k: string) => store[k] ?? null),
-    setItem: vi.fn((k: string, v: string) => { store[k] = v; }),
-    removeItem: vi.fn((k: string) => { delete store[k]; }),
-    clear: vi.fn(() => { store = {}; }),
+    setItem: vi.fn((k: string, v: string) => {
+      store[k] = v;
+    }),
+    removeItem: vi.fn((k: string) => {
+      delete store[k];
+    }),
+    clear: vi.fn(() => {
+      store = {};
+    }),
   };
 })();
 Object.defineProperty(globalThis, 'localStorage', { value: localStorageMock, writable: true });
@@ -89,7 +100,9 @@ const setupAudioContextMock = (ctxState: 'running' | 'suspended' = 'running') =>
   };
 
   Object.defineProperty(globalThis, 'AudioContext', {
-    value: vi.fn().mockImplementation(function() { return mockCtx; }),
+    value: vi.fn().mockImplementation(function () {
+      return mockCtx;
+    }),
     writable: true,
     configurable: true,
   });
@@ -113,7 +126,7 @@ describe('base64ToArrayBuffer & arrayBufferToBase64 helpers', () => {
     expect(result.byteLength).toBe(5);
 
     const decoded = new Uint8Array(result);
-    expect(decoded[0]).toBe(72);  // 'H'
+    expect(decoded[0]).toBe(72); // 'H'
     expect(decoded[1]).toBe(101); // 'e'
     expect(decoded[4]).toBe(111); // 'o'
   });

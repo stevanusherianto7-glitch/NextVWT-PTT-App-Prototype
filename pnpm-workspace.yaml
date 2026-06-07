@@ -3,6 +3,7 @@ packages:
 allowBuilds:
   '@tailwindcss/oxide': true
   core-js: true
+  cypress: set this to true or false
   esbuild: true
   javascript-obfuscator: true
 

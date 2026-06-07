@@ -48,7 +48,7 @@ export const createChannelSlice: StateCreator<
     // Subscribe to the new channel (Fast Click configures immediate or debounced delay reconnect)
     const delay = state.fastClick ? 0 : 800;
     setTimeout(() => state.subscribeToChannel(clamped), delay);
-    
+
     // Persist channel selection for offline recovery
     safeSetStorage({ channelNumber: clamped });
 

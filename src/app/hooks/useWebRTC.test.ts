@@ -26,14 +26,19 @@ vi.mock('../utils/supabase', () => ({
       on: vi.fn().mockReturnThis(),
       track: vi.fn(() => Promise.resolve()),
       send: vi.fn(() => Promise.resolve()),
-      subscribe: vi.fn((cb) => { cb?.('SUBSCRIBED'); return { unsubscribe: vi.fn() }; }),
+      subscribe: vi.fn((cb) => {
+        cb?.('SUBSCRIBED');
+        return { unsubscribe: vi.fn() };
+      }),
       unsubscribe: vi.fn(),
     })),
     auth: {
       getSession: vi.fn(() => Promise.resolve({ data: { session: null } })),
       onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
     },
-    from: vi.fn(() => ({ select: vi.fn(() => ({ order: vi.fn(() => Promise.resolve({ data: [], error: null })) })) })),
+    from: vi.fn(() => ({
+      select: vi.fn(() => ({ order: vi.fn(() => Promise.resolve({ data: [], error: null })) })),
+    })),
   },
 }));
 
@@ -51,9 +56,15 @@ const localStorageMock = (() => {
   let store: Record<string, string> = {};
   return {
     getItem: vi.fn((k: string) => store[k] ?? null),
-    setItem: vi.fn((k: string, v: string) => { store[k] = v; }),
-    removeItem: vi.fn((k: string) => { delete store[k]; }),
-    clear: vi.fn(() => { store = {}; }),
+    setItem: vi.fn((k: string, v: string) => {
+      store[k] = v;
+    }),
+    removeItem: vi.fn((k: string) => {
+      delete store[k];
+    }),
+    clear: vi.fn(() => {
+      store = {};
+    }),
   };
 })();
 Object.defineProperty(globalThis, 'localStorage', { value: localStorageMock, writable: true });
@@ -100,7 +111,7 @@ const createMockPc = () => {
 
   // KRITIS: RTCPeerConnection harus di-mock sebagai class constructor
   // Gunakan function biasa, bukan arrow function agar bisa di-new
-  const MockRTCPeerConnection = vi.fn().mockImplementation(function() {
+  const MockRTCPeerConnection = vi.fn().mockImplementation(function () {
     return mockPc;
   });
   Object.defineProperty(globalThis, 'RTCPeerConnection', {
@@ -110,13 +121,17 @@ const createMockPc = () => {
   });
 
   Object.defineProperty(globalThis, 'RTCSessionDescription', {
-    value: vi.fn().mockImplementation(function(init) { return init; }),
+    value: vi.fn().mockImplementation(function (init) {
+      return init;
+    }),
     writable: true,
     configurable: true,
   });
 
   Object.defineProperty(globalThis, 'RTCIceCandidate', {
-    value: vi.fn().mockImplementation(function(init) { return init; }),
+    value: vi.fn().mockImplementation(function (init) {
+      return init;
+    }),
     writable: true,
     configurable: true,
   });
@@ -134,9 +149,7 @@ function setupHook() {
   const getSilentTrack = vi.fn(() => mockSilentTrack);
   const streamRef = { current: null as MediaStream | null };
 
-  const { result } = renderHook(() =>
-    useWebRTC(getSilentTrack, streamRef)
-  );
+  const { result } = renderHook(() => useWebRTC(getSilentTrack, streamRef));
 
   return { result, getSilentTrack, streamRef };
 }
@@ -367,7 +380,9 @@ describe('useWebRTC', () => {
 
     // Mock PeerConnection kedua
     const mockPc2 = { ...mockPc, close: vi.fn() };
-    (RTCPeerConnection as any).mockImplementationOnce(function() { return mockPc2; });
+    (RTCPeerConnection as any).mockImplementationOnce(function () {
+      return mockPc2;
+    });
 
     act(() => {
       result.current.createPeerConnection('another-peer-003');

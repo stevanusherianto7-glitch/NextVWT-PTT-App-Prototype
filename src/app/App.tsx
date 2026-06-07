@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { usePTTStore, generateUUID } from './store/usePTTStore';
-import type { GuestUser } from './store/types';
+import type { AppUser, GuestUser } from './store/types';
 import { Toaster } from './components/ui/sonner';
 import { getSupabase } from './utils/supabase';
 import type { Subscription } from '@supabase/supabase-js';
@@ -23,7 +23,7 @@ export default function App() {
     getSupabase().then((supabase) => {
       supabase.auth.getSession().then(({ data: { session } }) => {
         const currentStore = usePTTStore.getState();
-        if (currentStore.user?.isGuest && !session?.user) {
+        if (currentStore.user && (currentStore.user as GuestUser).isGuest && !session?.user) {
           return; // Prevent overwriting guest session with null from delayed getSession
         }
         const u = session?.user || null;
@@ -38,7 +38,7 @@ export default function App() {
         data: { subscription },
       } = supabase.auth.onAuthStateChange((_event, session) => {
         const currentStore = usePTTStore.getState();
-        if (currentStore.user?.isGuest && !session?.user) {
+        if (currentStore.user && (currentStore.user as GuestUser).isGuest && !session?.user) {
           return;
         }
         const u = session?.user || null;
