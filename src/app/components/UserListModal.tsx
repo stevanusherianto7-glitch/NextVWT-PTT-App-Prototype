@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { usePTTStore } from '../store/usePTTStore';
 import { Sparkles } from 'lucide-react';
 
@@ -350,41 +350,24 @@ export function UserListModal({
   onClose: _onClose,
 }: UserListModalProps) {
   const isTransmitting = usePTTStore((state) => state.isTransmitting);
+  const activeTransmitter = usePTTStore((state) => state.activeTransmitter);
+  const localUserId = usePTTStore((state) => state.userId);
   const localUser = usePTTStore((state) => state.user);
   const localInfoText = usePTTStore((state) => state.infoText);
   const localName = localUser?.user_metadata?.full_name || localInfoText;
-  const [activeSpeakerIdx, setActiveSpeakerIdx] = useState<number | null>(null);
 
   const showMyPhoto = usePTTStore((state) => state.showMyPhoto);
   const showOtherPhotos = usePTTStore((state) => state.showOtherPhotos);
   const showPhotosInList = usePTTStore((state) => state.showPhotosInList);
 
-  useEffect(() => {
-    if (isTransmitting) {
-      setActiveSpeakerIdx(null);
-      return;
-    }
-
-    const interval = setInterval(() => {
-      const rand = Math.random();
-      if (rand < 0.4) {
-        const randomIdx = Math.floor(Math.random() * users.length);
-        setActiveSpeakerIdx(randomIdx);
-      } else {
-        setActiveSpeakerIdx(null);
-      }
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [isTransmitting, users.length]);
-
   // Map user list or generate dynamic fallback
   const allUsersMapped = users.map((user) => {
     if (typeof user === 'string') {
-      if (USER_PROFILES[user]) {
-        return USER_PROFILES[user];
-      }
-      return getDeterministicProfile(user);
+      const profileData = USER_PROFILES[user] || getDeterministicProfile(user);
+      return {
+        ...profileData,
+        userId: user,
+      };
     } else {
       // It's a live presence activeUser object
       return {
@@ -394,6 +377,7 @@ export function UserListModal({
         avatarColor: '#3F51B5',
         avatarUrl: user.avatarUrl || '',
         isNewUser: (user as any).isNewUser,
+        userId: user.userId,
       };
     }
   });
@@ -460,9 +444,13 @@ export function UserListModal({
         {/* Users List */}
         {allUsersMapped.length > 0 ? (
           allUsersMapped.map((profile, idx) => {
-            const isLocalUser = profile.displayName === localName || profile.callSign === '2DYUA';
+            const isLocalUser =
+              profile.userId === localUserId ||
+              profile.displayName === localName ||
+              profile.callSign === '2DYUA';
             const isSpeaking =
-              (isTransmitting && isLocalUser) || (!isTransmitting && idx === activeSpeakerIdx);
+              (isTransmitting && isLocalUser) ||
+              (activeTransmitter && activeTransmitter.userId === profile.userId);
 
             let avatarUrlToUse = profile.avatarUrl;
             if (!showPhotosInList) {

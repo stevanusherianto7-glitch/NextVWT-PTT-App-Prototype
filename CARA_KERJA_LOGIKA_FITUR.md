@@ -216,6 +216,13 @@ Channel 100 bertindak sebagai simulator loopback lokal.
   ```
 - Begitu tombol PTT dilepas (lepas tekan), perekaman mic ditutup, jeda asinkronus `350ms` dipicu, dan array buffer `echoChunksRef.current` dimainkan kembali secara berurutan ke speaker internal pengguna. Ini memungkinkan pengguna mendengarkan modulasi suaranya sendiri secara offline.
 
+### 3. Animasi Cahaya & Indikator Megaphone (Ikon Speaker)
+Untuk menjaga keakuratan status transmisi, indikator berbicara (**Megaphone/Speaker Icon**) dan animasi pijar (**Active Glow Animation**) dikendalikan 100% oleh status modulasi nyata (bukan simulasi):
+- **Logika Pemancar Aktif**:
+  - **Pengguna Lokal**: Saat menekan PTT (`isTransmitting === true`), baris akun lokal di `<UserListModal />` akan berkedip dengan efek pijar biru (`.active-user-glow`) dan memunculkan ikon megaphone pemancar aktif.
+  - **Pengguna Rekan (Remote)**: Saat data websocket broadcast mendeteksi adanya transmitter aktif (`activeTransmitter !== null` dan cocok dengan `profile.userId`), baris rekan tersebut akan otomatis menyalakan efek pijar `.active-user-glow` dan memunculkan ikon megaphone.
+- **Pembersihan Simulator Acak**: Simulator interval acak (`activeSpeakerIdx` simulator yang sebelumnya secara acak menyalakan status berbicara pengguna palsu setiap 5 detik) telah **dihapus sepenuhnya** dari `<UserListModal />`. Dengan ini, indikator suara dan cahaya hanya akan menyala jika ada modulasi PTT nyata di channel.
+
 ---
 
 ## ⚙️ VI. Panel Pengaturan (Settings Panel - SET)
