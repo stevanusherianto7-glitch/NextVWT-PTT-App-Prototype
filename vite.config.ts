@@ -78,9 +78,7 @@ export default defineConfig(({ command: _command, mode }) => {
 
             // Semua Radix UI primitives — UI library stabil, cache lama
             'vendor-radix': [
-              '@radix-ui/react-accordion',
               '@radix-ui/react-alert-dialog',
-              '@radix-ui/react-aspect-ratio',
               '@radix-ui/react-avatar',
               '@radix-ui/react-checkbox',
               '@radix-ui/react-collapsible',
@@ -89,11 +87,8 @@ export default defineConfig(({ command: _command, mode }) => {
               '@radix-ui/react-dropdown-menu',
               '@radix-ui/react-hover-card',
               '@radix-ui/react-label',
-              '@radix-ui/react-menubar',
-              '@radix-ui/react-navigation-menu',
               '@radix-ui/react-popover',
               '@radix-ui/react-progress',
-              '@radix-ui/react-radio-group',
               '@radix-ui/react-scroll-area',
               '@radix-ui/react-select',
               '@radix-ui/react-separator',

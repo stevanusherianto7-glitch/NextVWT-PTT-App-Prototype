@@ -2,6 +2,7 @@ import { useRef, useCallback, useEffect } from 'react';
 import { usePTTStore, type WebRTCSignalingPayload } from '../store/usePTTStore';
 import { getSecureConfig } from '../utils/secureConfig';
 import { BRAND } from '../utils/config';
+import { startStreamAnalyzer } from '../utils/audioAnalyzer';
 
 let ephemeralTurnCreds: { username: string; credential: string; expiresAt: number } | null = null;
 
@@ -56,6 +57,7 @@ export function useWebRTC(
   const peerConnectionsRef = useRef<Map<string, RTCPeerConnection>>(new Map());
   const audioElementsRef = useRef<Map<string, HTMLAudioElement>>(new Map());
   const candidatesQueueRef = useRef<Map<string, RTCIceCandidateInit[]>>(new Map());
+  const analyzerCleanupsRef = useRef<Map<string, () => void>>(new Map());
 
   // Play remote stream using programmatic Audio element
   const playRemoteStream = useCallback((peerUserId: string, stream: MediaStream) => {
@@ -69,6 +71,16 @@ export function useWebRTC(
     const store = usePTTStore.getState();
     audio.volume = store.pttVolume / 100;
 
+    // Bersihkan analyzer lama jika ada
+    const oldCleanup = analyzerCleanupsRef.current.get(peerUserId);
+    if (oldCleanup) oldCleanup();
+
+    // Jalankan analyzer RMS riil untuk stream WebRTC yang masuk
+    const cleanup = startStreamAnalyzer(stream, (progress) => {
+      usePTTStore.getState().setProgress(progress);
+    });
+    analyzerCleanupsRef.current.set(peerUserId, cleanup);
+
     audio.play().catch((err) => {
       console.warn(`Failed to play remote WebRTC stream for ${peerUserId}:`, err);
     });
@@ -76,6 +88,11 @@ export function useWebRTC(
 
   // Cleanup peer resource
   const cleanupPeer = useCallback((peerUserId: string) => {
+    const cleanupAnalyzer = analyzerCleanupsRef.current.get(peerUserId);
+    if (cleanupAnalyzer) {
+      cleanupAnalyzer();
+      analyzerCleanupsRef.current.delete(peerUserId);
+    }
     const pc = peerConnectionsRef.current.get(peerUserId);
     if (pc) {
       pc.close();

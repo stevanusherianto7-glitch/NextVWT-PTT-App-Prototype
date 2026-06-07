@@ -40,13 +40,19 @@ export interface PTTState {
 
   // Auth State
   user: AppUser | null;
-  activeTransmitter: { userId: string; displayName: string; callSign: string } | null;
+  activeTransmitter: {
+    userId: string;
+    displayName: string;
+    callSign: string;
+    isNewUser?: boolean;
+  } | null;
   activeUsers: Array<{
     userId: string;
     displayName: string;
     callSign: string;
     location: string;
     avatarUrl?: string;
+    isNewUser?: boolean;
   }>;
 
   // Settings State

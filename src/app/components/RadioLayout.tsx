@@ -74,19 +74,13 @@ export function RadioLayout() {
     return 'theme-classic';
   };
 
-  // Simulate progress when receiving (transmitting uses real VAD RMS values)
+  // Reset progress when not transmitting and not receiving
   useEffect(() => {
     if (isTransmitting) return;
 
     const isReceiving =
       activeTransmitter && activeTransmitter.userId !== usePTTStore.getState().userId;
-    if (isReceiving) {
-      setProgress(50);
-      const interval = setInterval(() => {
-        setProgress(Math.floor(Math.random() * 70) + 30);
-      }, 100);
-      return () => clearInterval(interval);
-    } else {
+    if (!isReceiving) {
       setProgress(0);
     }
   }, [isTransmitting, activeTransmitter, setProgress]);
@@ -221,7 +215,9 @@ export function RadioLayout() {
   const safeActiveUsers = activeUsers || [];
 
   const dynamicUserCount =
-    isConnected && safeActiveUsers.length > 0 ? safeActiveUsers.length : getChannelUserCount(channel);
+    isConnected && safeActiveUsers.length > 0
+      ? safeActiveUsers.length
+      : getChannelUserCount(channel);
 
   const dynamicUserList =
     isConnected && safeActiveUsers.length > 0 ? safeActiveUsers : activeChannelObj?.users || [];

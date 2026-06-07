@@ -3,6 +3,8 @@ import twinHeadsIcon from '../../imports/ikon_kepala_kembar-2.png';
 import usernameIcon from '../../imports/ikon_username1.png';
 import { usePTTStore } from '../store/usePTTStore';
 import { AquariumSkeleton } from './SkeletonLoaders';
+import { checkIfNewUser } from '../utils/constants';
+import { Sparkles } from 'lucide-react';
 
 // [P2-2] AquariumCanvas hanya diload jika user memakai theme-v6 + bgActive
 // Ukuran: ~24KB JS + WebGL canvas — 0% users tidak memakai tema ini tidak perlu download
@@ -41,6 +43,12 @@ export function LCDPanel({
     : isReceiving
       ? activeTransmitter?.displayName
       : localName;
+
+  const isNewUser = isTransmitting
+    ? checkIfNewUser(user?.created_at)
+    : isReceiving
+      ? activeTransmitter?.isNewUser
+      : checkIfNewUser(user?.created_at);
 
   // Signal strength simulator (fluctuates 1-4 bars when online, 0 when offline)
   const [signalBars, setSignalBars] = useState(4);
@@ -159,7 +167,9 @@ export function LCDPanel({
         )}
 
         {/* Content */}
-        <div className="relative p-2.5 h-full flex flex-col justify-between transition-opacity duration-300 opacity-100 z-10">
+        <div
+          className={`relative p-2.5 h-full flex flex-col justify-between transition-opacity duration-300 z-10 ${_isPowerOn ? 'opacity-100' : 'opacity-0'}`}
+        >
           {/* Top status bar */}
           <div className="flex items-start justify-between">
             {/* Top Left: Username Icon and Letter */}
@@ -177,6 +187,13 @@ export function LCDPanel({
               >
                 {username}
               </span>
+              {isNewUser && (
+                <Sparkles
+                  className="w-4 h-4 ml-0.5 text-yellow-400 animate-pulse flex-shrink-0"
+                  style={{ filter: 'drop-shadow(0px 0px 2px rgba(250,204,21,0.8))' }}
+                  title="Pengguna Baru"
+                />
+              )}
             </div>
 
             {/* OFFLINE Badge */}
