@@ -1,6 +1,36 @@
 import { useState } from 'react';
 import { usePTTStore } from '../store/usePTTStore';
 import { Sparkles } from 'lucide-react';
+import iconVoice from '../../assets/icon_voice.png';
+import iconOperator from '../../assets/icon_operator_otomatis.png';
+import iconModerator from '../../assets/icon_moderator.png';
+
+/** Mode types that can be assigned to users */
+type UserMode = 'voice' | 'operator' | 'moderator';
+
+/** Icon mapping per mode */
+const MODE_ICONS: Record<UserMode, string> = {
+  voice: iconVoice,
+  operator: iconOperator,
+  moderator: iconModerator,
+};
+
+/** Tooltip labels per mode */
+const MODE_LABELS: Record<UserMode, string> = {
+  voice: 'Voice',
+  operator: 'Operator',
+  moderator: 'Moderator',
+};
+
+/** Deterministic random mode assignment based on username hash */
+function getUserMode(username: string): UserMode {
+  let hash = 7;
+  for (let i = 0; i < username.length; i++) {
+    hash = (hash * 31 + username.charCodeAt(i)) | 0;
+  }
+  const modes: UserMode[] = ['voice', 'operator', 'moderator'];
+  return modes[Math.abs(hash) % modes.length];
+}
 
 interface UserListModalProps {
   channel: number;
@@ -468,19 +498,26 @@ export function UserListModal({
                   isSpeaking ? 'active-user-glow z-10' : 'bg-[#fafbfc]'
                 }`}
               >
-                {/* Avatar with status overlay */}
+                {/* Avatar with mode icon overlay */}
                 <div className="relative w-11 h-11 shrink-0 select-none">
                   <AvatarImage
                     src={avatarUrlToUse}
                     displayName={profile.displayName}
                     avatarColor={profile.avatarColor}
                   />
-                  {/* Blue status overlay badge */}
-                  <div className="absolute bottom-0 right-0 w-[15px] h-[15px] bg-[#0088cc] rounded-full border-[1.5px] border-white flex items-center justify-center shadow-sm">
-                    <svg viewBox="0 0 24 24" className="w-2 h-2 text-white" fill="currentColor">
-                      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                    </svg>
-                  </div>
+                  {/* Mode icon badge at bottom-right */}
+                  {(() => {
+                    const mode = getUserMode(profile.userId || profile.displayName);
+                    return (
+                      <img
+                        src={MODE_ICONS[mode]}
+                        alt={MODE_LABELS[mode]}
+                        title={MODE_LABELS[mode]}
+                        className="absolute -bottom-[2px] -right-[2px] w-[18px] h-[18px] rounded-full border-[1.5px] border-white shadow-sm object-contain bg-white"
+                        draggable={false}
+                      />
+                    );
+                  })()}
                 </div>
 
                 {/* Name & Details */}
