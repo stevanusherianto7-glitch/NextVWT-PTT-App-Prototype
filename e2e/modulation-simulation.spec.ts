@@ -34,6 +34,14 @@ test.describe('User Modulation Activity Simulation', () => {
           return dest.stream;
         };
       }
+
+      if (window.AnalyserNode) {
+        window.AnalyserNode.prototype.getFloatTimeDomainData = function (array: Float32Array) {
+          for (let i = 0; i < array.length; i++) {
+            array[i] = Math.sin(i * 0.1) * 0.1;
+          }
+        };
+      }
     });
   });
 
