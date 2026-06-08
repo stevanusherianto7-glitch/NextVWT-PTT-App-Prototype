@@ -177,7 +177,7 @@ test.describe('Multi-User Real-time Modulation Delivery', () => {
       }
     }, userIdAlfa);
 
-    await pageAlfa.waitForTimeout(1500); // Hold for active transmission
+    await pageAlfa.waitForTimeout(500); // Hold for active transmission
 
     // 7. Verify User Beta receives User Alfa's active transmission
     // Beta's LCD username display should change to "USER ALFA"
