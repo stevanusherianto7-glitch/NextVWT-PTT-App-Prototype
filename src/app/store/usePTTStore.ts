@@ -5,102 +5,25 @@ import { checkIfNewUser } from '../utils/constants';
 export type { AppUser, ChannelItem, WebRTCSignalingPayload, GuestUser, PTTState } from './types';
 import { BRAND } from '../utils/config';
 
-// ─── Local Storage Key ────────────────────────────────────────────────────────
-const LS_KEY = 'nextvwt_settings';
+import {
+  safeGetStorage,
+  safeSetStorage,
+  generateUUID,
+  getChannelUUID,
+  generateRandomCallSign,
+  PERSISTED_KEYS,
+  pickPersistedState,
+} from './storeUtils';
 
-// Robust localStorage read – returns null on parse errors or security exceptions
-export function safeGetStorage(): Partial<PTTState> | null {
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (!raw) return null;
-    return JSON.parse(raw) as Partial<PTTState>;
-  } catch {
-    return null;
-  }
-}
-
-// Robust localStorage write – silent on quota/security errors
-export function safeSetStorage(partial: Partial<PTTState>): void {
-  try {
-    const existing = safeGetStorage() ?? {};
-    localStorage.setItem(LS_KEY, JSON.stringify({ ...existing, ...partial }));
-  } catch {
-    // Quota exceeded or private-browsing blocked – fail silently per Robustness Rule
-  }
-}
-
-// ─── UUID Utilities ───────────────────────────────────────────────────────────
-// Robust RFC4122 v4 UUID generator with fallback
-export function generateUUID(): string {
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-    return crypto.randomUUID();
-  }
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0;
-    const v = c === 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-}
-
-// Map channel integers deterministically to syntactically valid UUID v4 format
-export function getChannelUUID(channelNum: number): string {
-  const padded = channelNum.toString().padStart(12, '0');
-  return `00000000-0000-4000-8000-${padded}`;
-}
-
-// Generate random 5-character alphanumeric uppercase call sign
-export function generateRandomCallSign(): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = '';
-  for (let i = 0; i < 5; i++) {
-    result += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return result;
-}
-
-// ─── Persisted Settings Keys ──────────────────────────────────────────────────
-// Only these keys are persisted to localStorage (volatile runtime state is excluded)
-export const PERSISTED_KEYS: Array<keyof PTTState> = [
-  'infoText',
-  'locationText',
-  'channelNumber',
-  'callSign',
-  'showMyPhoto',
-  'showOtherPhotos',
-  'showPhotosInList',
-  'fastClick',
-  'showModulator',
-  'showPTT',
-  'maxQueue',
-  'audioMode',
-  'pttSize',
-  'pttBottom',
-  'togglePtt',
-  'pttVolume',
-  'vibrateOnStart',
-  'toneOnStartEnd',
-  'bgActive',
-  'fullDuplex',
-  'themeText',
-  'builtInEcho',
-  'isKaraokePlayerOpen',
-  'echoFeedback',
-  'profilePhotoOption',
-  'customPhotoUrl',
-  'hasCompletedOnboarding',
-  'lastFeedbackTime',
-];
-
-export function pickPersistedState(state: Partial<PTTState>): Partial<PTTState> {
-  const result: Partial<PTTState> = {};
-  for (const key of PERSISTED_KEYS) {
-    if (key in state) {
-      // @ts-expect-error dynamic key access
-      result[key] = state[key];
-    }
-  }
-  return result;
-}
+export {
+  safeGetStorage,
+  safeSetStorage,
+  generateUUID,
+  getChannelUUID,
+  generateRandomCallSign,
+  PERSISTED_KEYS,
+  pickPersistedState,
+};
 
 interface PresenceMeta {
   userId?: string;

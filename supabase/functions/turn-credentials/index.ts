@@ -4,10 +4,23 @@ import { MeteredProvider } from "./providers/metered.ts";
 import { TwilioProvider } from "./providers/twilio.ts";
 import { StaticProvider } from "./providers/static.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+const ALLOWED_ORIGINS = [
+  'http://localhost:5173',
+  'http://localhost:4173',
+  'https://nextvwt.vercel.app',
+  'https://nextvwt.id',
+  'https://www.nextvwt.id',
+];
+
+function getCorsHeaders(req: Request) {
+  const origin = req.headers.get('Origin') || '';
+  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Vary': 'Origin',
+  };
+}
 
 // Simplified in-memory rate limiting map for MVP
 // Key: user_id, Value: { count: number, resetTime: number }
@@ -15,6 +28,7 @@ const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
 serve(async (req) => {
   const startTime = Date.now();
+  const corsHeaders = getCorsHeaders(req);
 
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {

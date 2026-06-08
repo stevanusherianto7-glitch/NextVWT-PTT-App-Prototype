@@ -2,7 +2,7 @@ import { StateCreator } from 'zustand';
 import { PTTState } from '../types';
 import { pttRateLimiter } from '../../utils/rateLimiter';
 import { activeChannelSubscription, setActiveChannelSubscription } from '../subscription';
-import { safeSetStorage } from '../usePTTStore';
+import { safeSetStorage } from '../storeUtils';
 
 export const createUISlice: StateCreator<
   PTTState,

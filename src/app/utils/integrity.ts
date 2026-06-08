@@ -46,13 +46,7 @@ export function detectDevTools(): boolean {
     return true;
   }
 
-  // Performance-based detection
-  const t1 = performance.now();
-  // eslint-disable-next-line no-debugger
-  debugger; // Akan pause jika DevTools terbuka
-  const t2 = performance.now();
-
-  return t2 - t1 > 100;
+  return false;
 }
 
 /**

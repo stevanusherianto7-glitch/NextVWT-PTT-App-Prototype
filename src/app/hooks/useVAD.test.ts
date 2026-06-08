@@ -16,8 +16,8 @@ import { useVAD } from './useVAD';
 import { usePTTStore } from '../store/usePTTStore';
 
 // ─── Mock Supabase (offline-capable) ─────────────────────────────────────────
-vi.mock('../utils/supabase', () => ({
-  supabase: {
+vi.mock('../utils/supabase', () => {
+  const mockSupabase = {
     channel: vi.fn(() => ({
       on: vi.fn().mockReturnThis(),
       track: vi.fn(() => Promise.resolve()),
@@ -35,8 +35,12 @@ vi.mock('../utils/supabase', () => ({
     from: vi.fn(() => ({
       select: vi.fn(() => ({ order: vi.fn(() => Promise.resolve({ data: [], error: null })) })),
     })),
-  },
-}));
+  };
+  return {
+    supabase: mockSupabase,
+    getSupabase: vi.fn(() => Promise.resolve(mockSupabase)),
+  };
+});
 
 // ─── Mock localStorage ────────────────────────────────────────────────────────
 const localStorageMock = (() => {
@@ -89,15 +93,24 @@ const setupAudioMocks = (rmsValue = 0.05) => {
     createAnalyser: vi.fn(() => mockAnalyserNode),
   };
 
-  // Expose ke window agar hook bisa menemukannya
-  // KRITIS: Gunakan mockImplementation agar bisa di-'new' sebagai constructor
+  // Expose ke globalThis dan window agar hook bisa menemukannya
+  const mockContextClass = vi.fn().mockImplementation(function () {
+    return mockAudioContext;
+  });
+
   Object.defineProperty(globalThis, 'AudioContext', {
-    value: vi.fn().mockImplementation(function () {
-      return mockAudioContext;
-    }),
+    value: mockContextClass,
     writable: true,
     configurable: true,
   });
+
+  if (typeof window !== 'undefined') {
+    Object.defineProperty(window, 'AudioContext', {
+      value: mockContextClass,
+      writable: true,
+      configurable: true,
+    });
+  }
 };
 
 // ─── Mock MediaStreamTrack ────────────────────────────────────────────────────
@@ -165,6 +178,9 @@ describe('useVAD', () => {
     const { result } = renderHook(() => useVAD(0.01));
     const track = createMockTrack();
     const stream = createMockStream(track);
+
+    // Set isTransmitting to true to bypass store setProgress guard
+    usePTTStore.setState({ isTransmitting: true });
 
     act(() => {
       result.current.startVAD(stream, track);

@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { usePTTStore, getChannelUUID, safeGetStorage, safeSetStorage } from './usePTTStore';
+import { usePTTStore } from './usePTTStore';
+import { getChannelUUID, safeGetStorage, safeSetStorage } from './storeUtils';
 
 // ─── Mock Supabase ────────────────────────────────────────────────────────────
 // Mock Supabase to keep unit tests offline-capable and fast

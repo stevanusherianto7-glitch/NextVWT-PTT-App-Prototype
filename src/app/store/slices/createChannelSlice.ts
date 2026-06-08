@@ -1,8 +1,7 @@
 import { StateCreator } from 'zustand';
 import { PTTState, ChannelItem } from '../types';
 import { BRAND, CHANNELS, fetchChannels as fetchChannelsFromConfig } from '../../utils/config';
-import { getChannelUUID } from '../usePTTStore'; // We will export these utils from usePTTStore.ts
-import { safeSetStorage } from '../usePTTStore';
+import { getChannelUUID, safeSetStorage } from '../storeUtils';
 import { channelSwitchRateLimiter } from '../../utils/rateLimiter';
 
 export const createChannelSlice: StateCreator<

@@ -9,7 +9,7 @@ import {
   getChannelUUID,
   PERSISTED_KEYS,
   pickPersistedState,
-} from '../usePTTStore';
+} from '../storeUtils';
 import { activeChannelSubscription } from '../subscription';
 
 export const createSettingsSlice: StateCreator<
