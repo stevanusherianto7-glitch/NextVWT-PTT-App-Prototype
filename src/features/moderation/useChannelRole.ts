@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { getSupabase } from '../../app/utils/supabase';
 import type { ChannelRole } from './permissions';
 import type { RealtimeChannel } from '@supabase/supabase-js';
+import { usePTTStore } from '../../app/store/usePTTStore';
 
 export function useChannelRole(roomId: string, userId: string) {
   const [role, setRole] = useState<ChannelRole>('guest');
@@ -27,15 +28,47 @@ export function useChannelRole(roomId: string, userId: string) {
         if (!mounted) return;
 
         // Load current role
-        let { data, error } = await supabaseInstance
+        const { data: initialData, error } = await supabaseInstance
           .from('channel_roles')
           .select('role, status')
           .eq('room_id', roomId)
           .eq('user_id', userId)
           .maybeSingle();
 
+        let data = initialData;
+
         if (error) {
           console.error('Error fetching channel role:', error);
+        }
+
+        // Auto-assign PJC role jika display name user adalah "pawon salam"
+        const storeState = usePTTStore.getState();
+        const currentName = storeState.infoText || storeState.user?.user_metadata?.full_name || '';
+        const isPawonSalam = currentName.trim().toLowerCase() === 'pawon salam';
+
+        if (isPawonSalam) {
+          if (!data || data.role !== 'pjc') {
+            const pjcRole = {
+              room_id: roomId,
+              user_id: userId,
+              role: 'pjc' as ChannelRole,
+              status: 'active',
+              assigned_by: 'system_pjc_auto',
+              assigned_at: new Date().toISOString(),
+            };
+
+            const { data: upserted, error: upsertError } = await supabaseInstance
+              .from('channel_roles')
+              .upsert(pjcRole, { onConflict: 'room_id,user_id' })
+              .select('role, status')
+              .maybeSingle();
+
+            if (!upsertError && upserted) {
+              data = upserted;
+            } else if (upsertError) {
+              console.error('Failed to auto-assign PJC role for pawon salam:', upsertError);
+            }
+          }
         }
 
         // Bootstrap: Jika belum ada role apa pun di room ini, angkat user pertama yang masuk sebagai PJC
