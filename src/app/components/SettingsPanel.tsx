@@ -357,12 +357,7 @@ export function SettingsPanel({ onClose, onOpenModeration }: SettingsPanelProps)
                 <div className="p-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 rounded-full flex items-center justify-center">
                   <Shield className="h-5 w-5" />
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-bold text-gray-800">Kelola & Moderasi Channel</span>
-                  <span className="text-[11px] text-slate-500">
-                    Atur peran, PTT, chat, dan log saluran aktif
-                  </span>
-                </div>
+                <span className="text-sm font-bold text-gray-800">Kelola & Moderasi Channel</span>
               </div>
               <ChevronRight className="h-5 w-5 text-gray-400" />
             </button>
