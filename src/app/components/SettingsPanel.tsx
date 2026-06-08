@@ -3,12 +3,16 @@ import { usePTTStore } from '../store/usePTTStore';
 import { toast } from 'sonner';
 
 import { PROVINCE_CITIES } from '../data/provinceCities';
+import { useChannelRole } from '../../features/moderation/useChannelRole';
+import { canPerformAction } from '../../features/moderation/permissions';
+import { Shield, ChevronRight } from 'lucide-react';
 
 interface SettingsPanelProps {
   onClose: () => void;
+  onOpenModeration?: () => void;
 }
 
-export function SettingsPanel({ onClose }: SettingsPanelProps) {
+export function SettingsPanel({ onClose, onOpenModeration }: SettingsPanelProps) {
   const {
     infoText,
     locationText,
@@ -38,6 +42,8 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
     signOut,
     profilePhotoOption,
     customPhotoUrl,
+    userId,
+    channelNumber: channel,
   } = usePTTStore();
 
   const [isPhraseModalOpen, setIsPhraseModalOpen] = useState(false);
@@ -47,6 +53,16 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
   const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
   const [selectedProvince, setSelectedProvince] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const roomId = `ptt-room-${channel}`;
+  const { role } = useChannelRole(roomId, userId);
+
+  const handleOpenModeration = () => {
+    onClose();
+    if (onOpenModeration) {
+      onOpenModeration();
+    }
+  };
 
   const PREDEFINED_PHRASES = [
     '1 ❤️ BERBAGI MODULASI NEXTVWT TETAP DI HATI',
@@ -330,6 +346,29 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
 
       {/* Scrollable Form Body */}
       <div className="flex-1 overflow-y-auto w-full pb-8">
+        {/* MODERATION CHANNEL TAB */}
+        {canPerformAction(role, 'VIEW_ADMIN_PANEL') && (
+          <div className="w-full bg-white border-b border-gray-200">
+            <button
+              onClick={handleOpenModeration}
+              className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors cursor-pointer text-left focus:outline-none"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 rounded-full flex items-center justify-center">
+                  <Shield className="h-5 w-5" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm font-bold text-gray-800">Kelola & Moderasi Channel</span>
+                  <span className="text-[11px] text-slate-500">
+                    Atur peran, PTT, chat, dan log saluran aktif
+                  </span>
+                </div>
+              </div>
+              <ChevronRight className="h-5 w-5 text-gray-400" />
+            </button>
+          </div>
+        )}
+
         {/* INFO SECTION */}
         <div className="w-full bg-[#e2e8f0] py-1.5 px-6 text-[11px] font-bold text-[#475569] uppercase tracking-wider">
           Info

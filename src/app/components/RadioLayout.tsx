@@ -22,15 +22,13 @@ import { Shield } from 'lucide-react';
 
 // Helper to catch dynamic import chunk loading failures (typically after a new deploy)
 // and automatically reload the page to fetch the latest assets
-const lazyRetry = <T extends React.ComponentType<any>>(
-  importFn: () => Promise<{ default: T }>
-) => {
+const lazyRetry = <T extends React.ComponentType<any>>(importFn: () => Promise<{ default: T }>) => {
   return lazy(async () => {
     try {
       return await importFn();
     } catch (error) {
-      console.error("Dynamic chunk loading failed, triggering page reload:", error);
-      if (typeof window !== "undefined") {
+      console.error('Dynamic chunk loading failed, triggering page reload:', error);
+      if (typeof window !== 'undefined') {
         window.location.reload();
       }
       throw error;
@@ -419,7 +417,10 @@ export function RadioLayout() {
         // Suspense boundary: tampilkan skeleton saat SettingsPanel sedang dimuat
         // (hanya terjadi pada kali pertama Settings dibuka dalam sesi ini)
         <Suspense fallback={<SettingsPanelSkeleton />}>
-          <SettingsPanel onClose={() => setIsSettingsOpen(false)} />
+          <SettingsPanel
+            onClose={() => setIsSettingsOpen(false)}
+            onOpenModeration={() => setIsManageOpen(true)}
+          />
         </Suspense>
       ) : (
         <div
