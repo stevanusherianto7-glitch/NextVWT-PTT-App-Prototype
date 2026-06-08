@@ -92,8 +92,8 @@
 .moderation-tab-btn {
   flex: 1;
   white-space: nowrap;
-  padding: 0.45rem 0.75rem;
-  font-size: 0.75rem;
+  padding: 0.45rem 0.25rem;
+  font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
   color: #64748b;
@@ -102,6 +102,7 @@
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  gap: 0.25rem !important;
 }
 
 .moderation-tab-btn.active {

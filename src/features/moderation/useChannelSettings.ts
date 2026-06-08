@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import { getSupabase } from "../../app/utils/supabase";
-import type { RealtimeChannel } from "@supabase/supabase-js";
+import { useEffect, useState } from 'react';
+import { getSupabase } from '../../app/utils/supabase';
+import type { RealtimeChannel } from '@supabase/supabase-js';
 
 export interface ChannelSettings {
   room_id: string;
   channel_name: string;
   channel_description: string;
-  channel_mode: "public" | "private" | "password" | "locked" | "hidden";
+  channel_mode: 'public' | 'private' | 'password' | 'locked' | 'hidden';
   channel_password_hash?: string;
   pjc_user_id?: string;
   theme_key: string;
@@ -25,7 +25,7 @@ export interface ChannelSettings {
   slow_mode_seconds: number;
 }
 
-export function useChannelSettings(roomId: string, initialChannelName = "Channel") {
+export function useChannelSettings(roomId: string, initialChannelName = 'Channel') {
   const [settings, setSettings] = useState<ChannelSettings | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -43,18 +43,18 @@ export function useChannelSettings(roomId: string, initialChannelName = "Channel
       try {
         setLoading(true);
         const supabaseInstance = await getSupabase();
-        
+
         if (!mounted) return;
 
         // Fetch settings
         const { data, error } = await supabaseInstance
-          .from("channel_settings")
-          .select("*")
-          .eq("room_id", roomId)
+          .from('channel_settings')
+          .select('*')
+          .eq('room_id', roomId)
           .maybeSingle();
 
         if (error) {
-          console.error("Error fetching channel settings:", error);
+          console.error('Error fetching channel settings:', error);
         }
 
         if (!mounted) return;
@@ -67,9 +67,9 @@ export function useChannelSettings(roomId: string, initialChannelName = "Channel
           const defaults = {
             room_id: roomId,
             channel_name: initialChannelName,
-            channel_description: "",
-            channel_mode: "public",
-            theme_key: "green-crystal",
+            channel_description: '',
+            channel_mode: 'public',
+            theme_key: 'green-crystal',
             allow_guest_ptt: true,
             allow_guest_chat: true,
             allow_guest_reaction: true,
@@ -86,13 +86,13 @@ export function useChannelSettings(roomId: string, initialChannelName = "Channel
           };
 
           const { data: inserted, error: insertError } = await supabaseInstance
-            .from("channel_settings")
+            .from('channel_settings')
             .insert(defaults)
             .select()
             .maybeSingle();
 
           if (insertError) {
-            console.error("Error creating default settings:", insertError);
+            console.error('Error creating default settings:', insertError);
           }
 
           if (mounted) {
@@ -105,15 +105,15 @@ export function useChannelSettings(roomId: string, initialChannelName = "Channel
         channel = supabaseInstance
           .channel(`channel-settings:${roomId}`)
           .on(
-            "postgres_changes",
+            'postgres_changes',
             {
-              event: "*",
-              schema: "public",
-              table: "channel_settings",
+              event: '*',
+              schema: 'public',
+              table: 'channel_settings',
               filter: `room_id=eq.${roomId}`,
             },
             (payload) => {
-              if (payload.eventType === "DELETE") {
+              if (payload.eventType === 'DELETE') {
                 if (mounted) setSettings(null);
               } else if (payload.new) {
                 if (mounted) setSettings(payload.new as ChannelSettings);
@@ -122,7 +122,7 @@ export function useChannelSettings(roomId: string, initialChannelName = "Channel
           )
           .subscribe();
       } catch (err) {
-        console.error("Error loadAndSubscribe channel settings:", err);
+        console.error('Error loadAndSubscribe channel settings:', err);
         if (mounted) {
           setLoading(false);
         }
@@ -145,29 +145,29 @@ export function useChannelSettings(roomId: string, initialChannelName = "Channel
     if (!roomId) return;
     try {
       const supabaseInstance = await getSupabase();
-      
+
       // Optimistic Update
-      setSettings((prev) => prev ? { ...prev, ...newSettings } : null);
+      setSettings((prev) => (prev ? { ...prev, ...newSettings } : null));
 
       const { error } = await supabaseInstance
-        .from("channel_settings")
+        .from('channel_settings')
         .update({
           ...newSettings,
           updated_at: new Date().toISOString(),
         })
-        .eq("room_id", roomId);
+        .eq('room_id', roomId);
 
       if (error) {
-        console.error("Error updating channel settings:", error);
+        console.error('Error updating channel settings:', error);
         throw error;
       }
     } catch (err) {
       // Re-fetch to sync correct status on error
       const supabaseInstance = await getSupabase();
       const { data } = await supabaseInstance
-        .from("channel_settings")
-        .select("*")
-        .eq("room_id", roomId)
+        .from('channel_settings')
+        .select('*')
+        .eq('room_id', roomId)
         .maybeSingle();
       if (data) {
         setSettings(data as ChannelSettings);

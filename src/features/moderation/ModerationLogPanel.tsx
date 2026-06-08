@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { getSupabase } from "../../app/utils/supabase";
-import { RefreshCw, ClipboardList, Clock } from "lucide-react";
+import { useEffect, useState } from 'react';
+import { getSupabase } from '../../app/utils/supabase';
+import { RefreshCw, ClipboardList, Clock } from 'lucide-react';
 
 interface ModerationLog {
   id: string;
@@ -27,19 +27,19 @@ export function ModerationLogPanel({ roomId }: ModerationLogPanelProps) {
       setLoading(true);
       const supabaseInstance = await getSupabase();
       const { data, error } = await supabaseInstance
-        .from("channel_moderation_logs")
-        .select("*")
-        .eq("room_id", roomId)
-        .order("created_at", { ascending: false })
+        .from('channel_moderation_logs')
+        .select('*')
+        .eq('room_id', roomId)
+        .order('created_at', { ascending: false })
         .limit(40);
 
       if (error) {
-        console.error("Error loading logs:", error);
+        console.error('Error loading logs:', error);
       } else if (data) {
         setLogs(data as ModerationLog[]);
       }
     } catch (err) {
-      console.error("Failed loading moderation logs:", err);
+      console.error('Failed loading moderation logs:', err);
     } finally {
       setLoading(false);
     }
@@ -54,11 +54,11 @@ export function ModerationLogPanel({ roomId }: ModerationLogPanelProps) {
       channel = supabaseInstance
         .channel(`moderation-logs:${roomId}`)
         .on(
-          "postgres_changes",
+          'postgres_changes',
           {
-            event: "INSERT",
-            schema: "public",
-            table: "channel_moderation_logs",
+            event: 'INSERT',
+            schema: 'public',
+            table: 'channel_moderation_logs',
             filter: `room_id=eq.${roomId}`,
           },
           (payload) => {
@@ -77,49 +77,60 @@ export function ModerationLogPanel({ roomId }: ModerationLogPanelProps) {
 
   const getActorRoleLabel = (role: string) => {
     switch (role) {
-      case "noc": return "N.O.C";
-      case "sys_admin": return "Sys Admin";
-      case "pjc": return "P.J.C";
-      case "operator": return "Operator";
-      default: return role.toUpperCase();
+      case 'noc':
+        return 'N.O.C';
+      case 'sys_admin':
+        return 'Sys Admin';
+      case 'pjc':
+        return 'P.J.C';
+      case 'operator':
+        return 'Operator';
+      default:
+        return role.toUpperCase();
     }
   };
 
   const getRoleLabel = (role: string) => {
     switch (role) {
-      case "noc": return "N.O.C";
-      case "sys_admin": return "Sys Admin";
-      case "pjc": return "P.J.C";
-      case "operator": return "Operator";
-      case "guest": return "Tamu";
-      default: return role;
+      case 'noc':
+        return 'N.O.C';
+      case 'sys_admin':
+        return 'Sys Admin';
+      case 'pjc':
+        return 'P.J.C';
+      case 'operator':
+        return 'Operator';
+      case 'guest':
+        return 'Tamu';
+      default:
+        return role;
     }
   };
 
   const formatActionDescription = (log: ModerationLog) => {
-    const target = log.target_user_id || "Sistem";
+    const target = log.target_user_id || 'Sistem';
     const detail = log.detail || {};
 
     switch (log.action) {
-      case "SET_USER_ROLE":
-        return `Mengubah jabatan ${target} menjadi ${getRoleLabel(detail.nextRole || "guest")} (sebelumnya ${getRoleLabel(detail.previousRole || "guest")}).`;
-      case "MUTE_USER":
-        return `Membungkam ${target} selama ${detail.minutes > 0 ? `${detail.minutes} menit` : "permanen"}.`;
-      case "UNMUTE_USER":
+      case 'SET_USER_ROLE':
+        return `Mengubah jabatan ${target} menjadi ${getRoleLabel(detail.nextRole || 'guest')} (sebelumnya ${getRoleLabel(detail.previousRole || 'guest')}).`;
+      case 'MUTE_USER':
+        return `Membungkam ${target} selama ${detail.minutes > 0 ? `${detail.minutes} menit` : 'permanen'}.`;
+      case 'UNMUTE_USER':
         return `Membatalkan pembungkaman ${target}.`;
-      case "BLOCK_PTT":
-        return `Memblokir tombol bicara (PTT) ${target} selama ${detail.minutes > 0 ? `${detail.minutes} menit` : "permanen"}.`;
-      case "UNBLOCK_PTT":
+      case 'BLOCK_PTT':
+        return `Memblokir tombol bicara (PTT) ${target} selama ${detail.minutes > 0 ? `${detail.minutes} menit` : 'permanen'}.`;
+      case 'UNBLOCK_PTT':
         return `Membuka blokir PTT ${target}.`;
-      case "BLOCK_CHAT":
-        return `Memblokir chat ${target} selama ${detail.minutes > 0 ? `${detail.minutes} menit` : "permanen"}.`;
-      case "UNBLOCK_CHAT":
+      case 'BLOCK_CHAT':
+        return `Memblokir chat ${target} selama ${detail.minutes > 0 ? `${detail.minutes} menit` : 'permanen'}.`;
+      case 'UNBLOCK_CHAT':
         return `Membuka blokir chat ${target}.`;
-      case "KICK_USER":
+      case 'KICK_USER':
         return `Mengeluarkan ${target} dari channel.`;
-      case "BAN_USER":
-        return `Memblokir permanen (ban) ${target}${detail.reason ? ` dengan alasan: "${detail.reason}"` : ""}.`;
-      case "UNBAN_USER":
+      case 'BAN_USER':
+        return `Memblokir permanen (ban) ${target}${detail.reason ? ` dengan alasan: "${detail.reason}"` : ''}.`;
+      case 'UNBAN_USER':
         return `Membatalkan blokir permanen (unban) ${target}.`;
       default:
         return `${log.action} pada ${target} ${JSON.stringify(detail)}`;
@@ -139,7 +150,7 @@ export function ModerationLogPanel({ roomId }: ModerationLogPanelProps) {
           className="p-1 hover:bg-white/5 rounded text-slate-400 hover:text-white transition-colors"
           title="Segarkan Log"
         >
-          <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-emerald-400" : ""}`} />
+          <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin text-emerald-400' : ''}`} />
         </button>
       </div>
 

@@ -6,7 +6,6 @@ interface AppSecurityPlugin {
 
 const AppSecurity = registerPlugin<AppSecurityPlugin>('AppSecurity');
 
-
 // SHA-256 hash dari signing certificate (isi setelah pertama kali sign dengan keytool)
 // Perintah: keytool -list -v -keystore release.keystore -alias <alias>
 // Ambil nilai SHA-256 fingerprint dan masukkan di sini.

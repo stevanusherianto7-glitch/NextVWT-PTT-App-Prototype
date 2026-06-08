@@ -36,7 +36,7 @@ describe('RateLimiter', () => {
 
     expect(limiter.canProceed()).toBe(true);
     expect(limiter.canProceed()).toBe(true);
-    
+
     // Request ketiga melebihi batas, harus memicu blokir
     expect(limiter.canProceed()).toBe(false);
     expect(limiter.getRemaining()).toBe(0);
@@ -60,7 +60,7 @@ describe('RateLimiter', () => {
     });
 
     expect(limiter.canProceed()).toBe(true);
-    
+
     // Maju waktu 600ms (masih di dalam window)
     vi.advanceTimersByTime(600);
     expect(limiter.canProceed()).toBe(true);

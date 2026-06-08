@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
-import { usePTTStore } from "../../app/store/usePTTStore";
-import { getSupabase } from "../../app/utils/supabase";
-import { useModerationActions } from "./useModerationActions";
+import { useState, useEffect } from 'react';
+import { usePTTStore } from '../../app/store/usePTTStore';
+import { getSupabase } from '../../app/utils/supabase';
+import { useModerationActions } from './useModerationActions';
 import {
   canModerateRole,
   canPerformAction,
   roleRank,
   type ChannelRole,
   type ChannelUserStatus,
-} from "./permissions";
+} from './permissions';
 import {
   MoreVertical,
   VolumeX,
@@ -20,7 +20,7 @@ import {
   UserX,
   X,
   Shield,
-} from "lucide-react";
+} from 'lucide-react';
 
 interface MemberRoleStatus {
   user_id: string;
@@ -43,23 +43,38 @@ interface ChannelMemberListProps {
 
 export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberListProps) {
   const activeUsers = usePTTStore((state) => state.activeUsers);
-  const { setUserRole, muteUser, unmuteUser, blockPTT, unblockPTT, blockChat, unblockChat, kickUser, banUser, unbanUser } =
-    useModerationActions({ roomId, actorId, actorRole });
+  const {
+    setUserRole,
+    muteUser,
+    unmuteUser,
+    blockPTT,
+    unblockPTT,
+    blockChat,
+    unblockChat,
+    kickUser,
+    banUser,
+    unbanUser,
+  } = useModerationActions({ roomId, actorId, actorRole });
 
   // Local state for role and status mapping from database
   const [dbRoles, setDbRoles] = useState<Record<string, MemberRoleStatus>>({});
   const [bannedUsers, setBannedUsers] = useState<BannedUser[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState<"online" | "banned">("online");
-  
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState<'online' | 'banned'>('online');
+
   // Modal states
-  const [selectedUser, setSelectedUser] = useState<{ userId: string; displayName: string; role: ChannelRole; status: ChannelUserStatus } | null>(null);
+  const [selectedUser, setSelectedUser] = useState<{
+    userId: string;
+    displayName: string;
+    role: ChannelRole;
+    status: ChannelUserStatus;
+  } | null>(null);
   const [showActionModal, setShowActionModal] = useState(false);
-  const [banReason, setBanReason] = useState("");
+  const [banReason, setBanReason] = useState('');
   const [muteMinutes, setMuteMinutes] = useState(15);
   const [blockMinutes, setBlockMinutes] = useState(15);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   // Load database roles/statuses and banned users
   useEffect(() => {
@@ -70,22 +85,22 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
     async function loadData() {
       try {
         const supabaseInstance = await getSupabase();
-        
+
         // Load roles
         const { data: rolesData, error: rolesError } = await supabaseInstance
-          .from("channel_roles")
-          .select("user_id, role, status")
-          .eq("room_id", roomId);
+          .from('channel_roles')
+          .select('user_id, role, status')
+          .eq('room_id', roomId);
 
-        if (rolesError) console.error("Error loading channel roles:", rolesError);
+        if (rolesError) console.error('Error loading channel roles:', rolesError);
 
         // Load bans
         const { data: bansData, error: bansError } = await supabaseInstance
-          .from("channel_bans")
-          .select("user_id, reason, banned_by, banned_at")
-          .eq("room_id", roomId);
+          .from('channel_bans')
+          .select('user_id, reason, banned_by, banned_at')
+          .eq('room_id', roomId);
 
-        if (bansError) console.error("Error loading channel bans:", bansError);
+        if (bansError) console.error('Error loading channel bans:', bansError);
 
         if (!mounted) return;
 
@@ -101,7 +116,7 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
           setBannedUsers(bansData as BannedUser[]);
         }
       } catch (err) {
-        console.error("Failed to load moderation member data:", err);
+        console.error('Failed to load moderation member data:', err);
       }
     }
 
@@ -113,12 +128,12 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
 
     (async () => {
       const supabaseInstance = await getSupabase();
-      
+
       rolesChannel = supabaseInstance
         .channel(`member-roles:${roomId}`)
         .on(
-          "postgres_changes",
-          { event: "*", schema: "public", table: "channel_roles", filter: `room_id=eq.${roomId}` },
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'channel_roles', filter: `room_id=eq.${roomId}` },
           () => loadData()
         )
         .subscribe();
@@ -126,8 +141,8 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
       bansChannel = supabaseInstance
         .channel(`member-bans:${roomId}`)
         .on(
-          "postgres_changes",
-          { event: "*", schema: "public", table: "channel_bans", filter: `room_id=eq.${roomId}` },
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'channel_bans', filter: `room_id=eq.${roomId}` },
           () => loadData()
         )
         .subscribe();
@@ -141,23 +156,23 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
   }, [roomId]);
 
   const handleOpenActions = (userId: string, displayName: string) => {
-    const userDbInfo = dbRoles[userId] || { role: "guest", status: "active" };
+    const userDbInfo = dbRoles[userId] || { role: 'guest', status: 'active' };
     setSelectedUser({
       userId,
       displayName,
       role: userDbInfo.role,
       status: userDbInfo.status,
     });
-    setBanReason("");
-    setErrorMessage("");
-    setSuccessMessage("");
+    setBanReason('');
+    setErrorMessage('');
+    setSuccessMessage('');
     setShowActionModal(true);
   };
 
   const handleAction = async (actionFn: () => Promise<void>, successText: string) => {
     try {
-      setErrorMessage("");
-      setSuccessMessage("");
+      setErrorMessage('');
+      setSuccessMessage('');
       await actionFn();
       setSuccessMessage(successText);
       setTimeout(() => {
@@ -165,7 +180,7 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
         setSelectedUser(null);
       }, 1500);
     } catch (err: any) {
-      setErrorMessage(err.message || "Terjadi kesalahan saat memproses aksi.");
+      setErrorMessage(err.message || 'Terjadi kesalahan saat memproses aksi.');
     }
   };
 
@@ -178,16 +193,16 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
 
   const getRoleLabel = (role: ChannelRole) => {
     switch (role) {
-      case "noc":
-        return "N.O.C";
-      case "sys_admin":
-        return "Sys Admin";
-      case "pjc":
-        return "P.J.C";
-      case "operator":
-        return "Operator";
-      case "guest":
-        return "Tamu";
+      case 'noc':
+        return 'N.O.C';
+      case 'sys_admin':
+        return 'Sys Admin';
+      case 'pjc':
+        return 'P.J.C';
+      case 'operator':
+        return 'Operator';
+      case 'guest':
+        return 'Tamu';
       default:
         return role;
     }
@@ -198,22 +213,22 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
       {/* Sub tabs for Online vs Banned */}
       <div className="flex gap-2 border-b border-white/5 pb-2">
         <button
-          onClick={() => setActiveTab("online")}
+          onClick={() => setActiveTab('online')}
           className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
-            activeTab === "online"
-              ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400"
-              : "text-slate-400 hover:text-white"
+            activeTab === 'online'
+              ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400'
+              : 'text-slate-400 hover:text-white'
           }`}
         >
           Online ({filteredOnlineUsers.length})
         </button>
-        {canPerformAction(actorRole, "BAN_USER") && (
+        {canPerformAction(actorRole, 'BAN_USER') && (
           <button
-            onClick={() => setActiveTab("banned")}
+            onClick={() => setActiveTab('banned')}
             className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
-              activeTab === "banned"
-                ? "bg-red-500/10 border border-red-500/30 text-red-400"
-                : "text-slate-400 hover:text-white"
+              activeTab === 'banned'
+                ? 'bg-red-500/10 border border-red-500/30 text-red-400'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
             Banned ({bannedUsers.length})
@@ -222,7 +237,7 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
       </div>
 
       {/* Search Input */}
-      {activeTab === "online" && (
+      {activeTab === 'online' && (
         <div className="relative">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
           <input
@@ -237,7 +252,7 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
 
       {/* Lists */}
       <div className="flex-1 overflow-y-auto pr-1">
-        {activeTab === "online" ? (
+        {activeTab === 'online' ? (
           filteredOnlineUsers.length === 0 ? (
             <div className="text-center text-slate-500 py-8 text-sm">
               Tidak ada pengguna online yang cocok.
@@ -245,7 +260,7 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
           ) : (
             <div className="flex flex-col gap-2">
               {filteredOnlineUsers.map((u) => {
-                const userDbInfo = dbRoles[u.userId] || { role: "guest", status: "active" };
+                const userDbInfo = dbRoles[u.userId] || { role: 'guest', status: 'active' };
                 const isActorSelf = u.userId === actorId;
                 const canModerate = !isActorSelf && canModerateRole(actorRole, userDbInfo.role);
 
@@ -277,7 +292,7 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
                           <span className={`role-badge ${userDbInfo.role}`}>
                             {getRoleLabel(userDbInfo.role)}
                           </span>
-                          {userDbInfo.status !== "active" && (
+                          {userDbInfo.status !== 'active' && (
                             <span className={`status-badge ${userDbInfo.status}`}>
                               {userDbInfo.status}
                             </span>
@@ -299,37 +314,33 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
               })}
             </div>
           )
+        ) : bannedUsers.length === 0 ? (
+          <div className="text-center text-slate-500 py-8 text-sm">
+            Tidak ada pengguna yang di-ban.
+          </div>
         ) : (
-          bannedUsers.length === 0 ? (
-            <div className="text-center text-slate-500 py-8 text-sm">
-              Tidak ada pengguna yang di-ban.
-            </div>
-          ) : (
-            <div className="flex flex-col gap-2">
-              {bannedUsers.map((bu) => (
-                <div
-                  key={bu.user_id}
-                  className="moderation-glass-card flex items-center justify-between p-3 border-red-500/20"
-                >
-                  <div className="flex flex-col gap-1">
-                    <span className="font-semibold text-sm text-red-300">{bu.user_id}</span>
-                    {bu.reason && (
-                      <span className="text-xs text-slate-400">Alasan: {bu.reason}</span>
-                    )}
-                    <span className="text-[10px] text-slate-500">
-                      Banned oleh: {bu.banned_by} | {new Date(bu.banned_at).toLocaleString()}
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => unbanUser(bu.user_id)}
-                    className="px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded text-[11px] text-emerald-400 hover:bg-emerald-500 hover:text-slate-950 transition-all font-semibold"
-                  >
-                    Unban
-                  </button>
+          <div className="flex flex-col gap-2">
+            {bannedUsers.map((bu) => (
+              <div
+                key={bu.user_id}
+                className="moderation-glass-card flex items-center justify-between p-3 border-red-500/20"
+              >
+                <div className="flex flex-col gap-1">
+                  <span className="font-semibold text-sm text-red-300">{bu.user_id}</span>
+                  {bu.reason && <span className="text-xs text-slate-400">Alasan: {bu.reason}</span>}
+                  <span className="text-[10px] text-slate-500">
+                    Banned oleh: {bu.banned_by} | {new Date(bu.banned_at).toLocaleString()}
+                  </span>
                 </div>
-              ))}
-            </div>
-          )
+                <button
+                  onClick={() => unbanUser(bu.user_id)}
+                  className="px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded text-[11px] text-emerald-400 hover:bg-emerald-500 hover:text-slate-950 transition-all font-semibold"
+                >
+                  Unban
+                </button>
+              </div>
+            ))}
+          </div>
         )}
       </div>
 
@@ -367,7 +378,7 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
 
             <div className="flex flex-col gap-3">
               {/* Role Assignment */}
-              {canPerformAction(actorRole, "MANAGE_ROLES") && (
+              {canPerformAction(actorRole, 'MANAGE_ROLES') && (
                 <div className="border border-white/5 rounded-lg p-2.5 bg-black/20 flex flex-col gap-2">
                   <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
                     <Shield className="h-3.5 w-3.5" /> Atur Jabatan
@@ -385,13 +396,13 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
                       className="moderation-select flex-1"
                     >
                       <option value="guest">Tamu (Guest)</option>
-                      {roleRank[actorRole] > roleRank["operator"] && (
+                      {roleRank[actorRole] > roleRank['operator'] && (
                         <option value="operator">Operator Otomatis</option>
                       )}
-                      {roleRank[actorRole] > roleRank["pjc"] && (
+                      {roleRank[actorRole] > roleRank['pjc'] && (
                         <option value="pjc">PJC (Penanggung Jawab)</option>
                       )}
-                      {roleRank[actorRole] > roleRank["sys_admin"] && (
+                      {roleRank[actorRole] > roleRank['sys_admin'] && (
                         <option value="sys_admin">Sys Admin</option>
                       )}
                     </select>
@@ -402,17 +413,17 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
               {/* Status Actions */}
               <div className="grid grid-cols-2 gap-2 text-sm">
                 {/* Mute User */}
-                {canPerformAction(actorRole, "MUTE_USER") && (
+                {canPerformAction(actorRole, 'MUTE_USER') && (
                   <div className="border border-white/5 rounded-lg p-2.5 bg-black/20 flex flex-col gap-2">
                     <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
                       <VolumeX className="h-3.5 w-3.5" /> Mute Suara
                     </span>
-                    {selectedUser.status === "muted" ? (
+                    {selectedUser.status === 'muted' ? (
                       <button
                         onClick={() =>
                           handleAction(
                             () => unmuteUser(selectedUser.userId, selectedUser.role),
-                            "Mute dibatalkan."
+                            'Mute dibatalkan.'
                           )
                         }
                         className="py-1 px-2 border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 rounded text-xs font-semibold"
@@ -436,7 +447,7 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
                           onClick={() =>
                             handleAction(
                               () => muteUser(selectedUser.userId, selectedUser.role, muteMinutes),
-                              "User berhasil di-mute."
+                              'User berhasil di-mute.'
                             )
                           }
                           className="py-1 px-2 bg-red-600 hover:bg-red-700 text-white rounded text-xs font-semibold transition-all"
@@ -449,17 +460,17 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
                 )}
 
                 {/* PTT Control */}
-                {canPerformAction(actorRole, "BLOCK_PTT") && (
+                {canPerformAction(actorRole, 'BLOCK_PTT') && (
                   <div className="border border-white/5 rounded-lg p-2.5 bg-black/20 flex flex-col gap-2">
                     <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
                       <MicOff className="h-3.5 w-3.5" /> Blokir PTT
                     </span>
-                    {selectedUser.status === "ptt_blocked" ? (
+                    {selectedUser.status === 'ptt_blocked' ? (
                       <button
                         onClick={() =>
                           handleAction(
                             () => unblockPTT(selectedUser.userId, selectedUser.role),
-                            "Blokir PTT dibatalkan."
+                            'Blokir PTT dibatalkan.'
                           )
                         }
                         className="py-1 px-2 border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 rounded text-xs font-semibold"
@@ -483,7 +494,7 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
                           onClick={() =>
                             handleAction(
                               () => blockPTT(selectedUser.userId, selectedUser.role, blockMinutes),
-                              "PTT berhasil diblokir."
+                              'PTT berhasil diblokir.'
                             )
                           }
                           className="py-1 px-2 bg-red-600 hover:bg-red-700 text-white rounded text-xs font-semibold transition-all"
@@ -496,17 +507,17 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
                 )}
 
                 {/* Chat Control */}
-                {canPerformAction(actorRole, "BLOCK_CHAT") && (
+                {canPerformAction(actorRole, 'BLOCK_CHAT') && (
                   <div className="border border-white/5 rounded-lg p-2.5 bg-black/20 flex flex-col gap-2">
                     <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
                       <MessageSquareOff className="h-3.5 w-3.5" /> Blokir Chat
                     </span>
-                    {selectedUser.status === "chat_blocked" ? (
+                    {selectedUser.status === 'chat_blocked' ? (
                       <button
                         onClick={() =>
                           handleAction(
                             () => unblockChat(selectedUser.userId, selectedUser.role),
-                            "Blokir Chat dibatalkan."
+                            'Blokir Chat dibatalkan.'
                           )
                         }
                         className="py-1 px-2 border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 rounded text-xs font-semibold"
@@ -530,7 +541,7 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
                           onClick={() =>
                             handleAction(
                               () => blockChat(selectedUser.userId, selectedUser.role, blockMinutes),
-                              "Chat berhasil diblokir."
+                              'Chat berhasil diblokir.'
                             )
                           }
                           className="py-1 px-2 bg-red-600 hover:bg-red-700 text-white rounded text-xs font-semibold transition-all"
@@ -543,7 +554,7 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
                 )}
 
                 {/* Kick Action */}
-                {canPerformAction(actorRole, "KICK_USER") && (
+                {canPerformAction(actorRole, 'KICK_USER') && (
                   <div className="border border-white/5 rounded-lg p-2.5 bg-black/20 flex flex-col justify-between gap-2">
                     <div className="flex flex-col gap-1">
                       <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
@@ -557,7 +568,7 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
                       onClick={() =>
                         handleAction(
                           () => kickUser(selectedUser.userId, selectedUser.role),
-                          "User berhasil dikick."
+                          'User berhasil dikick.'
                         )
                       }
                       className="py-1.5 px-2 bg-amber-600 hover:bg-amber-700 text-white rounded text-xs font-semibold transition-all w-full mt-1"
@@ -569,7 +580,7 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
               </div>
 
               {/* Ban Action */}
-              {canPerformAction(actorRole, "BAN_USER") && (
+              {canPerformAction(actorRole, 'BAN_USER') && (
                 <div className="border border-red-500/10 rounded-lg p-3 bg-red-950/10 flex flex-col gap-2 mt-1">
                   <span className="text-xs font-semibold text-red-400 flex items-center gap-1.5">
                     <ShieldAlert className="h-4 w-4" /> Banned Dari Channel
@@ -586,7 +597,7 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
                       onClick={() =>
                         handleAction(
                           () => banUser(selectedUser.userId, selectedUser.role, banReason, 0),
-                          "User berhasil di-ban secara permanen."
+                          'User berhasil di-ban secara permanen.'
                         )
                       }
                       className="py-1.5 bg-red-600 hover:bg-red-700 text-white rounded text-xs font-bold transition-all flex items-center justify-center gap-1.5"

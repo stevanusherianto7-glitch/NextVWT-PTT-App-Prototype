@@ -1,26 +1,26 @@
-export type ChannelRole = "noc" | "sys_admin" | "pjc" | "operator" | "guest";
+export type ChannelRole = 'noc' | 'sys_admin' | 'pjc' | 'operator' | 'guest';
 
 export type ChannelUserStatus =
-  | "active"
-  | "muted"
-  | "ptt_blocked"
-  | "chat_blocked"
-  | "suspended"
-  | "banned";
+  | 'active'
+  | 'muted'
+  | 'ptt_blocked'
+  | 'chat_blocked'
+  | 'suspended'
+  | 'banned';
 
 export type ModerationAction =
-  | "VIEW_ADMIN_PANEL"
-  | "MANAGE_CHANNEL"
-  | "MANAGE_ROLES"
-  | "MANAGE_SETTINGS"
-  | "MUTE_USER"
-  | "KICK_USER"
-  | "BAN_USER"
-  | "BLOCK_PTT"
-  | "BLOCK_CHAT"
-  | "MANAGE_QUEUE"
-  | "MANAGE_THEME"
-  | "VIEW_LOGS";
+  | 'VIEW_ADMIN_PANEL'
+  | 'MANAGE_CHANNEL'
+  | 'MANAGE_ROLES'
+  | 'MANAGE_SETTINGS'
+  | 'MUTE_USER'
+  | 'KICK_USER'
+  | 'BAN_USER'
+  | 'BLOCK_PTT'
+  | 'BLOCK_CHAT'
+  | 'MANAGE_QUEUE'
+  | 'MANAGE_THEME'
+  | 'VIEW_LOGS';
 
 export const roleRank: Record<ChannelRole, number> = {
   guest: 1,
@@ -45,9 +45,9 @@ export function isHigherRole(actor: ChannelRole, target: ChannelRole): boolean {
  * - Operators and Guests cannot moderate anyone
  */
 export function canModerateRole(actor: ChannelRole, target: ChannelRole): boolean {
-  if (actor === "noc") return target !== "noc";
-  if (actor === "sys_admin") return target !== "noc" && target !== "sys_admin";
-  if (actor === "pjc") return target === "operator" || target === "guest";
+  if (actor === 'noc') return target !== 'noc';
+  if (actor === 'sys_admin') return target !== 'noc' && target !== 'sys_admin';
+  if (actor === 'pjc') return target === 'operator' || target === 'guest';
   return false;
 }
 
@@ -57,47 +57,47 @@ export function canModerateRole(actor: ChannelRole, target: ChannelRole): boolea
 export function canPerformAction(role: ChannelRole, action: ModerationAction): boolean {
   const permissions: Record<ChannelRole, ModerationAction[]> = {
     noc: [
-      "VIEW_ADMIN_PANEL",
-      "MANAGE_CHANNEL",
-      "MANAGE_ROLES",
-      "MANAGE_SETTINGS",
-      "MUTE_USER",
-      "KICK_USER",
-      "BAN_USER",
-      "BLOCK_PTT",
-      "BLOCK_CHAT",
-      "MANAGE_QUEUE",
-      "MANAGE_THEME",
-      "VIEW_LOGS",
+      'VIEW_ADMIN_PANEL',
+      'MANAGE_CHANNEL',
+      'MANAGE_ROLES',
+      'MANAGE_SETTINGS',
+      'MUTE_USER',
+      'KICK_USER',
+      'BAN_USER',
+      'BLOCK_PTT',
+      'BLOCK_CHAT',
+      'MANAGE_QUEUE',
+      'MANAGE_THEME',
+      'VIEW_LOGS',
     ],
     sys_admin: [
-      "VIEW_ADMIN_PANEL",
-      "MANAGE_CHANNEL",
-      "MANAGE_ROLES",
-      "MANAGE_SETTINGS",
-      "MUTE_USER",
-      "KICK_USER",
-      "BAN_USER",
-      "BLOCK_PTT",
-      "BLOCK_CHAT",
-      "MANAGE_QUEUE",
-      "MANAGE_THEME",
-      "VIEW_LOGS",
+      'VIEW_ADMIN_PANEL',
+      'MANAGE_CHANNEL',
+      'MANAGE_ROLES',
+      'MANAGE_SETTINGS',
+      'MUTE_USER',
+      'KICK_USER',
+      'BAN_USER',
+      'BLOCK_PTT',
+      'BLOCK_CHAT',
+      'MANAGE_QUEUE',
+      'MANAGE_THEME',
+      'VIEW_LOGS',
     ],
     pjc: [
-      "VIEW_ADMIN_PANEL",
-      "MANAGE_ROLES", // Enabled so PJC can change roles of operators & guests
-      "MANAGE_SETTINGS",
-      "MUTE_USER",
-      "KICK_USER",
-      "BAN_USER",
-      "BLOCK_PTT",
-      "BLOCK_CHAT",
-      "MANAGE_QUEUE",
-      "MANAGE_THEME",
-      "VIEW_LOGS",
+      'VIEW_ADMIN_PANEL',
+      'MANAGE_ROLES', // Enabled so PJC can change roles of operators & guests
+      'MANAGE_SETTINGS',
+      'MUTE_USER',
+      'KICK_USER',
+      'BAN_USER',
+      'BLOCK_PTT',
+      'BLOCK_CHAT',
+      'MANAGE_QUEUE',
+      'MANAGE_THEME',
+      'VIEW_LOGS',
     ],
-    operator: ["VIEW_ADMIN_PANEL", "MANAGE_QUEUE"],
+    operator: ['VIEW_ADMIN_PANEL', 'MANAGE_QUEUE'],
     guest: [],
   };
 
@@ -114,12 +114,12 @@ export function canUsePTT(params: {
 }): boolean {
   const { role, status, allowGuestPTT } = params;
 
-  if (status === "muted") return false;
-  if (status === "ptt_blocked") return false;
-  if (status === "banned") return false;
-  if (status === "suspended") return false;
+  if (status === 'muted') return false;
+  if (status === 'ptt_blocked') return false;
+  if (status === 'banned') return false;
+  if (status === 'suspended') return false;
 
-  if (role === "guest" && !allowGuestPTT) return false;
+  if (role === 'guest' && !allowGuestPTT) return false;
 
   return true;
 }
@@ -134,12 +134,12 @@ export function canUseChat(params: {
 }): boolean {
   const { role, status, allowGuestChat } = params;
 
-  if (status === "muted") return false;
-  if (status === "chat_blocked") return false;
-  if (status === "banned") return false;
-  if (status === "suspended") return false;
+  if (status === 'muted') return false;
+  if (status === 'chat_blocked') return false;
+  if (status === 'banned') return false;
+  if (status === 'suspended') return false;
 
-  if (role === "guest" && !allowGuestChat) return false;
+  if (role === 'guest' && !allowGuestChat) return false;
 
   return true;
 }
@@ -154,11 +154,11 @@ export function canUseReaction(params: {
 }): boolean {
   const { role, status, allowGuestReaction } = params;
 
-  if (status === "muted") return false;
-  if (status === "banned") return false;
-  if (status === "suspended") return false;
+  if (status === 'muted') return false;
+  if (status === 'banned') return false;
+  if (status === 'suspended') return false;
 
-  if (role === "guest" && !allowGuestReaction) return false;
+  if (role === 'guest' && !allowGuestReaction) return false;
 
   return true;
 }
