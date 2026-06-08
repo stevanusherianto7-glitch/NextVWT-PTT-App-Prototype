@@ -188,8 +188,8 @@ Papan kontrol utama yang diposisikan secara absolute di atas pelat belakang ceta
   - **Down Button**: Tinggi `48px`, `rounded-b-full`.
   - **Center Divider Line (Pivot)**: Garis horizontal absolute tebal `4px`, `opacity: 0.4`, warna hitam, dipasang tepat di tengah (`top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2`) untuk menyimulasikan poros ayun rocker fisik.
 - **Efek Bayangan Tombol D-Pad (SCAN/SET)**:
-  - Posisi Normal (Idle): Memiliki bayangan ekstrusi 3D solid hitam setebal `2.5px` (`box-shadow: 0 2.5px 0 #000000, var(--btn-shadow)`) agar tombol terlihat timbul namun tetap rata menghadap tegak lurus ke pengguna.
-  - Posisi Ditekan (Pressed): Menggunakan translasi turun `translateY(2px)` dengan `box-shadow: inset 0 3px 8px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.1)`.
+  - Posisi Normal (Idle): Memiliki bayangan ekstrusi 3D solid hitam tipis setebal `1.5px` (`box-shadow: 0 1.5px 0 rgba(0, 0, 0, 0.65), var(--btn-shadow)`) agar tombol terlihat timbul, bersih, dan menyatu dengan indah.
+  - Posisi Ditekan (Pressed): Menggunakan translasi turun `translateY(1.5px)` dengan `box-shadow: inset 0 3px 8px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.1)`.
 
 ### C. PTT Button Component (`PTTButton.tsx`)
 
@@ -543,9 +543,13 @@ Sistem streaming audio diimplementasikan via React Hook (`src/app/hooks/useAudio
 Untuk memastikan antarmuka Walkie-Talkie tidak terpotong di perangkat seluler (mobile browser) akibat bilah navigasi dinamis (dynamic toolbar/URL bar):
 
 1. **Dynamic Viewport Height (`100dvh`)**:
-   - Seluruh kontainer sasis utama (`App.tsx` dan `RadioLayout.tsx`) wajib menggunakan tinggi dinamis `h-[100dvh]` sebagai pengganti `min-h-screen` atau `100vh`.
-   - Ini memastikan aplikasi selalu menempati tepat 100% dari ruang pandang aktif tanpa memicu scrollbar vertikal liar saat bilah alamat browser seluler bergeser.
-2. **Layout Constraint**:
+   - Seluruh kontainer sasis utama (`App.tsx` dan `RadioLayout.tsx`) wajib menggunakan tinggi dinamis `h-dvh` (`100dvh`) sebagai pengganti `min-h-screen` atau `100vh`.
+   - Ini memastikan aplikasi selalu menempati tepat 100% dari ruang pandang aktif tanpa memicu scrollbar vertikal liar atau layout shift pada Android saat URL bar atau status bar berubah ukuran.
+2. **Safe-Area Viewport Fit (`viewport-fit=cover`)**:
+   - Tag `<meta name="viewport">` di `index.html` menyertakan `viewport-fit=cover` dan menonaktifkan zoom (`user-scalable=no, maximum-scale=1.0`). Ini mengaktifkan pembacaan CSS safe area dinamis dari perangkat Android Webview.
+3. **Dynamic Vertical PTT Button Offset**:
+   - Letak tombol PTT diposisikan menggunakan `bottom: calc(24px + env(safe-area-inset-bottom, 12px))` untuk menjamin tombol terangkat secara dinamis di atas bottom system navigation bar Android.
+4. **Layout Constraint**:
    - Layout dikunci pada mode portrait dengan lebar kontainer maksimal `w-full max-w-md` atau proporsi fisik sasis, memastikan elemen kontrol dan visual tetap berada di area jangkauan satu tangan (one-hand operation area) dan bebas dari Layout Shift (CLS < 0.1).
 3. **Top Header Spacing Compression**:
    - Spasi vertikal antara top bar header (area logo dan power toggle) dan sasis utama panel LCD dipadatkan dengan mengubah padding-top kontainer utama dari `pt-8` (32px) menjadi `pt-[14px]` (14px). Ini mengangkat sasis utama panel LCD ke atas mendekati tepi bawah top header, menghasilkan visual yang lebih padat (compact) sambil tetap memberikan breathing room yang cukup untuk teks berjalan (marquee) di atas.
@@ -633,3 +637,4 @@ Aplikasi dilengkapi dengan spesifikasi Progressive Web App (PWA) mandiri (standa
 | **v3.1.0** | 2026-06-06 | Penerapan Opsi C: JS Terser Obfuscation (mangle toplevel, drop console/debugger, no sourcemap), ProGuard Android bytecode shrinking & bridge reflection protection, serta deklarasi SSL Pinning (*.supabase.co) via networkSecurityConfig untuk proteksi anti-cloning & MitM (Seksi 9). | Senior System Architect |
 | **v3.2.0** | 2026-06-07 | Kompresi tinggi sasis sasis faceplate utama (pb-7 -> pb-3, mt-2 mb-2 -> mt-1 mb-0.5, mt-4 -> mt-1.5) untuk membuat spasi dengan tombol PTT, serta penyelarasan jarak bottom row LCD Panel (pb-0 -> pb-2) agar tidak menempel ke bezel bawah (Seksi 3.A, 3.B, & 8). | Senior System Architect |
 | **v3.3.0** | 2026-06-08 | Implementasi PWA Opsi B: PWA Kustom Manual (Service Worker + Manifest di public) dengan strategi Cache-First untuk aset statis dan Network-Only untuk WebSocket/Realtime (Seksi 10). | Senior System Architect |
+| **v3.4.0** | 2026-06-08 | Perbaikan viewport fit (`viewport-fit=cover`), layout height `h-dvh`, pengangkatan tombol PTT menggunakan safe-area bottom, penipisan solid shadow SCAN/SET (`1.5px`), dan guard state progress bar (Seksi 3.B, 5, & 8). | Senior System Architect |
