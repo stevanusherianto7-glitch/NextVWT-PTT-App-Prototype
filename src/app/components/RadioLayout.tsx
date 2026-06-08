@@ -266,7 +266,7 @@ export function RadioLayout() {
           setIsUserListOpen(false);
         }
       }}
-      className={`w-full h-screen sm:w-[360px] sm:h-[800px] bg-white sm:rounded-[40px] overflow-hidden relative sm:shadow-[0_20px_50px_rgba(0,0,0,0.5)] sm:border-[8px] sm:border-[#2a2d36] flex-shrink-0 flex flex-col ${getThemeClass(themeText)}`}
+      className={`w-full h-dvh sm:w-[360px] sm:h-[800px] bg-white sm:rounded-[40px] overflow-hidden relative sm:shadow-[0_20px_50px_rgba(0,0,0,0.5)] sm:border-[8px] sm:border-[#2a2d36] flex-shrink-0 flex flex-col ${getThemeClass(themeText)}`}
       style={{
         boxShadow: 'inset 0 0 0 2px rgba(255,255,255,0.1)',
       }}
@@ -545,7 +545,8 @@ export function RadioLayout() {
             {/* PTT Button */}
             {showPTT && (
               <div
-                className={`absolute bottom-[20px] left-0 right-0 w-full flex justify-center transition-opacity duration-300 opacity-100 ${isPowerOn ? '' : 'pointer-events-none'}`}
+                className={`absolute left-0 right-0 w-full flex justify-center transition-opacity duration-300 opacity-100 ${isPowerOn ? '' : 'pointer-events-none'}`}
+                style={{ bottom: 'calc(24px + env(safe-area-inset-bottom, 12px))' }}
               >
                 <div onClick={(e) => e.stopPropagation()}>
                   <PTTButton
