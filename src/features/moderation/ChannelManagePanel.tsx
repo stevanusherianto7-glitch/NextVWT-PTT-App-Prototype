@@ -75,15 +75,15 @@ export function ChannelManagePanel({
 
   // Define tab navigation buttons based on role permissions
   const tabs: { id: TabType; label: string; icon: ReactNode }[] = [
-    { id: 'info', label: 'Info', icon: <Info className="h-3.5 w-3.5" /> },
+    { id: 'info', label: 'Info', icon: <Info className="h-3 w-3" /> },
   ];
 
   // Operator only gets Info and cannot access settings/members/logs
   if (!isOperatorOnly) {
     tabs.push(
-      { id: 'members', label: 'Anggota', icon: <Users className="h-3.5 w-3.5" /> },
-      { id: 'settings', label: 'Setelan', icon: <Settings className="h-3.5 w-3.5" /> },
-      { id: 'logs', label: 'Log', icon: <ClipboardList className="h-3.5 w-3.5" /> }
+      { id: 'members', label: 'Anggota', icon: <Users className="h-3 w-3" /> },
+      { id: 'settings', label: 'Setelan', icon: <Settings className="h-3 w-3" /> },
+      { id: 'logs', label: 'Log', icon: <ClipboardList className="h-3 w-3" /> }
     );
   }
 
@@ -124,7 +124,7 @@ export function ChannelManagePanel({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`moderation-tab-btn flex items-center justify-center gap-1.5 ${
+              className={`moderation-tab-btn flex items-center justify-center ${
                 activeTab === tab.id ? 'active' : ''
               }`}
             >
