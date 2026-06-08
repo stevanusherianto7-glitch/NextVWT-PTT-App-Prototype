@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { usePTTStore } from '../store/usePTTStore';
-import { Sparkles } from 'lucide-react';
 import iconVoice from '../../assets/icon_voice.png';
 import iconOperator from '../../assets/icon_operator_otomatis.png';
 import iconModerator from '../../assets/icon_moderator.png';
@@ -513,7 +512,7 @@ export function UserListModal({
                         src={MODE_ICONS[mode]}
                         alt={MODE_LABELS[mode]}
                         title={MODE_LABELS[mode]}
-                        className="absolute -bottom-[2px] -right-[2px] w-[18px] h-[18px] rounded-full border-[1.5px] border-white shadow-sm object-contain bg-white"
+                        className="absolute -bottom-[2px] -right-[2px] w-[18px] h-[18px] object-contain"
                         draggable={false}
                       />
                     );
@@ -522,14 +521,8 @@ export function UserListModal({
 
                 {/* Name & Details */}
                 <div className="ml-3 flex-1 min-w-0 text-left">
-                  <div className="text-[14px] font-medium text-gray-800 truncate leading-snug flex items-center gap-1">
+                  <div className="text-[14px] font-medium text-gray-800 truncate leading-snug">
                     <span className="truncate">{profile.displayName}</span>
-                    {profile.isNewUser && (
-                      <Sparkles
-                        className="w-3.5 h-3.5 text-yellow-500 animate-pulse flex-shrink-0"
-                        style={{ filter: 'drop-shadow(0px 0px 2px rgba(234,179,8,0.6))' }}
-                      />
-                    )}
                   </div>
                   <div className="flex items-center text-[11px] mt-0.5 truncate gap-1.5 font-medium leading-none">
                     <span className="text-[#00C853] font-medium tracking-wide">
