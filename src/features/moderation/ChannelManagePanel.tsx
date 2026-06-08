@@ -1,21 +1,11 @@
-import { useState, type ReactNode } from 'react';
+import { useState } from 'react';
 import { useChannelRole } from './useChannelRole';
 import { useChannelSettings } from './useChannelSettings';
 import { ChannelMemberList } from './ChannelMemberList';
 import { ChannelSettingsPanel } from './ChannelSettingsPanel';
 import { ModerationLogPanel } from './ModerationLogPanel';
 import { canPerformAction, type ChannelRole } from './permissions';
-import {
-  X,
-  Info,
-  Users,
-  Settings,
-  ClipboardList,
-  Shield,
-  Radio,
-  Lock,
-  Loader2,
-} from 'lucide-react';
+import { X, Shield, Radio, Lock, Loader2 } from 'lucide-react';
 import './moderation.css';
 
 interface ChannelManagePanelProps {
@@ -74,16 +64,16 @@ export function ChannelManagePanel({
   }
 
   // Define tab navigation buttons based on role permissions
-  const tabs: { id: TabType; label: string; icon: ReactNode }[] = [
-    { id: 'info', label: 'Info', icon: <Info className="h-3 w-3" /> },
+  const tabs: { id: TabType; label: string }[] = [
+    { id: 'info', label: 'INFO' },
   ];
 
   // Operator only gets Info and cannot access settings/members/logs
   if (!isOperatorOnly) {
     tabs.push(
-      { id: 'members', label: 'Anggota', icon: <Users className="h-3 w-3" /> },
-      { id: 'settings', label: 'Setelan', icon: <Settings className="h-3 w-3" /> },
-      { id: 'logs', label: 'Log', icon: <ClipboardList className="h-3 w-3" /> }
+      { id: 'members', label: 'ANGGOTA' },
+      { id: 'settings', label: 'SETELAN' },
+      { id: 'logs', label: 'LOG' }
     );
   }
 
@@ -124,11 +114,10 @@ export function ChannelManagePanel({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`moderation-tab-btn flex items-center justify-center ${
+              className={`moderation-tab-btn ${
                 activeTab === tab.id ? 'active' : ''
               }`}
             >
-              {tab.icon}
               {tab.label}
             </button>
           ))}
