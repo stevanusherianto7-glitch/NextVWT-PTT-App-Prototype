@@ -12,7 +12,6 @@ import { useAudioStreamer } from '../hooks/useAudioStreamer';
 import { toast } from 'sonner';
 import { BRAND } from '../utils/config';
 import { SettingsPanelSkeleton, KaraokePlayerSkeleton } from './SkeletonLoaders';
-import { OnboardingTour } from './OnboardingTour';
 import { FeedbackModal } from './FeedbackModal';
 
 // [P2-2] Lazy-load komponen besar — hanya diunduh saat pertama kali dibuka
@@ -578,9 +577,6 @@ export function RadioLayout() {
           onSelectChannel={(num) => setChannelNumber(num)}
         />
       )}
-
-      {/* Onboarding Tour for new users */}
-      <OnboardingTour />
 
       {/* In-App Feedback Modal */}
       <FeedbackModal />
