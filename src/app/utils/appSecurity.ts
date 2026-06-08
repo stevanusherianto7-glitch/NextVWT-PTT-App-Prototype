@@ -1,4 +1,11 @@
-import { Capacitor } from '@capacitor/core';
+import { Capacitor, registerPlugin } from '@capacitor/core';
+
+interface AppSecurityPlugin {
+  getSigningCertificate(): Promise<{ value: string }>;
+}
+
+const AppSecurity = registerPlugin<AppSecurityPlugin>('AppSecurity');
+
 
 // SHA-256 hash dari signing certificate (isi setelah pertama kali sign dengan keytool)
 // Perintah: keytool -list -v -keystore release.keystore -alias <alias>
@@ -173,15 +180,20 @@ export async function performSecurityAudit(): Promise<{
           'Isi nilai SHA-256 fingerprint dari release.keystore dan set IS_SIGNING_HASH_CONFIGURED = true.'
       );
     } else {
-      // Hash sudah dikonfigurasi — lakukan verifikasi sesungguhnya
-      // Di produksi nyata, hash ini harus di-fetch dari native plugin
-      // Contoh: const actualHash = await Plugins.App.getSigningCertificate();
-      const mockActualHash = 'MOCK_CURRENT_HASH_DARI_NATIVE_PLUGIN' as string;
-      if (mockActualHash !== (EXPECTED_SIGNING_HASH as string)) {
-        issues.push('INVALID_SIGNATURE');
-        score -= 100; // Penalty fatal: aplikasi dimodifikasi
+      // Hash sudah dikonfigurasi — lakukan verifikasi sesungguhnya dengan native plugin
+      try {
+        const result = await AppSecurity.getSigningCertificate();
+        const actualHash = result.value;
+        if (actualHash !== EXPECTED_SIGNING_HASH) {
+          issues.push('INVALID_SIGNATURE');
+          score -= 100; // Penalty fatal: aplikasi dimodifikasi
+        }
+        console.log('[AppSecurity] Signing certificate verification passed successfully.');
+      } catch (err) {
+        issues.push('SIGNING_HASH_FETCH_FAILED');
+        score -= 20;
+        console.error('[AppSecurity] Failed to fetch signing certificate from native:', err);
       }
-      console.warn('[AppSecurity] Signing certificate check aktif dan terkonfigurasi.');
     }
   }
 

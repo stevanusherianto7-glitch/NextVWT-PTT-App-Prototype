@@ -22,10 +22,6 @@ function getCorsHeaders(req: Request) {
   };
 }
 
-// Simplified in-memory rate limiting map for MVP
-// Key: user_id, Value: { count: number, resetTime: number }
-const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
-
 serve(async (req) => {
   const startTime = Date.now();
   const corsHeaders = getCorsHeaders(req);
@@ -39,6 +35,7 @@ serve(async (req) => {
     // 1. Verify User Session (Auth Required)
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
     
     const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: req.headers.get('Authorization')! } }
@@ -53,27 +50,58 @@ serve(async (req) => {
       });
     }
 
-    // 2. Rate Limiting (10 requests / 10 minutes per user)
+    // 2. Rate Limiting (10 requests / 10 minutes per user - Persistent in Database)
     const now = Date.now();
     const tenMinutes = 10 * 60 * 1000;
-    const userRate = rateLimitMap.get(user.id);
+    
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+    
+    // Fetch current rate limit record
+    const { data: rateData, error: rateError } = await supabaseAdmin
+      .from('turn_rate_limits')
+      .select('count, reset_time')
+      .eq('user_id', user.id)
+      .maybeSingle();
 
-    if (userRate && now < userRate.resetTime) {
-      if (userRate.count >= 10) {
-        console.warn(JSON.stringify({
-          event: 'TURN_CREDENTIALS_RATELIMIT',
-          user_id: user.id,
-          status: 'failed',
-          reason: 'Too many requests'
-        }));
-        return new Response(JSON.stringify({ error: 'Rate limit exceeded. Try again later.' }), {
-          status: 429,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
+    if (rateError) {
+      console.error('[TURN_LIMIT_ERROR] Failed to query turn_rate_limits:', rateError.message);
+    }
+
+    let count = 1;
+    let resetTime = now + tenMinutes;
+    let limitExceeded = false;
+
+    if (rateData) {
+      const dbResetTime = Number(rateData.reset_time);
+      if (now < dbResetTime) {
+        count = rateData.count + 1;
+        resetTime = dbResetTime;
+        if (rateData.count >= 10) {
+          limitExceeded = true;
+        }
       }
-      userRate.count++;
-    } else {
-      rateLimitMap.set(user.id, { count: 1, resetTime: now + tenMinutes });
+    }
+
+    if (limitExceeded) {
+      console.warn(JSON.stringify({
+        event: 'TURN_CREDENTIALS_RATELIMIT',
+        user_id: user.id,
+        status: 'failed',
+        reason: 'Too many requests'
+      }));
+      return new Response(JSON.stringify({ error: 'Rate limit exceeded. Try again later.' }), {
+        status: 429,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Upsert rate limit record (fails gracefully if DB has issues)
+    const { error: upsertError } = await supabaseAdmin
+      .from('turn_rate_limits')
+      .upsert({ user_id: user.id, count, reset_time: resetTime });
+
+    if (upsertError) {
+      console.error('[TURN_LIMIT_ERROR] Failed to upsert turn_rate_limits:', upsertError.message);
     }
 
     // 3. Determine Provider

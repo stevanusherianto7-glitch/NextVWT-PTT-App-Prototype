@@ -2,12 +2,14 @@ interface RateLimitConfig {
   maxRequests: number; // Max requests dalam window
   windowMs: number; // Window duration dalam milliseconds
   blockDurationMs: number; // Block duration jika limit exceeded
+  ignoreTestEnv?: boolean; // Set true untuk memaksa berjalan di lingkungan test
 }
 
 const DEFAULT_CONFIG: RateLimitConfig = {
   maxRequests: 10, // 10 request
   windowMs: 1000, // per 1 detik
   blockDurationMs: 5000, // block 5 detik jika exceeded
+  ignoreTestEnv: false,
 };
 
 export class RateLimiter {
@@ -29,7 +31,7 @@ export class RateLimiter {
         (process.env.NODE_ENV === 'test' || process.env.VITEST === 'true')) ||
       (typeof import.meta !== 'undefined' && import.meta.env?.MODE === 'test');
 
-    if (isTest) {
+    if (isTest && !this.config.ignoreTestEnv) {
       return true;
     }
 
