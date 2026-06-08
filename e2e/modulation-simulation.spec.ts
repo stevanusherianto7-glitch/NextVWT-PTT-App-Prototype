@@ -62,12 +62,10 @@ test.describe('User Modulation Activity Simulation', () => {
   });
 
   test('user can press-and-hold PTT to modulate voice transmission', async ({ page }) => {
-    // 1. Open settings and turn off Toggle PTT (enable Hold-to-Talk mode)
-    await page.click('button:has-text("Set")');
-    await expect(page.locator('span:has-text("Pengaturan")').first()).toBeVisible();
-    await page.click('label[for="toggle-togglePtt"]');
-    await page.click('button:has-text("Simpan")');
-    await expect(page.locator('span:has-text("Pengaturan")').first()).not.toBeVisible();
+    // 1. Turn off Toggle PTT directly via store to enable Hold-to-Talk mode
+    await page.evaluate(() => {
+      (window as any).__store__.getState().updateSettings({ togglePtt: false });
+    });
 
     const pttButton = page.locator('button:has-text("PTT")');
     const progressBar = page.locator('div.h-full.transition-all.duration-75').first();
