@@ -189,3 +189,64 @@ Area konten Info Channel dipadatkan secara vertikal agar menyisakan ruang yang c
 - **Tombol Tutup**: Margin atas `mt-1.5` (6px), padding vertikal `py-0.5` (2px), font `15px` bold, warna biru `#0c62a8`.
 - **Container Padding**: `p-5` (20px) pada modal box.
 
+
+---
+
+## 🛡️ 4. Channel Manage & Moderation Panel Component (`ChannelManagePanel.tsx`)
+
+Channel Manage & Moderation Panel adalah dashboard khusus yang digunakan oleh operator, Penanggung Jawab Channel (PJC), System Admin, atau N.O.C untuk memantau status, mengelola perizinan channel, dan menegakkan moderasi secara realtime.
+
+### A. Dimensi & Tata Letak Dasar (Container)
+
+- **Penempatan**: Berfungsi sebagai overlay modal penuh di dalam sasis faceplate utama, sejajar di atas konten utama.
+- **Dimensi Fisik**: Mewarisi kelas `.moderation-container` dengan keseragaman dimensi modal utama:
+  - **Lebar**: `w-full max-w-[340px]`
+  - **Tinggi**: Mengisi penuh kontainer vertikal (`height: 100%`), `overflow-hidden`.
+  - **Paddings**: `padding: 1.25rem 0.65rem` — dipadatkan dari `1rem` awal untuk memaksimalkan area horizontal aktif bagi elemen navigasi tab agar bebas dari pemotongan (truncation).
+- **Latar Belakang**: Degradasi warna putih ke perak keabu-abuan (`linear-gradient(180deg, #ffffff 0%, #f7f9fb 100%)`) dengan border abu-abu tebal `2px solid #9ca3af` (border-gray-400) dan rounded `22px`.
+
+### B. Header Bar Panel (`moderation-header`)
+
+- **Struktur**: Flexbox horizontal (`flex justify-between items-center pb-2`), border bawah tipis `1px solid rgba(0, 0, 0, 0.08)`.
+- **Judul**: Teks `"Kelola Channel"` berukuran `1.1rem` (`font-size`), tebal `850` (ultra-bold), tracking-wider, kapital penuh, warna gelap `#111827`. Didampingi ikon `Shield` berwarna hijau zamrud (`text-emerald-400`, `h-5 w-5`).
+- **Tombol Tutup (Close Button)**: Lingkaran diameter `2.25rem` (`w-9 h-9`), background transparan abu-abu perak, border tipis, memutar `90deg` dengan transisi hover berwarna merah destruktif (`rgba(220, 38, 38, 0.1)`).
+
+### C. Navigasi Tab Mengambang (`moderation-tabs`)
+
+Navigasi atas membagi panel menjadi 4 area kontrol yang disusun sejajar secara horizontal:
+
+- **Tata Letak Baris Tab**: Flexbox horizontal (`flex`), dengan `gap: 0.2rem` (3px) dan padding kontainer `0.15rem` (2.4px). Background abu-abu muda `#f1f5f9` (slate-100), rounded `12px`, border tipis.
+- **Tombol Tab (`.moderation-tab-btn`)**:
+  - Sifat Flex: `flex: 1` (membagi ruang secara merata), `white-space: nowrap`.
+  - Spasi & Teks: Padding `0.4rem 0.15rem`, ukuran font `0.6rem`, font-bold (`700`), kapital penuh, warna default `#64748b` (slate-500).
+  - Jarak Ikon & Teks: `gap: 0.15rem !important` (2.4px) dengan tinggi/lebar ikon Lucide `12px × 12px` (`h-3 w-3`) untuk mencegah tab terpotong atau meluap keluar batas sasis.
+- **Status Tab Aktif (`active`)**:
+  - Warna Teks: Hijau zamrud gelap `#047857` (emerald-700).
+  - Latar Belakang: Putih bersih `#ffffff`, border `1px solid #10b981` (emerald-500), drop shadow halus `0 1px 3px rgba(0, 0, 0, 0.08)`.
+
+### D. Struktur Panel Konten Kontrol
+
+#### 1. Tab Detail & Otorisasi ("INFO")
+- **Detail Saluran**: Kartu kaca putih `.moderation-glass-card` menampilkan nama channel, nomor ID room, deskripsi, mode saluran (aktif/senyap), dan warna tema sasis.
+- **Otorisasi Lokal**: Menampilkan lencana peran aktif pengguna di room tersebut (`noc`, `sys_admin`, `pjc`, `operator`, `guest`) dengan gradasi warna premium (misalnya peran PJC menggunakan latar ungu lembut `#7c3aed` dengan kemilau beveled 3D) dan status moderasi aktif.
+
+#### 2. Tab Pengelolaan Pengguna ("ANGGOTA")
+- **Struktur List**: Menampilkan daftar anggota aktif di room (Online) dan tab filter anggota yang ter-ban (Banned).
+- **Aksi Moderasi (Aksi Tactile)**: Klik pada user memicu dialog modal lembar aksi yang menyajikan opsi kontrol:
+  - **Ubah Peran**: Dropdown pilihan pangkat yang dibatasi oleh hirarki otoritas (misalnya PJC hanya bisa memoderasi operator & guest).
+  - **Mute / Unmute**: Mematikan suara user (berdurasi 15m, 1j, 24j, permanen).
+  - **Blokir / Buka Blokir PTT**: Mencegah transmisi suara.
+  - **Blokir / Buka Blokir Chat**: Mematikan akses chat room.
+  - **Kick**: Mengeluarkan user secara realtime dengan mematikan daya radio mereka secara paksa.
+  - **Ban / Unban**: Memasukkan ke daftar hitam permanen.
+
+#### 3. Tab Batasan Saluran ("SETELAN")
+Menyediakan slider dan toggle pengaturan room yang disinkronkan secara realtime:
+- **Batasan Slow Mode**: Slider rentang durasi cooldown jeda transmisi (`0s`, `5s`, `10s`, `30s`, `60s`).
+- **Maksimum Durasi PTT**: Slider pembatas panjang bicara terus-menerus (`15s`, `30s`, `60s`, `120s`).
+- **Toggle Perizinan Fitur**: Switch biner kustom perak untuk mengaktifkan/menonaktifkan chat tamu, reaction tamu, dan transmisi PTT tamu.
+
+#### 4. Tab Riwayat Audit ("LOG")
+- **Konten Log**: Menampilkan daftar audit log immutable yang diurutkan secara kronologis terbalik (paling baru di atas).
+- **Gaya Baris Log**: Latar belakang abu-abu pudar `#f8fafc`, border tipis `#e2e8f0`, memuat label aksi berwarna tebal (mis. `BAN_USER`, `MUTE_USER`) beserta timestamp dan rincian parameter metadata (seperti durasi atau alasan).
+
