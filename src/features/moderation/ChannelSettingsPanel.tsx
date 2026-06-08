@@ -1,0 +1,315 @@
+import { useState } from "react";
+import { useChannelSettings, type ChannelSettings } from "./useChannelSettings";
+import type { ChannelRole } from "./permissions";
+import { canPerformAction } from "./permissions";
+import {
+  Mic,
+  MessageSquare,
+  Smile,
+  Palette,
+  Check,
+  RefreshCw,
+  Sliders,
+} from "lucide-react";
+
+interface ChannelSettingsPanelProps {
+  roomId: string;
+  actorRole: ChannelRole;
+}
+
+export function ChannelSettingsPanel({ roomId, actorRole }: ChannelSettingsPanelProps) {
+  const { settings, loading, updateSettings } = useChannelSettings(roomId);
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
+
+  const hasSettingsPerm = canPerformAction(actorRole, "MANAGE_SETTINGS");
+  const hasThemePerm = canPerformAction(actorRole, "MANAGE_THEME");
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12 gap-2 text-slate-400 text-sm">
+        <RefreshCw className="h-4 w-4 animate-spin text-emerald-400" />
+        Memuat setelan channel...
+      </div>
+    );
+  }
+
+  if (!settings) {
+    return (
+      <div className="text-center text-red-400 py-8 text-sm">
+        Gagal memuat setelan channel atau channel tidak terdaftar.
+      </div>
+    );
+  }
+
+  const handleToggle = async (key: keyof ChannelSettings, value: boolean) => {
+    if (!hasSettingsPerm) return;
+    try {
+      setSaveStatus("saving");
+      await updateSettings({ [key]: value });
+      setSaveStatus("success");
+      setTimeout(() => setSaveStatus("idle"), 1200);
+    } catch (err: any) {
+      console.error(err);
+      setSaveStatus("error");
+    }
+  };
+
+  const handleSelectChange = async (key: keyof ChannelSettings, value: string | number) => {
+    if (!hasSettingsPerm) return;
+    try {
+      setSaveStatus("saving");
+      await updateSettings({ [key]: value });
+      setSaveStatus("success");
+      setTimeout(() => setSaveStatus("idle"), 1200);
+    } catch (err: any) {
+      console.error(err);
+      setSaveStatus("error");
+    }
+  };
+
+  const THEMES = [
+    { key: "green-crystal", label: "Green Crystal (Default)" },
+    { key: "classic-radio", label: "Classic Radio" },
+    { key: "dark-premium", label: "Dark Premium" },
+    { key: "gold-karaoke", label: "Gold Karaoke" },
+    { key: "aquarium-skin", label: "Aquarium Skin" },
+    { key: "gaming-neon", label: "Gaming Neon" },
+    { key: "community-skin", label: "Community Skin" },
+  ];
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Header and status info */}
+      <div className="flex justify-between items-center bg-black/10 p-2 rounded-lg border border-white/5">
+        <span className="text-xs text-slate-400 font-semibold flex items-center gap-1.5">
+          <Sliders className="h-3.5 w-3.5 text-emerald-400" />
+          Konfigurasi Channel
+        </span>
+        {saveStatus === "saving" && <span className="text-[10px] text-emerald-400 animate-pulse">Menyimpan...</span>}
+        {saveStatus === "success" && <span className="text-[10px] text-emerald-400 flex items-center gap-1"><Check className="h-3 w-3" /> Tersimpan</span>}
+        {saveStatus === "error" && <span className="text-[10px] text-red-400">Gagal menyimpan!</span>}
+      </div>
+
+      {/* 1. Pengaturan PTT */}
+      <div className="moderation-glass-card flex flex-col gap-2">
+        <h3 className="text-xs font-bold text-white flex items-center gap-2 pb-1.5 border-b border-white/5">
+          <Mic className="h-3.5 w-3.5 text-emerald-400" /> ATURAN SUARA / PTT
+        </h3>
+
+        <div className="setting-row">
+          <div className="setting-info">
+            <span className="setting-label">Izinkan Tamu Bicara (PTT)</span>
+            <span className="setting-desc">Tamu (guest) diizinkan menekan tombol PTT untuk mentransmisikan suara</span>
+          </div>
+          <input
+            type="checkbox"
+            checked={settings.allow_guest_ptt}
+            disabled={!hasSettingsPerm}
+            onChange={(e) => handleToggle("allow_guest_ptt", e.target.checked)}
+            className="w-4 h-4 rounded accent-emerald-500 cursor-pointer disabled:opacity-50"
+          />
+        </div>
+
+        <div className="setting-row">
+          <div className="setting-info">
+            <span className="setting-label">Cooldown PTT (detik)</span>
+            <span className="setting-desc">Jeda waktu minimum yang harus dipenuhi sebelum boleh berbicara kembali</span>
+          </div>
+          <select
+            value={settings.ptt_cooldown_seconds}
+            disabled={!hasSettingsPerm}
+            onChange={(e) => handleSelectChange("ptt_cooldown_seconds", Number(e.target.value))}
+            className="moderation-select text-xs"
+          >
+            <option value={0}>Tanpa Cooldown</option>
+            <option value={1}>1 Detik</option>
+            <option value={2}>2 Detik</option>
+            <option value={3}>3 Detik</option>
+            <option value={5}>5 Detik</option>
+          </select>
+        </div>
+
+        <div className="setting-row">
+          <div className="setting-info">
+            <span className="setting-label">Durasi Bicara Tamu (detik)</span>
+            <span className="setting-desc">Batas durasi maksimum bicara tamu sekali tekan PTT</span>
+          </div>
+          <select
+            value={settings.guest_max_ptt_seconds}
+            disabled={!hasSettingsPerm}
+            onChange={(e) => handleSelectChange("guest_max_ptt_seconds", Number(e.target.value))}
+            className="moderation-select text-xs"
+          >
+            <option value={5}>5 Detik</option>
+            <option value={10}>10 Detik</option>
+            <option value={15}>15 Detik</option>
+            <option value={30}>30 Detik</option>
+            <option value={60}>60 Detik</option>
+          </select>
+        </div>
+
+        <div className="setting-row">
+          <div className="setting-info">
+            <span className="setting-label">Durasi Bicara Anggota (detik)</span>
+            <span className="setting-desc">Batas durasi maksimum bicara anggota / operator sekali tekan PTT</span>
+          </div>
+          <select
+            value={settings.member_max_ptt_seconds}
+            disabled={!hasSettingsPerm}
+            onChange={(e) => handleSelectChange("member_max_ptt_seconds", Number(e.target.value))}
+            className="moderation-select text-xs"
+          >
+            <option value={30}>30 Detik</option>
+            <option value={60}>60 Detik (1 Menit)</option>
+            <option value={120}>120 Detik (2 Menit)</option>
+            <option value={300}>300 Detik (5 Menit)</option>
+            <option value={0}>Tanpa Batas</option>
+          </select>
+        </div>
+      </div>
+
+      {/* 2. Pengaturan Chat */}
+      <div className="moderation-glass-card flex flex-col gap-2">
+        <h3 className="text-xs font-bold text-white flex items-center gap-2 pb-1.5 border-b border-white/5">
+          <MessageSquare className="h-3.5 w-3.5 text-blue-400" /> PENGATURAN CHAT
+        </h3>
+
+        <div className="setting-row">
+          <div className="setting-info">
+            <span className="setting-label">Aktifkan Fitur Chat</span>
+            <span className="setting-desc">Membuka atau menutup kolom chat di dalam channel ini secara keseluruhan</span>
+          </div>
+          <input
+            type="checkbox"
+            checked={settings.chat_enabled}
+            disabled={!hasSettingsPerm}
+            onChange={(e) => handleToggle("chat_enabled", e.target.checked)}
+            className="w-4 h-4 rounded accent-emerald-500 cursor-pointer disabled:opacity-50"
+          />
+        </div>
+
+        <div className="setting-row">
+          <div className="setting-info">
+            <span className="setting-label">Tamu Diizinkan Chat</span>
+            <span className="setting-desc">Mengontrol apakah tamu biasa boleh mengirim pesan di chat</span>
+          </div>
+          <input
+            type="checkbox"
+            checked={settings.allow_guest_chat}
+            disabled={!hasSettingsPerm || !settings.chat_enabled}
+            onChange={(e) => handleToggle("allow_guest_chat", e.target.checked)}
+            className="w-4 h-4 rounded accent-emerald-500 cursor-pointer disabled:opacity-50"
+          />
+        </div>
+
+        <div className="setting-row">
+          <div className="setting-info">
+            <span className="setting-label">Slow Mode Chat (detik)</span>
+            <span className="setting-desc">Jeda waktu antar pesan yang dikirim oleh user biasa</span>
+          </div>
+          <select
+            value={settings.slow_mode_seconds}
+            disabled={!hasSettingsPerm || !settings.chat_enabled}
+            onChange={(e) => handleSelectChange("slow_mode_seconds", Number(e.target.value))}
+            className="moderation-select text-xs"
+          >
+            <option value={0}>Nonaktif (0s)</option>
+            <option value={3}>3 Detik</option>
+            <option value={5}>5 Detik</option>
+            <option value={10}>10 Detik</option>
+            <option value={30}>30 Detik</option>
+          </select>
+        </div>
+      </div>
+
+      {/* 3. Pengaturan Reaction & Karaoke */}
+      <div className="moderation-glass-card flex flex-col gap-2">
+        <h3 className="text-xs font-bold text-white flex items-center gap-2 pb-1.5 border-b border-white/5">
+          <Smile className="h-3.5 w-3.5 text-purple-400" /> REACTION & KARAOKE QUEUE
+        </h3>
+
+        <div className="setting-row">
+          <div className="setting-info">
+            <span className="setting-label">Aktifkan Reaction Animasi</span>
+            <span className="setting-desc">Izinkan emoji reaction melayang di atas stage</span>
+          </div>
+          <input
+            type="checkbox"
+            checked={settings.reaction_enabled}
+            disabled={!hasSettingsPerm}
+            onChange={(e) => handleToggle("reaction_enabled", e.target.checked)}
+            className="w-4 h-4 rounded accent-emerald-500 cursor-pointer disabled:opacity-50"
+          />
+        </div>
+
+        <div className="setting-row">
+          <div className="setting-info">
+            <span className="setting-label">Tamu Boleh Kirim Reaction</span>
+            <span className="setting-desc">Kontrol izin reaction melayang bagi tamu biasa</span>
+          </div>
+          <input
+            type="checkbox"
+            checked={settings.allow_guest_reaction}
+            disabled={!hasSettingsPerm || !settings.reaction_enabled}
+            onChange={(e) => handleToggle("allow_guest_reaction", e.target.checked)}
+            className="w-4 h-4 rounded accent-emerald-500 cursor-pointer disabled:opacity-50"
+          />
+        </div>
+
+        <div className="setting-row">
+          <div className="setting-info">
+            <span className="setting-label">Antrian Karaoke Aktif</span>
+            <span className="setting-desc">Buka panel antrian karaoke (Queue List)</span>
+          </div>
+          <input
+            type="checkbox"
+            checked={settings.karaoke_queue_enabled}
+            disabled={!hasSettingsPerm}
+            onChange={(e) => handleToggle("karaoke_queue_enabled", e.target.checked)}
+            className="w-4 h-4 rounded accent-emerald-500 cursor-pointer disabled:opacity-50"
+          />
+        </div>
+
+        <div className="setting-row">
+          <div className="setting-info">
+            <span className="setting-label">Tamu Ikut Antrian Karaoke</span>
+            <span className="setting-desc">Tamu diizinkan bergabung ke antrian antre panggung karaoke</span>
+          </div>
+          <input
+            type="checkbox"
+            checked={settings.allow_guest_queue}
+            disabled={!hasSettingsPerm || !settings.karaoke_queue_enabled}
+            onChange={(e) => handleToggle("allow_guest_queue", e.target.checked)}
+            className="w-4 h-4 rounded accent-emerald-500 cursor-pointer disabled:opacity-50"
+          />
+        </div>
+      </div>
+
+      {/* 4. Theme Channel */}
+      {hasThemePerm && (
+        <div className="moderation-glass-card flex flex-col gap-2">
+          <h3 className="text-xs font-bold text-white flex items-center gap-2 pb-1.5 border-b border-white/5">
+            <Palette className="h-3.5 w-3.5 text-pink-400" /> TEMA SKIN CHANNEL
+          </h3>
+          <div className="setting-row">
+            <div className="setting-info">
+              <span className="setting-label">Pilih Skin Visual</span>
+              <span className="setting-desc">Mengubah skin/warna tema channel secara visual untuk seluruh pendengar</span>
+            </div>
+            <select
+              value={settings.theme_key}
+              onChange={(e) => handleSelectChange("theme_key", e.target.value)}
+              className="moderation-select text-xs"
+            >
+              {THEMES.map((t) => (
+                <option key={t.key} value={t.key}>
+                  {t.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

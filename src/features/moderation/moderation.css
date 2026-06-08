@@ -1,0 +1,396 @@
+/* NextVWT Moderation Panel Premium Styling */
+
+.moderation-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  background: rgba(3, 2, 19, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.moderation-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  padding: 1rem;
+  overflow: hidden;
+  color: var(--foreground, #ffffff);
+}
+
+.moderation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.moderation-header h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #00ff66, #00bfff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 10px rgba(0, 255, 102, 0.3);
+}
+
+.moderation-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #a0aec0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.moderation-close-btn:hover {
+  background: rgba(220, 38, 38, 0.2);
+  border-color: rgba(220, 38, 38, 0.5);
+  color: #f87171;
+  transform: rotate(90deg);
+}
+
+/* Tab Navigation */
+.moderation-tabs {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.25rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 1rem;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+}
+
+.moderation-tabs::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
+.moderation-tab-btn {
+  flex: 1;
+  white-space: nowrap;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #a0aec0;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.moderation-tab-btn.active {
+  color: #00ff66;
+  background: rgba(0, 255, 102, 0.12);
+  border: 1px solid rgba(0, 255, 102, 0.3);
+  box-shadow: 0 0 10px rgba(0, 255, 102, 0.15);
+}
+
+.moderation-tab-btn:hover:not(.active) {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Content Area */
+.moderation-content {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Glass Panels */
+.moderation-glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 20px 40px rgba(255, 255, 255, 0.01), 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition: border-color 0.2s ease;
+}
+
+.moderation-glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+  pointer-events: none;
+}
+
+.moderation-glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Badges for roles */
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.18rem 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.role-badge.noc {
+  background: rgba(255, 0, 85, 0.15);
+  border: 1px solid rgba(255, 0, 85, 0.5);
+  color: #ff0055;
+  text-shadow: 0 0 5px rgba(255, 0, 85, 0.4);
+}
+
+.role-badge.sys_admin {
+  background: rgba(0, 191, 255, 0.15);
+  border: 1px solid rgba(0, 191, 255, 0.5);
+  color: #00bfff;
+  text-shadow: 0 0 5px rgba(0, 191, 255, 0.4);
+}
+
+.role-badge.pjc {
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.5);
+  color: #c084fc;
+  text-shadow: 0 0 5px rgba(168, 85, 247, 0.4);
+}
+
+.role-badge.operator {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  color: #fbbf24;
+  text-shadow: 0 0 5px rgba(245, 158, 11, 0.4);
+}
+
+.role-badge.guest {
+  background: rgba(148, 163, 184, 0.15);
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  color: #94a3b8;
+}
+
+/* User status badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.4rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-radius: 4px;
+}
+
+.status-badge.active {
+  background: rgba(0, 255, 102, 0.1);
+  color: #00ff66;
+}
+
+.status-badge.muted {
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+}
+
+.status-badge.ptt_blocked {
+  background: rgba(245, 158, 11, 0.1);
+  color: #fbbf24;
+}
+
+.status-badge.chat_blocked {
+  background: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+}
+
+.status-badge.suspended {
+  background: rgba(220, 38, 38, 0.15);
+  color: #ef4444;
+}
+
+.status-badge.banned {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  color: #ef4444;
+}
+
+/* Switch & Setting components */
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.setting-row:last-child {
+  border-bottom: none;
+}
+
+.setting-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-width: 75%;
+}
+
+.setting-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.setting-desc {
+  font-size: 0.7rem;
+  color: #a0aec0;
+}
+
+/* Inputs & Form Styling */
+.moderation-input {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #ffffff;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+  width: 100%;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.moderation-input:focus {
+  border-color: #00ff66;
+  box-shadow: 0 0 8px rgba(0, 255, 102, 0.2);
+}
+
+.moderation-select {
+  background: rgba(15, 18, 25, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #ffffff;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+  outline: none;
+  cursor: pointer;
+}
+
+.moderation-select:focus {
+  border-color: #00ff66;
+}
+
+.moderation-btn-primary {
+  background: linear-gradient(135deg, #00ff66 0%, #00b344 100%);
+  border: none;
+  border-radius: 8px;
+  color: #030213;
+  padding: 0.5rem 1rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 255, 102, 0.2);
+  transition: all 0.2s ease;
+}
+
+.moderation-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 255, 102, 0.3);
+}
+
+.moderation-btn-primary:active {
+  transform: translateY(1px);
+}
+
+.moderation-btn-destructive {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  border: none;
+  border-radius: 8px;
+  color: #ffffff;
+  padding: 0.5rem 1rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+  transition: all 0.2s ease;
+}
+
+.moderation-btn-destructive:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.3);
+}
+
+/* Log Item Row */
+.log-item-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.log-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.65rem;
+  color: #718096;
+}
+
+.log-text {
+  font-size: 0.8rem;
+  color: #e2e8f0;
+  line-height: 1.4;
+}
+
+.log-details {
+  font-family: monospace;
+  font-size: 0.7rem;
+  color: #a0aec0;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

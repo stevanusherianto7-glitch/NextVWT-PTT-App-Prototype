@@ -1,0 +1,113 @@
+import { useEffect, useState } from "react";
+import { getSupabase } from "../../app/utils/supabase";
+import type { ChannelRole } from "./permissions";
+import type { RealtimeChannel } from "@supabase/supabase-js";
+
+export function useChannelRole(roomId: string, userId: string) {
+  const [role, setRole] = useState<ChannelRole>("guest");
+  const [status, setStatus] = useState("active");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!roomId || !userId) {
+      setRole("guest");
+      setStatus("active");
+      setLoading(false);
+      return;
+    }
+
+    let mounted = true;
+    let channel: RealtimeChannel | null = null;
+
+    async function loadAndSubscribe() {
+      try {
+        setLoading(true);
+        const supabaseInstance = await getSupabase();
+        
+        if (!mounted) return;
+
+        // Load current role
+        const { data, error } = await supabaseInstance
+          .from("channel_roles")
+          .select("role, status")
+          .eq("room_id", roomId)
+          .eq("user_id", userId)
+          .maybeSingle();
+
+        if (error) {
+          console.error("Error fetching channel role:", error);
+        }
+
+        if (!mounted) return;
+
+        setRole((data?.role as ChannelRole) || "guest");
+        setStatus(data?.status || "active");
+        setLoading(false);
+
+        // Setup realtime subscription
+        channel = supabaseInstance
+          .channel(`channel-role:${roomId}:${userId}`)
+          .on(
+            "postgres_changes",
+            {
+              event: "*",
+              schema: "public",
+              table: "channel_roles",
+              filter: `room_id=eq.${roomId}`,
+            },
+            async (payload) => {
+              const newRecord = payload.new as { user_id?: string; role?: string; status?: string } | null;
+              const oldRecord = payload.old as { user_id?: string } | null;
+
+              if (newRecord && newRecord.user_id === userId) {
+                if (mounted) {
+                  setRole((newRecord.role as ChannelRole) || "guest");
+                  setStatus(newRecord.status || "active");
+                }
+              } else if (payload.eventType === "DELETE" && oldRecord && oldRecord.user_id === userId) {
+                if (mounted) {
+                  setRole("guest");
+                  setStatus("active");
+                }
+              } else {
+                // If it affects this user or we need to be sure, do a quick refetch
+                const { data: refetch } = await supabaseInstance
+                  .from("channel_roles")
+                  .select("role, status")
+                  .eq("room_id", roomId)
+                  .eq("user_id", userId)
+                  .maybeSingle();
+                if (mounted) {
+                  setRole((refetch?.role as ChannelRole) || "guest");
+                  setStatus(refetch?.status || "active");
+                }
+              }
+            }
+          )
+          .subscribe();
+      } catch (err) {
+        console.error("Error loading or subscribing to channel role:", err);
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadAndSubscribe();
+
+    return () => {
+      mounted = false;
+      if (channel) {
+        getSupabase().then((sub) => {
+          sub.removeChannel(channel!);
+        });
+      }
+    };
+  }, [roomId, userId]);
+
+  return {
+    role,
+    status,
+    loading,
+  };
+}

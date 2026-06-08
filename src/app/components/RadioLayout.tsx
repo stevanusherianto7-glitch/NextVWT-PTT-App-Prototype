@@ -13,6 +13,12 @@ import { toast } from 'sonner';
 import { BRAND } from '../utils/config';
 import { SettingsPanelSkeleton, KaraokePlayerSkeleton } from './SkeletonLoaders';
 import { FeedbackModal } from './FeedbackModal';
+import { useChannelRole } from '../../features/moderation/useChannelRole';
+import { useChannelSettings } from '../../features/moderation/useChannelSettings';
+import { ChannelManagePanel } from '../../features/moderation/ChannelManagePanel';
+import { canUsePTT, canPerformAction } from '../../features/moderation/permissions';
+import { getSupabase } from '../utils/supabase';
+import { Shield } from 'lucide-react';
 
 // [P2-2] Lazy-load komponen besar — hanya diunduh saat pertama kali dibuka
 // SettingsPanel: ~76KB → split ke chunk terpisah, tidak menambah initial bundle
@@ -49,14 +55,29 @@ export function RadioLayout() {
     fullDuplex,
     isKaraokePlayerOpen,
     setKaraokePlayerOpen: setIsKaraokePlayerOpen,
+    userId,
   } = usePTTStore();
+
+  const activeChannelObj = STATIC_CHANNELS.find((ch) => ch.number === channel);
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isChannelListOpen, setIsChannelListOpen] = useState(false);
   const [isUserListOpen, setIsUserListOpen] = useState(false);
+  const [isManageOpen, setIsManageOpen] = useState(false);
   const [txStartTime, setTxStartTime] = useState<number>(0);
 
   const { startRecording, stopRecording, playAudioChunk, flushAudioQueue } = useAudioStreamer();
+
+  const roomId = `ptt-room-${channel}`;
+  const { role, status } = useChannelRole(roomId, userId);
+  const { settings: channelSettings } = useChannelSettings(roomId, activeChannelObj?.name);
+
+  // Enforce PTT permission constraints
+  const pttAllowed = canUsePTT({
+    role,
+    status,
+    allowGuestPTT: channelSettings?.allow_guest_ptt ?? true,
+  });
   const echoChunksRef = useRef<string[]>([]);
 
   const isReceiving =
@@ -233,8 +254,100 @@ export function RadioLayout() {
       setIsChannelListOpen(false);
       setIsUserListOpen(false);
       setIsKaraokePlayerOpen(false);
+      setIsManageOpen(false);
     }
   }, [isPowerOn, setIsKaraokePlayerOpen]);
+
+  // Enforce role status updates while transmitting (offline/realtime guard)
+  useEffect(() => {
+    if (isTransmitting && (status === "muted" || status === "ptt_blocked" || status === "suspended" || status === "banned")) {
+      setIsTransmitting(false);
+      toast.error(
+        status === "muted"
+          ? "Transmisi dihentikan: Anda dibungkam (muted) di channel ini."
+          : status === "ptt_blocked"
+          ? "Transmisi dihentikan: Hak PTT Anda diblokir."
+          : "Transmisi dihentikan: Status Anda dibatasi."
+      );
+    }
+  }, [status, isTransmitting, setIsTransmitting]);
+
+  // Listen for realtime kick / ban broadcasts
+  useEffect(() => {
+    if (!roomId || !userId || !isPowerOn) return;
+
+    let mounted = true;
+    let channelInstance: any = null;
+
+    (async () => {
+      try {
+        const supabaseInstance = await getSupabase();
+        if (!mounted) return;
+
+        channelInstance = supabaseInstance.channel(`room:${roomId}:moderation`);
+        channelInstance
+          .on("broadcast", { event: "kick" }, (payload: any) => {
+            const { targetUserId } = payload.payload || {};
+            if (targetUserId === userId) {
+              toast.error("Anda telah dikeluarkan (kick/ban) dari channel ini oleh moderator.");
+              setIsPowerOn(false);
+              setIsManageOpen(false);
+            }
+          })
+          .subscribe();
+      } catch (err) {
+        console.error("Realtime kick listener setup failed:", err);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+      if (channelInstance) {
+        getSupabase().then((sub) => sub.removeChannel(channelInstance));
+      }
+    };
+  }, [roomId, userId, isPowerOn, setIsPowerOn]);
+
+  // Enforce ban list check on channel change / boot
+  useEffect(() => {
+    if (!roomId || !userId || !isPowerOn) return;
+
+    let mounted = true;
+
+    async function checkBan() {
+      try {
+        const supabaseInstance = await getSupabase();
+        if (!mounted) return;
+
+        const { data, error } = await supabaseInstance
+          .from("channel_bans")
+          .select("id")
+          .eq("room_id", roomId)
+          .eq("user_id", userId)
+          .maybeSingle();
+
+        if (error) {
+          console.error("Error checking ban list:", error);
+          return;
+        }
+
+        if (!mounted) return;
+
+        if (data) {
+          toast.error("Anda tidak dapat memasuki channel ini karena Anda telah diblokir (banned).");
+          setIsPowerOn(false);
+        }
+      } catch (err) {
+        console.error("Ban check failed:", err);
+      }
+    }
+
+    checkBan();
+
+    return () => {
+      mounted = false;
+    };
+  }, [roomId, userId, isPowerOn, setIsPowerOn]);
 
   const handleSet = () => {
     if (isPowerOn) {
@@ -242,7 +355,7 @@ export function RadioLayout() {
     }
   };
 
-  const activeChannelObj = STATIC_CHANNELS.find((ch) => ch.number === channel);
+  // activeChannelObj already declared at the top of the component
 
   const safeActiveUsers = activeUsers || [];
 
@@ -271,7 +384,14 @@ export function RadioLayout() {
         boxShadow: 'inset 0 0 0 2px rgba(255,255,255,0.1)',
       }}
     >
-      {isSettingsOpen ? (
+      {isManageOpen ? (
+        <ChannelManagePanel
+          roomId={roomId}
+          userId={userId}
+          initialChannelName={activeChannelObj?.name}
+          onClose={() => setIsManageOpen(false)}
+        />
+      ) : isSettingsOpen ? (
         // Suspense boundary: tampilkan skeleton saat SettingsPanel sedang dimuat
         // (hanya terjadi pada kali pertama Settings dibuka dalam sesi ini)
         <Suspense fallback={<SettingsPanelSkeleton />}>
@@ -466,6 +586,15 @@ export function RadioLayout() {
             </div>
 
             <div className="flex items-center gap-3">
+              {isPowerOn && canPerformAction(role, "VIEW_ADMIN_PANEL") && (
+                <button
+                  onClick={() => setIsManageOpen(true)}
+                  className="p-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 hover:border-emerald-500/60 rounded-full text-emerald-400 cursor-pointer transition-all active:scale-95 flex items-center justify-center relative z-30"
+                  title="Kelola Channel"
+                >
+                  <Shield className="h-5 w-5" />
+                </button>
+              )}
               <ToggleSwitch isOn={isPowerOn} onToggle={() => setIsPowerOn(!isPowerOn)} />
             </div>
           </div>
@@ -552,7 +681,21 @@ export function RadioLayout() {
                   <PTTButton
                     isActive={isTransmitting}
                     isBusy={isBusy}
-                    onPressStart={() => isPowerOn && setIsTransmitting(true)}
+                    onPressStart={() => {
+                      if (isPowerOn) {
+                        if (!pttAllowed) {
+                          toast.error(
+                            status === "muted"
+                              ? "Anda sedang dibungkam (muted) di channel ini."
+                              : status === "ptt_blocked"
+                              ? "Hak PTT Anda diblokir di channel ini."
+                              : "Tamu biasa dilarang menggunakan PTT di channel ini."
+                          );
+                          return;
+                        }
+                        setIsTransmitting(true);
+                      }
+                    }}
                     onPressEnd={() => setIsTransmitting(false)}
                   />
                 </div>
