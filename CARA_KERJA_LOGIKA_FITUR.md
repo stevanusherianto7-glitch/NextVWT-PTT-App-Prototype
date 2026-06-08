@@ -267,3 +267,22 @@ Pada siklus hidup awal aplikasi di `initializeSession()`:
 2. Jika data cache valid, state store diisi ulang menggunakan konfigurasi terakhir yang disimpan.
 3. Call Sign acak 5-karakter baru digenerasikan dan disimpan hanya jika pengguna belum memilikinya di cache.
 4. Aplikasi secara optimis menyambungkan kembali ke saluran frekuensi terakhir yang digunakan pengguna sebelum aplikasi ditutup/di-refresh.
+
+---
+
+## 📱 VIII. Mekanisme PWA Offline Caching & Robustness
+
+Aplikasi NextVWT dikonfigurasi sebagai Progressive Web App (PWA) kustom untuk menjamin pemuatan instan (instant loading) dan dapat berjalan secara mandiri (standalone) di bawah skenario offline penuh.
+
+### 1. Web App Manifest (`public/manifest.json`)
+- Menyediakan deklarasi nama aplikasi, warna tema (`theme_color`), dan warna latar belakang (`background_color`) yang diselaraskan dengan brand casing NextVWT.
+- Mendaftarkan ikon rilis `192x192` dan `512x512` dengan flag `purpose: "any maskable"` untuk mendukung rendering ikon adaptif pada launcher sistem Android/iOS.
+
+### 2. Siklus Hidup & Strategi Caching Service Worker (`public/sw.js`)
+Service Worker (`sw.js`) bertindak sebagai proxy jaringan kustom di latar belakang:
+- **Fase `install`**: Mengunduh dan menyimpan aset statis dasar (app shell) seperti halaman utama `index.html` dan ikon brand ke dalam cache statis bernama `nextvwt-static-v1`.
+- **Fase `activate`**: Membersihkan versi cache lama yang tidak lagi cocok dengan versi aktif saat ini untuk menghindari kebocoran memori (cache bloat).
+- **Fase `fetch` (Strategi Caching Dinamis)**:
+  - **Static Assets Caching (Cache-First dengan Fallback Jaringan)**: Berkas-berkas JS, CSS, Font, dan Gambar dari bundel Vite dimuat langsung dari cache lokal untuk memangkas latensi pemuatan layar ke *0ms*. Jika aset belum ada di cache, service worker akan mengambilnya dari jaringan lalu menyimpannya ke cache dinamis.
+  - **Bypass Realtime & API (Network-Only)**: Jalur komunikasi real-time seperti panggilan WebSocket Supabase dan negosiasi peer WebRTC dibebaskan sepenuhnya dari interceptor Service Worker agar komunikasi audio PTT tidak mengalami buffering atau delay.
+  - **Offline UI Fallback**: Apabila koneksi internet terputus total secara fisik saat aplikasi dijalankan, Service Worker menyajikan halaman utama dari cache sehingga UI casing walkie-talkie tetap merender utuh, serta mengaktifkan indikator "Offline Mode" (tanda silang merah pada bar sinyal LCD).

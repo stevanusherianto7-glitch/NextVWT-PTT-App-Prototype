@@ -76,8 +76,6 @@ let mockGainNode: {
 let mockAnalyserNode: any;
 let mockCtx: any;
 
-
-
 const setupAudioContextMock = (ctxState: 'running' | 'suspended' = 'running') => {
   mockAudioBuffer = { duration: 0.5 };
   mockSourceNode = {

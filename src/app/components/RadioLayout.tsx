@@ -121,7 +121,7 @@ export function RadioLayout() {
       setTxStartTime(Date.now());
     } else {
       stopRecording();
-      
+
       // Playback recorded chunks on Channel 100 after PTT released (Parrot Echo Test)
       const currentChannel = usePTTStore.getState().channelNumber;
       if (currentChannel === 100 && echoChunksRef.current.length > 0) {
@@ -140,7 +140,7 @@ export function RadioLayout() {
         const lastFeedback = usePTTStore.getState().lastFeedbackTime;
         const timeSinceLastFeedback = Date.now() - lastFeedback;
         const ONE_DAY = 24 * 60 * 60 * 1000;
-        
+
         // Tampilkan modal jika durasi transmisi > 3 detik dan sudah lewat 1 hari sejak prompt terakhir
         if (txDuration > 3000 && timeSinceLastFeedback > ONE_DAY) {
           usePTTStore.getState().setShowFeedbackModal(true);

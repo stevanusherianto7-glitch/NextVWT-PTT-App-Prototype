@@ -20,16 +20,16 @@ export const FeedbackModal: React.FC = () => {
     try {
       // TODO: Kirim data analitik ke PostHog atau Supabase di sini
       console.log('Feedback submitted:', isPositive ? 'Thumbs Up' : 'Thumbs Down');
-      
+
       // Simulasi delay jaringan
       await new Promise((resolve) => setTimeout(resolve, 800));
 
       toast.success(
-        isPositive 
-          ? 'Terima kasih! Senang Anda menyukainya.' 
+        isPositive
+          ? 'Terima kasih! Senang Anda menyukainya.'
           : 'Terima kasih atas masukannya. Kami akan terus memperbaiki kualitas audio.'
       );
-      
+
       setLastFeedbackTime(Date.now());
       setShowFeedbackModal(false);
     } catch (error) {
@@ -57,7 +57,8 @@ export const FeedbackModal: React.FC = () => {
 
         <h2 className="text-xl font-bold text-white mb-2">Kualitas Audio</h2>
         <p className="text-sm text-gray-400 mb-6">
-          Bagaimana kualitas komunikasi Anda barusan? Penilaian Anda membantu kami menjadi lebih baik.
+          Bagaimana kualitas komunikasi Anda barusan? Penilaian Anda membantu kami menjadi lebih
+          baik.
         </p>
 
         <div className="flex gap-4 justify-center">

@@ -1,5 +1,3 @@
-
-
 export function SkeletonLoading() {
   return (
     <div className="w-full h-full flex flex-col justify-center items-center p-4 gap-4 animate-pulse">

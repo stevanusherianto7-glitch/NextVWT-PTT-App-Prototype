@@ -11,7 +11,7 @@ export const fetchTurnCredentials = async (): Promise<RTCIceServer[]> => {
   if (ephemeralTurnCreds && Date.now() < ephemeralTurnCreds.expiresAt) {
     return ephemeralTurnCreds.iceServers;
   }
-  
+
   // Minimal fallback: STUN Google
   const fallbackServers: RTCIceServer[] = [
     { urls: 'stun:stun.l.google.com:19302' },
@@ -22,25 +22,25 @@ export const fetchTurnCredentials = async (): Promise<RTCIceServer[]> => {
     // Timeout 5 detik
     const supabase = await getSupabase();
     const invokePromise = supabase.functions.invoke('turn-credentials');
-    const timeoutPromise = new Promise((_, reject) => 
+    const timeoutPromise = new Promise((_, reject) =>
       setTimeout(() => reject(new Error('TURN fetch timeout')), 5000)
     );
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const response = await Promise.race([invokePromise, timeoutPromise]) as any;
+    const response = (await Promise.race([invokePromise, timeoutPromise])) as any;
 
     if (response?.data?.iceServers && Array.isArray(response.data.iceServers)) {
       ephemeralTurnCreds = {
         iceServers: response.data.iceServers,
         // Refresh jika sisa < 5 menit dari TTL (misalnya kita cache 55 menit jika server ngasih 1 jam)
-        expiresAt: Date.now() + 55 * 60 * 1000, 
+        expiresAt: Date.now() + 55 * 60 * 1000,
       };
       return ephemeralTurnCreds.iceServers;
     }
   } catch (err) {
     console.warn('[WebRTC] Failed to fetch TURN credentials, using fallback STUN', err);
   }
-  
+
   // Return fallback and cache it for a short time so we don't spam errors
   ephemeralTurnCreds = {
     iceServers: fallbackServers,
@@ -53,10 +53,7 @@ const getIceServers = (): RTCIceServer[] => {
   if (ephemeralTurnCreds && Date.now() < ephemeralTurnCreds.expiresAt) {
     return ephemeralTurnCreds.iceServers;
   }
-  return [
-    { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:stun1.l.google.com:19302' },
-  ];
+  return [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }];
 };
 
 // Helper to modify SDP to prioritize high-quality Opus stereo music stream for Karaoke mode

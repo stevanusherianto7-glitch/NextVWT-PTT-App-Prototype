@@ -584,9 +584,39 @@ Untuk mencegah kloning aplikasi, reverse engineering, dan pembajakan komunikasi 
 - **Public Key Pinning (SPKI SHA-256)**: Menetapkan sidik jari kunci publik dari sertifikat SSL target (Let's Encrypt R3/E1, Cloudflare ECC, dan ISRG Root X1 sebagai backup) secara deklaratif di `network_security_config.xml`.
 - **MitM Protection**: Menjamin seluruh WebView fetch request dan Supabase Realtime WebSocket client langsung menolak koneksi jika lalu lintas dialihkan melalui proxy tidak dikenal (sertifikat tidak cocok), mencegah pencurian API Key Supabase.
 
+## 📱 10. Progressive Web App (PWA) Specifications (Option B)
+
+Aplikasi dilengkapi dengan spesifikasi Progressive Web App (PWA) mandiri (standalone) yang dikonfigurasi secara kustom tanpa dependensi eksternal, menjamin kecepatan memuat instan (instant loading) dan ketahanan saat offline.
+
+### A. Web App Manifest (`public/manifest.json`)
+* **Metadata Aplikasi**:
+  - `name`: `"NextVWT Walkie Talkie"`
+  - `short_name`: `"NextVWT"`
+  - `description`: `"Next Virtual Walkie Talkie - Real-time PTT communication platform"`
+  - `start_url`: `"./index.html"`
+  - `display`: `"standalone"`
+  - `orientation`: `"portrait"`
+  - `theme_color`: `"#0c62a8"`
+  - `background_color`: `"#0a1423"`
+* **Icons Configuration**:
+  - Menyertakan ikon ukuran `192x192` (`pwa-192x192.png`) dan `512x512` (`pwa-512x512.png`) dengan tipe `image/png`.
+  - Mendefinisikan properti `purpose: "any"` dan `purpose: "maskable"` pada ikon untuk adaptasi tampilan launcher OS Android/iOS.
+
+### B. Service Worker Caching Strategy (`public/sw.js`)
+* **Strategi Precaching**:
+  - Menyimpan aset utama aplikasi (`./`, `index.html`, `pwa-192x192.png`, `pwa-512x512.png`) ke dalam cache statis (`nextvwt-static-v1`) saat instalasi.
+* **Strategi Runtime Caching**:
+  - **Static Assets (JS, CSS, Images, Fonts)**: Menggunakan strategi **Cache-First (Stale-While-Revalidate)**. Aset dimuat instan dari cache lokal, lalu diperbarui di latar belakang jika ada versi baru di server.
+  - **API & WebSocket / Realtime Traffic**: Menggunakan strategi **Network-Only** dengan pembatasan bypass cache untuk menjamin komunikasi audio realtime dan WebRTC tidak pernah terhambat oleh interceptor service worker.
+* **Offline Fallback**:
+  - Ketika koneksi terputus total, service worker menyajikan berkas cache statis lokal agar aplikasi tidak menampilkan layar "No Internet" bawaan browser, melainkan langsung merender UI casing radio dalam kondisi *Offline Mode* dengan indikator silang merah pada LCD sinyal.
+
+### C. Registration (`src/main.tsx`)
+* Registrasi service worker dipicu secara asinkron saat halaman selesai dimuat (`window.onload`) untuk menghindari hambatan pada pemuatan kritis awal (Critical Rendering Path).
+
 ---
 
-## 📝 10. Riwayat Perubahan Dokumen (Changelog)
+## 📝 11. Riwayat Perubahan Dokumen (Changelog)
 
 | Versi | Tanggal | Deskripsi Perubahan | Penulis |
 | :--- | :--- | :--- | :--- |
@@ -602,3 +632,4 @@ Untuk mencegah kloning aplikasi, reverse engineering, dan pembajakan komunikasi 
 | **v3.0.0** | 2026-06-06 | Implementasi D-Pad Bezel Plate 3D Convex Bevel & Shadow menggunakan filter SVG diagonal yang disempurnakan (highlight white & shadow black) secara internal guna mencegah kebocoran visual (leak) di sekeliling tepi pelat cetakan (Seksi 3.B). | Senior System Architect |
 | **v3.1.0** | 2026-06-06 | Penerapan Opsi C: JS Terser Obfuscation (mangle toplevel, drop console/debugger, no sourcemap), ProGuard Android bytecode shrinking & bridge reflection protection, serta deklarasi SSL Pinning (*.supabase.co) via networkSecurityConfig untuk proteksi anti-cloning & MitM (Seksi 9). | Senior System Architect |
 | **v3.2.0** | 2026-06-07 | Kompresi tinggi sasis sasis faceplate utama (pb-7 -> pb-3, mt-2 mb-2 -> mt-1 mb-0.5, mt-4 -> mt-1.5) untuk membuat spasi dengan tombol PTT, serta penyelarasan jarak bottom row LCD Panel (pb-0 -> pb-2) agar tidak menempel ke bezel bawah (Seksi 3.A, 3.B, & 8). | Senior System Architect |
+| **v3.3.0** | 2026-06-08 | Implementasi PWA Opsi B: PWA Kustom Manual (Service Worker + Manifest di public) dengan strategi Cache-First untuk aset statis dan Network-Only untuk WebSocket/Realtime (Seksi 10). | Senior System Architect |
