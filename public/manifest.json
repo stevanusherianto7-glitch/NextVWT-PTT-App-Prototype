@@ -1,0 +1,30 @@
+{
+  "name": "NextVWT Walkie Talkie",
+  "short_name": "NextVWT",
+  "description": "Next Virtual Walkie Talkie - Real-time PTT communication platform",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a1423",
+  "theme_color": "#0c62a8",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

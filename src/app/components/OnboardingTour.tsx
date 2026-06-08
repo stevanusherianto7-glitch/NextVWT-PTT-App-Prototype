@@ -6,17 +6,20 @@ const steps = [
   {
     target: 'layar-lcd',
     title: 'Layar LCD & Saluran',
-    content: 'Di sini Anda dapat melihat nomor saluran Anda dan siapa saja yang sedang aktif. Putar knop atau tekan layar untuk mengganti saluran.',
+    content:
+      'Di sini Anda dapat melihat nomor saluran Anda dan siapa saja yang sedang aktif. Putar knop atau tekan layar untuk mengganti saluran.',
   },
   {
     target: 'tombol-ptt',
     title: 'Tombol PTT',
-    content: 'Tekan dan tahan tombol besar ini untuk berbicara. Lepaskan saat selesai (Ganti). Anda juga bisa menggunakan tombol Spasi di keyboard!',
+    content:
+      'Tekan dan tahan tombol besar ini untuk berbicara. Lepaskan saat selesai (Ganti). Anda juga bisa menggunakan tombol Spasi di keyboard!',
   },
   {
     target: 'tombol-pengaturan',
     title: 'Pengaturan & Profil',
-    content: 'Sesuaikan nama panggilan (Call Sign), foto profil, dan preferensi audio Anda di menu ini.',
+    content:
+      'Sesuaikan nama panggilan (Call Sign), foto profil, dan preferensi audio Anda di menu ini.',
   },
 ];
 
@@ -72,9 +75,7 @@ export const OnboardingTour: React.FC = () => {
         </div>
 
         <h2 className="text-2xl font-bold text-white mb-3">{step.title}</h2>
-        <p className="text-gray-300 text-sm leading-relaxed mb-8">
-          {step.content}
-        </p>
+        <p className="text-gray-300 text-sm leading-relaxed mb-8">{step.content}</p>
 
         <button
           onClick={handleNext}

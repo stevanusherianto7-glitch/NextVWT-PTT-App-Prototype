@@ -65,7 +65,7 @@
 
 .logo-word {
   font-family: 'Montserrat', 'Poppins', 'Arial Black', system-ui, sans-serif;
-  font-size: clamp(20px, 5.5vw, 26px); /* Reduced from clamp(30px, 8vw, 46px) */
+  font-size: clamp(24px, 5.5vw, 30px); /* Increased by 3pt (4px) from clamp(20px, 5.5vw, 26px) */
   font-weight: 950;
   letter-spacing: 0.045em;
   line-height: 1;
@@ -204,7 +204,7 @@
 
 .nextvwt-subtitle {
   font-family: 'Montserrat', 'Poppins', system-ui, sans-serif;
-  font-size: 8px; /* Reduced from 11px */
+  font-size: 12px; /* Increased by 3pt (4px) from 8px */
   font-weight: 850;
   letter-spacing: 0.22em; /* Reduced from 0.46em */
   color: #b81f25;

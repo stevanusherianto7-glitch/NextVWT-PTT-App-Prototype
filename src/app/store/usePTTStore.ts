@@ -5,7 +5,6 @@ import { checkIfNewUser } from '../utils/constants';
 export type { AppUser, ChannelItem, WebRTCSignalingPayload, GuestUser, PTTState } from './types';
 import { BRAND } from '../utils/config';
 
-
 // ─── Local Storage Key ────────────────────────────────────────────────────────
 const LS_KEY = 'nextvwt_settings';
 

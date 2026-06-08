@@ -1,5 +1,3 @@
-
-
 let globalAudioCtx: AudioContext | null = null;
 
 const getAudioContext = () => {
