@@ -73,7 +73,7 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-dvh h-dvh w-full bg-[#1a1c23] flex items-center justify-center sm:p-4 select-none overflow-auto">
+      <div className="min-h-dvh h-dvh w-full bg-[#1a1c23] flex items-center justify-center sm:p-4 select-none overflow-hidden sm:overflow-auto overscroll-none">
         {user === null ? (
           <div
             className="w-full h-dvh sm:w-[360px] sm:h-[800px] bg-white sm:rounded-[40px] overflow-hidden relative sm:shadow-[0_20px_50px_rgba(0,0,0,0.5)] sm:border-[8px] sm:border-[#2a2d36] flex-shrink-0 flex flex-col"
