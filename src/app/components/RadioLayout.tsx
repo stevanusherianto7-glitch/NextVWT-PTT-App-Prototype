@@ -16,9 +16,8 @@ import { FeedbackModal } from './FeedbackModal';
 import { useChannelRole } from '../../features/moderation/useChannelRole';
 import { useChannelSettings } from '../../features/moderation/useChannelSettings';
 import { ChannelManagePanel } from '../../features/moderation/ChannelManagePanel';
-import { canUsePTT, canPerformAction } from '../../features/moderation/permissions';
+import { canUsePTT } from '../../features/moderation/permissions';
 import { getSupabase } from '../utils/supabase';
-import { Shield } from 'lucide-react';
 
 // Helper to catch dynamic import chunk loading failures (typically after a new deploy)
 // and automatically reload the page to fetch the latest assets
@@ -611,15 +610,6 @@ export function RadioLayout() {
             </div>
 
             <div className="flex items-center gap-3">
-              {isPowerOn && canPerformAction(role, 'VIEW_ADMIN_PANEL') && (
-                <button
-                  onClick={() => setIsManageOpen(true)}
-                  className="p-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 hover:border-emerald-500/60 rounded-full text-emerald-400 cursor-pointer transition-all active:scale-95 flex items-center justify-center relative z-30"
-                  title="Kelola Channel"
-                >
-                  <Shield className="h-5 w-5" />
-                </button>
-              )}
               <ToggleSwitch isOn={isPowerOn} onToggle={() => setIsPowerOn(!isPowerOn)} />
             </div>
           </div>
