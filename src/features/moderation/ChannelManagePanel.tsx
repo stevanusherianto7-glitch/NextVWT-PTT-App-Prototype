@@ -141,7 +141,9 @@ export function ChannelManagePanel({
                   </div>
                   <div className="flex flex-col gap-0.5">
                     <span className="text-slate-500 font-semibold">Nomor Channel:</span>
-                    <span className="text-white font-medium">{roomId}</span>
+                    <span className="text-white font-medium">
+                      {roomId.split('-').pop()?.padStart(3, '0') || '001'}
+                    </span>
                   </div>
                   <div className="flex flex-col gap-0.5 col-span-2">
                     <span className="text-slate-500 font-semibold">Deskripsi:</span>
