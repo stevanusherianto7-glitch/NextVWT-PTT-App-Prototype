@@ -30,6 +30,7 @@ import wowAnimation from '../../assets/reactions/wow.json';
 import fireAnimation from '../../assets/reactions/fire.json';
 import crownAnimation from '../../assets/reactions/crown.json';
 import confettiAnimation from '../../assets/reactions/confetti.json';
+import kissAnimation from '../../assets/reactions/kiss.json';
 
 // Helper to catch dynamic import chunk loading failures (typically after a new deploy)
 // and automatically reload the page to fetch the latest assets
@@ -753,6 +754,7 @@ export function RadioLayout() {
                         const animationMap: Record<string, any> = {
                           applause: applauseAnimation,
                           love: loveAnimation,
+                          kiss: kissAnimation,
                           wow: wowAnimation,
                           fire: fireAnimation,
                           crown: crownAnimation,
@@ -762,7 +764,7 @@ export function RadioLayout() {
                         return (
                           <div
                             key={r.id}
-                            className="absolute bottom-0 w-12 h-12 animate-float-up flex items-center justify-center"
+                            className="absolute bottom-0 w-20 h-20 animate-float-up flex items-center justify-center"
                             style={{
                               left: `${r.x}%`,
                             }}
@@ -772,10 +774,10 @@ export function RadioLayout() {
                                 autoplay
                                 loop={false}
                                 src={animData}
-                                style={{ width: '45px', height: '45px' }}
+                                style={{ width: '80px', height: '80px' }}
                               />
                             ) : (
-                              <span className="text-xl">🔥</span>
+                              <span className="text-3xl">🔥</span>
                             )}
                           </div>
                         );

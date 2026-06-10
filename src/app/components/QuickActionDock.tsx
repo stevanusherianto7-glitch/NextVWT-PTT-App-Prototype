@@ -26,6 +26,7 @@ export function QuickActionDock({
   const reactions = [
     { kind: 'applause', emoji: '👏' },
     { kind: 'love', emoji: '❤️' },
+    { kind: 'kiss', emoji: '😘' },
     { kind: 'wow', emoji: '😮' },
     { kind: 'fire', emoji: '🔥' },
     { kind: 'crown', emoji: '👑' },
