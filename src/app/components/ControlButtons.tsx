@@ -63,9 +63,9 @@ export function ControlButtons({
               />
               <feComposite operator="in" in="color-top" in2="inverse-top" result="shadow-top" />
 
-              {/* Softer Dark Inner Shadow at Bottom-Right */}
-              <feOffset dx="-2" dy="-2.5" />
-              <feGaussianBlur stdDeviation="1.2" result="offset-blur-bottom" />
+              {/* Sharp bottom-right highlight to define the bottom edge bezel of the recess */}
+              <feOffset dx="-1.5" dy="-2" />
+              <feGaussianBlur stdDeviation="1.0" result="offset-blur-bottom" />
               <feComposite
                 operator="out"
                 in="SourceGraphic"
@@ -73,8 +73,8 @@ export function ControlButtons({
                 result="inverse-bottom"
               />
               <feFlood
-                floodColor="black"
-                floodOpacity="0.18"
+                floodColor="white"
+                floodOpacity="0.55"
                 result="color-bottom"
               />
               <feComposite
@@ -93,6 +93,15 @@ export function ControlButtons({
             </filter>
           </defs>
 
+          {/* 3D Bezel Bottom/Right light-catching highlight (placed under fill to mask top/left shifted edge) */}
+          <path
+            d="M 100 30 A 48.75 48.75 0 0 1 190 30 L 245 30 A 45 45 0 0 1 245 120 L 190 120 A 48.75 48.75 0 0 1 100 120 L 45 120 A 45 45 0 0 1 45 30 Z"
+            fill="none"
+            stroke="var(--dpad-bezel-highlight, rgba(255, 255, 255, 0.75))"
+            strokeWidth="2"
+            transform="translate(0.5, 1.2)"
+          />
+
           {/* Filled base shape with gradient and filter */}
           <path
             d="M 100 30 A 48.75 48.75 0 0 1 190 30 L 245 30 A 45 45 0 0 1 245 120 L 190 120 A 48.75 48.75 0 0 1 100 120 L 45 120 A 45 45 0 0 1 45 30 Z"
@@ -105,7 +114,7 @@ export function ControlButtons({
             d="M 100 30 A 48.75 48.75 0 0 1 190 30 L 245 30 A 45 45 0 0 1 245 120 L 190 120 A 48.75 48.75 0 0 1 100 120 L 45 120 A 45 45 0 0 1 45 30 Z"
             fill="none"
             stroke="var(--dpad-border-color)"
-            strokeWidth="1.5"
+            strokeWidth="2"
           />
         </svg>
       </div>

@@ -432,8 +432,9 @@
   --dpad-bg: linear-gradient(to bottom, #ffffff, #e8ebf0);
   --dpad-bg-start: #ffffff;
   --dpad-bg-end: #e8ebf0;
-  --dpad-border: 1px solid #c8d1db;
-  --dpad-border-color: #c8d1db;
+  --dpad-border: 1px solid #64748b;
+  --dpad-border-color: #64748b;
+  --dpad-bezel-highlight: rgba(255, 255, 255, 0.95);
   --dpad-shadow:
     inset 0 8px 12px rgba(255, 255, 255, 1), inset 0 -6px 12px rgba(0, 0, 0, 0.2),
     inset 0 0 28px rgba(0, 0, 0, 0.32), 0 4px 8px rgba(0, 0, 0, 0.12);
@@ -502,8 +503,9 @@
   --dpad-bg: linear-gradient(to bottom, #ffffff, #e8ebf0);
   --dpad-bg-start: #ffffff;
   --dpad-bg-end: #e8ebf0;
-  --dpad-border: 1px solid #c8d1db;
-  --dpad-border-color: #c8d1db;
+  --dpad-border: 1px solid #64748b;
+  --dpad-border-color: #64748b;
+  --dpad-bezel-highlight: rgba(255, 255, 255, 0.95);
   --dpad-shadow:
     inset 0 8px 12px rgba(255, 255, 255, 1), inset 0 -6px 12px rgba(0, 0, 0, 0.2),
     inset 0 0 28px rgba(0, 0, 0, 0.32);
@@ -589,7 +591,8 @@
   --dpad-bg-start: rgba(255, 255, 255, 0.55);
   --dpad-bg-end: rgba(205, 225, 250, 0.3);
   --dpad-border: 1.5px solid rgba(255, 255, 255, 0.85);
-  --dpad-border-color: rgba(255, 255, 255, 0.85);
+  --dpad-border-color: rgba(255, 255, 255, 0.95);
+  --dpad-bezel-highlight: rgba(255, 255, 255, 0.95);
   --dpad-shadow:
     inset 0 5px 10px rgba(255, 255, 255, 0.95), inset 0 -5px 10px rgba(125, 170, 215, 0.4),
     0 4px 8px rgba(135, 175, 220, 0.2);
@@ -670,7 +673,8 @@
   --dpad-bg-start: rgba(255, 255, 255, 0.55);
   --dpad-bg-end: rgba(128, 222, 234, 0.3);
   --dpad-border: 1.5px solid rgba(255, 255, 255, 0.85);
-  --dpad-border-color: rgba(255, 255, 255, 0.85);
+  --dpad-border-color: rgba(255, 255, 255, 0.95);
+  --dpad-bezel-highlight: rgba(255, 255, 255, 0.95);
   --dpad-shadow:
     inset 0 5px 10px rgba(255, 255, 255, 0.95), inset 0 -5px 10px rgba(0, 184, 212, 0.3);
   --dpad-shadow-top-opacity: 0.95;
@@ -733,8 +737,9 @@
   --dpad-bg: linear-gradient(to bottom, rgba(38, 50, 56, 0.8) 0%, rgba(16, 23, 26, 0.9) 100%);
   --dpad-bg-start: rgba(38, 50, 56, 0.8);
   --dpad-bg-end: rgba(16, 23, 26, 0.9);
-  --dpad-border: 1.5px solid rgba(0, 230, 70, 0.35);
-  --dpad-border-color: rgba(0, 230, 70, 0.35);
+  --dpad-border: 1.5px solid rgba(0, 230, 70, 0.45);
+  --dpad-border-color: rgba(0, 230, 70, 0.45);
+  --dpad-bezel-highlight: rgba(57, 255, 20, 0.35);
   --dpad-shadow: inset 0 3px 6px rgba(255, 255, 255, 0.2), inset 0 -5px 10px rgba(0, 0, 0, 0.75);
   --dpad-shadow-top-opacity: 0.25;
   --dpad-shadow-bottom-color: #000000;
@@ -813,7 +818,8 @@
   --dpad-bg-start: rgba(255, 255, 255, 0.55);
   --dpad-bg-end: rgba(206, 147, 216, 0.3);
   --dpad-border: 1.5px solid rgba(255, 255, 255, 0.85);
-  --dpad-border-color: rgba(255, 255, 255, 0.85);
+  --dpad-border-color: rgba(255, 255, 255, 0.95);
+  --dpad-bezel-highlight: rgba(255, 255, 255, 0.95);
   --dpad-shadow:
     inset 0 5px 10px rgba(255, 255, 255, 0.95), inset 0 -5px 10px rgba(186, 104, 200, 0.3);
   --dpad-shadow-top-opacity: 0.95;
@@ -873,8 +879,9 @@
   --dpad-bg: linear-gradient(to bottom, rgba(255, 255, 255, 0.3) 0%, rgba(0, 119, 182, 0.15) 100%);
   --dpad-bg-start: rgba(255, 255, 255, 0.3);
   --dpad-bg-end: rgba(0, 119, 182, 0.15);
-  --dpad-border: 1px solid rgba(0, 180, 216, 0.45);
-  --dpad-border-color: rgba(0, 180, 216, 0.45);
+  --dpad-border: 1px solid rgba(0, 180, 216, 0.65);
+  --dpad-border-color: rgba(0, 180, 216, 0.65);
+  --dpad-bezel-highlight: rgba(255, 255, 255, 0.65);
   --dpad-shadow:
     inset 0 6px 10px rgba(255, 255, 255, 0.55), inset 0 -4px 8px rgba(0, 0, 0, 0.15),
     inset 0 0 20px rgba(0, 0, 0, 0.08);
@@ -924,8 +931,9 @@
   --dpad-bg: linear-gradient(to bottom, #f8fafc, #cbd5e1);
   --dpad-bg-start: #f8fafc;
   --dpad-bg-end: #cbd5e1;
-  --dpad-border: 1px solid #cbd5e1;
-  --dpad-border-color: #cbd5e1;
+  --dpad-border: 1px solid #475569;
+  --dpad-border-color: #475569;
+  --dpad-bezel-highlight: rgba(255, 255, 255, 0.9);
   --dpad-shadow: none;
   --dpad-shadow-top-opacity: 0;
   --dpad-shadow-bottom-color: #000000;
