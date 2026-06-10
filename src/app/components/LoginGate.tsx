@@ -19,10 +19,60 @@ export function LoginGate({ onLogin, onGuestLogin }: LoginGateProps) {
 
   return (
     <div className="size-full flex flex-col items-center justify-center bg-gradient-to-b from-[#1a1c23] to-[#0e1013] px-6 text-center select-none relative overflow-hidden">
+      <style>{`
+        @keyframes radioWave {
+          0% {
+            transform: translate(-50%, -50%) scale(0.25);
+            opacity: 0;
+          }
+          15% {
+            opacity: 0.3;
+          }
+          100% {
+            transform: translate(-50%, -50%) scale(2.2);
+            opacity: 0;
+          }
+        }
+        .radio-ripple {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 380px;
+          height: 380px;
+          border: 1.5px solid rgba(0, 200, 83, 0.28);
+          border-radius: 50%;
+          transform: translate(-50%, -50%);
+          animation: radioWave 9s infinite linear;
+          pointer-events: none;
+          z-index: 0;
+        }
+        .radio-ripple:nth-child(2) {
+          animation-delay: 3s;
+          border-color: rgba(0, 136, 204, 0.22);
+        }
+        .radio-ripple:nth-child(3) {
+          animation-delay: 6s;
+          border-color: rgba(52, 211, 153, 0.15);
+        }
+        .neon-glow-border {
+          background: linear-gradient(#1e2230, #1e2230) padding-box,
+                      linear-gradient(135deg, #00c853 0%, #0088cc 100%) border-box;
+          border: 1.5px solid transparent !important;
+          box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 22px rgba(0, 200, 83, 0.16) !important;
+        }
+      `}</style>
+      
+      {/* Background Neon Radio Ripples */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="radio-ripple" />
+        <div className="radio-ripple" />
+        <div className="radio-ripple" />
+      </div>
+
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-blue-500/10 rounded-full blur-[80px]" />
       <div className="absolute bottom-1/4 left-1/2 -translate-x-1/2 translate-y-1/2 w-48 h-48 bg-orange-500/10 rounded-full blur-[80px]" />
 
-      <div className="w-full bg-[#1e2230]/75 backdrop-blur-lg border border-white/10 rounded-[32px] p-6 shadow-[0_15px_35px_rgba(0,0,0,0.5)] z-10 flex flex-col items-center">
+      <div className="w-full bg-[#1e2230]/75 backdrop-blur-lg rounded-[32px] p-6 z-10 flex flex-col items-center neon-glow-border">
         <svg
           viewBox="0 0 100 100"
           className="h-16 w-auto mb-4"
@@ -160,10 +210,10 @@ export function LoginGate({ onLogin, onGuestLogin }: LoginGateProps) {
         <button
           onClick={handleLogin}
           disabled={loading}
-          className="w-full h-12 bg-white text-black font-semibold rounded-full flex items-center justify-center gap-3 transition-all duration-300 active:scale-95 border border-gray-200 shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:shadow-[0_0_20px_rgba(255,255,255,0.7)] cursor-pointer disabled:opacity-50"
+          className="w-full h-12 bg-[#171a26]/80 backdrop-blur-md text-white font-semibold rounded-full flex items-center justify-center gap-3 transition-all duration-300 active:scale-95 border border-white/10 hover:border-white/20 hover:bg-[#1e2233]/90 hover:shadow-[0_0_15px_rgba(255,255,255,0.25)] cursor-pointer disabled:opacity-50"
         >
           {loading ? (
-            <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
           ) : (
             <>
               <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -191,22 +241,27 @@ export function LoginGate({ onLogin, onGuestLogin }: LoginGateProps) {
 
         <button
           onClick={onGuestLogin}
-          className="w-full h-12 mt-3 text-slate-700 font-semibold rounded-full flex items-center justify-center gap-3 transition-all duration-300 active:scale-95 border border-gray-200 hover:text-black cursor-pointer shadow-sm"
+          className="w-full h-12 mt-3 text-slate-900 font-bold rounded-full flex items-center justify-center gap-3 transition-all duration-300 active:scale-95 border border-slate-400/80 cursor-pointer shadow-[0_4px_10px_rgba(0,0,0,0.3)]"
           style={{
-            background: 'linear-gradient(to bottom, #ffffff 0%, #cbd5e1 100%)',
-            boxShadow: '0 0 8px rgba(255, 255, 255, 0.8), 0 2px 4px rgba(148, 163, 184, 0.15)',
+            background: 'linear-gradient(180deg, #ffffff 0%, #f1f5f9 40%, #cbd5e1 50%, #94a3b8 100%)',
+            boxShadow: 'inset 0 1.5px 0 rgba(255,255,255,0.95), 0 4px 10px rgba(0,0,0,0.25)',
+            textShadow: '0 1px 0 rgba(255,255,255,0.85)'
           }}
           onMouseEnter={(e) => {
+            e.currentTarget.style.background =
+              'linear-gradient(180deg, #ffffff 0%, #f8fafc 40%, #e2e8f0 50%, #cbd5e1 100%)';
             e.currentTarget.style.boxShadow =
-              '0 0 15px rgba(255, 255, 255, 0.9), 0 4px 8px rgba(148, 163, 184, 0.3)';
+              'inset 0 1.5px 0 rgba(255,255,255,0.95), 0 0 15px rgba(255, 255, 255, 0.4), 0 6px 14px rgba(0,0,0,0.3)';
           }}
           onMouseLeave={(e) => {
+            e.currentTarget.style.background =
+              'linear-gradient(180deg, #ffffff 0%, #f1f5f9 40%, #cbd5e1 50%, #94a3b8 100%)';
             e.currentTarget.style.boxShadow =
-              '0 0 8px rgba(255, 255, 255, 0.8), 0 2px 4px rgba(148, 163, 184, 0.15)';
+              'inset 0 1.5px 0 rgba(255,255,255,0.95), 0 4px 10px rgba(0,0,0,0.25)';
           }}
         >
           <svg
-            className="w-5 h-5 text-slate-500"
+            className="w-5 h-5 text-slate-700"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
