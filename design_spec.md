@@ -133,7 +133,7 @@ Font diimpor secara dinamis melalui Google Fonts API bersama dengan font penduku
 
 1. **Header Sasis Walkie-Talkie ([RadioLayout.tsx](file:///c:/Users/ASUS/Downloads/NextVWT%20PTT%20App%20Prototype%20-%20Clone/src/app/components/RadioLayout.tsx))**:
    * **Font Family**: `'Outfit', sans-serif`
-   * **Ukuran Font**: `19px` (`text-[19px]`)
+   * **Ukuran Font**: `16px` (`text-[16px]`)
    * **Ketebalan (Weights)**: 
      * **Next**: `font-medium` (500) - berwarna sesuai sasis default (`var(--header-text-color)`).
      * **VWT**: `font-black` (900) - berwarna hijau sinyal/emerald (`#00C853`).
@@ -141,7 +141,7 @@ Font diimpor secara dinamis melalui Google Fonts API bersama dengan font penduku
 
 2. **Gerbang Masuk Aplikasi ([LoginGate.tsx](file:///c:/Users/ASUS/Downloads/NextVWT%20PTT%20App%20Prototype%20-%20Clone/src/app/components/LoginGate.tsx))**:
    * **Font Family**: `'Outfit', sans-serif`
-   * **Ukuran Font**: `30px` (`text-3xl`)
+   * **Ukuran Font**: `24px` (`text-2xl`)
    * **Ketebalan (Weights)**:
      * **Next**: `font-medium` (500) - berwarna putih bersih (`text-white`).
      * **VWT**: `font-black` (900) - berwarna hijau sinyal/emerald (`#00C853`).
@@ -149,7 +149,7 @@ Font diimpor secara dinamis melalui Google Fonts API bersama dengan font penduku
 
 3. **Logo Premium Dialog Modal ([ChannelListModal.css](file:///c:/Users/ASUS/Downloads/NextVWT%20PTT%20App%20Prototype%20-%20Clone/src/app/components/ChannelListModal.css))**:
    * **Font Family**: `'Outfit', sans-serif`
-   * **Ukuran Font**: `clamp(24px, 5.5vw, 30px)`
+   * **Ukuran Font**: `clamp(20px, 4.5vw, 24px)`
    * **Ketebalan (Weights)**:
      * **Next** (`.logo-next`): `font-weight: 500` dengan gradasi metalik perak-putih bersih (`linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%)`).
      * **VWT** (`.logo-vwt`): `font-weight: 900` dengan gradasi mint-to-emerald (`linear-gradient(180deg, #a7f3d0 0%, #00C853 45%, #007c31 100%)`).

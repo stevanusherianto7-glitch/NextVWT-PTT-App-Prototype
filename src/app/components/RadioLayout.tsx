@@ -588,7 +588,7 @@ export function RadioLayout() {
                   className={`flex flex-col justify-center relative z-20 transition-all duration-300 ${isTransmitting ? 'logo-transmitting' : ''} ml-2`}
                 >
                   <span
-                    className="text-[19px] leading-none tracking-wide select-none"
+                    className="text-[16px] leading-none tracking-wide select-none"
                     style={{
                       fontFamily: "'Outfit', sans-serif",
                     }}

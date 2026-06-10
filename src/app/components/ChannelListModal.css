@@ -65,7 +65,7 @@
 
 .logo-word {
   font-family: 'Outfit', sans-serif;
-  font-size: clamp(24px, 5.5vw, 30px);
+  font-size: clamp(20px, 4.5vw, 24px);
   line-height: 1;
   text-transform: uppercase;
   position: relative;

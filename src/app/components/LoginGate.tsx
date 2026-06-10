@@ -194,7 +194,7 @@ export function LoginGate({ onLogin }: LoginGateProps) {
           />
         </svg>
 
-        <h1 className="text-3xl tracking-wide mb-1 select-none" style={{ fontFamily: "'Outfit', sans-serif" }}>
+        <h1 className="text-2xl tracking-wide mb-1 select-none" style={{ fontFamily: "'Outfit', sans-serif" }}>
           <span className="font-medium text-white">Next</span>
           <span className="font-black text-[#00C853]">VWT</span>
         </h1>
