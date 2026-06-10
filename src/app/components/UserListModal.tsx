@@ -21,6 +21,13 @@ interface UserListModalProps {
         callSign: string;
         location: string;
         avatarUrl?: string;
+        isNewUser?: boolean;
+        joinedAt?: string;
+        role?: ChannelRole;
+        isMuted?: boolean;
+        isControlled?: boolean;
+        isWait?: boolean;
+        isWaitControlled?: boolean;
       }
   >;
   onClose: () => void;
@@ -275,60 +282,67 @@ export const USER_PROFILES: Record<string, UserProfile> = {
     callSign: 'NOC-01',
     location: 'JAKARTA, DKI',
     avatarColor: '#3F51B5',
-    avatarUrl: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=80&h=80&fit=crop&crop=faces',
-    role: 'noc'
+    avatarUrl:
+      'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=80&h=80&fit=crop&crop=faces',
+    role: 'noc',
   },
   sys_admin_vwt: {
     displayName: 'Sys Admin VWT',
     callSign: 'SYS-01',
     location: 'SURABAYA, JATIM',
     avatarColor: '#9C27B0',
-    avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80&h=80&fit=crop&crop=faces',
-    role: 'sys_admin'
+    avatarUrl:
+      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80&h=80&fit=crop&crop=faces',
+    role: 'sys_admin',
   },
   pjc_room_manager: {
     displayName: 'PJC Room Manager',
     callSign: 'PJC-01',
     location: 'MEDAN, SUMUT',
     avatarColor: '#E91E63',
-    avatarUrl: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=80&h=80&fit=crop&crop=faces',
-    role: 'pjc'
+    avatarUrl:
+      'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=80&h=80&fit=crop&crop=faces',
+    role: 'pjc',
   },
   operator_otomatis: {
     displayName: 'Operator Otomatis',
     callSign: 'OPR-01',
     location: 'BANDUNG, JABAR',
     avatarColor: '#009688',
-    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=faces',
-    role: 'operator'
+    avatarUrl:
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=faces',
+    role: 'operator',
   },
   user_baru_nextvwt: {
     displayName: 'User Baru NextVWT',
     callSign: 'NEW-01',
     location: 'MAKASSAR, SULSEL',
     avatarColor: '#4CAF50',
-    avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&h=80&fit=crop&crop=faces',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&h=80&fit=crop&crop=faces',
     role: 'guest',
     isNewUser: true,
-    joinedAt: '2026-06-07' // Joined 3 days ago (less than 2 weeks, badge shown)
+    joinedAt: '2026-06-07', // Joined 3 days ago (less than 2 weeks, badge shown)
   },
   silent_user: {
     displayName: 'User Silent',
     callSign: 'SLT-01',
     location: 'SEMARANG, JATENG',
     avatarColor: '#795548',
-    avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=80&h=80&fit=crop&crop=faces',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=80&h=80&fit=crop&crop=faces',
     role: 'guest',
-    isMuted: true
+    isMuted: true,
   },
   controlled_user: {
     displayName: 'User Controlled',
     callSign: 'CTRL-01',
     location: 'BALIKPAPAN, KALTIM',
     avatarColor: '#FF9800',
-    avatarUrl: 'https://images.unsplash.com/photo-1628157582853-a796fa650a6a?w=80&h=80&fit=crop&crop=faces',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1628157582853-a796fa650a6a?w=80&h=80&fit=crop&crop=faces',
     role: 'guest',
-    isControlled: true
+    isControlled: true,
   },
 };
 
@@ -426,7 +440,7 @@ function AvatarImage({
 function isNewUserJoined(profile: UserProfile): boolean {
   if (!profile.isNewUser) return false;
   if (!profile.joinedAt) return true; // Default to true if flag is set but no joined date is provided
-  
+
   const joinedDate = new Date(profile.joinedAt);
   const now = new Date();
   const diffTime = Math.abs(now.getTime() - joinedDate.getTime());
@@ -434,7 +448,14 @@ function isNewUserJoined(profile: UserProfile): boolean {
   return diffDays <= 14;
 }
 
-type UserMode = 'voice' | 'operator' | 'moderator' | 'silent' | 'controlled' | 'wait' | 'wait_controlled';
+type UserMode =
+  | 'voice'
+  | 'operator'
+  | 'moderator'
+  | 'silent'
+  | 'controlled'
+  | 'wait'
+  | 'wait_controlled';
 
 const MODE_ICONS: Record<UserMode, string> = {
   voice: iconVoice,
@@ -461,17 +482,14 @@ function getUserMode(profile: UserProfile): UserMode {
   if (profile.isControlled) return 'controlled';
   if (profile.isWait) return 'wait';
   if (profile.isWaitControlled) return 'wait_controlled';
-  
+
   if (profile.role === 'operator') return 'operator';
-  if (profile.role === 'pjc' || profile.role === 'sys_admin' || profile.role === 'noc') return 'moderator';
+  if (profile.role === 'pjc' || profile.role === 'sys_admin' || profile.role === 'noc')
+    return 'moderator';
   return 'voice';
 }
 
-export function UserListModal({
-  channel,
-  channelName: _channelName,
-  users,
-}: UserListModalProps) {
+export function UserListModal({ channel, channelName: _channelName, users }: UserListModalProps) {
   const isTransmitting = usePTTStore((state) => state.isTransmitting);
   const activeTransmitter = usePTTStore((state) => state.activeTransmitter);
   const localUserId = usePTTStore((state) => state.userId);
@@ -495,10 +513,10 @@ export function UserListModal({
       if (typeof user === 'string') {
         profileData = { ...(USER_PROFILES[user] || getDeterministicProfile(user)) };
       } else {
-        const matchedProfile = 
-          USER_PROFILES[user.userId] || 
-          USER_PROFILES[user.displayName] || 
-          Object.values(USER_PROFILES).find(p => p.callSign === user.callSign);
+        const matchedProfile =
+          USER_PROFILES[user.userId] ||
+          USER_PROFILES[user.displayName] ||
+          Object.values(USER_PROFILES).find((p) => p.callSign === user.callSign);
 
         profileData = {
           displayName: user.displayName,
@@ -506,13 +524,13 @@ export function UserListModal({
           location: user.location,
           avatarColor: '#3F51B5',
           avatarUrl: user.avatarUrl || matchedProfile?.avatarUrl || '',
-          isNewUser: (user as any).isNewUser || matchedProfile?.isNewUser,
-          joinedAt: (user as any).joinedAt || matchedProfile?.joinedAt,
-          role: (user as any).role || matchedProfile?.role || 'guest',
-          isMuted: (user as any).isMuted || matchedProfile?.isMuted || false,
-          isControlled: (user as any).isControlled || matchedProfile?.isControlled || false,
-          isWait: (user as any).isWait || matchedProfile?.isWait || false,
-          isWaitControlled: (user as any).isWaitControlled || matchedProfile?.isWaitControlled || false,
+          isNewUser: user.isNewUser || matchedProfile?.isNewUser,
+          joinedAt: user.joinedAt || matchedProfile?.joinedAt,
+          role: user.role || matchedProfile?.role || 'guest',
+          isMuted: user.isMuted || matchedProfile?.isMuted || false,
+          isControlled: user.isControlled || matchedProfile?.isControlled || false,
+          isWait: user.isWait || matchedProfile?.isWait || false,
+          isWaitControlled: user.isWaitControlled || matchedProfile?.isWaitControlled || false,
         };
       }
 
@@ -521,9 +539,13 @@ export function UserListModal({
         userId: uId,
         role: localRole || profileData.role || 'guest',
         isMuted: localStatus === 'muted' || (localStatus ? false : profileData.isMuted) || false,
-        isControlled: localStatus === 'controlled' || (localStatus ? false : profileData.isControlled) || false,
+        isControlled:
+          localStatus === 'controlled' || (localStatus ? false : profileData.isControlled) || false,
         isWait: localStatus === 'wait' || (localStatus ? false : profileData.isWait) || false,
-        isWaitControlled: localStatus === 'wait_controlled' || (localStatus ? false : profileData.isWaitControlled) || false,
+        isWaitControlled:
+          localStatus === 'wait_controlled' ||
+          (localStatus ? false : profileData.isWaitControlled) ||
+          false,
       };
     });
   };
@@ -533,21 +555,21 @@ export function UserListModal({
   // Sync state if users or channel changes
   useEffect(() => {
     setModalUsers(mapUsers(users));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [users, channel]);
 
-  const [activeZoomedAvatar, setActiveZoomedAvatar] = useState<(typeof modalUsers[0]) | null>(null);
+  const [activeZoomedAvatar, setActiveZoomedAvatar] = useState<(typeof modalUsers)[0] | null>(null);
 
   // Check if current logged-in user holds Moderator/Operator/NOC/SysAdmin position
   const roomId = `ptt-room-${channel}`;
   const localProfile = modalUsers.find(
-    (u) =>
-      u.userId === localUserId ||
-      u.displayName === localName ||
-      u.callSign === '2DYUA'
+    (u) => u.userId === localUserId || u.displayName === localName || u.callSign === '2DYUA'
   );
-  const localRole = 
-    (localUserId ? localStorage.getItem(`channel-role:${roomId}:${localUserId}`) as ChannelRole | null : null) ||
-    localProfile?.role || 
+  const localRole =
+    (localUserId
+      ? (localStorage.getItem(`channel-role:${roomId}:${localUserId}`) as ChannelRole | null)
+      : null) ||
+    localProfile?.role ||
     'guest';
   const canModerate =
     localRole === 'operator' ||
@@ -561,36 +583,43 @@ export function UserListModal({
     if (uId === localUserId || uId === '2DYUA' || uId === localName) {
       window.dispatchEvent(new Event('channel-role-changed'));
     }
-    setModalUsers(prev => prev.map(u => u.userId === uId ? { ...u, role: nextRole } : u));
-    setActiveZoomedAvatar(prev => prev && prev.userId === uId ? { ...prev, role: nextRole } : prev);
+    setModalUsers((prev) => prev.map((u) => (u.userId === uId ? { ...u, role: nextRole } : u)));
+    setActiveZoomedAvatar((prev) =>
+      prev && prev.userId === uId ? { ...prev, role: nextRole } : prev
+    );
   };
 
-  const handleUpdateStatus = (uId: string, statusType: 'normal' | 'muted' | 'controlled' | 'wait' | 'wait_controlled') => {
+  const handleUpdateStatus = (
+    uId: string,
+    statusType: 'normal' | 'muted' | 'controlled' | 'wait' | 'wait_controlled'
+  ) => {
     const roomId = `ptt-room-${channel}`;
     if (statusType === 'normal') {
       localStorage.setItem(`channel-status:${roomId}:${uId}`, 'active');
     } else {
       localStorage.setItem(`channel-status:${roomId}:${uId}`, statusType);
     }
-    
+
     if (uId === localUserId || uId === '2DYUA' || uId === localName) {
       window.dispatchEvent(new Event('channel-role-changed'));
     }
 
-    setModalUsers(prev => prev.map(u => {
-      if (u.userId === uId) {
-        return {
-          ...u,
-          isMuted: statusType === 'muted',
-          isControlled: statusType === 'controlled',
-          isWait: statusType === 'wait',
-          isWaitControlled: statusType === 'wait_controlled',
-        };
-      }
-      return u;
-    }));
+    setModalUsers((prev) =>
+      prev.map((u) => {
+        if (u.userId === uId) {
+          return {
+            ...u,
+            isMuted: statusType === 'muted',
+            isControlled: statusType === 'controlled',
+            isWait: statusType === 'wait',
+            isWaitControlled: statusType === 'wait_controlled',
+          };
+        }
+        return u;
+      })
+    );
 
-    setActiveZoomedAvatar(prev => {
+    setActiveZoomedAvatar((prev) => {
       if (!prev || prev.userId !== uId) return prev;
       return {
         ...prev,
@@ -690,14 +719,12 @@ export function UserListModal({
                 onClick={() => {
                   setActiveZoomedAvatar({
                     ...profile,
-                    avatarUrl: avatarUrlToUse
+                    avatarUrl: avatarUrlToUse,
                   });
                 }}
               >
                 {/* Avatar with mode icon overlay */}
-                <div
-                  className="relative w-[52px] h-[52px] shrink-0 select-none hover:scale-105 active:scale-95 transition-transform duration-200"
-                >
+                <div className="relative w-[52px] h-[52px] shrink-0 select-none hover:scale-105 active:scale-95 transition-transform duration-200">
                   <AvatarImage
                     src={avatarUrlToUse}
                     displayName={profile.displayName}
@@ -817,10 +844,13 @@ export function UserListModal({
                 </div>
                 <div className="grid grid-cols-2 gap-1.5 w-full">
                   {/* Voice / Normal */}
-                  <button
+                  <button type="button"
                     onClick={() => handleUpdateStatus(activeZoomedAvatar.userId, 'normal')}
                     className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[11px] font-semibold transition-all duration-200 ${
-                      (!activeZoomedAvatar.isMuted && !activeZoomedAvatar.isControlled && !activeZoomedAvatar.isWait && !activeZoomedAvatar.isWaitControlled)
+                      !activeZoomedAvatar.isMuted &&
+                      !activeZoomedAvatar.isControlled &&
+                      !activeZoomedAvatar.isWait &&
+                      !activeZoomedAvatar.isWaitControlled
                         ? 'bg-emerald-50 border-emerald-500/30 text-emerald-700 shadow-sm'
                         : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
                     }`}
@@ -830,7 +860,7 @@ export function UserListModal({
                   </button>
 
                   {/* Silent / Muted */}
-                  <button
+                  <button type="button"
                     onClick={() => handleUpdateStatus(activeZoomedAvatar.userId, 'muted')}
                     className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[11px] font-semibold transition-all duration-200 ${
                       activeZoomedAvatar.isMuted
@@ -843,7 +873,7 @@ export function UserListModal({
                   </button>
 
                   {/* Controlled */}
-                  <button
+                  <button type="button"
                     onClick={() => handleUpdateStatus(activeZoomedAvatar.userId, 'controlled')}
                     className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[11px] font-semibold transition-all duration-200 ${
                       activeZoomedAvatar.isControlled
@@ -851,12 +881,16 @@ export function UserListModal({
                         : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
                     }`}
                   >
-                    <img src={iconControlled} className="w-3.5 h-3.5 object-contain" alt="Controlled" />
+                    <img
+                      src={iconControlled}
+                      className="w-3.5 h-3.5 object-contain"
+                      alt="Controlled"
+                    />
                     Controlled
                   </button>
 
                   {/* Wait */}
-                  <button
+                  <button type="button"
                     onClick={() => handleUpdateStatus(activeZoomedAvatar.userId, 'wait')}
                     className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[11px] font-semibold transition-all duration-200 ${
                       activeZoomedAvatar.isWait
@@ -869,7 +903,7 @@ export function UserListModal({
                   </button>
 
                   {/* Wait Controlled */}
-                  <button
+                  <button type="button"
                     onClick={() => handleUpdateStatus(activeZoomedAvatar.userId, 'wait_controlled')}
                     className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[11px] font-semibold transition-all duration-200 ${
                       activeZoomedAvatar.isWaitControlled
@@ -877,12 +911,16 @@ export function UserListModal({
                         : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
                     }`}
                   >
-                    <img src={iconWaitControlled} className="w-3.5 h-3.5 object-contain" alt="Wait Controlled" />
+                    <img
+                      src={iconWaitControlled}
+                      className="w-3.5 h-3.5 object-contain"
+                      alt="Wait Controlled"
+                    />
                     Wait Ctrl
                   </button>
 
                   {/* Hang Up */}
-                  <button
+                  <button type="button"
                     id="btn-hang-up-user"
                     onClick={() => {
                       usePTTStore.getState().hangUpUser(activeZoomedAvatar.userId);
@@ -890,7 +928,11 @@ export function UserListModal({
                     className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[11px] font-semibold transition-all duration-200 bg-red-50 border-red-500/30 text-red-700 hover:bg-red-100"
                   >
                     {/* Lightning / Flash Icon (Petir) */}
-                    <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-current" xmlns="http://www.w3.org/2000/svg">
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="w-3.5 h-3.5 fill-current"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
                       <path d="M7 2v11h3v9l7-12h-4l4-8z" />
                     </svg>
                     Hang Up
@@ -902,7 +944,7 @@ export function UserListModal({
                 </div>
                 <div className="grid grid-cols-3 gap-1.5 w-full">
                   {/* Guest */}
-                  <button
+                  <button type="button"
                     onClick={() => handleUpdateRole(activeZoomedAvatar.userId, 'guest')}
                     className={`py-1 rounded-lg border text-[10px] font-semibold transition-all duration-200 ${
                       activeZoomedAvatar.role === 'guest'
@@ -914,7 +956,7 @@ export function UserListModal({
                   </button>
 
                   {/* Operator */}
-                  <button
+                  <button type="button"
                     onClick={() => handleUpdateRole(activeZoomedAvatar.userId, 'operator')}
                     className={`flex items-center justify-center gap-0.5 py-1 rounded-lg border text-[10px] font-semibold transition-all duration-200 ${
                       activeZoomedAvatar.role === 'operator'
@@ -927,7 +969,7 @@ export function UserListModal({
                   </button>
 
                   {/* Moderator */}
-                  <button
+                  <button type="button"
                     onClick={() => handleUpdateRole(activeZoomedAvatar.userId, 'pjc')}
                     className={`flex items-center justify-center gap-0.5 py-1 rounded-lg border text-[10px] font-semibold transition-all duration-200 ${
                       activeZoomedAvatar.role === 'pjc'
@@ -935,7 +977,11 @@ export function UserListModal({
                         : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100'
                     }`}
                   >
-                    <img src={iconModerator} className="w-3.5 h-3.5 object-contain" alt="Moderator" />
+                    <img
+                      src={iconModerator}
+                      className="w-3.5 h-3.5 object-contain"
+                      alt="Moderator"
+                    />
                     Moderator
                   </button>
                 </div>
@@ -943,7 +989,7 @@ export function UserListModal({
             )}
 
             {/* Close Button */}
-            <button
+            <button type="button"
               onClick={() => setActiveZoomedAvatar(null)}
               className="mt-5 px-6 py-2 bg-gray-800 hover:bg-gray-700 active:bg-gray-900 text-white text-xs font-semibold rounded-full shadow transition-colors duration-200 w-full text-center"
             >

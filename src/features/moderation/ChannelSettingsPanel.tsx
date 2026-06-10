@@ -40,7 +40,7 @@ export function ChannelSettingsPanel({ roomId, actorRole }: ChannelSettingsPanel
       await updateSettings({ [key]: value });
       setSaveStatus('success');
       setTimeout(() => setSaveStatus('idle'), 1200);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       setSaveStatus('error');
     }
@@ -53,7 +53,7 @@ export function ChannelSettingsPanel({ roomId, actorRole }: ChannelSettingsPanel
       await updateSettings({ [key]: value });
       setSaveStatus('success');
       setTimeout(() => setSaveStatus('idle'), 1200);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       setSaveStatus('error');
     }
@@ -105,6 +105,8 @@ export function ChannelSettingsPanel({ roomId, actorRole }: ChannelSettingsPanel
           </div>
           <input
             type="checkbox"
+            title="Izinkan Tamu Bicara (PTT)"
+            aria-label="Izinkan Tamu Bicara (PTT)"
             checked={settings.allow_guest_ptt}
             disabled={!hasSettingsPerm}
             onChange={(e) => handleToggle('allow_guest_ptt', e.target.checked)}
@@ -120,6 +122,8 @@ export function ChannelSettingsPanel({ roomId, actorRole }: ChannelSettingsPanel
             </span>
           </div>
           <select
+            title="Cooldown PTT (detik)"
+            aria-label="Cooldown PTT (detik)"
             value={settings.ptt_cooldown_seconds}
             disabled={!hasSettingsPerm}
             onChange={(e) => handleSelectChange('ptt_cooldown_seconds', Number(e.target.value))}
@@ -139,6 +143,8 @@ export function ChannelSettingsPanel({ roomId, actorRole }: ChannelSettingsPanel
             <span className="setting-desc">Batas durasi maksimum bicara tamu sekali tekan PTT</span>
           </div>
           <select
+            title="Durasi Bicara Tamu (detik)"
+            aria-label="Durasi Bicara Tamu (detik)"
             value={settings.guest_max_ptt_seconds}
             disabled={!hasSettingsPerm}
             onChange={(e) => handleSelectChange('guest_max_ptt_seconds', Number(e.target.value))}
@@ -160,6 +166,8 @@ export function ChannelSettingsPanel({ roomId, actorRole }: ChannelSettingsPanel
             </span>
           </div>
           <select
+            title="Durasi Bicara Anggota (detik)"
+            aria-label="Durasi Bicara Anggota (detik)"
             value={settings.member_max_ptt_seconds}
             disabled={!hasSettingsPerm}
             onChange={(e) => handleSelectChange('member_max_ptt_seconds', Number(e.target.value))}
@@ -189,6 +197,8 @@ export function ChannelSettingsPanel({ roomId, actorRole }: ChannelSettingsPanel
           </div>
           <input
             type="checkbox"
+            title="Aktifkan Fitur Chat"
+            aria-label="Aktifkan Fitur Chat"
             checked={settings.chat_enabled}
             disabled={!hasSettingsPerm}
             onChange={(e) => handleToggle('chat_enabled', e.target.checked)}
@@ -205,6 +215,8 @@ export function ChannelSettingsPanel({ roomId, actorRole }: ChannelSettingsPanel
           </div>
           <input
             type="checkbox"
+            title="Tamu Diizinkan Chat"
+            aria-label="Tamu Diizinkan Chat"
             checked={settings.allow_guest_chat}
             disabled={!hasSettingsPerm || !settings.chat_enabled}
             onChange={(e) => handleToggle('allow_guest_chat', e.target.checked)}
@@ -220,6 +232,8 @@ export function ChannelSettingsPanel({ roomId, actorRole }: ChannelSettingsPanel
             </span>
           </div>
           <select
+            title="Slow Mode Chat (detik)"
+            aria-label="Slow Mode Chat (detik)"
             value={settings.slow_mode_seconds}
             disabled={!hasSettingsPerm || !settings.chat_enabled}
             onChange={(e) => handleSelectChange('slow_mode_seconds', Number(e.target.value))}
@@ -247,6 +261,8 @@ export function ChannelSettingsPanel({ roomId, actorRole }: ChannelSettingsPanel
           </div>
           <input
             type="checkbox"
+            title="Aktifkan Reaction Animasi"
+            aria-label="Aktifkan Reaction Animasi"
             checked={settings.reaction_enabled}
             disabled={!hasSettingsPerm}
             onChange={(e) => handleToggle('reaction_enabled', e.target.checked)}
@@ -261,6 +277,8 @@ export function ChannelSettingsPanel({ roomId, actorRole }: ChannelSettingsPanel
           </div>
           <input
             type="checkbox"
+            title="Tamu Boleh Kirim Reaction"
+            aria-label="Tamu Boleh Kirim Reaction"
             checked={settings.allow_guest_reaction}
             disabled={!hasSettingsPerm || !settings.reaction_enabled}
             onChange={(e) => handleToggle('allow_guest_reaction', e.target.checked)}
@@ -275,6 +293,8 @@ export function ChannelSettingsPanel({ roomId, actorRole }: ChannelSettingsPanel
           </div>
           <input
             type="checkbox"
+            title="Antrian Karaoke Aktif"
+            aria-label="Antrian Karaoke Aktif"
             checked={settings.karaoke_queue_enabled}
             disabled={!hasSettingsPerm}
             onChange={(e) => handleToggle('karaoke_queue_enabled', e.target.checked)}
@@ -291,6 +311,8 @@ export function ChannelSettingsPanel({ roomId, actorRole }: ChannelSettingsPanel
           </div>
           <input
             type="checkbox"
+            title="Tamu Ikut Antrian Karaoke"
+            aria-label="Tamu Ikut Antrian Karaoke"
             checked={settings.allow_guest_queue}
             disabled={!hasSettingsPerm || !settings.karaoke_queue_enabled}
             onChange={(e) => handleToggle('allow_guest_queue', e.target.checked)}
@@ -313,6 +335,8 @@ export function ChannelSettingsPanel({ roomId, actorRole }: ChannelSettingsPanel
               </span>
             </div>
             <select
+              title="Pilih Skin Visual"
+              aria-label="Pilih Skin Visual"
               value={settings.theme_key}
               onChange={(e) => handleSelectChange('theme_key', e.target.value)}
               className="moderation-select text-xs"

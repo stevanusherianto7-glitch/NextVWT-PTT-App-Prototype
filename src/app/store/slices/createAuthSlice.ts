@@ -42,25 +42,27 @@ export const createAuthSlice: StateCreator<
         const state = _get() as PTTState;
         state.fetchCoins();
 
-        getSupabase().then((supabase) => {
-          coinsSubscription = supabase
-            .channel(`coins-sync:${user.id}`)
-            .on(
-              'postgres_changes',
-              {
-                event: 'UPDATE',
-                schema: 'public',
-                table: 'user_profiles_extended',
-                filter: `user_id=eq.${user.id}`,
-              },
-              (payload) => {
-                if (payload.new && typeof payload.new.coins === 'number') {
-                  set({ coins: payload.new.coins });
+        getSupabase()
+          .then((supabase) => {
+            coinsSubscription = supabase
+              .channel(`coins-sync:${user.id}`)
+              .on(
+                'postgres_changes',
+                {
+                  event: 'UPDATE',
+                  schema: 'public',
+                  table: 'user_profiles_extended',
+                  filter: `user_id=eq.${user.id}`,
+                },
+                (payload) => {
+                  if (payload.new && typeof payload.new.coins === 'number') {
+                    set({ coins: payload.new.coins });
+                  }
                 }
-              }
-            )
-            .subscribe();
-        }).catch((err) => console.warn('Failed to subscribe to realtime coins:', err));
+              )
+              .subscribe();
+          })
+          .catch((err) => console.warn('Failed to subscribe to realtime coins:', err));
       }, 0);
     } else {
       set({ coins: 0 });
@@ -101,7 +103,7 @@ export const createAuthSlice: StateCreator<
     try {
       const supabase = await getSupabase();
       await supabase.auth.signInWithOAuth({
-        provider: 'tiktok' as any,
+        provider: 'tiktok' as import('@supabase/supabase-js').Provider,
         options: {
           redirectTo: `${window.location.origin}/`,
         },

@@ -12,7 +12,7 @@ export function useModerationActions({ roomId, actorId, actorRole }: ModerationC
   async function callEdgeFunction(
     action: string,
     targetUserId?: string,
-    payload?: Record<string, any>
+    payload?: Record<string, unknown>
   ) {
     try {
       const supabaseInstance = await getSupabase();
@@ -38,7 +38,8 @@ export function useModerationActions({ roomId, actorId, actorRole }: ModerationC
       }
 
       return data;
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       console.error(`Error calling moderate-channel function for ${action}:`, err);
       throw err;
     }

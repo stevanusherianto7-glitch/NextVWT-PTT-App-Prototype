@@ -37,7 +37,10 @@ async function generateHMAC(secret: string, message: string): Promise<string> {
 
 export function WalletPanel({ onClose }: WalletPanelProps) {
   const { user, coins, fetchCoins } = usePTTStore();
-  const [amountOption, setAmountOption] = useState<{ koin: number; rupiah: number }>({ koin: 20, rupiah: 20000 });
+  const [amountOption, setAmountOption] = useState<{ koin: number; rupiah: number }>({
+    koin: 20,
+    rupiah: 20000,
+  });
   const [referenceId, setReferenceId] = useState('');
   const [qrisGenerated, setQrisGenerated] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -76,6 +79,7 @@ export function WalletPanel({ onClose }: WalletPanelProps) {
 
   useEffect(() => {
     fetchTxHistory();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const handleGenerateQRIS = () => {
@@ -104,8 +108,8 @@ export function WalletPanel({ onClose }: WalletPanelProps) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'apikey': supabaseAnonKey,
-          'Authorization': `Bearer ${supabaseAnonKey}`,
+          apikey: supabaseAnonKey,
+          Authorization: `Bearer ${supabaseAnonKey}`,
         },
         body: JSON.stringify({
           userId: user.id,
@@ -125,11 +129,12 @@ export function WalletPanel({ onClose }: WalletPanelProps) {
       toast.success(`Simulasi Top Up berhasil! +${amountOption.koin} Koin.`);
       setQrisGenerated(false);
       setReferenceId('');
-      
+
       // Update local state
       fetchCoins();
       fetchTxHistory();
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       console.error(err);
       toast.error(`Gagal memproses pembayaran: ${err.message}`);
     } finally {
@@ -151,8 +156,10 @@ export function WalletPanel({ onClose }: WalletPanelProps) {
       >
         <div className="absolute top-0 left-0 right-0 h-[40%] bg-gradient-to-b from-white/35 to-transparent pointer-events-none z-10" />
 
-        <button
+        <button type="button"
           onClick={onClose}
+          title="Kembali"
+          aria-label="Kembali"
           className="mr-2.5 w-9 h-9 flex items-center justify-center rounded-full border border-slate-300 bg-gradient-to-b from-white via-[#f1f5f9] to-[#cbd5e1] shadow-[0_2px_0_#94a3b8,inset_0_1px_0_rgba(255,255,255,0.8)] active:translate-y-[1.5px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer focus:outline-none relative z-25 flex-shrink-0"
           style={{ color: 'var(--header-text-color)' }}
         >
@@ -212,7 +219,7 @@ export function WalletPanel({ onClose }: WalletPanelProps) {
 
           <div className="mt-4 pt-4 border-t border-slate-700/60 flex justify-between items-center text-[10px] text-slate-400">
             <span>ID Akun: {user?.id?.slice(0, 8)}...</span>
-            <button
+            <button type="button"
               onClick={fetchCoins}
               className="flex items-center gap-1 hover:text-white cursor-pointer active:scale-95 transition-all"
             >
@@ -231,7 +238,7 @@ export function WalletPanel({ onClose }: WalletPanelProps) {
             <>
               <div className="grid grid-cols-2 gap-2">
                 {topupOptions.map((opt) => (
-                  <button
+                  <button type="button"
                     key={opt.koin}
                     onClick={() => setAmountOption(opt)}
                     className={`py-3 px-4 rounded-xl border text-left flex flex-col justify-between transition-all cursor-pointer ${
@@ -241,7 +248,9 @@ export function WalletPanel({ onClose }: WalletPanelProps) {
                     }`}
                   >
                     <span className="text-sm font-extrabold text-gray-800 flex items-center gap-1">
-                      <Coins className={`w-3.5 h-3.5 ${amountOption.koin === opt.koin ? 'text-amber-500' : 'text-gray-400'}`} />
+                      <Coins
+                        className={`w-3.5 h-3.5 ${amountOption.koin === opt.koin ? 'text-amber-500' : 'text-gray-400'}`}
+                      />
                       {opt.koin} Koin
                     </span>
                     <span className="text-[10px] text-gray-500 mt-1 font-semibold">
@@ -251,7 +260,7 @@ export function WalletPanel({ onClose }: WalletPanelProps) {
                 ))}
               </div>
 
-              <button
+              <button type="button"
                 onClick={handleGenerateQRIS}
                 className="w-full py-3 px-4 rounded-xl text-white font-bold text-xs bg-gradient-to-b from-[#38bdf8] via-[#0ea5e9] to-[#0284c7] border-t border-white/30 border-b border-black/20 shadow-[0_3px_0_#0284c7,inset_0_1px_0_rgba(255,255,255,0.4)] active:translate-y-[2px] active:shadow-none hover:brightness-105 transition-all duration-100 flex items-center justify-center gap-1.5 focus:outline-none cursor-pointer"
               >
@@ -262,7 +271,10 @@ export function WalletPanel({ onClose }: WalletPanelProps) {
             <div className="flex flex-col items-center p-3 border border-slate-200 rounded-xl bg-slate-50 space-y-4">
               <div className="text-center">
                 <p className="text-xs font-bold text-gray-800">QRIS Dinamis Terbuat</p>
-                <p className="text-[10px] text-gray-500">Nominal: Rp {amountOption.rupiah.toLocaleString('id-ID')} ({amountOption.koin} Koin)</p>
+                <p className="text-[10px] text-gray-500">
+                  Nominal: Rp {amountOption.rupiah.toLocaleString('id-ID')} ({amountOption.koin}{' '}
+                  Koin)
+                </p>
                 <p className="text-[9px] font-mono text-gray-400 mt-0.5">Ref: {referenceId}</p>
               </div>
 
@@ -273,7 +285,9 @@ export function WalletPanel({ onClose }: WalletPanelProps) {
                   <div className="w-12 h-12 border-2 border-black rounded flex justify-center items-center">
                     <div className="w-6 h-6 bg-black" />
                   </div>
-                  <div className="text-[9px] font-bold text-gray-700 tracking-wider">QRIS SIMULATOR</div>
+                  <div className="text-[9px] font-bold text-gray-700 tracking-wider">
+                    QRIS SIMULATOR
+                  </div>
                   <div className="flex gap-1 w-full justify-center">
                     <div className="w-2 h-2 bg-black" />
                     <div className="w-6 h-2 bg-black" />
@@ -283,14 +297,14 @@ export function WalletPanel({ onClose }: WalletPanelProps) {
               </div>
 
               <div className="w-full flex gap-2">
-                <button
+                <button type="button"
                   disabled={isProcessing}
                   onClick={() => setQrisGenerated(false)}
                   className="flex-1 py-2 rounded-lg text-[10px] font-bold bg-white border border-gray-300 text-gray-700 cursor-pointer disabled:opacity-50"
                 >
                   Batal
                 </button>
-                <button
+                <button type="button"
                   disabled={isProcessing}
                   onClick={handleSimulatePayment}
                   className="flex-1 py-2 rounded-lg text-[10px] font-bold text-white bg-gradient-to-b from-[#4ade80] via-[#22c55e] to-[#16a34a] border-t border-white/40 border-b border-black/20 shadow-[0_2.5px_0_#15803d] active:translate-y-[2px] active:shadow-none hover:brightness-105 cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1"
@@ -311,7 +325,9 @@ export function WalletPanel({ onClose }: WalletPanelProps) {
           {isLoadingHistory ? (
             <div className="text-center py-6 text-xs text-gray-500">Memuat riwayat...</div>
           ) : history.length === 0 ? (
-            <div className="text-center py-6 text-xs text-gray-400">Belum ada riwayat transaksi.</div>
+            <div className="text-center py-6 text-xs text-gray-400">
+              Belum ada riwayat transaksi.
+            </div>
           ) : (
             <div className="divide-y divide-gray-100 max-h-[220px] overflow-y-auto pr-1">
               {history.map((item) => (
@@ -333,8 +349,8 @@ export function WalletPanel({ onClose }: WalletPanelProps) {
                         item.status === 'success'
                           ? 'bg-emerald-100 text-emerald-700'
                           : item.status === 'failed'
-                          ? 'bg-red-100 text-red-700'
-                          : 'bg-amber-100 text-amber-700'
+                            ? 'bg-red-100 text-red-700'
+                            : 'bg-amber-100 text-amber-700'
                       }`}
                     >
                       {item.status}

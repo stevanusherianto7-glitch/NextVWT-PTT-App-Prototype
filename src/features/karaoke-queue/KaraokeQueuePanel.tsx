@@ -1,10 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { usePTTStore } from '../../app/store/usePTTStore';
 import { getSupabase } from '../../app/utils/supabase';
 import { useChannelRole } from '../moderation/useChannelRole';
 import { useChannelSettings } from '../moderation/useChannelSettings';
 import { KaraokeQueueItem } from './types';
-import { Music, Play, CheckCircle2, AlertCircle, Plus, Trash2, ArrowRight, SkipForward, RefreshCw } from 'lucide-react';
+import {
+  Music,
+  Play,
+  SkipForward,
+  AlertCircle,
+  Trash2,
+  Plus,
+  RefreshCw,
+  CheckCircle2,
+} from 'lucide-react';
+import type { RealtimeChannel } from '@supabase/supabase-js';
 import { toast } from 'sonner';
 
 interface KaraokeQueuePanelProps {
@@ -12,7 +22,8 @@ interface KaraokeQueuePanelProps {
 }
 
 export function KaraokeQueuePanel({ onClose }: KaraokeQueuePanelProps) {
-  const { channelNumber, userId, infoText, customPhotoUrl, profilePhotoOption, user } = usePTTStore();
+  const { channelNumber, userId, infoText, customPhotoUrl, profilePhotoOption, user } =
+    usePTTStore();
   const roomId = `ptt-room-${channelNumber}`;
 
   const [queueList, setQueueList] = useState<KaraokeQueueItem[]>([]);
@@ -35,7 +46,7 @@ export function KaraokeQueuePanel({ onClose }: KaraokeQueuePanelProps) {
   const myActiveItem = queueList.find((item) => item.user_id === userId);
 
   // Fetch queue from database
-  const fetchQueue = async () => {
+  const fetchQueue = useCallback(async () => {
     try {
       const supabase = await getSupabase();
       const { data, error } = await supabase
@@ -53,12 +64,12 @@ export function KaraokeQueuePanel({ onClose }: KaraokeQueuePanelProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [roomId]);
 
   // Real-time Postgres changes subscription
   useEffect(() => {
     let mounted = true;
-    let queueChannel: any = null;
+    let queueChannel: RealtimeChannel | null = null;
 
     fetchQueue();
 
@@ -91,11 +102,12 @@ export function KaraokeQueuePanel({ onClose }: KaraokeQueuePanelProps) {
 
     return () => {
       mounted = false;
-      if (queueChannel) {
-        getSupabase().then((sub) => sub.removeChannel(queueChannel));
+      const channelToRemove = queueChannel;
+      if (channelToRemove) {
+        getSupabase().then((sub) => sub.removeChannel(channelToRemove));
       }
     };
-  }, [roomId]);
+  }, [roomId, fetchQueue]);
 
   // Join the queue
   const handleJoinQueue = async (e: React.FormEvent) => {
@@ -109,12 +121,11 @@ export function KaraokeQueuePanel({ onClose }: KaraokeQueuePanelProps) {
     try {
       const supabase = await getSupabase();
       const avatarUrl =
-        profilePhotoOption === 'google'
-          ? user?.user_metadata?.avatar_url || ''
-          : customPhotoUrl;
+        profilePhotoOption === 'google' ? user?.user_metadata?.avatar_url || '' : customPhotoUrl;
 
       // Determine next queue number
-      const nextQueueNum = queueList.length > 0 ? Math.max(...queueList.map((q) => q.queue_number)) + 1 : 1;
+      const nextQueueNum =
+        queueList.length > 0 ? Math.max(...queueList.map((q) => q.queue_number)) + 1 : 1;
 
       const { error } = await supabase.from('karaoke_queue').insert({
         room_id: roomId,
@@ -175,31 +186,36 @@ export function KaraokeQueuePanel({ onClose }: KaraokeQueuePanelProps) {
 
   const getStatusBadge = (status: string) => {
     const badges: Record<string, JSX.Element> = {
-      live: <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase animate-pulse flex items-center gap-1">🎤 LIVE</span>,
-      ready: <span className="bg-sky-500/10 text-sky-400 border border-sky-500/20 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase flex items-center gap-1">SIAP</span>,
-      waiting: <span className="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase flex items-center gap-1">ANTRE</span>,
+      live: (
+        <span className="bg-emerald-50 text-emerald-600 border border-emerald-200 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase animate-pulse flex items-center gap-1">
+          🎤 LIVE
+        </span>
+      ),
+      ready: (
+        <span className="bg-sky-50 text-sky-600 border border-sky-200 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase flex items-center gap-1">
+          SIAP
+        </span>
+      ),
+      waiting: (
+        <span className="bg-amber-50 text-amber-600 border border-amber-200 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase flex items-center gap-1">
+          ANTRE
+        </span>
+      ),
     };
     return badges[status] || null;
   };
 
   return (
-    <div className="w-full h-full flex flex-col bg-[#111216] select-none text-white">
+    <div className="w-full h-full flex flex-col bg-white select-none text-gray-900">
       {/* Header */}
-      <div
-        className="w-full h-[90px] flex items-center px-5 z-20 relative overflow-hidden shrink-0"
-        style={{
-          background: 'var(--header-bg)',
-          boxShadow:
-            'var(--header-shadow), inset 0 -12px 20px -6px rgba(0, 0, 0, 0.45), inset 0 3px 6px rgba(255, 255, 255, 0.4)',
-          borderBottom: 'var(--header-border)',
-        }}
-      >
-        <div className="absolute top-0 left-0 right-0 h-[40%] bg-gradient-to-b from-white/35 to-transparent pointer-events-none z-10" />
+      <div className="w-full h-[90px] flex items-center px-5 z-20 relative overflow-hidden shrink-0 bg-white border-b border-gray-200 shadow-sm">
+        <div className="absolute top-0 left-0 right-0 h-[40%] bg-gradient-to-b from-slate-100/50 to-transparent pointer-events-none z-10" />
 
-        <button
+        <button type="button"
           onClick={onClose}
-          className="mr-2.5 w-9 h-9 flex items-center justify-center rounded-full border border-slate-300 bg-gradient-to-b from-white via-[#f1f5f9] to-[#cbd5e1] shadow-[0_2px_0_#94a3b8,inset_0_1px_0_rgba(255,255,255,0.8)] active:translate-y-[1.5px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer focus:outline-none relative z-25 flex-shrink-0"
-          style={{ color: 'var(--header-text-color)' }}
+          title="Kembali"
+          aria-label="Kembali"
+          className="mr-2.5 w-9 h-9 flex items-center justify-center rounded-full border border-slate-300 bg-gradient-to-b from-white via-[#f1f5f9] to-[#cbd5e1] shadow-[0_2px_0_#94a3b8,inset_0_1px_0_rgba(255,255,255,0.8)] active:translate-y-[1.5px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer focus:outline-none relative z-25 flex-shrink-0 text-gray-700"
         >
           <svg
             width="20"
@@ -217,59 +233,63 @@ export function KaraokeQueuePanel({ onClose }: KaraokeQueuePanelProps) {
 
         <div className="flex flex-col justify-center relative z-25">
           <span
-            className="text-[15px] font-bold tracking-wide leading-tight"
+            className="text-[15px] font-bold tracking-wide leading-tight text-gray-800"
             style={{
               fontFamily: "'Outfit', 'Orbitron', sans-serif",
-              color: 'var(--header-text-color)',
             }}
           >
             Antrean Karaoke
           </span>
-          <span className="text-[10px] text-slate-400 font-bold tracking-wider mt-0.5">
+          <span className="text-[10px] font-bold tracking-wider mt-0.5 text-gray-500">
             ROOM: {String(channelNumber).padStart(3, '0')}
           </span>
         </div>
       </div>
 
       {/* Main Body */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#13151b] scrollbar-thin">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-white scrollbar-thin">
         {/* Join Queue Form (or active queue card for user) */}
         {!queueEnabled ? (
-          <div className="flex items-center gap-2 p-4 rounded-xl bg-red-950/20 border border-red-900/30 text-red-400 text-xs font-bold uppercase select-none">
+          <div className="flex items-center gap-2 p-4 rounded-xl bg-red-50 border border-red-200 text-red-500 text-xs font-bold uppercase select-none">
             <AlertCircle className="w-4 h-4" />
             Fitur Antrean Dinonaktifkan
           </div>
         ) : myActiveItem ? (
           /* User already inside the queue list */
-          <div className="rounded-xl p-4 bg-gradient-to-br from-indigo-950/60 to-slate-900 border border-indigo-500/25 shadow-md flex justify-between items-center">
+          <div className="rounded-xl p-4 bg-gradient-to-br from-indigo-50 to-slate-50 border border-indigo-200 shadow-sm flex justify-between items-center">
             <div className="space-y-1">
-              <span className="text-[9px] bg-indigo-500/20 text-indigo-300 font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
+              <span className="text-[9px] bg-indigo-100 text-indigo-600 font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
                 Status Antrean Anda
               </span>
-              <h4 className="text-sm font-extrabold text-white mt-1.5 truncate max-w-[200px]">
+              <h4 className="text-sm font-extrabold text-gray-800 mt-1.5 truncate max-w-[200px]">
                 {myActiveItem.song_title}
               </h4>
-              <p className="text-[10px] text-slate-400">
-                Nomor Antrean: <span className="font-extrabold text-indigo-400 text-xs">#{myActiveItem.queue_number}</span>
+              <p className="text-[10px] text-gray-500">
+                Nomor Antrean:{' '}
+                <span className="font-extrabold text-indigo-500 text-xs">
+                  #{myActiveItem.queue_number}
+                </span>
               </p>
             </div>
-            
-            <button
+
+            <button type="button"
               onClick={() => handleLeaveQueue(myActiveItem.id)}
-              className="p-2.5 rounded-xl border border-red-500/30 bg-red-950/20 hover:bg-red-900/30 text-red-400 cursor-pointer transition-all active:scale-95 flex items-center justify-center gap-1.5 font-bold text-xs"
+              className="p-2.5 rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 text-red-500 cursor-pointer transition-all active:scale-95 flex items-center justify-center gap-1.5 font-bold text-xs"
             >
               <Trash2 className="w-4 h-4" /> Batal
             </button>
           </div>
         ) : (
           /* Join queue */
-          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-4 space-y-3">
-            <h4 className="text-xs font-extrabold text-slate-300 flex items-center gap-1.5 uppercase tracking-wider">
-              <Music className="w-4 h-4 text-emerald-400" /> Daftar Antre Menyanyi
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-3">
+            <h4 className="text-xs font-extrabold text-gray-600 flex items-center gap-1.5 uppercase tracking-wider">
+              <Music className="w-4 h-4 text-emerald-500" /> Daftar Antre Menyanyi
             </h4>
-            
+
             {!canJoin ? (
-              <p className="text-[10px] text-slate-500 font-bold uppercase">Tamu tidak diizinkan masuk antrean.</p>
+              <p className="text-[10px] text-gray-400 font-bold uppercase">
+                Tamu tidak diizinkan masuk antrean.
+              </p>
             ) : (
               <form onSubmit={handleJoinQueue} className="flex gap-2">
                 <input
@@ -279,10 +299,12 @@ export function KaraokeQueuePanel({ onClose }: KaraokeQueuePanelProps) {
                   onChange={(e) => setSongTitle(e.target.value)}
                   disabled={isJoining}
                   required
-                  className="flex-1 bg-slate-950 border border-slate-800 focus:border-slate-700 outline-none rounded-xl px-3.5 py-2 text-xs font-semibold placeholder:text-slate-600 text-white"
+                  className="flex-1 bg-white border border-gray-200 focus:border-emerald-400 outline-none rounded-xl px-3.5 py-2 text-xs font-semibold placeholder:text-gray-400 text-gray-800"
                 />
                 <button
                   type="submit"
+                  title="Daftar antrean"
+                  aria-label="Daftar antrean"
                   disabled={!songTitle.trim() || isJoining}
                   className="w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-b from-emerald-500 to-emerald-700 border-t border-white/20 border-b border-black/20 shadow-md active:translate-y-[1px] active:shadow-none hover:brightness-105 cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
                 >
@@ -295,37 +317,41 @@ export function KaraokeQueuePanel({ onClose }: KaraokeQueuePanelProps) {
 
         {/* Queue List Area */}
         <div className="space-y-2">
-          <h4 className="text-[10px] text-slate-500 font-extrabold uppercase tracking-wider px-1">
+          <h4 className="text-[10px] text-gray-400 font-extrabold uppercase tracking-wider px-1">
             Daftar Antrean Aktif ({queueList.length})
           </h4>
 
           {loading ? (
-            <div className="flex items-center justify-center py-12 gap-2 text-slate-500 text-xs font-semibold">
-              <RefreshCw className="w-4 h-4 animate-spin text-emerald-400" />
+            <div className="flex items-center justify-center py-12 gap-2 text-gray-400 text-xs font-semibold">
+              <RefreshCw className="w-4 h-4 animate-spin text-emerald-500" />
               Memuat antrean...
             </div>
           ) : queueList.length === 0 ? (
-            <div className="text-center py-12 border border-slate-800/40 rounded-xl bg-slate-900/10 text-slate-600 text-xs font-semibold">
+            <div className="text-center py-12 border border-gray-200 rounded-xl bg-gray-50 text-gray-400 text-xs font-semibold">
               Belum ada antrean lagu saat ini.
             </div>
           ) : (
-            <div className="divide-y divide-slate-800/60 max-h-[300px] overflow-y-auto pr-1">
+            <div className="divide-y divide-gray-100 max-h-[300px] overflow-y-auto pr-1">
               {queueList.map((item, index) => {
                 const isUser = item.user_id === userId;
                 return (
                   <div key={item.id} className="py-3 flex justify-between items-center gap-3">
                     <div className="flex items-center gap-2.5 min-w-0">
                       {/* Queue Number */}
-                      <span className="text-xs font-black text-slate-500 shrink-0 w-6">
+                      <span className="text-xs font-black text-gray-400 shrink-0 w-6">
                         #{index + 1}
                       </span>
 
                       {/* Avatar */}
-                      <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-700 bg-slate-800 shrink-0 relative">
+                      <div className="w-8 h-8 rounded-full overflow-hidden border border-gray-200 bg-gray-100 shrink-0 relative">
                         {item.user_avatar ? (
-                          <img src={item.user_avatar} alt="avatar" className="w-full h-full object-cover" />
+                          <img
+                            src={item.user_avatar}
+                            alt="avatar"
+                            className="w-full h-full object-cover"
+                          />
                         ) : (
-                          <div className="w-full h-full bg-slate-700 flex items-center justify-center text-xs font-bold uppercase">
+                          <div className="w-full h-full bg-gray-200 flex items-center justify-center text-xs font-bold uppercase text-gray-600">
                             {item.user_name?.slice(0, 2) || 'SG'}
                           </div>
                         )}
@@ -336,10 +362,12 @@ export function KaraokeQueuePanel({ onClose }: KaraokeQueuePanelProps) {
 
                       {/* Info */}
                       <div className="min-w-0">
-                        <p className={`text-xs font-extrabold truncate ${isUser ? 'text-indigo-400' : 'text-slate-200'}`}>
+                        <p
+                          className={`text-xs font-extrabold truncate ${isUser ? 'text-indigo-500' : 'text-gray-800'}`}
+                        >
                           {item.song_title}
                         </p>
-                        <p className="text-[9px] text-slate-400 mt-0.5 truncate font-bold uppercase">
+                        <p className="text-[9px] text-gray-400 mt-0.5 truncate font-bold uppercase">
                           {item.user_name}
                         </p>
                       </div>
@@ -353,7 +381,7 @@ export function KaraokeQueuePanel({ onClose }: KaraokeQueuePanelProps) {
                       {isAdmin && (
                         <div className="flex gap-1">
                           {item.status !== 'live' && (
-                            <button
+                            <button type="button"
                               onClick={() => handleUpdateStatus(item.id, 'live')}
                               title="Set Live"
                               className="w-6 h-6 rounded bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center cursor-pointer transition-all active:scale-90"
@@ -362,7 +390,7 @@ export function KaraokeQueuePanel({ onClose }: KaraokeQueuePanelProps) {
                             </button>
                           )}
                           {item.status === 'live' && (
-                            <button
+                            <button type="button"
                               onClick={() => handleUpdateStatus(item.id, 'finished')}
                               title="Selesai"
                               className="w-6 h-6 rounded bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center cursor-pointer transition-all active:scale-90"
@@ -370,10 +398,10 @@ export function KaraokeQueuePanel({ onClose }: KaraokeQueuePanelProps) {
                               <CheckCircle2 className="w-3.5 h-3.5" />
                             </button>
                           )}
-                          <button
+                          <button type="button"
                             onClick={() => handleUpdateStatus(item.id, 'skipped')}
                             title="Lewati"
-                            className="w-6 h-6 rounded bg-slate-700 hover:bg-slate-600 text-slate-300 flex items-center justify-center cursor-pointer transition-all active:scale-90"
+                            className="w-6 h-6 rounded bg-gray-200 hover:bg-gray-300 text-gray-600 flex items-center justify-center cursor-pointer transition-all active:scale-90"
                           >
                             <SkipForward className="w-3.5 h-3.5" />
                           </button>

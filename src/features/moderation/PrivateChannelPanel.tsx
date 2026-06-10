@@ -12,7 +12,8 @@ interface PrivateChannelPanelProps {
 }
 
 export function PrivateChannelPanel({ onClose, onOpenWallet }: PrivateChannelPanelProps) {
-  const { channelNumber, userId, coins, fetchCoins, setChannelNumber, user, infoText, callSign } = usePTTStore();
+  const { channelNumber, userId, coins, fetchCoins, setChannelNumber, user, infoText, callSign } =
+    usePTTStore();
   const roomId = `ptt-room-${channelNumber}`;
 
   const [hasBadge, setHasBadge] = useState(false);
@@ -37,7 +38,13 @@ export function PrivateChannelPanel({ onClose, onOpenWallet }: PrivateChannelPan
     userId === 'sys_admin_vwt' ||
     (isLocalUser && (localName === 'Sys Admin VWT' || localCallSign === 'SYS-01'));
 
-  const isImplicitAllowed = role === 'operator' || role === 'pjc' || role === 'sys_admin' || role === 'noc' || isNocUser || isSysAdminUser;
+  const isImplicitAllowed =
+    role === 'operator' ||
+    role === 'pjc' ||
+    role === 'sys_admin' ||
+    role === 'noc' ||
+    isNocUser ||
+    isSysAdminUser;
   const hasAccess = isImplicitAllowed || hasBadge;
 
   // Fetch badges to check if user has 'badge_merah'
@@ -67,6 +74,7 @@ export function PrivateChannelPanel({ onClose, onOpenWallet }: PrivateChannelPan
   useEffect(() => {
     checkBadgeStatus();
     fetchCoins();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   // Exchange 10 coins for Badge Merah
@@ -154,7 +162,7 @@ export function PrivateChannelPanel({ onClose, onOpenWallet }: PrivateChannelPan
       >
         <div className="absolute top-0 left-0 right-0 h-[40%] bg-gradient-to-b from-white/35 to-transparent pointer-events-none z-10" />
 
-        <button
+        <button type="button"
           onClick={onClose}
           className="mr-2.5 w-9 h-9 flex items-center justify-center rounded-full border border-slate-300 bg-gradient-to-b from-white via-[#f1f5f9] to-[#cbd5e1] shadow-[0_2px_0_#94a3b8,inset_0_1px_0_rgba(255,255,255,0.8)] active:translate-y-[1.5px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer focus:outline-none relative z-25 flex-shrink-0"
           style={{ color: 'var(--header-text-color)' }}
@@ -214,14 +222,16 @@ export function PrivateChannelPanel({ onClose, onOpenWallet }: PrivateChannelPan
                 </h3>
               )}
             </div>
-            <Shield className={`w-8 h-8 ${hasAccess ? 'text-emerald-400 fill-emerald-500/10' : 'text-rose-500 fill-rose-500/10'}`} />
+            <Shield
+              className={`w-8 h-8 ${hasAccess ? 'text-emerald-400 fill-emerald-500/10' : 'text-rose-500 fill-rose-500/10'}`}
+            />
           </div>
 
           <div className="pt-3 border-t border-slate-800/80 flex justify-between items-center text-[10px] text-slate-400">
             <span className="flex items-center gap-1 font-bold">
               <Coins className="w-3.5 h-3.5 text-amber-500" /> Saldo: {coins} Koin
             </span>
-            <button
+            <button type="button"
               onClick={() => {
                 onClose();
                 onOpenWallet();
@@ -243,12 +253,13 @@ export function PrivateChannelPanel({ onClose, onOpenWallet }: PrivateChannelPan
                   Tukarkan Badge Merah
                 </h4>
                 <p className="text-[10px] text-slate-400 mt-1 leading-normal font-semibold">
-                  Mendapatkan akses penuh permanen ke seluruh Saluran Privat tanpa harus memasukkan kode PIN.
+                  Mendapatkan akses penuh permanen ke seluruh Saluran Privat tanpa harus memasukkan
+                  kode PIN.
                 </p>
               </div>
             </div>
 
-            <button
+            <button type="button"
               onClick={handleExchangeBadge}
               disabled={isExchanging || coins < 10}
               className="w-full py-2.5 rounded-xl text-white font-bold text-[11px] uppercase bg-gradient-to-b from-[#818cf8] via-[#4f46e5] to-[#3730a3] border-t border-white/20 border-b border-black/20 shadow-md active:translate-y-[1px] active:shadow-none hover:brightness-105 transition-all duration-100 flex items-center justify-center gap-1.5 focus:outline-none cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
@@ -275,7 +286,7 @@ export function PrivateChannelPanel({ onClose, onOpenWallet }: PrivateChannelPan
                   >
                     {ch.number.toString().padStart(3, '0')}
                   </div>
-                  
+
                   <div className="min-w-0">
                     <p className="text-xs font-black text-slate-200 truncate">{ch.name}</p>
                     <p className="text-[9px] text-slate-400 font-semibold truncate mt-0.5">
@@ -285,7 +296,7 @@ export function PrivateChannelPanel({ onClose, onOpenWallet }: PrivateChannelPan
                 </div>
 
                 {/* Entry Action */}
-                <button
+                <button type="button"
                   onClick={() => handleChannelJoin(ch)}
                   className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all ${
                     hasAccess
@@ -317,7 +328,7 @@ export function PrivateChannelPanel({ onClose, onOpenWallet }: PrivateChannelPan
               <Key className="w-5 h-5 text-indigo-400 shrink-0" />
               <h3 className="text-sm font-extrabold text-white">Kode Akses PIN</h3>
             </div>
-            
+
             <p className="text-[11px] text-slate-400 leading-normal font-semibold">
               Saluran {selectedChannel.number} memerlukan kode PIN untuk masuk.
             </p>

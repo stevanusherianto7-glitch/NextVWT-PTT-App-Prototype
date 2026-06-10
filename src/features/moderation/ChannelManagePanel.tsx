@@ -55,7 +55,7 @@ export function ChannelManagePanel({
             atau N.O.C. Status Anda saat ini adalah{' '}
             <span className="text-slate-200 font-bold">{role.toUpperCase()}</span>.
           </p>
-          <button onClick={onClose} className="moderation-btn-destructive w-full py-2">
+          <button type="button" onClick={onClose} className="moderation-btn-destructive w-full py-2">
             Kembali ke Radio
           </button>
         </div>
@@ -64,9 +64,7 @@ export function ChannelManagePanel({
   }
 
   // Define tab navigation buttons based on role permissions
-  const tabs: { id: TabType; label: string }[] = [
-    { id: 'info', label: 'INFO' },
-  ];
+  const tabs: { id: TabType; label: string }[] = [{ id: 'info', label: 'INFO' }];
 
   // Operator only gets Info and cannot access settings/members/logs
   if (!isOperatorOnly) {
@@ -103,7 +101,12 @@ export function ChannelManagePanel({
             <Shield className="h-5 w-5 text-emerald-400" />
             <h2>Kelola Channel</h2>
           </div>
-          <button onClick={onClose} className="moderation-close-btn">
+          <button type="button"
+            onClick={onClose}
+            title="Tutup"
+            aria-label="Tutup"
+            className="moderation-close-btn"
+          >
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -111,12 +114,10 @@ export function ChannelManagePanel({
         {/* Tab selector */}
         <div className="moderation-tabs">
           {tabs.map((tab) => (
-            <button
+            <button type="button"
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`moderation-tab-btn ${
-                activeTab === tab.id ? 'active' : ''
-              }`}
+              className={`moderation-tab-btn ${activeTab === tab.id ? 'active' : ''}`}
             >
               {tab.label}
             </button>

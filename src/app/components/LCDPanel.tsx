@@ -68,26 +68,32 @@ export function LCDPanel({
     activeRole = localRole;
     activeStatus = localStatus;
   } else if (isReceiving && activeTransmitter) {
-    const activeUserObj = usePTTStore.getState().activeUsers.find(u => u.userId === activeUserId);
-    
+    const activeUserObj = usePTTStore.getState().activeUsers.find((u) => u.userId === activeUserId);
+
     // Resolve fallback role and status from USER_PROFILES
-    const matchedProfile = activeUserObj 
-      ? (USER_PROFILES[activeUserObj.userId] || USER_PROFILES[activeUserObj.displayName] || Object.values(USER_PROFILES).find(p => p.callSign === activeUserObj.callSign))
-      : (USER_PROFILES[activeUserId] || Object.values(USER_PROFILES).find(p => p.callSign === activeUserId));
+    const matchedProfile = activeUserObj
+      ? USER_PROFILES[activeUserObj.userId] ||
+        USER_PROFILES[activeUserObj.displayName] ||
+        Object.values(USER_PROFILES).find((p) => p.callSign === activeUserObj.callSign)
+      : USER_PROFILES[activeUserId] ||
+        Object.values(USER_PROFILES).find((p) => p.callSign === activeUserId);
 
     const roleFallback = matchedProfile?.role || 'guest';
-    const statusFallback = matchedProfile?.isMuted 
-      ? 'muted' 
-      : matchedProfile?.isControlled 
-        ? 'controlled' 
-        : matchedProfile?.isWait 
-          ? 'wait' 
-          : matchedProfile?.isWaitControlled 
-            ? 'wait_controlled' 
+    const statusFallback = matchedProfile?.isMuted
+      ? 'muted'
+      : matchedProfile?.isControlled
+        ? 'controlled'
+        : matchedProfile?.isWait
+          ? 'wait'
+          : matchedProfile?.isWaitControlled
+            ? 'wait_controlled'
             : 'active';
 
-    activeRole = (localStorage.getItem(`channel-role:${roomId}:${activeUserId}`) as ChannelRole | null) || roleFallback;
-    activeStatus = localStorage.getItem(`channel-status:${roomId}:${activeUserId}`) || statusFallback;
+    activeRole =
+      (localStorage.getItem(`channel-role:${roomId}:${activeUserId}`) as ChannelRole | null) ||
+      roleFallback;
+    activeStatus =
+      localStorage.getItem(`channel-status:${roomId}:${activeUserId}`) || statusFallback;
   }
 
   let activeUserModeIcon: string | null = null;
@@ -233,7 +239,11 @@ export function LCDPanel({
                 <img
                   src={activeRole === 'operator' ? iconOperator : usernameIcon}
                   alt="Username Icon"
-                  className={activeRole === 'operator' ? "h-[30px] w-[30px] object-contain mb-[1px]" : "h-[52px] w-[50px] object-contain absolute -top-[18px] -left-1.5"}
+                  className={
+                    activeRole === 'operator'
+                      ? 'h-[30px] w-[30px] object-contain mb-[1px]'
+                      : 'h-[52px] w-[50px] object-contain absolute -top-[18px] -left-1.5'
+                  }
                   style={{ filter: 'drop-shadow(1px 1px 0px rgba(0,0,0,0.2))' }}
                 />
                 {activeUserModeIcon && activeUserModeIcon !== iconOperator && (

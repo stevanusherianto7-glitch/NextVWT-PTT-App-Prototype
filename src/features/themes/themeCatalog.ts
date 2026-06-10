@@ -8,4 +8,3 @@ export const THEME_CATALOG = [
   { key: 'theme-v6', label: 'Glass Crystal V6 (Live Aquarium)', accentColor: '#0077b6' },
   { key: 'theme-monokrom', label: 'Monokrom (Legacy)', accentColor: '#64748b' },
 ] as const;
-

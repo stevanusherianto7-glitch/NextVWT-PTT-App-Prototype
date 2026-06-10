@@ -25,14 +25,14 @@ export function QuickActionDock({
 
   const reactions = [
     { kind: 'applause', emoji: '👏' },
-    { kind: 'love',     emoji: '❤️' },
-    { kind: 'kiss',     emoji: '😘' },
-    { kind: 'wow',      emoji: '😮' },
-    { kind: 'fire',     emoji: '🔥' },
-    { kind: 'crown',    emoji: '👑' },
+    { kind: 'love', emoji: '❤️' },
+    { kind: 'kiss', emoji: '😘' },
+    { kind: 'wow', emoji: '😮' },
+    { kind: 'fire', emoji: '🔥' },
+    { kind: 'crown', emoji: '👑' },
     { kind: 'confetti', emoji: '🎉' },
-    { kind: 'bart',     emoji: '🛹' },
-    { kind: 'fox',      emoji: '🦊' },
+    { kind: 'bart', emoji: '🛹' },
+    { kind: 'fox', emoji: '🦊' },
   ];
 
   useEffect(() => {
@@ -98,7 +98,51 @@ export function QuickActionDock({
   if (actionButtons.length === 0) return null;
 
   return (
-    <div className="w-full mt-3 relative z-30">
+    <div className="w-full mt-3 relative z-30 flex justify-center">
+      
+      {/* ── Reaction Popover (Centered over the dock) ── */}
+      {showReactions && (
+        <div
+          ref={popoverRef}
+          className="absolute bottom-[80px] left-1/2 -translate-x-1/2 z-50 p-2 rounded-2xl grid grid-cols-4 gap-1.5 min-w-[176px]"
+          style={{
+            background:
+              'linear-gradient(160deg, rgba(22,26,38,0.97) 0%, rgba(12,14,22,0.98) 100%)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            border: '1px solid rgba(255,255,255,0.10)',
+            borderTop: '1px solid rgba(255,255,255,0.16)',
+            boxShadow: [
+              '0 2px 0 rgba(255,255,255,0.05) inset',
+              '0 16px 48px rgba(0,0,0,0.75)',
+              '0 4px 12px rgba(0,0,0,0.4)',
+              '0 0 0 1px rgba(0,0,0,0.3)',
+            ].join(', '),
+            animation: 'qdPopIn 0.18s cubic-bezier(0.34,1.56,0.64,1) both',
+          }}
+        >
+          {reactions.map((r) => (
+            <button
+              type="button"
+              key={r.kind}
+              onClick={() => handleReactionClick(r.kind)}
+              className="w-10 h-10 flex items-center justify-center text-[22px] rounded-xl cursor-pointer focus:outline-none transition-all duration-100 active:scale-90"
+              style={{ background: 'transparent' }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background =
+                  'linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04))';
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+              }}
+              title={r.kind}
+            >
+              {r.emoji}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* ── Floating Skeuomorphic + Glassmorphic Container ── */}
       <div
         className={`relative w-full flex items-end justify-around px-4 py-3 rounded-2xl transition-all duration-300 ${
@@ -117,108 +161,62 @@ export function QuickActionDock({
           borderRight: '1px solid rgba(0,0,0,0.35)',
           /* Floating elevation shadow */
           boxShadow: [
-            '0 2px 0 rgba(255,255,255,0.06) inset',       /* top inner highlight */
-            '0 -1px 0 rgba(0,0,0,0.5) inset',             /* bottom inner shadow */
-            '0 8px 32px rgba(0,0,0,0.55)',                 /* main drop shadow */
-            '0 2px 8px rgba(0,0,0,0.4)',                   /* close shadow */
-            '0 0 0 1px rgba(0,0,0,0.25)',                  /* outer edge */
+            '0 2px 0 rgba(255,255,255,0.06) inset' /* top inner highlight */,
+            '0 -1px 0 rgba(0,0,0,0.5) inset' /* bottom inner shadow */,
+            '0 8px 32px rgba(0,0,0,0.55)' /* main drop shadow */,
+            '0 2px 8px rgba(0,0,0,0.4)' /* close shadow */,
+            '0 0 0 1px rgba(0,0,0,0.25)' /* outer edge */,
           ].join(', '),
         }}
       >
         {/* Subtle top-edge gloss strip */}
         <div
           className="absolute top-0 left-3 right-3 h-px pointer-events-none rounded-full"
-          style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent)' }}
+          style={{
+            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent)',
+          }}
         />
 
         {actionButtons.map((btn, index) => (
           <div key={btn.id} className="relative flex flex-col items-center gap-1.5">
-
             {/* Vertical divider between buttons */}
             {index > 0 && (
               <div
                 className="absolute left-[-6px] top-[4px] bottom-[16px] w-px pointer-events-none"
                 style={{
-                  background: 'linear-gradient(180deg, transparent, rgba(255,255,255,0.07) 40%, rgba(255,255,255,0.07) 60%, transparent)',
+                  background:
+                    'linear-gradient(180deg, transparent, rgba(255,255,255,0.07) 40%, rgba(255,255,255,0.07) 60%, transparent)',
                 }}
               />
             )}
 
-            {/* ── Reaction Popover ── */}
-            {btn.id === 'reaction' && showReactions && (
-              <div
-                ref={popoverRef}
-                className="absolute bottom-[68px] left-1/2 -translate-x-1/2 z-50 p-2 rounded-2xl grid grid-cols-4 gap-1.5 min-w-[176px]"
-                style={{
-                  background: 'linear-gradient(160deg, rgba(22,26,38,0.97) 0%, rgba(12,14,22,0.98) 100%)',
-                  backdropFilter: 'blur(24px)',
-                  WebkitBackdropFilter: 'blur(24px)',
-                  border: '1px solid rgba(255,255,255,0.10)',
-                  borderTop: '1px solid rgba(255,255,255,0.16)',
-                  boxShadow: [
-                    '0 2px 0 rgba(255,255,255,0.05) inset',
-                    '0 16px 48px rgba(0,0,0,0.75)',
-                    '0 4px 12px rgba(0,0,0,0.4)',
-                    '0 0 0 1px rgba(0,0,0,0.3)',
-                  ].join(', '),
-                  animation: 'qdPopIn 0.18s cubic-bezier(0.34,1.56,0.64,1) both',
-                }}
-              >
-                {/* Arrow */}
-                <div
-                  className="absolute -bottom-[7px] left-1/2 -translate-x-1/2 w-3.5 h-3.5 rotate-45"
-                  style={{
-                    background: 'rgba(12,14,22,0.98)',
-                    borderRight: '1px solid rgba(255,255,255,0.08)',
-                    borderBottom: '1px solid rgba(255,255,255,0.08)',
-                  }}
-                />
-                {reactions.map((r) => (
-                  <button
-                    key={r.kind}
-                    onClick={() => handleReactionClick(r.kind)}
-                    className="w-9 h-9 flex items-center justify-center text-xl rounded-xl cursor-pointer focus:outline-none transition-all duration-100 active:scale-90"
-                    style={{
-                      background: 'transparent',
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.background =
-                        'linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04))';
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-                    }}
-                    title={r.kind}
-                  >
-                    {r.emoji}
-                  </button>
-                ))}
-              </div>
-            )}
+            {/* Reaction popover removed from here and placed at the root of the dock */}
 
-            {/* ── Skeuomorphic Keycap Button ── */}
-            <button
+            {/* ── Skeuomorphic Glass Keycap Button ── */}
+            <button type="button"
               onClick={btn.onClick}
               disabled={!isPowerOn}
               title={btn.label}
               className="relative w-11 h-11 rounded-xl flex items-center justify-center cursor-pointer focus:outline-none transition-all duration-100 group"
               style={{
                 background: btn.active
-                  ? `linear-gradient(160deg, rgba(20,24,36,0.9) 0%, rgba(28,33,48,0.85) 100%)`
-                  : `linear-gradient(160deg, rgba(52,60,82,0.75) 0%, rgba(28,33,50,0.90) 100%)`,
+                  ? `linear-gradient(160deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.4) 100%)`
+                  : `linear-gradient(160deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.02) 100%)`,
+                backdropFilter: 'blur(32px) saturate(220%)',
+                WebkitBackdropFilter: 'blur(32px) saturate(220%)',
                 border: '1px solid rgba(255,255,255,0.08)',
                 borderTop: btn.active
                   ? '1px solid rgba(0,0,0,0.4)'
-                  : '1px solid rgba(255,255,255,0.18)',
+                  : '1px solid rgba(255,255,255,0.45)',
                 borderLeft: btn.active
                   ? '1px solid rgba(0,0,0,0.3)'
-                  : '1px solid rgba(255,255,255,0.12)',
+                  : '1px solid rgba(255,255,255,0.35)',
                 borderBottom: btn.active
                   ? '1px solid rgba(255,255,255,0.05)'
-                  : '1px solid rgba(0,0,0,0.55)',
+                  : '1px solid rgba(0,0,0,0.6)',
                 borderRight: btn.active
                   ? '1px solid rgba(255,255,255,0.04)'
-                  : '1px solid rgba(0,0,0,0.40)',
+                  : '1px solid rgba(0,0,0,0.4)',
                 boxShadow: btn.active
                   ? [
                       '0 1px 3px rgba(0,0,0,0.6) inset',
@@ -226,10 +224,10 @@ export function QuickActionDock({
                       `0 0 10px ${btn.glowColor}`,
                     ].join(', ')
                   : [
-                      '0 2px 0 rgba(255,255,255,0.06) inset',
-                      '0 -1px 0 rgba(0,0,0,0.5) inset',
-                      '0 3px 6px rgba(0,0,0,0.45)',
-                      '0 1px 2px rgba(0,0,0,0.3)',
+                      '0 4px 6px -1px rgba(255,255,255,0.2) inset',
+                      '0 -2px 4px rgba(0,0,0,0.5) inset',
+                      '0 8px 16px -2px rgba(0,0,0,0.5)',
+                      '0 2px 4px rgba(0,0,0,0.3)',
                     ].join(', '),
                 transform: btn.active ? 'translateY(1.5px)' : 'translateY(0)',
                 color: btn.iconColor,
@@ -248,10 +246,10 @@ export function QuickActionDock({
                 if (!btn.active) {
                   el.style.transform = 'translateY(0)';
                   el.style.boxShadow = [
-                    '0 2px 0 rgba(255,255,255,0.06) inset',
-                    '0 -1px 0 rgba(0,0,0,0.5) inset',
-                    '0 3px 6px rgba(0,0,0,0.45)',
-                    '0 1px 2px rgba(0,0,0,0.3)',
+                    '0 4px 6px -1px rgba(255,255,255,0.2) inset',
+                    '0 -2px 4px rgba(0,0,0,0.5) inset',
+                    '0 8px 16px -2px rgba(0,0,0,0.5)',
+                    '0 2px 4px rgba(0,0,0,0.3)',
                   ].join(', ');
                 }
               }}
@@ -278,7 +276,15 @@ export function QuickActionDock({
                     : 'linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)',
                 }}
               />
-              {btn.icon}
+              {/* Icon with glowing outline effect */}
+              <div 
+                className="relative z-10 transition-all duration-300"
+                style={{
+                  filter: `drop-shadow(0 0 3px ${btn.iconColor}) drop-shadow(0 0 8px ${btn.glowColor})`
+                }}
+              >
+                {btn.icon}
+              </div>
             </button>
 
             {/* Label */}

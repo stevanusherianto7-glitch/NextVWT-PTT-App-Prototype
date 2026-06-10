@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Minimize2, Maximize2, Search, Disc } from 'lucide-react';
 
-interface FloatingKaraokePlayerProps {
+export interface FloatingKaraokePlayerProps {
   onClose: () => void;
 }
 
@@ -501,7 +501,7 @@ export function FloatingKaraokePlayer({ onClose }: FloatingKaraokePlayerProps) {
                 }}
               />
             </div>
-            <button
+            <button type="button"
               onClick={() => handleLoadVideo(searchQuery)}
               className="px-2.5 py-1 text-[10px] font-bold text-white transition focus:outline-none cursor-pointer active:scale-95 flex items-center justify-center rounded-lg"
               style={{

@@ -29,7 +29,7 @@ export function ROIPBridgePanel({ onClose }: ROIPBridgePanelProps) {
     setTimeout(() => {
       const cleanLicense = iarLicense.trim().toUpperCase();
       const isValid = /^[Y][B-D|F-H][0-9][A-Z]{1,4}$/.test(cleanLicense);
-      
+
       if (isValid) {
         setIsLicenseVerified(true);
         toast.success(`Izin Stasiun Radio ${cleanLicense} terverifikasi resmi Kominfo/ORARI!`);
@@ -54,9 +54,12 @@ export function ROIPBridgePanel({ onClose }: ROIPBridgePanelProps) {
             if (pttTimerRef.current) {
               clearInterval(pttTimerRef.current);
             }
-            toast.error(`[ANTI-OVERHEAT] Transmisi diputus otomatis! Batas TOT ${totValue} detik terlampaui.`, {
-              duration: 5000,
-            });
+            toast.error(
+              `[ANTI-OVERHEAT] Transmisi diputus otomatis! Batas TOT ${totValue} detik terlampaui.`,
+              {
+                duration: 5000,
+              }
+            );
             return 0;
           }
           return next;
@@ -101,8 +104,10 @@ export function ROIPBridgePanel({ onClose }: ROIPBridgePanelProps) {
           borderBottom: '2px solid #374151',
         }}
       >
-        <button
+        <button type="button"
           onClick={onClose}
+          title="Kembali"
+          aria-label="Kembali"
           className="mr-2.5 w-9 h-9 flex items-center justify-center rounded-full border border-slate-700 bg-gradient-to-b from-[#374151] via-[#1f2937] to-[#111827] shadow-[0_2px_0_#000,inset_0_1px_0_rgba(255,255,255,0.1)] active:translate-y-[1.5px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer focus:outline-none flex-shrink-0"
         >
           <svg
@@ -145,18 +150,30 @@ export function ROIPBridgePanel({ onClose }: ROIPBridgePanelProps) {
 
           <div className="flex justify-between items-center relative z-10 font-mono">
             <div>
-              <span className="text-[8px] text-slate-500 uppercase font-bold tracking-widest block">ROIP Status</span>
+              <span className="text-[8px] text-slate-500 uppercase font-bold tracking-widest block">
+                ROIP Status
+              </span>
               <span
                 className={`text-sm font-extrabold flex items-center gap-1.5 ${
-                  isTransmitting ? 'text-red-500 animate-pulse' : corSignal ? 'text-green-500' : 'text-sky-400'
+                  isTransmitting
+                    ? 'text-red-500 animate-pulse'
+                    : corSignal
+                      ? 'text-green-500'
+                      : 'text-sky-400'
                 }`}
               >
                 <Activity className="w-4 h-4" />
-                {isTransmitting ? 'TX - TRANSMITTING' : corSignal ? 'RX - CARRIER DETECTED' : 'STANDBY / IDLE'}
+                {isTransmitting
+                  ? 'TX - TRANSMITTING'
+                  : corSignal
+                    ? 'RX - CARRIER DETECTED'
+                    : 'STANDBY / IDLE'}
               </span>
             </div>
             <div className="text-right">
-              <span className="text-[8px] text-slate-500 uppercase font-bold tracking-widest block">Timer (TOT)</span>
+              <span className="text-[8px] text-slate-500 uppercase font-bold tracking-widest block">
+                Timer (TOT)
+              </span>
               <span className="text-sm font-extrabold text-amber-400">
                 {isTransmitting ? `${elapsedTime}s / ${totValue}s` : `LIMIT: ${totValue}s`}
               </span>
@@ -164,8 +181,19 @@ export function ROIPBridgePanel({ onClose }: ROIPBridgePanelProps) {
           </div>
 
           <div className="mt-3 grid grid-cols-2 gap-2 pt-3 border-t border-slate-800/80 font-mono text-[10px] text-slate-400">
-            <div>LICENSE: <span className={isLicenseVerified ? 'text-emerald-400 font-bold' : 'text-amber-500 font-bold'}>{isLicenseVerified ? 'VERIFIED' : 'UNVERIFIED'}</span></div>
-            <div className="text-right">MODE: <span className="text-sky-300 font-bold">{roipMode.toUpperCase()}</span></div>
+            <div>
+              LICENSE:{' '}
+              <span
+                className={
+                  isLicenseVerified ? 'text-emerald-400 font-bold' : 'text-amber-500 font-bold'
+                }
+              >
+                {isLicenseVerified ? 'VERIFIED' : 'UNVERIFIED'}
+              </span>
+            </div>
+            <div className="text-right">
+              MODE: <span className="text-sky-300 font-bold">{roipMode.toUpperCase()}</span>
+            </div>
           </div>
         </div>
 
@@ -183,7 +211,7 @@ export function ROIPBridgePanel({ onClose }: ROIPBridgePanelProps) {
               placeholder="Contoh: YB1AAA / YC2XYZ"
               className="flex-1 bg-[#141822] border border-[#374151] rounded px-3 py-2 text-xs text-white uppercase placeholder-slate-500 outline-none focus:border-sky-500 font-mono disabled:opacity-60 disabled:cursor-not-allowed"
             />
-            <button
+            <button type="button"
               onClick={handleVerifyLicense}
               disabled={isLicenseVerified || isVerifying}
               className={`px-4 py-2 text-xs font-extrabold rounded text-white bg-gradient-to-b from-sky-400 to-sky-600 border-t border-sky-300 border-b border-black/30 shadow-[0_2px_0_#0369a1] active:translate-y-[1px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1`}
@@ -192,7 +220,9 @@ export function ROIPBridgePanel({ onClose }: ROIPBridgePanelProps) {
             </button>
           </div>
           <p className="text-[10px] text-slate-400 leading-relaxed">
-            Sesuai regulasi Kemenkomdigi dan ORARI/RAPI, otorisasi dua arah (Two-Way) wajib memverifikasi Izin Amatir Radio (IAR) atau Izin Komunikasi Radio Antar Penduduk (IKR) yang valid.
+            Sesuai regulasi Kemenkomdigi dan ORARI/RAPI, otorisasi dua arah (Two-Way) wajib
+            memverifikasi Izin Amatir Radio (IAR) atau Izin Komunikasi Radio Antar Penduduk (IKR)
+            yang valid.
           </p>
         </div>
 
@@ -214,7 +244,9 @@ export function ROIPBridgePanel({ onClose }: ROIPBridgePanelProps) {
               />
               <div className="flex flex-col">
                 <span className="text-xs font-bold text-slate-200">Mode Monitor (Rx Only)</span>
-                <span className="text-[10px] text-slate-400">Audio dari HT fisik diteruskan ke aplikasi. Transmisi balik ke HT dinonaktifkan.</span>
+                <span className="text-[10px] text-slate-400">
+                  Audio dari HT fisik diteruskan ke aplikasi. Transmisi balik ke HT dinonaktifkan.
+                </span>
               </div>
             </label>
 
@@ -229,10 +261,15 @@ export function ROIPBridgePanel({ onClose }: ROIPBridgePanelProps) {
                 className="mt-0.5 w-4 h-4 accent-sky-500 cursor-pointer disabled:opacity-30"
               />
               <div className="flex flex-col">
-                <span className={`text-xs font-bold ${!isLicenseVerified ? 'text-slate-500' : 'text-slate-200'}`}>
+                <span
+                  className={`text-xs font-bold ${!isLicenseVerified ? 'text-slate-500' : 'text-slate-200'}`}
+                >
                   Mode Dua Arah (Two-Way Controlled) {!isLicenseVerified && '🔒'}
                 </span>
-                <span className="text-[10px] text-slate-400">Komunikasi timbal balik penuh antara HT dan aplikasi. Memerlukan izin IAR/IKR terverifikasi.</span>
+                <span className="text-[10px] text-slate-400">
+                  Komunikasi timbal balik penuh antara HT dan aplikasi. Memerlukan izin IAR/IKR
+                  terverifikasi.
+                </span>
               </div>
             </label>
 
@@ -247,10 +284,15 @@ export function ROIPBridgePanel({ onClose }: ROIPBridgePanelProps) {
                 className="mt-0.5 w-4 h-4 accent-sky-500 cursor-pointer disabled:opacity-30"
               />
               <div className="flex flex-col">
-                <span className={`text-xs font-bold ${!isLicenseVerified ? 'text-slate-500' : 'text-slate-200'}`}>
+                <span
+                  className={`text-xs font-bold ${!isLicenseVerified ? 'text-slate-500' : 'text-slate-200'}`}
+                >
                   Mode Darurat (Emergency Bridge) {!isLicenseVerified && '🔒'}
                 </span>
-                <span className="text-[10px] text-slate-400">Bypass total frekuensi jembatan tanpa antrean untuk penanganan bencana nasional / SAR.</span>
+                <span className="text-[10px] text-slate-400">
+                  Bypass total frekuensi jembatan tanpa antrean untuk penanganan bencana nasional /
+                  SAR.
+                </span>
               </div>
             </label>
           </div>
@@ -272,10 +314,13 @@ export function ROIPBridgePanel({ onClose }: ROIPBridgePanelProps) {
               max="60"
               value={totValue}
               onChange={(e) => setTotValue(Number(e.target.value))}
+              title={`Time-Out Timer: ${totValue} detik`}
+              aria-label={`Time-Out Timer: ${totValue} detik`}
               className="w-full accent-sky-500 cursor-pointer h-1.5 bg-slate-700 rounded-lg appearance-none"
             />
             <p className="text-[9px] text-slate-400">
-              TOT mencegah pemancar radio analog HT terbakar (overheat) jika terjadi gangguan PTT macet atau hardware crash. Maksimum aman adalah 60 detik.
+              TOT mencegah pemancar radio analog HT terbakar (overheat) jika terjadi gangguan PTT
+              macet atau hardware crash. Maksimum aman adalah 60 detik.
             </p>
           </div>
         </div>
@@ -287,12 +332,14 @@ export function ROIPBridgePanel({ onClose }: ROIPBridgePanelProps) {
           </h3>
           <div className="flex items-center justify-between">
             <div className="flex flex-col pr-4">
-              <span className="text-xs font-bold text-slate-200">Sinyal COR (Uji Frekuensi Sibuk)</span>
+              <span className="text-xs font-bold text-slate-200">
+                Sinyal COR (Uji Frekuensi Sibuk)
+              </span>
               <span className="text-[10px] text-slate-400">
                 Simulasikan sinyal pembawa frekuensi HT analog terdeteksi aktif/sibuk.
               </span>
             </div>
-            <button
+            <button type="button"
               onClick={() => setCorSignal(!corSignal)}
               className={`px-4 py-2 rounded-lg text-xs font-bold text-white transition-all cursor-pointer shadow-[0_2px_0_rgba(0,0,0,0.3)] active:translate-y-[1.5px] active:shadow-none ${
                 corSignal
@@ -307,7 +354,8 @@ export function ROIPBridgePanel({ onClose }: ROIPBridgePanelProps) {
             <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-2.5 flex items-start gap-2 text-[10px] text-green-400">
               <AlertTriangle className="w-4 h-4 flex-shrink-0" />
               <span>
-                <strong>Sinyal COR aktif</strong>: Saluran udara analog sedang sibuk. Tombol PTT terblokir untuk mencegah tabrakan modulasi (Busy Channel Lockout).
+                <strong>Sinyal COR aktif</strong>: Saluran udara analog sedang sibuk. Tombol PTT
+                terblokir untuk mencegah tabrakan modulasi (Busy Channel Lockout).
               </span>
             </div>
           )}

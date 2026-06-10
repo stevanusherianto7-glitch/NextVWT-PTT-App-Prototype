@@ -259,6 +259,7 @@ export function PTTButton({
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isPowerOn,
     isBusy,
@@ -269,7 +270,7 @@ export function PTTButton({
     pttVolume,
     vibrateOnStart,
     onPressEnd,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   ]);
 
   // Calculate dynamic scale factor and vertical offset
@@ -291,7 +292,7 @@ export function PTTButton({
         transition: 'transform 0.12s ease-out, box-shadow 0.06s ease-in-out',
       }}
     >
-      <button
+      <button type="button"
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseLeave}

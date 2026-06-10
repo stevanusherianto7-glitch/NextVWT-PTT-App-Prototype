@@ -62,9 +62,11 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
 
       // Update Foreground Service notification
       const channelStr = String(channelNum).padStart(3, '0');
-      import('../utils/backgroundSurvival').then(({ startBackgroundService }) => {
-        startBackgroundService(`Siaga di Saluran ${channelStr}`);
-      }).catch((err) => console.warn('Failed to start/update background service:', err));
+      import('../utils/backgroundSurvival')
+        .then(({ startBackgroundService }) => {
+          startBackgroundService(`Siaga di Saluran ${channelStr}`);
+        })
+        .catch((err) => console.warn('Failed to start/update background service:', err));
 
       const store = usePTTStore.getState();
       const supabase = await getSupabase();
@@ -84,7 +86,17 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
           const rawList = Object.values(presenceState).flat() as unknown as PresenceMeta[];
 
           // Deduplicate by userId to ensure each active user only has one entry in the list
-          const uniqueUsersMap = new Map<string, any>();
+          const uniqueUsersMap = new Map<
+            string,
+            {
+              userId: string;
+              displayName: string;
+              callSign: string;
+              location: string;
+              avatarUrl?: string;
+              isNewUser?: boolean;
+            }
+          >();
           rawList.forEach((p) => {
             if (p && typeof p === 'object' && p.userId) {
               uniqueUsersMap.set(p.userId, {
@@ -151,7 +163,9 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
 
             // If we are the target and currently transmitting, force-stop our transmission
             if (payload.targetUserId === state.userId && state.isTransmitting) {
-              console.warn(`[Hang Up] Transmission interrupted by moderator${payload.moderatorName ? ` (${payload.moderatorName})` : ''}`);
+              console.warn(
+                `[Hang Up] Transmission interrupted by moderator${payload.moderatorName ? ` (${payload.moderatorName})` : ''}`
+              );
               usePTTStore.setState({ isTransmitting: false, progress: 0 });
             }
 
@@ -193,7 +207,8 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
         if (isSubscribed) {
           const currentStore = usePTTStore.getState();
           const userMeta = currentStore.user;
-          const displayName = currentStore.infoText || userMeta?.user_metadata?.full_name || 'Pebe Herianto';
+          const displayName =
+            currentStore.infoText || userMeta?.user_metadata?.full_name || 'Pebe Herianto';
           const location = currentStore.locationText;
 
           // Only track presence if the channel is actually subscribed on the backend

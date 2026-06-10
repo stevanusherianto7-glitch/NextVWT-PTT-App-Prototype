@@ -73,6 +73,7 @@ if (import.meta.env.PROD && 'serviceWorker' in navigator) {
     navigator.serviceWorker
       .register('./sw.js')
       .then((registration) => {
+        // eslint-disable-next-line no-console
         console.log('[PWA] Service Worker registered successfully with scope:', registration.scope);
       })
       .catch((error) => {

@@ -76,6 +76,7 @@ export function useAudioStreamer() {
   );
 
   // Sync peer connections when activeUsers changes
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const activeUsers = usePTTStore((state) => state.activeUsers) || [];
   const isConnected = usePTTStore((state) => state.isConnected);
   const isPowerOn = usePTTStore((state) => state.isPowerOn);
@@ -84,90 +85,93 @@ export function useAudioStreamer() {
 
   const noiseMode = usePTTStore((state) => state.noiseMode);
 
-  const updateAudioNodesParams = useCallback((mode: 'normal' | 'ojol' | 'wind' | 'crowd' | 'emergency') => {
-    const nodes = audioNodesRef.current;
-    if (!nodes.hpf && !nodes.agc && !nodes.bandpass) return;
+  const updateAudioNodesParams = useCallback(
+    (mode: 'normal' | 'ojol' | 'wind' | 'crowd' | 'emergency') => {
+      const nodes = audioNodesRef.current;
+      if (!nodes.hpf && !nodes.agc && !nodes.bandpass) return;
 
-    const ctx = getAudioContext();
-    if (!ctx) return;
-    const now = ctx.currentTime;
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
 
-    if (mode === 'normal') {
-      if (nodes.hpf) {
-        nodes.hpf.type = 'highpass';
-        nodes.hpf.frequency.setValueAtTime(80, now);
+      if (mode === 'normal') {
+        if (nodes.hpf) {
+          nodes.hpf.type = 'highpass';
+          nodes.hpf.frequency.setValueAtTime(80, now);
+        }
+        if (nodes.bandpass) {
+          nodes.bandpass.type = 'allpass';
+        }
+        if (nodes.agc) {
+          nodes.agc.threshold.setValueAtTime(-20, now);
+          nodes.agc.ratio.setValueAtTime(4, now);
+          nodes.agc.attack.setValueAtTime(0.01, now);
+          nodes.agc.release.setValueAtTime(0.25, now);
+        }
+      } else if (mode === 'ojol') {
+        if (nodes.hpf) {
+          nodes.hpf.type = 'highpass';
+          nodes.hpf.frequency.setValueAtTime(200, now);
+        }
+        if (nodes.bandpass) {
+          nodes.bandpass.type = 'allpass';
+        }
+        if (nodes.agc) {
+          nodes.agc.threshold.setValueAtTime(-35, now);
+          nodes.agc.ratio.setValueAtTime(12, now);
+          nodes.agc.attack.setValueAtTime(0.005, now);
+          nodes.agc.release.setValueAtTime(0.15, now);
+        }
+      } else if (mode === 'wind') {
+        if (nodes.hpf) {
+          nodes.hpf.type = 'highpass';
+          nodes.hpf.frequency.setValueAtTime(150, now);
+        }
+        if (nodes.bandpass) {
+          nodes.bandpass.type = 'allpass';
+        }
+        if (nodes.agc) {
+          nodes.agc.threshold.setValueAtTime(-30, now);
+          nodes.agc.ratio.setValueAtTime(8, now);
+          nodes.agc.attack.setValueAtTime(0.002, now);
+          nodes.agc.release.setValueAtTime(0.05, now);
+        }
+      } else if (mode === 'crowd') {
+        if (nodes.hpf) {
+          nodes.hpf.type = 'highpass';
+          nodes.hpf.frequency.setValueAtTime(150, now);
+        }
+        if (nodes.bandpass) {
+          nodes.bandpass.type = 'bandpass';
+          nodes.bandpass.frequency.setValueAtTime(1200, now);
+          nodes.bandpass.Q.setValueAtTime(1.0, now);
+        }
+        if (nodes.agc) {
+          nodes.agc.threshold.setValueAtTime(-25, now);
+          nodes.agc.ratio.setValueAtTime(6, now);
+          nodes.agc.attack.setValueAtTime(0.01, now);
+          nodes.agc.release.setValueAtTime(0.2, now);
+        }
+      } else if (mode === 'emergency') {
+        if (nodes.hpf) {
+          nodes.hpf.type = 'highpass';
+          nodes.hpf.frequency.setValueAtTime(400, now);
+        }
+        if (nodes.bandpass) {
+          nodes.bandpass.type = 'bandpass';
+          nodes.bandpass.frequency.setValueAtTime(1500, now);
+          nodes.bandpass.Q.setValueAtTime(2.0, now);
+        }
+        if (nodes.agc) {
+          nodes.agc.threshold.setValueAtTime(-45, now);
+          nodes.agc.ratio.setValueAtTime(20, now);
+          nodes.agc.attack.setValueAtTime(0.001, now);
+          nodes.agc.release.setValueAtTime(0.1, now);
+        }
       }
-      if (nodes.bandpass) {
-        nodes.bandpass.type = 'allpass';
-      }
-      if (nodes.agc) {
-        nodes.agc.threshold.setValueAtTime(-20, now);
-        nodes.agc.ratio.setValueAtTime(4, now);
-        nodes.agc.attack.setValueAtTime(0.01, now);
-        nodes.agc.release.setValueAtTime(0.25, now);
-      }
-    } else if (mode === 'ojol') {
-      if (nodes.hpf) {
-        nodes.hpf.type = 'highpass';
-        nodes.hpf.frequency.setValueAtTime(200, now);
-      }
-      if (nodes.bandpass) {
-        nodes.bandpass.type = 'allpass';
-      }
-      if (nodes.agc) {
-        nodes.agc.threshold.setValueAtTime(-35, now);
-        nodes.agc.ratio.setValueAtTime(12, now);
-        nodes.agc.attack.setValueAtTime(0.005, now);
-        nodes.agc.release.setValueAtTime(0.15, now);
-      }
-    } else if (mode === 'wind') {
-      if (nodes.hpf) {
-        nodes.hpf.type = 'highpass';
-        nodes.hpf.frequency.setValueAtTime(150, now);
-      }
-      if (nodes.bandpass) {
-        nodes.bandpass.type = 'allpass';
-      }
-      if (nodes.agc) {
-        nodes.agc.threshold.setValueAtTime(-30, now);
-        nodes.agc.ratio.setValueAtTime(8, now);
-        nodes.agc.attack.setValueAtTime(0.002, now);
-        nodes.agc.release.setValueAtTime(0.05, now);
-      }
-    } else if (mode === 'crowd') {
-      if (nodes.hpf) {
-        nodes.hpf.type = 'highpass';
-        nodes.hpf.frequency.setValueAtTime(150, now);
-      }
-      if (nodes.bandpass) {
-        nodes.bandpass.type = 'bandpass';
-        nodes.bandpass.frequency.setValueAtTime(1200, now);
-        nodes.bandpass.Q.setValueAtTime(1.0, now);
-      }
-      if (nodes.agc) {
-        nodes.agc.threshold.setValueAtTime(-25, now);
-        nodes.agc.ratio.setValueAtTime(6, now);
-        nodes.agc.attack.setValueAtTime(0.01, now);
-        nodes.agc.release.setValueAtTime(0.2, now);
-      }
-    } else if (mode === 'emergency') {
-      if (nodes.hpf) {
-        nodes.hpf.type = 'highpass';
-        nodes.hpf.frequency.setValueAtTime(400, now);
-      }
-      if (nodes.bandpass) {
-        nodes.bandpass.type = 'bandpass';
-        nodes.bandpass.frequency.setValueAtTime(1500, now);
-        nodes.bandpass.Q.setValueAtTime(2.0, now);
-      }
-      if (nodes.agc) {
-        nodes.agc.threshold.setValueAtTime(-45, now);
-        nodes.agc.ratio.setValueAtTime(20, now);
-        nodes.agc.attack.setValueAtTime(0.001, now);
-        nodes.agc.release.setValueAtTime(0.1, now);
-      }
-    }
-  }, [getAudioContext]);
+    },
+    [getAudioContext]
+  );
 
   useEffect(() => {
     updateAudioNodesParams(noiseMode);
@@ -547,7 +551,14 @@ export function useAudioStreamer() {
         throw err;
       }
     },
-    [stopRecording, startVAD, getAudioContext, peerConnectionsRef, streamRef, updateAudioNodesParams]
+    [
+      stopRecording,
+      startVAD,
+      getAudioContext,
+      peerConnectionsRef,
+      streamRef,
+      updateAudioNodesParams,
+    ]
   );
 
   const playAudioChunk = useCallback(

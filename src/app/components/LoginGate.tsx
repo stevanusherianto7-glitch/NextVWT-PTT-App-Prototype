@@ -62,7 +62,7 @@ export function LoginGate({ onLogin }: LoginGateProps) {
           box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 22px rgba(0, 200, 83, 0.16) !important;
         }
       `}</style>
-      
+
       {/* Background Neon Radio Ripples */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div className="radio-ripple" />
@@ -196,7 +196,10 @@ export function LoginGate({ onLogin }: LoginGateProps) {
           />
         </svg>
 
-        <h1 className="text-2xl tracking-wide mb-1 select-none" style={{ fontFamily: "'Outfit', sans-serif" }}>
+        <h1
+          className="text-2xl tracking-wide mb-1 select-none"
+          style={{ fontFamily: "'Outfit', sans-serif" }}
+        >
           <span className="font-medium text-white">Next</span>
           <span className="font-black text-[#00C853]">VWT</span>
         </h1>
@@ -206,13 +209,14 @@ export function LoginGate({ onLogin }: LoginGateProps) {
 
         <div className="w-full bg-black/35 rounded-xl p-3 border border-white/5 mb-6 text-center">
           <p className="text-[11px] text-gray-400 leading-normal">
-            Hubungkan ke frekuensi digital. Masuk dengan Google, Facebook, atau TikTok untuk sinkronisasi profil instan.
+            Hubungkan ke frekuensi digital. Masuk dengan Google, Facebook, atau TikTok untuk
+            sinkronisasi profil instan.
           </p>
         </div>
 
         <div className="w-full flex flex-col gap-3">
           {/* Google Login Button */}
-          <button
+          <button type="button"
             onClick={() => handleLogin('google')}
             disabled={loadingProvider !== null}
             className="w-full h-12 bg-[#171a26]/80 backdrop-blur-md text-white font-semibold rounded-full flex items-center justify-center gap-3 transition-all duration-300 active:scale-95 border border-white/10 hover:border-white/20 hover:bg-[#1e2233]/90 hover:shadow-[0_0_15px_rgba(255,255,255,0.25)] cursor-pointer disabled:opacity-50"
@@ -245,7 +249,7 @@ export function LoginGate({ onLogin }: LoginGateProps) {
           </button>
 
           {/* Facebook Login Button */}
-          <button
+          <button type="button"
             onClick={() => handleLogin('facebook')}
             disabled={loadingProvider !== null}
             className="w-full h-12 bg-[#171a26]/80 backdrop-blur-md text-white font-semibold rounded-full flex items-center justify-center gap-3 transition-all duration-300 active:scale-95 border border-white/10 hover:border-[#1877F2]/40 hover:bg-[#1e2233]/90 hover:shadow-[0_0_15px_rgba(24,119,242,0.45)] cursor-pointer disabled:opacity-50"
@@ -263,7 +267,7 @@ export function LoginGate({ onLogin }: LoginGateProps) {
           </button>
 
           {/* TikTok Login Button */}
-          <button
+          <button type="button"
             onClick={() => handleLogin('tiktok')}
             disabled={loadingProvider !== null}
             className="w-full h-12 bg-[#171a26]/80 backdrop-blur-md text-white font-semibold rounded-full flex items-center justify-center gap-3 transition-all duration-300 active:scale-95 border border-white/10 hover:border-[#fe2c55]/40 hover:bg-[#1e2233]/90 hover:shadow-[0_0_15px_rgba(254,44,85,0.45)] cursor-pointer disabled:opacity-50"
@@ -280,8 +284,6 @@ export function LoginGate({ onLogin }: LoginGateProps) {
             )}
           </button>
         </div>
-
-
       </div>
 
       <div className="absolute bottom-6 left-0 right-0 text-[10px] text-gray-500 font-bold uppercase tracking-widest">

@@ -387,7 +387,7 @@ describe('useWebRTC', () => {
 
     // Mock PeerConnection kedua
     const mockPc2 = { ...mockPc, close: vi.fn() };
-    (RTCPeerConnection as any).mockImplementationOnce(function () {
+    (RTCPeerConnection as unknown as import('vitest').Mock).mockImplementationOnce(function () {
       return mockPc2;
     });
 

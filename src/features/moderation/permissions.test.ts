@@ -7,6 +7,7 @@ import {
   canUseChat,
   canUseReaction,
   type ChannelRole,
+  type ModerationAction,
 } from './permissions';
 
 describe('Permissions Engine – Unit Tests', () => {
@@ -65,7 +66,7 @@ describe('Permissions Engine – Unit Tests', () => {
 
   describe('canPerformAction', () => {
     it('should allow NOC and Sys Admin to perform all actions', () => {
-      const actions: any[] = [
+      const actions: ModerationAction[] = [
         'VIEW_ADMIN_PANEL',
         'MANAGE_CHANNEL',
         'MANAGE_ROLES',
@@ -119,7 +120,7 @@ describe('Permissions Engine – Unit Tests', () => {
     });
 
     it('should deny all actions for Guest', () => {
-      const actions: any[] = [
+      const actions: ModerationAction[] = [
         'VIEW_ADMIN_PANEL',
         'MANAGE_CHANNEL',
         'MANAGE_ROLES',

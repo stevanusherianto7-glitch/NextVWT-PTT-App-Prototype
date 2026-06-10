@@ -56,11 +56,7 @@ export function ControlButtons({
                 in2="offset-blur-top"
                 result="inverse-top"
               />
-              <feFlood
-                floodColor="black"
-                floodOpacity="0.25"
-                result="color-top"
-              />
+              <feFlood floodColor="black" floodOpacity="0.25" result="color-top" />
               <feComposite operator="in" in="color-top" in2="inverse-top" result="shadow-top" />
 
               {/* Sharp bottom-right highlight to define the bottom edge bezel of the recess */}
@@ -72,11 +68,7 @@ export function ControlButtons({
                 in2="offset-blur-bottom"
                 result="inverse-bottom"
               />
-              <feFlood
-                floodColor="white"
-                floodOpacity="0.55"
-                result="color-bottom"
-              />
+              <feFlood floodColor="white" floodOpacity="0.55" result="color-bottom" />
               <feComposite
                 operator="in"
                 in="color-bottom"
@@ -120,7 +112,7 @@ export function ControlButtons({
       </div>
 
       {/* Scan Button */}
-      <button
+      <button type="button"
         onClick={onScan}
         onMouseDown={() => setPressedBtn('scan')}
         onMouseUp={() => setPressedBtn(null)}
@@ -157,11 +149,13 @@ export function ControlButtons({
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[5px] bg-[#1a1a1a] opacity-65 z-20 pointer-events-none shadow-[0_1px_1px_rgba(255,255,255,0.25)]" />
 
         {/* Up Button */}
-        <button
+        <button type="button"
           onClick={onUp}
           onMouseDown={() => setPressedBtn('up')}
           onMouseUp={() => setPressedBtn(null)}
           onMouseLeave={() => setPressedBtn(null)}
+          title="Channel Up"
+          aria-label="Channel Up"
           className="w-full h-[48px] rounded-t-full text-white flex items-center justify-center relative z-10"
           style={{
             background: pressedBtn === 'up' ? 'rgba(0,0,0,0.4)' : 'var(--btn-bg)',
@@ -185,11 +179,13 @@ export function ControlButtons({
         </button>
 
         {/* Down Button */}
-        <button
+        <button type="button"
           onClick={onDown}
           onMouseDown={() => setPressedBtn('down')}
           onMouseUp={() => setPressedBtn(null)}
           onMouseLeave={() => setPressedBtn(null)}
+          title="Channel Down"
+          aria-label="Channel Down"
           className="w-full h-[48px] rounded-b-full text-white flex items-center justify-center relative z-10"
           style={{
             background: pressedBtn === 'down' ? 'rgba(0,0,0,0.4)' : 'var(--btn-bg)',
@@ -214,7 +210,7 @@ export function ControlButtons({
       </div>
 
       {/* Set Button */}
-      <button
+      <button type="button"
         onClick={onSet}
         onMouseDown={() => setPressedBtn('set')}
         onMouseUp={() => setPressedBtn(null)}

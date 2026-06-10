@@ -403,10 +403,10 @@
   --panel-bg: #f0f3f6;
   --panel-border: 1px solid #dbe2e9;
   --panel-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.22), 0 6px 15px rgba(0, 0, 0, 0.12),
-    0 -2px 4px rgba(0, 0, 0, 0.08), inset 0 0 24px rgba(0, 0, 0, 0.20),
-    inset 0 4px 8px rgba(0, 0, 0, 0.25), inset 0 -6px 12px rgba(0, 0, 0, 0.18),
-    inset 8px 0 12px rgba(0, 0, 0, 0.08), inset -8px 0 12px rgba(0, 0, 0, 0.08);
+    0 18px 40px rgba(0, 0, 0, 0.22), 0 6px 15px rgba(0, 0, 0, 0.12), 0 -2px 4px rgba(0, 0, 0, 0.08),
+    inset 0 0 24px rgba(0, 0, 0, 0.2), inset 0 4px 8px rgba(0, 0, 0, 0.25),
+    inset 0 -6px 12px rgba(0, 0, 0, 0.18), inset 8px 0 12px rgba(0, 0, 0, 0.08),
+    inset -8px 0 12px rgba(0, 0, 0, 0.08);
   --panel-blur: none;
   --panel-text-color: #475569;
   --lcd-bg: linear-gradient(to bottom, #ff9500 0%, #d87d00 100%);
@@ -479,9 +479,9 @@
   --panel-bg: #f0f3f6;
   --panel-border: 1px solid #dbe2e9;
   --panel-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.22), 0 6px 15px rgba(0, 0, 0, 0.12),
-    0 -2px 4px rgba(0, 0, 0, 0.08), inset 0 0 24px rgba(0, 0, 0, 0.20),
-    inset 0 4px 8px rgba(0, 0, 0, 0.25), inset 0 -6px 12px rgba(0, 0, 0, 0.18);
+    0 18px 40px rgba(0, 0, 0, 0.22), 0 6px 15px rgba(0, 0, 0, 0.12), 0 -2px 4px rgba(0, 0, 0, 0.08),
+    inset 0 0 24px rgba(0, 0, 0, 0.2), inset 0 4px 8px rgba(0, 0, 0, 0.25),
+    inset 0 -6px 12px rgba(0, 0, 0, 0.18);
   --panel-blur: none;
   --panel-text-color: #475569;
   --lcd-bg: linear-gradient(to bottom, #ff9500 0%, #d87d00 100%);
@@ -644,7 +644,7 @@
   --panel-border: 1.5px solid rgba(255, 255, 255, 0.85);
   --panel-shadow:
     0 25px 45px rgba(0, 180, 216, 0.12), inset 0 3px 6px rgba(0, 0, 0, 0.18),
-    inset 0 -6px 10px rgba(0, 184, 212, 0.10);
+    inset 0 -6px 10px rgba(0, 184, 212, 0.1);
   --panel-blur: blur(20px);
   --panel-text-color: #004d40;
   --lcd-bg: linear-gradient(to bottom, #00e5ff 0%, #00b0ff 100%);
@@ -713,7 +713,7 @@
   --panel-border: 1.5px solid rgba(0, 230, 70, 0.4);
   --panel-shadow:
     0 25px 45px rgba(0, 0, 0, 0.45), inset 0 3px 6px rgba(0, 0, 0, 0.45),
-    inset 0 -6px 12px rgba(0, 0, 0, 0.50), 0 0 20px rgba(57, 255, 20, 0.18);
+    inset 0 -6px 12px rgba(0, 0, 0, 0.5), 0 0 20px rgba(57, 255, 20, 0.18);
   --panel-blur: blur(16px);
   --panel-text-color: #a7f3d0;
   --lcd-bg: linear-gradient(to bottom, #00c853 0%, #007c31 100%);
@@ -789,7 +789,7 @@
   --panel-border: 1.5px solid rgba(255, 255, 255, 0.85);
   --panel-shadow:
     0 25px 45px rgba(224, 64, 251, 0.18), inset 0 3px 6px rgba(0, 0, 0, 0.18),
-    inset 0 -6px 10px rgba(186, 104, 200, 0.10);
+    inset 0 -6px 10px rgba(186, 104, 200, 0.1);
   --panel-blur: blur(20px);
   --panel-text-color: #4a148c;
   --lcd-bg: linear-gradient(to bottom, #ff4081 0%, #e040fb 100%);

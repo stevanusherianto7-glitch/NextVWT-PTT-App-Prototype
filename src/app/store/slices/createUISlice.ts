@@ -52,7 +52,9 @@ export const createUISlice: StateCreator<
         activeChannelSubscription.unsubscribe();
         setActiveChannelSubscription(null);
       }
-      stopBackgroundService().catch((err) => console.warn('Failed to stop background service:', err));
+      stopBackgroundService().catch((err) =>
+        console.warn('Failed to stop background service:', err)
+      );
       set({
         isPowerOn: false,
         isConnected: false,
@@ -65,7 +67,9 @@ export const createUISlice: StateCreator<
     // Re-establish subscription on power on
     setTimeout(() => get().subscribeToChannel(state.channelNumber), 0);
     const info = `Siaga di Saluran ${String(state.channelNumber).padStart(3, '0')}`;
-    startBackgroundService(info).catch((err) => console.warn('Failed to start background service:', err));
+    startBackgroundService(info).catch((err) =>
+      console.warn('Failed to start background service:', err)
+    );
     set({ isPowerOn: true, isConnected: true });
   },
 
@@ -99,7 +103,7 @@ export const createUISlice: StateCreator<
         pjc: 3,
         operator: 2,
         member: 1.5,
-        guest: 1
+        guest: 1,
       };
 
       if (activeTx && activeTx.userId !== state.userId) {

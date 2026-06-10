@@ -26,8 +26,9 @@ export const fetchTurnCredentials = async (): Promise<RTCIceServer[]> => {
       setTimeout(() => reject(new Error('TURN fetch timeout')), 5000)
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const response = (await Promise.race([invokePromise, timeoutPromise])) as any;
+    const response = (await Promise.race([invokePromise, timeoutPromise])) as {
+      data?: { iceServers?: RTCIceServer[] };
+    };
 
     if (response?.data?.iceServers && Array.isArray(response.data.iceServers)) {
       ephemeralTurnCreds = {

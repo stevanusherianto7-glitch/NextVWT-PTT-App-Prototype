@@ -36,7 +36,9 @@ import foxSvg from '../../assets/reactions/fox.svg';
 
 // Helper to catch dynamic import chunk loading failures (typically after a new deploy)
 // and automatically reload the page to fetch the latest assets
-const lazyRetry = <T extends React.ComponentType<any>>(importFn: () => Promise<{ default: T }>) => {
+const lazyRetry = <Props extends object>(
+  importFn: () => Promise<{ default: React.ComponentType<Props> }>
+) => {
   return lazy(async () => {
     try {
       return await importFn();
@@ -47,18 +49,28 @@ const lazyRetry = <T extends React.ComponentType<any>>(importFn: () => Promise<{
       }
       throw error;
     }
-  });
+  }) as React.LazyExoticComponent<React.ComponentType<Props>>;
 };
 
 // [P2-2] Lazy-load komponen besar — hanya diunduh saat pertama kali dibuka
 // SettingsPanel: ~76KB → split ke chunk terpisah, tidak menambah initial bundle
-const SettingsPanel = lazyRetry(() =>
-  import('./SettingsPanel').then((m) => ({ default: m.SettingsPanel }))
-);
+const SettingsPanel = lazyRetry<import('./SettingsPanel').SettingsPanelProps>(async () => {
+  const m = await import('./SettingsPanel');
+  return {
+    default: m.SettingsPanel as React.ComponentType<import('./SettingsPanel').SettingsPanelProps>,
+  };
+});
 // FloatingKaraokePlayer: ~21KB → split ke chunk terpisah
-const FloatingKaraokePlayer = lazyRetry(() =>
-  import('./FloatingKaraokePlayer').then((m) => ({ default: m.FloatingKaraokePlayer }))
-);
+const FloatingKaraokePlayer = lazyRetry<
+  import('./FloatingKaraokePlayer').FloatingKaraokePlayerProps
+>(async () => {
+  const m = await import('./FloatingKaraokePlayer');
+  return {
+    default: m.FloatingKaraokePlayer as React.ComponentType<
+      import('./FloatingKaraokePlayer').FloatingKaraokePlayerProps
+    >,
+  };
+});
 
 export function RadioLayout() {
   const {
@@ -99,7 +111,9 @@ export function RadioLayout() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isQueueOpen, setIsQueueOpen] = useState(false);
   const [isPrivateOpen, setIsPrivateOpen] = useState(false);
-  const [floatingReactions, setFloatingReactions] = useState<Array<{ id: string; reaction: string; x: number }>>([]);
+  const [floatingReactions, setFloatingReactions] = useState<
+    Array<{ id: string; reaction: string; x: number }>
+  >([]);
   const [txStartTime, setTxStartTime] = useState<number>(0);
 
   const { startRecording, stopRecording, playAudioChunk, flushAudioQueue } = useAudioStreamer();
@@ -216,6 +230,7 @@ export function RadioLayout() {
     playAudioChunk,
     flushAudioQueue,
     setIsTransmitting,
+    txStartTime,
   ]);
 
   const resetWatchdogRef = useRef<(() => void) | null>(null);
@@ -324,7 +339,7 @@ export function RadioLayout() {
     if (!roomId || !userId || !isPowerOn) return;
 
     let mounted = true;
-    let channelInstance: any = null;
+    let channelInstance: import('@supabase/supabase-js').RealtimeChannel | null = null;
 
     (async () => {
       try {
@@ -333,14 +348,18 @@ export function RadioLayout() {
 
         channelInstance = supabaseInstance.channel(`room:${roomId}:moderation`);
         channelInstance
-          .on('broadcast', { event: 'kick' }, (payload: any) => {
-            const { targetUserId } = payload.payload || {};
-            if (targetUserId === userId) {
-              toast.error('Anda telah dikeluarkan (kick/ban) dari channel ini oleh moderator.');
-              setIsPowerOn(false);
-              setIsManageOpen(false);
+          .on(
+            'broadcast',
+            { event: 'kick' },
+            (payload: { payload?: { targetUserId?: string } }) => {
+              const { targetUserId } = payload.payload || {};
+              if (targetUserId === userId) {
+                toast.error('Anda telah dikeluarkan (kick/ban) dari channel ini oleh moderator.');
+                setIsPowerOn(false);
+                setIsManageOpen(false);
+              }
             }
-          })
+          )
           .subscribe();
       } catch (err) {
         console.error('Realtime kick listener setup failed:', err);
@@ -350,7 +369,9 @@ export function RadioLayout() {
     return () => {
       mounted = false;
       if (channelInstance) {
-        getSupabase().then((sub) => sub.removeChannel(channelInstance));
+        getSupabase().then((sub) => {
+          if (channelInstance) sub.removeChannel(channelInstance);
+        });
       }
     };
   }, [roomId, userId, isPowerOn, setIsPowerOn]);
@@ -427,22 +448,24 @@ export function RadioLayout() {
     }, 5000);
 
     // Broadcast to other peers on the channel
-    import('../store/subscription').then(({ activeChannelSubscription }) => {
-      if (activeChannelSubscription && isConnected) {
-        activeChannelSubscription.send({
-          type: 'broadcast',
-          event: 'reaction',
-          payload: {
-            id: localId,
-            roomId: roomId,
-            senderId: userId,
-            senderName: infoText || 'User',
-            reaction: reactionType,
-            createdAt: Date.now(),
-          },
-        });
-      }
-    }).catch(err => console.warn('Failed to broadcast reaction:', err));
+    import('../store/subscription')
+      .then(({ activeChannelSubscription }) => {
+        if (activeChannelSubscription && isConnected) {
+          activeChannelSubscription.send({
+            type: 'broadcast',
+            event: 'reaction',
+            payload: {
+              id: localId,
+              roomId: roomId,
+              senderId: userId,
+              senderName: infoText || 'User',
+              reaction: reactionType,
+              createdAt: Date.now(),
+            },
+          });
+        }
+      })
+      .catch((err) => console.warn('Failed to broadcast reaction:', err));
   };
 
   const handleSet = () => {
@@ -496,7 +519,10 @@ export function RadioLayout() {
       ) : isQueueOpen ? (
         <KaraokeQueuePanel onClose={() => setIsQueueOpen(false)} />
       ) : isPrivateOpen ? (
-        <PrivateChannelPanel onClose={() => setIsPrivateOpen(false)} onOpenWallet={() => setIsWalletOpen(true)} />
+        <PrivateChannelPanel
+          onClose={() => setIsPrivateOpen(false)}
+          onOpenWallet={() => setIsWalletOpen(true)}
+        />
       ) : isSettingsOpen ? (
         // Suspense boundary: tampilkan skeleton saat SettingsPanel sedang dimuat
         // (hanya terjadi pada kali pertama Settings dibuka dalam sesi ini)
@@ -681,12 +707,14 @@ export function RadioLayout() {
                       fontFamily: "'Outfit', sans-serif",
                     }}
                   >
-                    <span className="font-medium" style={{ color: 'var(--header-text-color)' }}>Next</span>
+                    <span className="font-medium" style={{ color: 'var(--header-text-color)' }}>
+                      Next
+                    </span>
                     <span className="font-black text-[#00C853]">VWT</span>
                   </span>
-                  <div className="w-[120px] overflow-hidden whitespace-nowrap relative h-[16px] mt-0.5">
+                  <div className="w-[120px] overflow-hidden whitespace-nowrap relative h-[20px] mt-0.5">
                     <div
-                      className="absolute top-0 left-0 inline-block animate-marquee text-[10px] font-semibold tracking-wide"
+                      className="absolute top-0 left-0 inline-block animate-marquee text-[10px] font-semibold tracking-wide leading-none py-0.5"
                       style={{ color: 'var(--header-text-color)', opacity: 0.65 }}
                     >
                       {marqueeText}
@@ -721,39 +749,88 @@ export function RadioLayout() {
               <>
                 {/* Themed Faceplate Container */}
                 <div
-                className="w-full flex flex-col items-center pt-6 pb-3 relative z-10 transition-all duration-300"
-                style={{
-                  borderRadius: '40px 40px 200px 200px / 40px 40px 90px 90px',
-                  background: 'var(--panel-bg)',
-                  boxShadow: 'var(--panel-shadow)',
-                  border: 'var(--panel-border)',
-                  backdropFilter: 'var(--panel-blur)',
-                }}
-              >
-                {/* 3D Faceplate Outer Highlight and Shadow Overlay */}
-                <div
-                  className="absolute inset-0 pointer-events-none z-20"
+                  className="w-full flex flex-col items-center pt-6 pb-3 relative z-10 transition-all duration-300"
                   style={{
                     borderRadius: '40px 40px 200px 200px / 40px 40px 90px 90px',
-                    boxShadow:
-                      'inset 0 2.5px 4px rgba(0, 0, 0, 0.32), inset 0 -2px 3px rgba(0, 0, 0, 0.25), inset 2px 0 3px rgba(0, 0, 0, 0.22), inset -2px 0 3px rgba(0, 0, 0, 0.22)',
+                    background: 'var(--panel-bg)',
+                    boxShadow: 'var(--panel-shadow)',
+                    border: 'var(--panel-border)',
+                    backdropFilter: 'var(--panel-blur)',
                   }}
-                />
-                {/* LCD Panel */}
-                <div className="transition-opacity duration-300 flex justify-center w-full relative">
-                  <LCDPanel
-                    channel={channel}
-                    userCount={dynamicUserCount}
-                    isOffline={!isConnected}
-                    isPowerOn={isPowerOn}
-                    onUserCountClick={() => setIsUserListOpen(true)}
+                >
+                  {/* 3D Faceplate Outer Highlight and Shadow Overlay */}
+                  <div
+                    className="absolute inset-0 pointer-events-none z-20"
+                    style={{
+                      borderRadius: '40px 40px 200px 200px / 40px 40px 90px 90px',
+                      boxShadow:
+                        'inset 0 2.5px 4px rgba(0, 0, 0, 0.32), inset 0 -2px 3px rgba(0, 0, 0, 0.25), inset 2px 0 3px rgba(0, 0, 0, 0.22), inset -2px 0 3px rgba(0, 0, 0, 0.22)',
+                    }}
                   />
+                  {/* LCD Panel */}
+                  <div className="transition-opacity duration-300 flex justify-center w-full relative">
+                    <LCDPanel
+                      channel={channel}
+                      userCount={dynamicUserCount}
+                      isOffline={!isConnected}
+                      isPowerOn={isPowerOn}
+                      onUserCountClick={() => setIsUserListOpen(true)}
+                    />
 
-                  {/* Floating Reactions Overlay (di depan LCD Panel, tidak menutupi D-pad & PTT) */}
-                  {isPowerOn && (
-                    <div className="absolute w-[280px] h-[135px] pointer-events-none overflow-hidden z-30 rounded-[14px] top-[10px] left-1/2 -translate-x-1/2">
-                      {floatingReactions.map((r) => {
-                        if (r.reaction === 'bart') {
+                    {/* Floating Reactions Overlay (di depan LCD Panel, tidak menutupi D-pad & PTT) */}
+                    {isPowerOn && (
+                      <div className="absolute w-[280px] h-[135px] pointer-events-none z-30 rounded-[14px] top-[10px] left-1/2 -translate-x-1/2">
+                        {floatingReactions.map((r) => {
+                          if (r.reaction === 'bart') {
+                            return (
+                              <div
+                                key={r.id}
+                                className="absolute bottom-0 -translate-x-1/2 w-[110px] h-[110px] flex items-center justify-center"
+                                style={{
+                                  left: `${r.x}%`,
+                                }}
+                              >
+                                <div className="animate-float-up w-full h-full flex items-center justify-center">
+                                  <img
+                                    src={bartSvg}
+                                    className="w-[110px] h-[110px] object-contain"
+                                    alt="Bart Simpson"
+                                  />
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          if (r.reaction === 'fox') {
+                            return (
+                              <div
+                                key={r.id}
+                                className="absolute bottom-0 -translate-x-1/2 w-[180px] h-[180px] flex items-center justify-center"
+                                style={{
+                                  left: `${r.x}%`,
+                                }}
+                              >
+                                <div className="animate-float-up w-full h-full flex items-center justify-center">
+                                  <img
+                                    src={foxSvg}
+                                    className="w-[180px] h-[180px] object-contain"
+                                    alt="Cute Fox"
+                                  />
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          const animationMap: Record<string, unknown> = {
+                            applause: applauseAnimation,
+                            love: loveAnimation,
+                            kiss: kissAnimation,
+                            wow: wowAnimation,
+                            fire: fireAnimation,
+                            crown: crownAnimation,
+                            confetti: confettiAnimation,
+                          };
+                          const animData = animationMap[r.reaction];
                           return (
                             <div
                               key={r.id}
@@ -763,109 +840,59 @@ export function RadioLayout() {
                               }}
                             >
                               <div className="animate-float-up w-full h-full flex items-center justify-center">
-                                <img
-                                  src={bartSvg}
-                                  className="w-[110px] h-[110px] object-contain"
-                                  alt="Bart Simpson"
-                                />
+                                {animData ? (
+                                  <Player
+                                    autoplay
+                                    loop={false}
+                                    src={animData}
+                                    style={{ width: '110px', height: '110px' }}
+                                  />
+                                ) : (
+                                  <span className="text-4xl">🔥</span>
+                                )}
                               </div>
                             </div>
                           );
-                        }
+                        })}
+                      </div>
+                    )}
+                  </div>
 
-                        if (r.reaction === 'fox') {
-                          return (
-                            <div
-                              key={r.id}
-                              className="absolute bottom-0 -translate-x-1/2 w-[180px] h-[180px] flex items-center justify-center"
-                              style={{
-                                left: `${r.x}%`,
-                              }}
-                            >
-                              <div className="animate-float-up w-full h-full flex items-center justify-center">
-                                <img
-                                  src={foxSvg}
-                                  className="w-[180px] h-[180px] object-contain"
-                                  alt="Cute Fox"
-                                />
-                              </div>
-                            </div>
-                          );
-                        }
-
-                        const animationMap: Record<string, any> = {
-                          applause: applauseAnimation,
-                          love: loveAnimation,
-                          kiss: kissAnimation,
-                          wow: wowAnimation,
-                          fire: fireAnimation,
-                          crown: crownAnimation,
-                          confetti: confettiAnimation,
-                        };
-                        const animData = animationMap[r.reaction];
-                        return (
-                          <div
-                            key={r.id}
-                            className="absolute bottom-0 -translate-x-1/2 w-[110px] h-[110px] flex items-center justify-center"
-                            style={{
-                              left: `${r.x}%`,
-                            }}
-                          >
-                            <div className="animate-float-up w-full h-full flex items-center justify-center">
-                              {animData ? (
-                                <Player
-                                  autoplay
-                                  loop={false}
-                                  src={animData}
-                                  style={{ width: '110px', height: '110px' }}
-                                />
-                              ) : (
-                                <span className="text-4xl">🔥</span>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
+                  {/* Progress Bar */}
+                  {showModulator && (
+                    <div
+                      className={`mt-2 flex justify-center transition-opacity duration-300 w-full ${isPowerOn ? 'opacity-100' : 'opacity-30'}`}
+                    >
+                      <ProgressBar progress={progress} />
                     </div>
                   )}
-                </div>
 
-                {/* Progress Bar */}
-                {showModulator && (
+                  {/* Control Buttons */}
                   <div
-                    className={`mt-2 flex justify-center transition-opacity duration-300 w-full ${isPowerOn ? 'opacity-100' : 'opacity-30'}`}
+                    className={`mt-1 mb-0.5 flex justify-center transition-opacity duration-300 w-full ${isPowerOn ? '' : 'pointer-events-none'}`}
                   >
-                    <ProgressBar progress={progress} />
+                    <ControlButtons
+                      onScan={() => setIsChannelListOpen(true)}
+                      onSet={handleSet}
+                      onUp={channelUp}
+                      onDown={channelDown}
+                      isScanning={isScanning}
+                    />
                   </div>
-                )}
-
-                {/* Control Buttons */}
-                <div
-                  className={`mt-1 mb-0.5 flex justify-center transition-opacity duration-300 w-full ${isPowerOn ? '' : 'pointer-events-none'}`}
-                >
-                  <ControlButtons
-                    onScan={() => setIsChannelListOpen(true)}
-                    onSet={handleSet}
-                    onUp={channelUp}
-                    onDown={channelDown}
-                    isScanning={isScanning}
-                  />
                 </div>
 
-              </div>
-
-              {/* Quick Action Dock */}
-              <QuickActionDock
-                onOpenChat={() => setIsChatOpen(true)}
-                onOpenQueue={() => setIsQueueOpen(true)}
-                onOpenPrivate={() => setIsPrivateOpen(true)}
-                onSendReaction={handleSendReaction}
-                isPowerOn={isPowerOn}
-                showPrivate={role === 'noc' || role === 'sys_admin'}
-                showSocialFeatures={isPowerOn}
-              />
-            </>
-          )}
+                {/* Quick Action Dock */}
+                <QuickActionDock
+                  onOpenChat={() => setIsChatOpen(true)}
+                  onOpenQueue={() => setIsQueueOpen(true)}
+                  onOpenPrivate={() => setIsPrivateOpen(true)}
+                  onSendReaction={handleSendReaction}
+                  isPowerOn={isPowerOn}
+                  showPrivate={role === 'noc' || role === 'sys_admin'}
+                  showSocialFeatures={isPowerOn}
+                />
+              </>
+            )}
 
             {/* PTT Button */}
             {showPTT && (
@@ -906,8 +933,6 @@ export function RadioLayout() {
                 </Suspense>
               </div>
             )}
-
-
           </div>
         </div>
       )}

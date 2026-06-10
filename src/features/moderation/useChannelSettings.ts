@@ -87,19 +87,23 @@ export function useChannelSettings(roomId: string, initialChannelName = 'Channel
           };
 
           const actorId = usePTTStore.getState().userId;
-          const { data: edgeResponse, error: insertError } = await supabaseInstance.functions.invoke('moderate-channel', {
-            body: {
-              action: 'UPDATE_SETTINGS',
-              room_id: roomId,
-              actor_user_id: actorId,
-              payload: {
-                settings: defaults
-              }
-            }
-          });
+          const { data: edgeResponse, error: insertError } =
+            await supabaseInstance.functions.invoke('moderate-channel', {
+              body: {
+                action: 'UPDATE_SETTINGS',
+                room_id: roomId,
+                actor_user_id: actorId,
+                payload: {
+                  settings: defaults,
+                },
+              },
+            });
 
           if (insertError || edgeResponse?.error) {
-            console.error('Error creating default settings via Edge Function:', insertError || edgeResponse?.error);
+            console.error(
+              'Error creating default settings via Edge Function:',
+              insertError || edgeResponse?.error
+            );
           }
 
           const inserted = edgeResponse?.result;
@@ -144,6 +148,7 @@ export function useChannelSettings(roomId: string, initialChannelName = 'Channel
       mounted = false;
       if (channel) {
         getSupabase().then((sub) => {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           sub.removeChannel(channel!);
         });
       }
@@ -159,19 +164,25 @@ export function useChannelSettings(roomId: string, initialChannelName = 'Channel
       setSettings((prev) => (prev ? { ...prev, ...newSettings } : null));
 
       const actorId = usePTTStore.getState().userId;
-      const { data: edgeResponse, error } = await supabaseInstance.functions.invoke('moderate-channel', {
-        body: {
-          action: 'UPDATE_SETTINGS',
-          room_id: roomId,
-          actor_user_id: actorId,
-          payload: {
-            settings: newSettings
-          }
+      const { data: edgeResponse, error } = await supabaseInstance.functions.invoke(
+        'moderate-channel',
+        {
+          body: {
+            action: 'UPDATE_SETTINGS',
+            room_id: roomId,
+            actor_user_id: actorId,
+            payload: {
+              settings: newSettings,
+            },
+          },
         }
-      });
+      );
 
       if (error || edgeResponse?.error) {
-        console.error('Error updating channel settings via Edge Function:', error || edgeResponse?.error);
+        console.error(
+          'Error updating channel settings via Edge Function:',
+          error || edgeResponse?.error
+        );
         throw error || new Error(edgeResponse?.error || 'Gagal menyimpan pengaturan.');
       }
     } catch (err) {

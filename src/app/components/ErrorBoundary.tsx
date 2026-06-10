@@ -61,7 +61,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
           >
             {this.state.error?.message || 'Terjadi error yang tidak terduga.'}
           </p>
-          <button
+          <button type="button"
             onClick={this.handleReset}
             style={{
               padding: '12px 32px',

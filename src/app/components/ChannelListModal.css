@@ -49,6 +49,7 @@
   justify-content: center;
   gap: 10px; /* Reduced gap from 14px */
   white-space: nowrap;
+  -webkit-user-select: none;
   user-select: none;
   pointer-events: none; /* Prevents logo text elements from intercepting close button clicks */
 }
@@ -98,12 +99,7 @@
   flex: 1;
   font-weight: 900;
   letter-spacing: 0.02em;
-  background: linear-gradient(
-    180deg,
-    #a7f3d0 0%,
-    #00C853 45%,
-    #007c31 100%
-  );
+  background: linear-gradient(180deg, #a7f3d0 0%, #00c853 45%, #007c31 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -130,9 +126,9 @@
   left: 50%;
   bottom: 2px;
   border: 3.5px solid transparent; /* Reduced from 5px */
-  border-top-color: #00C853;
-  border-left-color: #00C853;
-  border-right-color: #00C853;
+  border-top-color: #00c853;
+  border-left-color: #00c853;
+  border-right-color: #00c853;
   border-radius: 50% 50% 0 0;
   transform: translateX(-50%) rotate(0deg);
   box-shadow:

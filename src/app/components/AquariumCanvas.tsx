@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react';
+import fishSpriteUrl from '../../assets/fish_spritesheet.png';
 
 interface AquariumCanvasProps {
   theme: string;
@@ -17,9 +18,10 @@ interface Fish {
   maxSpeed: number;
   wigglePhase: number;
   wiggleSpeed: number;
-  type: 'goldfish' | 'betta-blue' | 'neon-tetra' | 'betta-purple';
-  color: string;
-  accentColor: string;
+  spriteCol: number;
+  spriteRow: number;
+  facingLeft: boolean;
+  currentFlip: number;
 }
 
 interface Bubble {
@@ -79,93 +81,48 @@ export function AquariumCanvas({ theme }: AquariumCanvasProps) {
     ctx.scale(dpr, dpr);
 
     // --- Initialize Fish ---
-    const fishList: Fish[] = [
-      {
-        id: 1,
-        x: 60,
-        y: 50,
-        vx: 0.5,
-        vy: -0.2,
-        angle: 0,
-        targetX: 150,
-        targetY: 80,
-        size: 0.85,
-        maxSpeed: 0.8,
-        wigglePhase: 0,
-        wiggleSpeed: 0.12,
-        type: 'goldfish',
-        color: '#ff7a00',
-        accentColor: '#ffa600',
-      },
-      {
-        id: 2,
-        x: 220,
-        y: 40,
-        vx: -0.4,
-        vy: 0.1,
-        angle: Math.PI,
-        targetX: 100,
-        targetY: 90,
-        size: 0.95,
-        maxSpeed: 0.75,
-        wigglePhase: Math.PI / 3,
-        wiggleSpeed: 0.08,
-        type: 'betta-blue',
-        color: '#0077b6',
-        accentColor: '#90e0ef',
-      },
-      {
-        id: 3,
-        x: 180,
-        y: 110,
-        vx: -0.6,
-        vy: -0.2,
-        angle: Math.PI,
-        targetX: 50,
-        targetY: 50,
-        size: 0.9,
-        maxSpeed: 0.7,
-        wigglePhase: Math.PI * (2 / 3),
-        wiggleSpeed: 0.09,
-        type: 'betta-purple',
-        color: '#b5179e',
-        accentColor: '#f72585',
-      },
-      {
-        id: 4,
-        x: 120,
-        y: 70,
-        vx: 0.9,
-        vy: 0.3,
-        angle: 0,
-        targetX: 250,
-        targetY: 120,
-        size: 0.7,
-        maxSpeed: 1.4,
-        wigglePhase: Math.PI / 4,
-        wiggleSpeed: 0.22,
-        type: 'neon-tetra',
-        color: '#00b4d8',
-        accentColor: '#ff003c',
-      },
-      {
-        id: 5,
-        x: 80,
-        y: 120,
-        vx: 1.1,
-        vy: -0.1,
-        angle: 0,
-        targetX: 200,
-        targetY: 40,
-        size: 0.65,
-        maxSpeed: 1.5,
-        wigglePhase: Math.PI / 2,
-        wiggleSpeed: 0.24,
-        type: 'neon-tetra',
-        color: '#00b4d8',
-        accentColor: '#ff003c',
-      },
+    const FISH_SPRITES = [
+      { col: 0, row: 0, facingLeft: false },
+      { col: 1, row: 0, facingLeft: false },
+      { col: 2, row: 0, facingLeft: false },
+      { col: 0, row: 1, facingLeft: false },
+      { col: 1, row: 1, facingLeft: false },
+      { col: 2, row: 1, facingLeft: false },
+      { col: 0, row: 2, facingLeft: true },
+      { col: 1, row: 2, facingLeft: false },
+      { col: 2, row: 2, facingLeft: false },
+      { col: 0, row: 3, facingLeft: false },
+      { col: 1, row: 3, facingLeft: true },
+      { col: 2, row: 3, facingLeft: false },
+      { col: 0, row: 4, facingLeft: false },
+      { col: 1, row: 4, facingLeft: false },
+      { col: 2, row: 4, facingLeft: true },
     ];
+
+    const fishList: Fish[] = Array.from({ length: 6 }, (_, i) => {
+      const sprite = FISH_SPRITES[Math.floor(Math.random() * FISH_SPRITES.length)];
+      return {
+        id: i + 1,
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 1.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        angle: 0,
+        targetX: Math.random() * width,
+        targetY: Math.random() * height,
+        size: 0.15 + Math.random() * 0.1,
+        maxSpeed: 0.5 + Math.random() * 0.5,
+        wigglePhase: Math.random() * Math.PI * 2,
+        wiggleSpeed: 0.1 + Math.random() * 0.15,
+        spriteCol: sprite.col,
+        spriteRow: sprite.row,
+        facingLeft: sprite.facingLeft,
+        currentFlip: 1,
+      };
+    });
+
+    const fishImage = new Image();
+    fishImage.src = fishSpriteUrl;
 
     // --- Initialize Bubbles ---
     const bubbles: Bubble[] = Array.from({ length: 10 }, () => ({
@@ -469,296 +426,38 @@ export function AquariumCanvas({ theme }: AquariumCanvasProps) {
         // --- DRAW FISH ---
         ctx.save();
         ctx.translate(fish.x, fish.y);
-        ctx.rotate(fish.angle);
+        
+        const isMovingLeft = fish.vx < 0;
+        const scaleX = isMovingLeft !== fish.facingLeft ? -1 : 1;
+        
+        // Instant horizontal flip 
+        ctx.scale(scaleX, 1);
+
+        // Pitch rotation based on velocity vector
+        const speedX = Math.abs(fish.vx);
+        const pitch = Math.atan2(fish.vy, speedX);
+        
+        // Wiggle rotation
+        const wiggle = Math.sin(fish.wigglePhase) * 0.1; 
+        
+        ctx.rotate(pitch + wiggle);
+
+        // Scale by fish size
         ctx.scale(fish.size, fish.size);
 
-        // 3D Drop Shadow effect (only on fish body)
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.55)';
-        ctx.shadowBlur = 10;
-        ctx.shadowOffsetX = 4;
-        ctx.shadowOffsetY = 6;
+        // 3D Drop Shadow effect
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
+        ctx.shadowBlur = 8;
+        ctx.shadowOffsetX = 3;
+        ctx.shadowOffsetY = 5;
 
-        const tailWiggle = Math.sin(fish.wigglePhase) * 0.35;
+        const srcW = 1024 / 3;
+        const srcH = 1024 / 5;
+        const srcX = fish.spriteCol * srcW;
+        const srcY = fish.spriteRow * srcH;
 
-        if (fish.type === 'neon-tetra') {
-          // --- Neon Tetra (Highly reflective chrome body) ---
-          ctx.beginPath();
-          ctx.ellipse(0, 0, 14, 4.5, 0, 0, Math.PI * 2);
-          ctx.fillStyle = '#1e2530';
-          ctx.fill();
-
-          // Reset shadows for glowing strip to prevent glowing shadow
-          ctx.shadowColor = 'transparent';
-          ctx.shadowBlur = 0;
-          ctx.shadowOffsetX = 0;
-          ctx.shadowOffsetY = 0;
-
-          // Glowing neon blue core stripe
-          ctx.beginPath();
-          ctx.moveTo(-10, -2);
-          ctx.lineTo(8, -1.2);
-          ctx.strokeStyle = '#00f2fe';
-          ctx.lineWidth = 2.4;
-          ctx.shadowColor = '#00f2fe';
-          ctx.shadowBlur = 6;
-          ctx.stroke();
-          ctx.shadowBlur = 0; // Reset glow
-
-          // Neon red tail stripe
-          ctx.beginPath();
-          ctx.moveTo(-12, 1.6);
-          ctx.lineTo(2, 1.6);
-          ctx.strokeStyle = fish.accentColor;
-          ctx.lineWidth = 2.0;
-          ctx.stroke();
-
-          // Reflective silver belly
-          ctx.beginPath();
-          ctx.ellipse(2, 1.8, 6.2, 2.6, 0, 0, Math.PI * 2);
-          const silverBelly = ctx.createLinearGradient(0, 0, 0, 4);
-          silverBelly.addColorStop(0, '#ffffff');
-          silverBelly.addColorStop(1, '#94a3b8');
-          ctx.fillStyle = silverBelly;
-          ctx.fill();
-
-          // Wiggling Tail Fin
-          ctx.save();
-          ctx.translate(-14, 0);
-          ctx.rotate(tailWiggle);
-          ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.lineTo(-7, -5);
-          ctx.lineTo(-5, 0);
-          ctx.lineTo(-7, 5);
-          ctx.closePath();
-          ctx.fillStyle = 'rgba(255, 61, 0, 0.75)';
-          ctx.fill();
-          ctx.restore();
-        } else if (fish.type === 'goldfish') {
-          // --- Goldfish (Fleshy scale highlights) ---
-          const bodyGrad = ctx.createRadialGradient(-3, -2, 2, -2, 0, 16);
-          bodyGrad.addColorStop(0, '#ffbe3b'); // High reflection specular highlight
-          bodyGrad.addColorStop(0.4, '#ff7a00');
-          bodyGrad.addColorStop(1, '#c90000');
-
-          ctx.beginPath();
-          ctx.ellipse(-2, 0, 18, 12, 0, 0, Math.PI * 2);
-          ctx.fillStyle = bodyGrad;
-          ctx.fill();
-
-          // Draw subtle overlapping scale lines for 4K realism
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-          ctx.lineWidth = 0.6;
-          ctx.beginPath();
-          for (let sx = -8; sx < 8; sx += 4) {
-            ctx.arc(sx, 0, 9, -Math.PI / 3, Math.PI / 3);
-          }
-          ctx.stroke();
-
-          // Specular eye
-          ctx.beginPath();
-          ctx.arc(10, -3.2, 2.8, 0, Math.PI * 2);
-          ctx.fillStyle = '#ffffff';
-          ctx.fill();
-          ctx.beginPath();
-          ctx.arc(11, -3.2, 1.4, 0, Math.PI * 2);
-          ctx.fillStyle = '#000000';
-          ctx.fill();
-          ctx.beginPath();
-          ctx.arc(10.2, -4, 0.5, 0, Math.PI * 2);
-          ctx.fillStyle = '#ffffff';
-          ctx.fill();
-
-          // Reset drop shadow for translucent fins to avoid heavy dark shapes
-          ctx.shadowColor = 'transparent';
-          ctx.shadowBlur = 0;
-          ctx.shadowOffsetX = 0;
-          ctx.shadowOffsetY = 0;
-
-          // Side pectoral fin with rays
-          ctx.save();
-          ctx.translate(2, 4);
-          ctx.rotate(0.35 + Math.sin(fish.wigglePhase) * 0.2);
-          ctx.beginPath();
-          ctx.ellipse(0, 0, 8, 4.5, -0.4, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(255, 122, 0, 0.65)';
-          ctx.fill();
-
-          // Fin rays lines
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
-          ctx.lineWidth = 0.5;
-          ctx.beginPath();
-          for (let r = 0; r < 3; r++) {
-            ctx.moveTo(0, 0);
-            ctx.lineTo(Math.cos(-0.3 + r * 0.3) * 7, Math.sin(-0.3 + r * 0.3) * 7);
-          }
-          ctx.stroke();
-          ctx.restore();
-
-          // Flowing Double Tail Fin with high density ray lines
-          ctx.save();
-          ctx.translate(-16, 0);
-          ctx.rotate(tailWiggle);
-
-          // Top Lobe
-          ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.bezierCurveTo(-16, -17, -13, -25, -25, -20);
-          ctx.bezierCurveTo(-17, -6, -9, -1, 0, 0);
-          ctx.fillStyle = 'rgba(255, 90, 0, 0.72)';
-          ctx.fill();
-
-          ctx.beginPath();
-          for (let r = 0; r < 5; r++) {
-            const angleOffset = -0.5 - r * 0.12;
-            ctx.moveTo(0, 0);
-            ctx.lineTo(Math.cos(angleOffset) * 21, Math.sin(angleOffset) * 21);
-          }
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
-          ctx.lineWidth = 0.5;
-          ctx.stroke();
-
-          // Bottom Lobe
-          ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.bezierCurveTo(-19, 17, -13, 25, -27, 18);
-          ctx.bezierCurveTo(-16, 6, -9, 1, 0, 0);
-          ctx.fillStyle = 'rgba(255, 120, 0, 0.72)';
-          ctx.fill();
-
-          ctx.beginPath();
-          for (let r = 0; r < 5; r++) {
-            const angleOffset = 0.5 + r * 0.12;
-            ctx.moveTo(0, 0);
-            ctx.lineTo(Math.cos(angleOffset) * 23, Math.sin(angleOffset) * 23);
-          }
-          ctx.stroke();
-
-          ctx.restore();
-        } else if (fish.type === 'betta-blue' || fish.type === 'betta-purple') {
-          // --- Betta (Iridescent scale shift) ---
-          const bodyGrad = ctx.createLinearGradient(-15, 0, 15, 0);
-          bodyGrad.addColorStop(0, fish.accentColor);
-          bodyGrad.addColorStop(0.75, fish.color);
-          bodyGrad.addColorStop(1, '#080a0f');
-
-          ctx.beginPath();
-          ctx.moveTo(15, -1);
-          ctx.quadraticCurveTo(5, -6, -5, -4);
-          ctx.lineTo(-15, -1.5);
-          ctx.lineTo(-15, 1.5);
-          ctx.lineTo(-5, 4);
-          ctx.quadraticCurveTo(5, 6, 15, 1);
-          ctx.closePath();
-          ctx.fillStyle = bodyGrad;
-          ctx.fill();
-
-          // Specular eye
-          ctx.beginPath();
-          ctx.arc(10, -1.6, 1.8, 0, Math.PI * 2);
-          ctx.fillStyle = '#ffffff';
-          ctx.fill();
-          ctx.beginPath();
-          ctx.arc(10.5, -1.6, 1.0, 0, Math.PI * 2);
-          ctx.fillStyle = '#000000';
-          ctx.fill();
-
-          // Reset shadows for tail fins
-          ctx.shadowColor = 'transparent';
-          ctx.shadowBlur = 0;
-          ctx.shadowOffsetX = 0;
-          ctx.shadowOffsetY = 0;
-
-          // Huge flowing dorsal (top) fin with ray structures
-          ctx.save();
-          const dorsalSway = Math.sin(fish.wigglePhase - 0.5) * 0.15;
-          ctx.translate(-3, -4);
-          ctx.rotate(dorsalSway);
-          ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.bezierCurveTo(-11, -24, -30, -22, -34, -10);
-          ctx.bezierCurveTo(-24, -2, -10, 2, 0, 0);
-          ctx.fillStyle = `${fish.color}cc`;
-          ctx.fill();
-
-          // Rays
-          ctx.beginPath();
-          for (let r = 0; r < 7; r++) {
-            const angleOffset = -1.1 - r * 0.12;
-            ctx.moveTo(0, 0);
-            ctx.lineTo(Math.cos(angleOffset) * 24, Math.sin(angleOffset) * 24);
-          }
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
-          ctx.lineWidth = 0.5;
-          ctx.stroke();
-          ctx.restore();
-
-          // Huge flowing ventral (bottom) fin with rays
-          ctx.save();
-          const ventralSway = Math.sin(fish.wigglePhase - 0.8) * 0.18;
-          ctx.translate(-4, 4);
-          ctx.rotate(-ventralSway);
-          ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.bezierCurveTo(-13, 24, -32, 22, -34, 8);
-          ctx.bezierCurveTo(-24, 1, -10, -2, 0, 0);
-          ctx.fillStyle = `${fish.accentColor}cc`;
-          ctx.fill();
-
-          // Rays
-          ctx.beginPath();
-          for (let r = 0; r < 7; r++) {
-            const angleOffset = 1.1 + r * 0.12;
-            ctx.moveTo(0, 0);
-            ctx.lineTo(Math.cos(angleOffset) * 24, Math.sin(angleOffset) * 24);
-          }
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
-          ctx.lineWidth = 0.5;
-          ctx.stroke();
-          ctx.restore();
-
-          // Massive multi-layered silk tail fin
-          ctx.save();
-          ctx.translate(-15, 0);
-          ctx.rotate(tailWiggle);
-
-          // Upper tail layer
-          ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.bezierCurveTo(-24, -22, -38, -14, -41, 3);
-          ctx.bezierCurveTo(-26, 6, -13, 2, 0, 0);
-          ctx.fillStyle = `${fish.color}b3`;
-          ctx.fill();
-
-          ctx.beginPath();
-          for (let r = 0; r < 8; r++) {
-            const angleOffset = -Math.PI / 8 - r * 0.14;
-            ctx.moveTo(0, 0);
-            ctx.lineTo(Math.cos(angleOffset) * 36, Math.sin(angleOffset) * 36);
-          }
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
-          ctx.lineWidth = 0.5;
-          ctx.stroke();
-
-          // Lower tail layer
-          ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.bezierCurveTo(-24, 22, -38, 14, -41, -3);
-          ctx.bezierCurveTo(-26, -6, -13, -2, 0, 0);
-          ctx.fillStyle = `${fish.accentColor}b3`;
-          ctx.fill();
-
-          ctx.beginPath();
-          for (let r = 0; r < 8; r++) {
-            const angleOffset = Math.PI / 8 + r * 0.14;
-            ctx.moveTo(0, 0);
-            ctx.lineTo(Math.cos(angleOffset) * 36, Math.sin(angleOffset) * 36);
-          }
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
-          ctx.lineWidth = 0.5;
-          ctx.stroke();
-
-          ctx.restore();
+        if (fishImage.complete) {
+          ctx.drawImage(fishImage, srcX, srcY, srcW, srcH, -srcW/2, -srcH/2, srcW, srcH);
         }
 
         ctx.restore();

@@ -8,19 +8,24 @@ import { usePTTStore } from '../../app/store/usePTTStore';
 export function useChannelRole(roomId: string, userId: string) {
   const [role, setRole] = useState<ChannelRole>(() => {
     if (!roomId || !userId) return 'guest';
-    const localRole = localStorage.getItem(`channel-role:${roomId}:${userId}`) as ChannelRole | null;
-    
+    const localRole = localStorage.getItem(
+      `channel-role:${roomId}:${userId}`
+    ) as ChannelRole | null;
+
     // Check if this hook is checking for the local user
     const store = usePTTStore.getState();
     const isLocalUser = userId === store.userId;
     const localUserObj = store.user;
     const localName = localUserObj?.user_metadata?.full_name || store.infoText || 'Pebe Herianto';
     const localCallSign = store.callSign;
-    const isOperatorUser = 
-      userId === 'Pebri Haryanto' || 
-      userId === 'Pebe Herianto' || 
+    const isOperatorUser =
+      userId === 'Pebri Haryanto' ||
+      userId === 'Pebe Herianto' ||
       userId === '2DYUA' ||
-      (isLocalUser && (localName === 'Pebri Haryanto' || localName === 'Pebe Herianto' || localCallSign === '2DYUA'));
+      (isLocalUser &&
+        (localName === 'Pebri Haryanto' ||
+          localName === 'Pebe Herianto' ||
+          localCallSign === '2DYUA'));
 
     const isNocUser =
       userId === 'noc_global' ||
@@ -51,7 +56,7 @@ export function useChannelRole(roomId: string, userId: string) {
         return 'sys_admin';
       }
     }
-    
+
     return localRole || 'guest';
   });
   const [status, setStatus] = useState(() => {
@@ -75,7 +80,9 @@ export function useChannelRole(roomId: string, userId: string) {
     // Local override listener
     const handleLocalRoleChange = () => {
       if (!mounted) return;
-      const localRole = localStorage.getItem(`channel-role:${roomId}:${userId}`) as ChannelRole | null;
+      const localRole = localStorage.getItem(
+        `channel-role:${roomId}:${userId}`
+      ) as ChannelRole | null;
       const localStatus = localStorage.getItem(`channel-status:${roomId}:${userId}`);
       if (localRole) setRole(localRole);
       if (localStatus) setStatus(localStatus);
@@ -140,7 +147,9 @@ export function useChannelRole(roomId: string, userId: string) {
                 }
               }
             } else {
-              console.warn(`[Bootstrap PJC] Room ${roomId} is not a valid registered channel number.`);
+              console.warn(
+                `[Bootstrap PJC] Room ${roomId} is not a valid registered channel number.`
+              );
             }
           }
         }
@@ -148,19 +157,25 @@ export function useChannelRole(roomId: string, userId: string) {
         if (!mounted) return;
 
         // Check local override first, if none, write db to local
-        const localRole = localStorage.getItem(`channel-role:${roomId}:${userId}`) as ChannelRole | null;
+        const localRole = localStorage.getItem(
+          `channel-role:${roomId}:${userId}`
+        ) as ChannelRole | null;
         const localStatus = localStorage.getItem(`channel-status:${roomId}:${userId}`);
 
         const store = usePTTStore.getState();
         const isLocalUser = userId === store.userId;
         const localUserObj = store.user;
-        const localName = localUserObj?.user_metadata?.full_name || store.infoText || 'Pebe Herianto';
+        const localName =
+          localUserObj?.user_metadata?.full_name || store.infoText || 'Pebe Herianto';
         const localCallSign = store.callSign;
-        const isOperatorUser = 
-          userId === 'Pebri Haryanto' || 
-          userId === 'Pebe Herianto' || 
+        const isOperatorUser =
+          userId === 'Pebri Haryanto' ||
+          userId === 'Pebe Herianto' ||
           userId === '2DYUA' ||
-          (isLocalUser && (localName === 'Pebri Haryanto' || localName === 'Pebe Herianto' || localCallSign === '2DYUA'));
+          (isLocalUser &&
+            (localName === 'Pebri Haryanto' ||
+              localName === 'Pebe Herianto' ||
+              localCallSign === '2DYUA'));
 
         const isNocUser =
           userId === 'noc_global' ||
@@ -277,6 +292,7 @@ export function useChannelRole(roomId: string, userId: string) {
       window.removeEventListener('channel-role-changed', handleLocalRoleChange);
       if (channel) {
         getSupabase().then((sub) => {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           sub.removeChannel(channel!);
         });
       }

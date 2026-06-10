@@ -73,8 +73,22 @@ let mockGainNode: {
   connect: ReturnType<typeof vi.fn>;
   gain: { value: number };
 };
-let mockAnalyserNode: any;
-let mockCtx: any;
+let mockAnalyserNode: {
+  connect: ReturnType<typeof vi.fn>;
+  fftSize: number;
+  frequencyBinCount: number;
+  getFloatTimeDomainData: ReturnType<typeof vi.fn>;
+};
+let mockCtx: {
+  state: string;
+  currentTime: number;
+  resume: ReturnType<typeof vi.fn>;
+  decodeAudioData: ReturnType<typeof vi.fn>;
+  createBufferSource: ReturnType<typeof vi.fn>;
+  createGain: ReturnType<typeof vi.fn>;
+  createAnalyser: ReturnType<typeof vi.fn>;
+  destination: unknown;
+};
 
 const setupAudioContextMock = (ctxState: 'running' | 'suspended' = 'running') => {
   mockAudioBuffer = { duration: 0.5 };
@@ -248,7 +262,7 @@ describe('useAudioPlayback', () => {
     usePTTStore.setState({
       isTransmitting: false,
       isConnected: true,
-      activeTransmitter: mockTransmitter as any,
+      activeTransmitter: mockTransmitter as import('../store/types').PTTState['activeTransmitter'],
     });
 
     const { result } = renderHook(() => useAudioPlayback());

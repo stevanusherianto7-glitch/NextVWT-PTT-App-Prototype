@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getSupabase } from '../../app/utils/supabase';
+import type { RealtimeChannel } from '@supabase/supabase-js';
 import { RefreshCw, ClipboardList, Clock } from 'lucide-react';
 
 interface ModerationLog {
@@ -9,7 +10,7 @@ interface ModerationLog {
   actor_role: string;
   target_user_id?: string;
   action: string;
-  detail: any;
+  detail: Record<string, unknown>;
   created_at: string;
 }
 
@@ -48,7 +49,7 @@ export function ModerationLogPanel({ roomId }: ModerationLogPanelProps) {
   useEffect(() => {
     loadLogs();
 
-    let channel: any = null;
+    let channel: RealtimeChannel | null = null;
     (async () => {
       const supabaseInstance = await getSupabase();
       channel = supabaseInstance
@@ -70,9 +71,11 @@ export function ModerationLogPanel({ roomId }: ModerationLogPanelProps) {
 
     return () => {
       if (channel) {
-        getSupabase().then((sub) => sub.removeChannel(channel));
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        getSupabase().then((sub) => sub.removeChannel(channel!));
       }
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId]);
 
   const getActorRoleLabel = (role: string) => {
@@ -113,17 +116,17 @@ export function ModerationLogPanel({ roomId }: ModerationLogPanelProps) {
 
     switch (log.action) {
       case 'SET_USER_ROLE':
-        return `Mengubah jabatan ${target} menjadi ${getRoleLabel(detail.nextRole || 'guest')} (sebelumnya ${getRoleLabel(detail.previousRole || 'guest')}).`;
+        return `Mengubah jabatan ${target} menjadi ${getRoleLabel((detail.nextRole as string) || 'guest')} (sebelumnya ${getRoleLabel((detail.previousRole as string) || 'guest')}).`;
       case 'MUTE_USER':
-        return `Membungkam ${target} selama ${detail.minutes > 0 ? `${detail.minutes} menit` : 'permanen'}.`;
+        return `Membungkam ${target} selama ${(detail.minutes as number) > 0 ? `${detail.minutes} menit` : 'permanen'}.`;
       case 'UNMUTE_USER':
         return `Membatalkan pembungkaman ${target}.`;
       case 'BLOCK_PTT':
-        return `Memblokir tombol bicara (PTT) ${target} selama ${detail.minutes > 0 ? `${detail.minutes} menit` : 'permanen'}.`;
+        return `Memblokir tombol bicara (PTT) ${target} selama ${(detail.minutes as number) > 0 ? `${detail.minutes} menit` : 'permanen'}.`;
       case 'UNBLOCK_PTT':
         return `Membuka blokir PTT ${target}.`;
       case 'BLOCK_CHAT':
-        return `Memblokir chat ${target} selama ${detail.minutes > 0 ? `${detail.minutes} menit` : 'permanen'}.`;
+        return `Memblokir chat ${target} selama ${(detail.minutes as number) > 0 ? `${detail.minutes} menit` : 'permanen'}.`;
       case 'UNBLOCK_CHAT':
         return `Membuka blokir chat ${target}.`;
       case 'KICK_USER':
@@ -145,7 +148,7 @@ export function ModerationLogPanel({ roomId }: ModerationLogPanelProps) {
           <ClipboardList className="h-3.5 w-3.5 text-emerald-400" />
           Log Aktivitas Moderasi
         </span>
-        <button
+        <button type="button"
           onClick={loadLogs}
           className="p-1 hover:bg-white/5 rounded text-slate-400 hover:text-white transition-colors"
           title="Segarkan Log"
