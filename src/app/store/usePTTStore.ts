@@ -133,6 +133,26 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
               state.onWebRTCSignalingReceived(payload);
             }
           }
+        )
+        .on(
+          'broadcast',
+          { event: 'hang_up' },
+          ({ payload }: { payload: { targetUserId: string; moderatorName?: string } }) => {
+            if (activeChannelSubscription !== channelInstance) return;
+            const state = usePTTStore.getState();
+
+            // If we are the target and currently transmitting, force-stop our transmission
+            if (payload.targetUserId === state.userId && state.isTransmitting) {
+              console.warn(`[Hang Up] Transmission interrupted by moderator${payload.moderatorName ? ` (${payload.moderatorName})` : ''}`);
+              usePTTStore.setState({ isTransmitting: false, progress: 0 });
+            }
+
+            // If the target matches the current active transmitter, clear it for all listeners
+            const currentTx = state.activeTransmitter;
+            if (currentTx && currentTx.userId === payload.targetUserId) {
+              usePTTStore.setState({ activeTransmitter: null, progress: 0 });
+            }
+          }
         );
 
       channelInstance.subscribe((status: string) => {
@@ -154,7 +174,7 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
         if (isSubscribed) {
           const currentStore = usePTTStore.getState();
           const userMeta = currentStore.user;
-          const displayName = currentStore.infoText || userMeta?.user_metadata?.full_name;
+          const displayName = currentStore.infoText || userMeta?.user_metadata?.full_name || 'Pebe Herianto';
           const location = currentStore.locationText;
 
           // Only track presence if the channel is actually subscribed on the backend

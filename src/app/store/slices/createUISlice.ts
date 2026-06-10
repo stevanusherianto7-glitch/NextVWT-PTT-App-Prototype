@@ -19,6 +19,7 @@ export const createUISlice: StateCreator<
     | 'setPower'
     | 'setConnected'
     | 'setTransmitting'
+    | 'hangUpUser'
     | 'setScanning'
     | 'setProgress'
     | 'setError'
@@ -74,7 +75,7 @@ export const createUISlice: StateCreator<
 
     if (activeChannelSubscription && state.isConnected) {
       const userMeta = state.user;
-      const displayName = state.infoText || userMeta?.user_metadata?.full_name;
+      const displayName = state.infoText || userMeta?.user_metadata?.full_name || 'Pebe Herianto';
 
       activeChannelSubscription.send({
         type: 'broadcast',
@@ -89,6 +90,37 @@ export const createUISlice: StateCreator<
     }
 
     set({ isTransmitting: transmitting, progress: transmitting ? 50 : 0 });
+  },
+
+  hangUpUser: (targetUserId: string) => {
+    const state = get();
+    if (!state.isPowerOn) return;
+
+    // Broadcast hang_up event to all clients on this channel
+    if (activeChannelSubscription && state.isConnected) {
+      const userMeta = state.user;
+      const moderatorName = state.infoText || userMeta?.user_metadata?.full_name || 'Moderator';
+
+      activeChannelSubscription.send({
+        type: 'broadcast',
+        event: 'hang_up',
+        payload: {
+          targetUserId,
+          moderatorName,
+        },
+      });
+    }
+
+    // Optimistically clear the active transmitter locally if it matches the target
+    const currentTx = state.activeTransmitter;
+    if (currentTx && currentTx.userId === targetUserId) {
+      set({ activeTransmitter: null, progress: 0 });
+    }
+
+    // If we are hanging up ourselves, stop our own transmission
+    if (targetUserId === state.userId && state.isTransmitting) {
+      set({ isTransmitting: false, progress: 0 });
+    }
   },
 
   setScanning: (scanning) => {

@@ -155,3 +155,208 @@ Font diimpor secara dinamis melalui Google Fonts API bersama dengan font penduku
      * **VWT** (`.logo-vwt`): `font-weight: 900` dengan gradasi mint-to-emerald (`linear-gradient(180deg, #a7f3d0 0%, #00C853 45%, #007c31 100%)`).
    * **Jarak Antar Huruf (Tracking)**: `0.045em` untuk Next, `0.02em` untuk VWT.
    * **Efek Gradasi 3D & Bayangan**: Menggunakan `-webkit-background-clip: text` dan bayangan bertumpuk `text-shadow` dengan rona hijau untuk menegaskan kedalaman taktil 3D.
+
+---
+
+## 🛡️ 7. Fitur Moderasi — Spesifikasi Desain & Fungsionalitas
+
+Fitur moderasi memungkinkan pengguna dengan peran tertentu untuk mengontrol status dan hak transmisi pengguna lain di dalam channel yang sama. Seluruh antarmuka moderasi diakses melalui **User List Modal** → klik profil user → **Zoomed Avatar Modal**.
+
+### A. Hak Akses Moderasi (Permission Model)
+
+Panel moderasi hanya ditampilkan jika pengguna yang login memiliki salah satu peran berikut:
+
+| Peran | Kode Internal | Dapat Memoderasi |
+| :--- | :--- | :--- |
+| **Network Operations Center** | `noc` | ✅ Semua peran di bawahnya |
+| **System Administrator** | `sys_admin` | ✅ `pjc`, `operator`, `guest` |
+| **Penanggung Jawab Channel** | `pjc` | ✅ `operator`, `guest` |
+| **Operator** | `operator` | ✅ Akses panel moderasi (mode & hang up) |
+| **Guest** | `guest` | ❌ Tidak dapat memoderasi |
+
+Logika penentuan hak:
+```typescript
+const canModerate =
+  localRole === 'operator' ||
+  localRole === 'pjc' ||
+  localRole === 'sys_admin' ||
+  localRole === 'noc';
+```
+
+Peran disimpan secara lokal per channel di `localStorage` dengan format key:
+```
+channel-role:ptt-room-{channelNumber}:{userId}
+```
+
+---
+
+### B. Panel Moderasi — Mode Moderasi Jalur
+
+Panel ini menampilkan grid tombol 2 kolom × 3 baris untuk mengatur status/kondisi transmisi user target.
+
+**Tata Letak Grid (`grid-cols-2 gap-1.5`)**:
+
+| Kolom 1 | Kolom 2 |
+| :--- | :--- |
+| 🟢 **Voice** (Normal) | 🔴 **Silent** (Mute) |
+| 🟡 **Controlled** | 🔵 **Wait (Antri)** |
+| 🟣 **Wait Ctrl** | ⚡ **Hang Up** |
+
+#### Deskripsi Setiap Mode
+
+| Mode | Ikon Aset | Fungsi | Warna Aktif |
+| :--- | :--- | :--- | :--- |
+| **Voice** | `icon_voice.png` | Status default — user dapat transmit dan menerima | `emerald-50` / `emerald-700` |
+| **Silent** | `icon_silent.png` | Mute — user tidak dapat transmit (hanya mendengar) | `red-50` / `red-700` |
+| **Controlled** | `icon_controlled.png` | Terkontrol — transmisi diatur oleh moderator | `amber-50` / `amber-700` |
+| **Wait (Antri)** | `icon_wait.png` | Antrian — user menunggu giliran transmit | `blue-50` / `blue-700` |
+| **Wait Ctrl** | `icon_wait_controlled.png` | Kombinasi antri + terkontrol | `indigo-50` / `indigo-700` |
+| **Hang Up** | SVG petir inline | Memutus paksa transmisi user target | `red-50` / `red-700` |
+
+#### Styling Tombol Mode
+
+```
+Tidak aktif : bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100
+Aktif       : bg-{color}-50 border-{color}-500/30 text-{color}-700 shadow-sm
+```
+
+Setiap tombol berukuran `px-2.5 py-1.5`, border `rounded-lg`, font `text-[11px] font-semibold`, dengan ikon berukuran `w-3.5 h-3.5`.
+
+---
+
+### C. Panel Moderasi — Peran / Jabatan Jalur
+
+Grid tombol 3 kolom × 1 baris untuk mengubah peran/jabatan user target di channel.
+
+**Tata Letak Grid (`grid-cols-3 gap-1.5`)**:
+
+| Kolom 1 | Kolom 2 | Kolom 3 |
+| :--- | :--- | :--- |
+| **Guest** | **Operator** | **Moderator** |
+
+#### Styling Tombol Peran
+
+```
+Tidak aktif : bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100
+Aktif       : bg-{color}-50/100 border-{color}-500/30 text-{color}-700 shadow-sm
+```
+
+Tombol berukuran `py-1`, border `rounded-lg`, font `text-[10px] font-semibold`. Tombol Operator dan Moderator menyertakan ikon kecil `w-3.5 h-3.5` di samping label.
+
+---
+
+### D. Heading Label Moderasi
+
+Kedua heading panel moderasi diposisikan rata tengah:
+
+```
+text-[10px] font-bold text-gray-400 uppercase tracking-wider text-center
+```
+
+* **"Mode Moderasi Jalur"** — di atas grid mode (margin bawah `mb-2`)
+* **"Peran / Jabatan Jalur"** — di atas grid peran (margin atas `mt-3.5`, margin bawah `mb-2`)
+
+---
+
+### E. Fitur Hang Up — Mekanisme & Alur Data
+
+**Tujuan**: Memungkinkan moderator/operator menyela dan menghentikan transmisi PTT user lain secara instan.
+
+#### Alur Fungsional
+
+```
+[Moderator klik ⚡ Hang Up]
+        │
+        ▼
+  hangUpUser(targetUserId)          ← createUISlice.ts
+        │
+        ├─► Broadcast 'hang_up' event via Supabase Realtime Channel
+        │     payload: { targetUserId, moderatorName }
+        │
+        ├─► Optimistic: clear activeTransmitter lokal (jika cocok)
+        │
+        └─► Optimistic: stop own transmission (jika target === self)
+        
+        
+  [Semua klien di channel menerima broadcast]
+        │
+        ▼
+  subscribeToChannel() listener     ← usePTTStore.ts
+        │
+        ├─► Jika targetUserId === userId saya & sedang transmit:
+        │     → isTransmitting = false, progress = 0
+        │
+        └─► Jika activeTransmitter.userId === targetUserId:
+              → activeTransmitter = null, progress = 0
+```
+
+#### Payload Broadcast
+
+```typescript
+// Event: 'hang_up'
+{
+  type: 'broadcast',
+  event: 'hang_up',
+  payload: {
+    targetUserId: string,    // ID user yang transmisinya dihentikan
+    moderatorName: string,   // Nama moderator yang melakukan hang up
+  }
+}
+```
+
+#### Implementasi Store (Zustand)
+
+**Action** — `hangUpUser` di [createUISlice.ts](file:///c:/Users/ASUS/Downloads/NextVWT%20PTT%20App%20Prototype%20-%20Clone/src/app/store/slices/createUISlice.ts):
+```typescript
+hangUpUser: (targetUserId: string) => {
+  // 1. Guard: abaikan jika power off
+  // 2. Broadcast 'hang_up' event via activeChannelSubscription
+  // 3. Optimistic: clear activeTransmitter jika cocok
+  // 4. Optimistic: stop own transmission jika target === self
+}
+```
+
+**Listener** — di [usePTTStore.ts](file:///c:/Users/ASUS/Downloads/NextVWT%20PTT%20App%20Prototype%20-%20Clone/src/app/store/usePTTStore.ts) `subscribeToChannel()`:
+```typescript
+.on('broadcast', { event: 'hang_up' }, ({ payload }) => {
+  // 1. Jika target === userId saya → force-stop transmission
+  // 2. Jika target === activeTransmitter → clear transmitter display
+})
+```
+
+#### Ikon Hang Up (SVG Petir / Flash)
+
+Ikon menggunakan SVG inline dengan path petir (lightning bolt):
+```tsx
+<svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-current">
+  <path d="M7 2v11h3v9l7-12h-4l4-8z" />
+</svg>
+```
+
+---
+
+### F. Lencana Mode di Avatar (Badge Overlay)
+
+Saat status user berubah melalui moderasi, lencana ikon mode ditampilkan di sudut kanan bawah avatar user pada daftar user list. Aturan tampil:
+
+| Mode | Lencana Tampil? | Keterangan |
+| :--- | :--- | :--- |
+| `voice` | ❌ Tidak | Default — tidak perlu lencana (bersih) |
+| `operator` | ✅ Ya | Ikon operator abu-abu |
+| `moderator` | ✅ Ya | Ikon mahkota emas |
+| `silent` | ✅ Ya | Ikon mute merah |
+| `controlled` | ✅ Ya | Ikon kontrol kuning |
+| `wait` | ✅ Ya | Ikon antri biru |
+| `wait_controlled` | ✅ Ya | Ikon antri+kontrol ungu |
+
+Styling lencana: `w-[21px] h-[21px] object-contain drop-shadow-[0_1.5px_2.5px_rgba(0,0,0,0.35)]` — tanpa background placeholder, langsung transparan di atas avatar.
+
+---
+
+### G. Dimensi Modal
+
+| Komponen | Lebar Maks | Catatan |
+| :--- | :--- | :--- |
+| User List Modal | `max-w-[340px]` | Container daftar user dengan scrollbar |
+| Zoomed Avatar / Profil Modal | `max-w-[340px]` | Modal overlay berisi avatar, info, dan panel moderasi |
+| Tinggi User List | `400px` (default), `535px` (layar ≥ 700px) | Responsif berdasarkan tinggi viewport |

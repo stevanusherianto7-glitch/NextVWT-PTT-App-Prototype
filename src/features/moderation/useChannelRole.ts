@@ -3,10 +3,40 @@ import { getSupabase } from '../../app/utils/supabase';
 import type { ChannelRole } from './permissions';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { CHANNELS, BRAND } from '../../app/utils/config';
+import { usePTTStore } from '../../app/store/usePTTStore';
 
 export function useChannelRole(roomId: string, userId: string) {
-  const [role, setRole] = useState<ChannelRole>('guest');
-  const [status, setStatus] = useState('active');
+  const [role, setRole] = useState<ChannelRole>(() => {
+    if (!roomId || !userId) return 'guest';
+    const localRole = localStorage.getItem(`channel-role:${roomId}:${userId}`) as ChannelRole | null;
+    
+    // Check if this hook is checking for the local user
+    const store = usePTTStore.getState();
+    const isLocalUser = userId === store.userId;
+    const localUserObj = store.user;
+    const localName = localUserObj?.user_metadata?.full_name || store.infoText || 'Pebe Herianto';
+    const localCallSign = store.callSign;
+    const isOperatorUser = 
+      userId === 'Pebri Haryanto' || 
+      userId === 'Pebe Herianto' || 
+      userId === '2DYUA' ||
+      (isLocalUser && (localName === 'Pebri Haryanto' || localName === 'Pebe Herianto' || localCallSign === '2DYUA'));
+
+    if (isOperatorUser) {
+      if (!localRole || localRole === 'guest') {
+        // Automatically save to localStorage
+        localStorage.setItem(`channel-role:${roomId}:${userId}`, 'operator');
+        return 'operator';
+      }
+    }
+    
+    return localRole || 'guest';
+  });
+  const [status, setStatus] = useState(() => {
+    if (!roomId || !userId) return 'active';
+    const localStatus = localStorage.getItem(`channel-status:${roomId}:${userId}`);
+    return localStatus || 'active';
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,6 +49,17 @@ export function useChannelRole(roomId: string, userId: string) {
 
     let mounted = true;
     let channel: RealtimeChannel | null = null;
+
+    // Local override listener
+    const handleLocalRoleChange = () => {
+      if (!mounted) return;
+      const localRole = localStorage.getItem(`channel-role:${roomId}:${userId}`) as ChannelRole | null;
+      const localStatus = localStorage.getItem(`channel-status:${roomId}:${userId}`);
+      if (localRole) setRole(localRole);
+      if (localStatus) setStatus(localStatus);
+    };
+
+    window.addEventListener('channel-role-changed', handleLocalRoleChange);
 
     async function loadAndSubscribe() {
       try {
@@ -84,8 +125,43 @@ export function useChannelRole(roomId: string, userId: string) {
 
         if (!mounted) return;
 
-        setRole((data?.role as ChannelRole) || 'guest');
-        setStatus(data?.status || 'active');
+        // Check local override first, if none, write db to local
+        const localRole = localStorage.getItem(`channel-role:${roomId}:${userId}`) as ChannelRole | null;
+        const localStatus = localStorage.getItem(`channel-status:${roomId}:${userId}`);
+
+        const store = usePTTStore.getState();
+        const isLocalUser = userId === store.userId;
+        const localUserObj = store.user;
+        const localName = localUserObj?.user_metadata?.full_name || store.infoText || 'Pebe Herianto';
+        const localCallSign = store.callSign;
+        const isOperatorUser = 
+          userId === 'Pebri Haryanto' || 
+          userId === 'Pebe Herianto' || 
+          userId === '2DYUA' ||
+          (isLocalUser && (localName === 'Pebri Haryanto' || localName === 'Pebe Herianto' || localCallSign === '2DYUA'));
+
+        if (isOperatorUser && (!localRole || localRole === 'guest')) {
+          setRole('operator');
+          localStorage.setItem(`channel-role:${roomId}:${userId}`, 'operator');
+        } else if (localRole) {
+          setRole(localRole);
+        } else if (data?.role) {
+          const dbRole = data.role as ChannelRole;
+          setRole(dbRole);
+          localStorage.setItem(`channel-role:${roomId}:${userId}`, dbRole);
+        } else {
+          setRole('guest');
+        }
+
+        if (localStatus) {
+          setStatus(localStatus);
+        } else if (data?.status) {
+          setStatus(data.status);
+          localStorage.setItem(`channel-status:${roomId}:${userId}`, data.status);
+        } else {
+          setStatus('active');
+        }
+
         setLoading(false);
 
         // Setup realtime subscription
@@ -109,8 +185,13 @@ export function useChannelRole(roomId: string, userId: string) {
 
               if (newRecord && newRecord.user_id === userId) {
                 if (mounted) {
-                  setRole((newRecord.role as ChannelRole) || 'guest');
-                  setStatus(newRecord.status || 'active');
+                  const r = (newRecord.role as ChannelRole) || 'guest';
+                  const s = newRecord.status || 'active';
+                  setRole(r);
+                  setStatus(s);
+                  localStorage.setItem(`channel-role:${roomId}:${userId}`, r);
+                  localStorage.setItem(`channel-status:${roomId}:${userId}`, s);
+                  window.dispatchEvent(new Event('channel-role-changed'));
                 }
               } else if (
                 payload.eventType === 'DELETE' &&
@@ -120,6 +201,9 @@ export function useChannelRole(roomId: string, userId: string) {
                 if (mounted) {
                   setRole('guest');
                   setStatus('active');
+                  localStorage.removeItem(`channel-role:${roomId}:${userId}`);
+                  localStorage.removeItem(`channel-status:${roomId}:${userId}`);
+                  window.dispatchEvent(new Event('channel-role-changed'));
                 }
               } else {
                 // If it affects this user or we need to be sure, do a quick refetch
@@ -130,8 +214,13 @@ export function useChannelRole(roomId: string, userId: string) {
                   .eq('user_id', userId)
                   .maybeSingle();
                 if (mounted) {
-                  setRole((refetch?.role as ChannelRole) || 'guest');
-                  setStatus(refetch?.status || 'active');
+                  const r = (refetch?.role as ChannelRole) || 'guest';
+                  const s = refetch?.status || 'active';
+                  setRole(r);
+                  setStatus(s);
+                  localStorage.setItem(`channel-role:${roomId}:${userId}`, r);
+                  localStorage.setItem(`channel-status:${roomId}:${userId}`, s);
+                  window.dispatchEvent(new Event('channel-role-changed'));
                 }
               }
             }
@@ -149,6 +238,7 @@ export function useChannelRole(roomId: string, userId: string) {
 
     return () => {
       mounted = false;
+      window.removeEventListener('channel-role-changed', handleLocalRoleChange);
       if (channel) {
         getSupabase().then((sub) => {
           sub.removeChannel(channel!);

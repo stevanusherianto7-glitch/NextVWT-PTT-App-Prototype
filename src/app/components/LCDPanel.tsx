@@ -3,8 +3,15 @@ import twinHeadsIcon from '../../imports/ikon_kepala_kembar-2.png';
 import usernameIcon from '../../imports/ikon_username1.png';
 import { usePTTStore } from '../store/usePTTStore';
 import { AquariumSkeleton } from './SkeletonLoaders';
-import { checkIfNewUser } from '../utils/constants';
-import { Sparkles } from 'lucide-react';
+import iconOperator from '../../assets/icon_operator_otomatis.png';
+import iconModerator from '../../assets/icon_moderator.png';
+import iconControlled from '../../assets/icon_controlled.png';
+import iconSilent from '../../assets/icon_silent.png';
+import iconWait from '../../assets/icon_wait.png';
+import iconWaitControlled from '../../assets/icon_wait_controlled.png';
+import { useChannelRole } from '../../features/moderation/useChannelRole';
+import { ChannelRole } from '../../features/moderation/permissions';
+import { USER_PROFILES } from './UserListModal';
 
 // [P2-2] AquariumCanvas hanya diload jika user memakai theme-v6 + bgActive
 // Ukuran: ~24KB JS + WebGL canvas — 0% users tidak memakai tema ini tidak perlu download
@@ -44,11 +51,59 @@ export function LCDPanel({
       ? activeTransmitter?.displayName
       : localName;
 
-  const isNewUser = isTransmitting
-    ? checkIfNewUser(user?.created_at)
-    : isReceiving
-      ? activeTransmitter?.isNewUser
-      : checkIfNewUser(user?.created_at);
+  // Get active user shown on LCD
+  const activeUserId = isTransmitting
+    ? localUserId
+    : isReceiving && activeTransmitter
+      ? activeTransmitter.userId
+      : localUserId;
+
+  const roomId = `ptt-room-${channel}`;
+  const { role: localRole, status: localStatus } = useChannelRole(roomId, localUserId);
+
+  let activeRole: ChannelRole = 'guest';
+  let activeStatus = 'active';
+
+  if (activeUserId === localUserId) {
+    activeRole = localRole;
+    activeStatus = localStatus;
+  } else if (isReceiving && activeTransmitter) {
+    const activeUserObj = usePTTStore.getState().activeUsers.find(u => u.userId === activeUserId);
+    
+    // Resolve fallback role and status from USER_PROFILES
+    const matchedProfile = activeUserObj 
+      ? (USER_PROFILES[activeUserObj.userId] || USER_PROFILES[activeUserObj.displayName] || Object.values(USER_PROFILES).find(p => p.callSign === activeUserObj.callSign))
+      : (USER_PROFILES[activeUserId] || Object.values(USER_PROFILES).find(p => p.callSign === activeUserId));
+
+    const roleFallback = matchedProfile?.role || 'guest';
+    const statusFallback = matchedProfile?.isMuted 
+      ? 'muted' 
+      : matchedProfile?.isControlled 
+        ? 'controlled' 
+        : matchedProfile?.isWait 
+          ? 'wait' 
+          : matchedProfile?.isWaitControlled 
+            ? 'wait_controlled' 
+            : 'active';
+
+    activeRole = (localStorage.getItem(`channel-role:${roomId}:${activeUserId}`) as ChannelRole | null) || roleFallback;
+    activeStatus = localStorage.getItem(`channel-status:${roomId}:${activeUserId}`) || statusFallback;
+  }
+
+  let activeUserModeIcon: string | null = null;
+  if (activeStatus === 'muted') {
+    activeUserModeIcon = iconSilent;
+  } else if (activeStatus === 'controlled') {
+    activeUserModeIcon = iconControlled;
+  } else if (activeStatus === 'wait') {
+    activeUserModeIcon = iconWait;
+  } else if (activeStatus === 'wait_controlled') {
+    activeUserModeIcon = iconWaitControlled;
+  } else if (activeRole === 'operator') {
+    activeUserModeIcon = iconOperator;
+  } else if (activeRole === 'pjc' || activeRole === 'sys_admin' || activeRole === 'noc') {
+    activeUserModeIcon = iconModerator;
+  }
 
   // Signal strength simulator (fluctuates 1-4 bars when online, 0 when offline)
   const [signalBars, setSignalBars] = useState(4);
@@ -173,26 +228,30 @@ export function LCDPanel({
           {/* Top status bar */}
           <div className="flex items-start justify-between">
             {/* Top Left: Username Icon and Letter */}
-            <div className="flex items-center gap-1.5 pt-1">
-              <img
-                src={usernameIcon}
-                alt="Username Icon"
-                className="h-[52px] w-[50px] object-contain -mt-[18px] -ml-1.5"
-                style={{ filter: 'drop-shadow(1px 1px 0px rgba(0,0,0,0.2))' }}
-              />
+            <div className="flex items-end gap-1.5 pt-1">
+              <div className="relative shrink-0 select-none flex items-end justify-center w-[38px] h-[38px] -ml-0.5">
+                <img
+                  src={activeRole === 'operator' ? iconOperator : usernameIcon}
+                  alt="Username Icon"
+                  className={activeRole === 'operator' ? "h-[30px] w-[30px] object-contain mb-[1px]" : "h-[52px] w-[50px] object-contain absolute -top-[18px] -left-1.5"}
+                  style={{ filter: 'drop-shadow(1px 1px 0px rgba(0,0,0,0.2))' }}
+                />
+                {activeUserModeIcon && activeUserModeIcon !== iconOperator && (
+                  <img
+                    src={activeUserModeIcon}
+                    alt="Role/Status Icon"
+                    className="absolute -bottom-[2px] -right-[4px] w-[18px] h-[18px] object-contain drop-shadow-[0_1px_1.5px_rgba(0,0,0,0.45)]"
+                    draggable={false}
+                  />
+                )}
+              </div>
               <span
                 data-testid="lcd-username"
-                className="text-base -ml-1 truncate max-w-[110px]"
+                className="text-base -ml-1 truncate max-w-[110px] leading-none mb-[7px]"
                 style={{ fontWeight: 600, color: 'var(--lcd-label-color)' }}
               >
                 {username}
               </span>
-              {isNewUser && (
-                <Sparkles
-                  className="w-4 h-4 ml-0.5 text-yellow-400 animate-pulse flex-shrink-0"
-                  style={{ filter: 'drop-shadow(0px 0px 2px rgba(250,204,21,0.8))' }}
-                />
-              )}
             </div>
 
             {/* OFFLINE Badge */}
@@ -306,9 +365,8 @@ export function LCDPanel({
           <div className="flex justify-between items-end pb-2 px-1 mt-auto">
             <div className="flex items-end gap-1 w-[115px]">
               <div
-                className="relative"
+                className="relative text-2xl"
                 style={{
-                  fontSize: '18px',
                   fontWeight: 'bold',
                   paddingBottom: '2px',
                   color: 'var(--lcd-label-color)',
@@ -349,7 +407,7 @@ export function LCDPanel({
                 <img
                   src={twinHeadsIcon}
                   alt="User Count Icon"
-                  className="h-[52px] w-[50px] object-contain -mb-[5px]"
+                  className="h-[52px] w-[50px] object-contain mb-[1px]"
                   style={{ filter: 'drop-shadow(1px 1px 0px rgba(0,0,0,0.2))' }}
                 />
               </div>

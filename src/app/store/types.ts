@@ -90,6 +90,7 @@ export interface PTTState {
   setPower: (power: boolean) => void;
   setConnected: (connected: boolean) => void;
   setTransmitting: (transmitting: boolean) => void;
+  hangUpUser: (targetUserId: string) => void;
   setScanning: (scanning: boolean) => void;
   setProgress: (progress: number) => void;
   setChannelNumber: (numOrFn: number | ((prev: number) => number)) => void;

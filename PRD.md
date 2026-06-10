@@ -231,6 +231,7 @@ Every feature is tagged **[P0]** (Must Have), **[P1]** (Should Have), **[P2]** (
 | PTT-11 | Haptic feedback | P0 | Vibrasi 15ms saat tekan, 10ms saat lepas |
 | PTT-12 | Sound feedback PTT | P0 | Tone tekan (chirp) + squelch + Roger beep |
 | PTT-13 | Watchdog transmitter | P0 | Auto-clear stale transmitter setelah 1.5 detik silence |
+| PTT-14 | Hang Up (moderasi) | P1 | Moderator/operator dapat memutus paksa transmisi user lain |
 
 **Spesifikasi PTT-05 (Half-Duplex):**
 - Saat `activeTransmitter !== null && activeTransmitter.userId !== myUserId`, tombol PTT menampilkan teks "BUSY" warna oranye
@@ -241,6 +242,14 @@ Every feature is tagged **[P0]** (Must Have), **[P1]** (Should Have), **[P2]** (
 - Latensi dari tekan tombol hingga suara terdengar di penerima: < 500ms di jaringan 4G
 - Audio tidak terputus-putus saat koneksi stabil (packet loss < 5%)
 - Mic release harus memicu squelch tail + Roger beep
+
+**Spesifikasi PTT-14 (Hang Up):**
+- Tombol "Hang Up" muncul di panel moderasi profil user (UserListModal) hanya jika target user sedang aktif transmit
+- Hanya user dengan role `operator`, `pjc`, `sys_admin`, atau `noc` yang dapat melihat dan menekan tombol
+- Mekanisme: broadcast event `hang_up` dengan payload `{ targetUserId, moderatorName }` melalui Supabase Realtime channel
+- Pada sisi target: jika `targetUserId === userId` dan sedang transmitting, `isTransmitting` langsung di-set `false`
+- Pada sisi semua klien: jika `activeTransmitter.userId === targetUserId`, `activeTransmitter` di-clear ke `null`
+- Optimistic UI: moderator langsung melihat transmitter berhenti tanpa menunggu broadcast kembali
 
 ---
 
