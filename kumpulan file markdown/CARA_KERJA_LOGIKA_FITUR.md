@@ -1,4 +1,5 @@
 # Cara Kerja Logika Fitur — NextVWT PTT App
+
 **Versi:** 4.0 · **Diperbarui:** Juni 2026 · Mencakup Sistem Moderasi 5 Level
 
 Dokumen ini menjelaskan arsitektur teknis, alur logika, state management, dan integrasi layanan NextVWT secara mendalam. Diperbarui untuk mencerminkan kondisi codebase terkini termasuk sistem moderasi yang telah terimplementasi.
@@ -9,7 +10,7 @@ Dokumen ini menjelaskan arsitektur teknis, alur logika, state management, dan in
 
 ### 1.1 Store Zustand — 5 Slice Architecture
 
-```
+```text
 usePTTStore.ts (komposisi)
 ├── storeUtils.ts              safeGetStorage, safeSetStorage, generateUUID, getChannelUUID
 ├── subscription.ts            activeChannelSubscription (di luar state — non-serializable)
@@ -26,7 +27,7 @@ usePTTStore.ts (komposisi)
 
 ### 1.2 Audio Pipeline
 
-```
+```text
 PTTButton (tekan)
   → usePTTStore.setTransmitting(true)
   → useAudioStreamer.startTransmit()
@@ -43,7 +44,7 @@ PTTButton (lepas)
 
 ### 1.3 Moderasi Channel
 
-```
+```text
 ChannelManagePanel (dibuka oleh user role >= operator)
   ├── useChannelRole(roomId, userId)      Role efektif + real-time via Postgres Changes
   ├── useChannelSettings(roomId)          15+ konfigurasi channel dari Supabase
@@ -61,7 +62,7 @@ ChannelManagePanel (dibuka oleh user role >= operator)
 
 ### 2.1 Siklus Subscribe Channel
 
-```
+```text
 subscribeToChannel(channelNum)
   1. Unsubscribe channel lama (jika ada)
   2. usePTTStore.setState({ activeUsers: [], isConnected: false })
@@ -78,7 +79,7 @@ subscribeToChannel(channelNum)
 
 ### 2.2 TURN Server — Multi-Provider
 
-```
+```text
 useWebRTC.connect()
   → secureConfig.getSecureConfig()
       → fetch('/functions/v1/turn-credentials', { Authorization: bearerToken })
@@ -99,7 +100,7 @@ useWebRTC.connect()
 ### 3.1 Hirarki Role
 
 | Level | Role | Rank | Cakupan |
-|-------|------|------|---------|
+| ------- | ------ | ------ | --------- |
 | 1 | `noc` | 5 | Global semua channel |
 | 2 | `sys_admin` | 4 | Global semua channel |
 | 3 | `pjc` | 3 | Channel yang ditugaskan |
@@ -109,7 +110,7 @@ useWebRTC.connect()
 ### 3.2 Matriks Kewenangan Kunci
 
 | Aksi | guest | operator | pjc | sys_admin | noc |
-|------|:-----:|:--------:|:---:|:---------:|:---:|
+| ------ | :-----: | :--------: | :---: | :---------: | :---: |
 | VIEW_ADMIN_PANEL | ❌ | ✅ | ✅ | ✅ | ✅ |
 | MANAGE_QUEUE | ❌ | ✅ | ✅ | ✅ | ✅ |
 | MUTE_USER | ❌ | ❌ | ✅ | ✅ | ✅ |
@@ -122,6 +123,7 @@ useWebRTC.connect()
 ### 3.3 Status User
 
 User bisa memiliki salah satu status berikut:
+
 - `active` — normal
 - `muted` — tidak bisa PTT dan Chat
 - `ptt_blocked` — tidak bisa PTT saja
@@ -131,7 +133,7 @@ User bisa memiliki salah satu status berikut:
 
 ### 3.4 Alur Mute User
 
-```
+```text
 PJC tap [Mute 15 menit] di ChannelMemberList
   → useModerationActions.muteUser(targetId, targetRole, 15)
       → canPerformAction(actorRole, 'MUTE_USER') → true
@@ -145,12 +147,28 @@ PJC tap [Mute 15 menit] di ChannelMemberList
         → PTTButton berubah abu-abu, ikon 🔇
 ```
 
+### 3.5 Visual Lencana & Indikator Peran (User Badge Logic)
+
+Pada antarmuka daftar pengguna (`UserListModal`), setiap pengguna diberikan lencana/indikator khusus berdasarkan perannya:
+
+- **Badge Bintang Perak:** Operator (`icon_operator_otomatis.png`)
+- **Badge Bintang Emas:** Moderator / PJC / System Admin (`icon_moderator.png`)
+- **Ikon Daun (User Baru):** Diberikan kepada pengguna yang bergabung dalam kurun waktu kurang dari 14 hari (`icon_user_baru.png`).
+
+**Pengecualian Lencana User Baru (Proteksi N.O.C):**
+Sistem memiliki validasi proteksi berlapis dalam fungsi `isNewUserJoined()` untuk memastikan personel admin pusat atau NOC tidak dilabeli sebagai "pengguna baru" yang dapat mengurangi wibawa otoritas mereka di mata pengguna biasa.
+Lencana pengguna baru **dihilangkan secara paksa (disembunyikan)** apabila memenuhi setidaknya salah satu syarat berikut:
+
+1. *Role* profil adalah `noc`.
+2. *Role* profil adalah `sys_admin`.
+3. *CallSign* / ID pengguna sama persis dengan string `"N.O.C"`. Kondisi ke-3 ini berfungsi ganda sebagai *fail-safe* apabila pengguna sebelumnya memiliki sisa data *localStorage* usang (*stale state*) seperti "operator", sehingga prioritas label "N.O.C" tetap menjamin lencana baru tidak muncul.
+
 ---
 
 ## IV. Channel Settings yang Bisa Dikonfigurasi PJC
 
 | Setting | Default | Deskripsi |
-|---------|---------|-----------|
+| --------- | --------- | ----------- |
 | `allow_guest_ptt` | true | Apakah tamu bisa transmit |
 | `allow_guest_chat` | true | Apakah tamu bisa chat |
 | `allow_guest_reaction` | true | Apakah tamu bisa reaction |
@@ -169,7 +187,7 @@ PJC tap [Mute 15 menit] di ChannelMemberList
 
 ## V. Fitur Sound Design PTT
 
-```
+```text
 Saat tekan (press):
   → Dual-tone pre-chirp: OscillatorNode 950Hz + 1400Hz, 120ms
   → Static noise pendek (WhiteNoise + GainNode)
@@ -188,7 +206,7 @@ Semua tone dibuat secara programatik via `AudioContext` — tidak ada file audio
 ## VI. Daftar Issue Aktif (Juni 2026)
 
 | ID | Issue | Priority | File |
-|----|-------|----------|------|
+| ---- | ------- | ---------- | ------ |
 | ENV-01 | `.env` credential di git history | 🔴 KRITIS | `.env` |
 | RLS-01 | RLS policies permisif `USING (true)` | 🔴 KRITIS | `20260608201500_create_moderation_tables.sql` |
 | SEC-01 | Auto-PJC via nama "pawon salam" | 🟡 TINGGI | `useChannelRole.ts` |

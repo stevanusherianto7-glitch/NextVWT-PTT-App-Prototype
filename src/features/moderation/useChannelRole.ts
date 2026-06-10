@@ -20,16 +20,15 @@ export function useChannelRole(roomId: string, userId: string) {
     const localCallSign = store.callSign;
     const isOperatorUser =
       userId === 'Pebri Haryanto' ||
-      userId === 'Pebe Herianto' ||
       userId === '2DYUA' ||
       (isLocalUser &&
         (localName === 'Pebri Haryanto' ||
-          localName === 'Pebe Herianto' ||
           localCallSign === '2DYUA'));
 
     const isNocUser =
       userId === 'noc_global' ||
-      (isLocalUser && (localName === 'NOC Global' || localCallSign === 'NOC-01'));
+      userId === 'Pebe Herianto' ||
+      (isLocalUser && (localName === 'NOC Global' || localName === 'Pebe Herianto' || localCallSign === 'NOC-01'));
 
     const isSysAdminUser =
       userId === 'sys_admin_vwt' ||
@@ -170,16 +169,15 @@ export function useChannelRole(roomId: string, userId: string) {
         const localCallSign = store.callSign;
         const isOperatorUser =
           userId === 'Pebri Haryanto' ||
-          userId === 'Pebe Herianto' ||
           userId === '2DYUA' ||
           (isLocalUser &&
             (localName === 'Pebri Haryanto' ||
-              localName === 'Pebe Herianto' ||
               localCallSign === '2DYUA'));
 
         const isNocUser =
           userId === 'noc_global' ||
-          (isLocalUser && (localName === 'NOC Global' || localCallSign === 'NOC-01'));
+          userId === 'Pebe Herianto' ||
+          (isLocalUser && (localName === 'NOC Global' || localName === 'Pebe Herianto' || localCallSign === 'NOC-01'));
 
         const isSysAdminUser =
           userId === 'sys_admin_vwt' ||

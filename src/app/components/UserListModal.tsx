@@ -60,12 +60,12 @@ export const USER_PROFILES: Record<string, UserProfile> = {
   },
   'Pebe Herianto': {
     displayName: 'Pebe Herianto',
-    callSign: '2DYUA',
+    callSign: 'N.O.C',
     location: 'BANDUNG, JABAR',
     avatarColor: '#3F51B5',
     avatarUrl:
       'https://images.unsplash.com/photo-1504257404764-5a9b0ad04e26?w=80&h=80&fit=crop&crop=faces',
-    role: 'operator',
+    role: 'noc',
   },
   antoni_99: {
     displayName: 'Arthur',
@@ -279,7 +279,7 @@ export const USER_PROFILES: Record<string, UserProfile> = {
   },
   noc_global: {
     displayName: 'NOC Global',
-    callSign: 'NOC-01',
+    callSign: 'N.O.C',
     location: 'JAKARTA, DKI',
     avatarColor: '#3F51B5',
     avatarUrl:
@@ -438,6 +438,14 @@ function AvatarImage({
  * Helper function to determine if a user profile is "new" (registered/joined less than 2 weeks ago)
  */
 function isNewUserJoined(profile: UserProfile): boolean {
+  // Seorang NOC atau System Admin tidak boleh dilabeli sebagai user baru
+  if (
+    profile.role === 'noc' ||
+    profile.role === 'sys_admin' ||
+    profile.callSign === 'N.O.C'
+  ) {
+    return false;
+  }
   if (!profile.isNewUser) return false;
   if (!profile.joinedAt) return true; // Default to true if flag is set but no joined date is provided
 
@@ -520,7 +528,7 @@ export function UserListModal({ channel, channelName: _channelName, users }: Use
 
         profileData = {
           displayName: user.displayName,
-          callSign: user.callSign,
+          callSign: matchedProfile?.callSign || user.callSign,
           location: user.location,
           avatarColor: '#3F51B5',
           avatarUrl: user.avatarUrl || matchedProfile?.avatarUrl || '',
