@@ -1,0 +1,2 @@
+-- See the complete markdown document for the full migration.
+-- This starter file is intentionally minimal. Copy the full SQL from section 65.

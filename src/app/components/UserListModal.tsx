@@ -354,7 +354,7 @@ function AvatarImage({
   if (hasError || !src) {
     return (
       <div
-        className="w-full h-full rounded-full flex items-center justify-center text-white font-semibold text-[17px] shadow-[inset_0_1.5px_3px_rgba(255,255,255,0.4)]"
+        className="w-full h-full rounded-full flex items-center justify-center text-white font-bold text-[22px] shadow-[inset_0_2px_4px_rgba(255,255,255,0.4)] border border-white/20"
         style={{ backgroundColor: avatarColor }}
       >
         {initial}
@@ -388,6 +388,14 @@ export function UserListModal({
   const showMyPhoto = usePTTStore((state) => state.showMyPhoto);
   const showOtherPhotos = usePTTStore((state) => state.showOtherPhotos);
   const showPhotosInList = usePTTStore((state) => state.showPhotosInList);
+
+  const [activeZoomedAvatar, setActiveZoomedAvatar] = useState<{
+    displayName: string;
+    callSign: string;
+    location: string;
+    avatarUrl: string;
+    avatarColor: string;
+  } | null>(null);
 
   // Map user list or generate dynamic fallback
   const allUsersMapped = users.map((user) => {
@@ -457,8 +465,8 @@ export function UserListModal({
       <div className="flex-1 overflow-y-auto bg-[#fafbfc] divide-y divide-gray-100 custom-scrollbar">
         {/* Server Row */}
         <div className="w-full flex items-center px-4 py-2.5 border-b border-gray-100 bg-[#f4f7f6]">
-          <div className="w-11 h-11 shrink-0 rounded-full bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center shadow-inner relative">
-            <svg className="w-6 h-6 text-white fill-current" viewBox="0 0 24 24">
+          <div className="w-[52px] h-[52px] shrink-0 rounded-full bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center shadow-inner relative">
+            <svg className="w-7 h-7 text-white fill-current" viewBox="0 0 24 24">
               <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
             </svg>
           </div>
@@ -498,7 +506,19 @@ export function UserListModal({
                 }`}
               >
                 {/* Avatar with mode icon overlay */}
-                <div className="relative w-11 h-11 shrink-0 select-none">
+                <div
+                  className="relative w-[52px] h-[52px] shrink-0 select-none cursor-pointer hover:scale-105 active:scale-95 transition-transform duration-200"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveZoomedAvatar({
+                      displayName: profile.displayName,
+                      callSign: profile.callSign,
+                      location: profile.location,
+                      avatarUrl: avatarUrlToUse,
+                      avatarColor: profile.avatarColor,
+                    });
+                  }}
+                >
                   <AvatarImage
                     src={avatarUrlToUse}
                     displayName={profile.displayName}
@@ -512,7 +532,7 @@ export function UserListModal({
                         src={MODE_ICONS[mode]}
                         alt={MODE_LABELS[mode]}
                         title={MODE_LABELS[mode]}
-                        className="absolute -bottom-[2px] -right-[2px] w-[18px] h-[18px] object-contain"
+                        className="absolute -bottom-[1px] -right-[1px] w-[21px] h-[21px] object-contain drop-shadow-[0_1.5px_2.5px_rgba(0,0,0,0.35)]"
                         draggable={false}
                       />
                     );
@@ -549,6 +569,56 @@ export function UserListModal({
           </div>
         )}
       </div>
+
+      {/* Zoomed Avatar Overlay Modal */}
+      {activeZoomedAvatar && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setActiveZoomedAvatar(null)}
+        >
+          <div
+            className="bg-white rounded-2xl p-6 max-w-[280px] w-full mx-4 shadow-2xl flex flex-col items-center animate-in zoom-in-95 duration-200 border border-gray-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Expanded Avatar */}
+            <div className="w-40 h-40 rounded-full overflow-hidden shadow-lg border-2 border-[#00C853] relative flex items-center justify-center bg-gray-100">
+              {activeZoomedAvatar.avatarUrl ? (
+                <img
+                  src={activeZoomedAvatar.avatarUrl}
+                  alt={activeZoomedAvatar.displayName}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div
+                  className="w-full h-full flex items-center justify-center text-white font-bold text-5xl"
+                  style={{ backgroundColor: activeZoomedAvatar.avatarColor }}
+                >
+                  {activeZoomedAvatar.displayName.charAt(0).toUpperCase()}
+                </div>
+              )}
+            </div>
+
+            {/* Profile Info Details */}
+            <h3 className="mt-4 text-lg font-bold text-gray-900 text-center truncate w-full">
+              {activeZoomedAvatar.displayName}
+            </h3>
+            <div className="text-sm font-semibold text-[#00C853] mt-1 tracking-wider">
+              {activeZoomedAvatar.callSign}
+            </div>
+            <div className="text-xs text-gray-500 mt-0.5 uppercase tracking-wide">
+              {activeZoomedAvatar.location}
+            </div>
+
+            {/* Close Button */}
+            <button
+              onClick={() => setActiveZoomedAvatar(null)}
+              className="mt-5 px-6 py-2 bg-gray-800 hover:bg-gray-700 active:bg-gray-900 text-white text-xs font-semibold rounded-full shadow transition-colors duration-200"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

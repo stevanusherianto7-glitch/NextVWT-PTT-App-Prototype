@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getSupabase } from '../../app/utils/supabase';
 import type { ChannelRole } from './permissions';
 import type { RealtimeChannel } from '@supabase/supabase-js';
-import { usePTTStore } from '../../app/store/usePTTStore';
+import { CHANNELS, BRAND } from '../../app/utils/config';
 
 export function useChannelRole(roomId: string, userId: string) {
   const [role, setRole] = useState<ChannelRole>('guest');
@@ -41,61 +41,43 @@ export function useChannelRole(roomId: string, userId: string) {
           console.error('Error fetching channel role:', error);
         }
 
-        // Auto-assign PJC role jika display name user adalah "pawon salam"
-        const storeState = usePTTStore.getState();
-        const currentName = storeState.infoText || storeState.user?.user_metadata?.full_name || '';
-        const isPawonSalam = currentName.trim().toLowerCase() === 'pawon salam';
-
-        if (isPawonSalam) {
-          if (!data || data.role !== 'pjc') {
-            const pjcRole = {
-              room_id: roomId,
-              user_id: userId,
-              role: 'pjc' as ChannelRole,
-              status: 'active',
-              assigned_by: 'system_pjc_auto',
-              assigned_at: new Date().toISOString(),
-            };
-
-            const { data: upserted, error: upsertError } = await supabaseInstance
-              .from('channel_roles')
-              .upsert(pjcRole, { onConflict: 'room_id,user_id' })
-              .select('role, status')
-              .maybeSingle();
-
-            if (!upsertError && upserted) {
-              data = upserted;
-            } else if (upsertError) {
-              console.error('Failed to auto-assign PJC role for pawon salam:', upsertError);
-            }
-          }
-        }
-
         // Bootstrap: Jika belum ada role apa pun di room ini, angkat user pertama yang masuk sebagai PJC
         if (!data) {
-          const { count, error: countError } = await supabaseInstance
-            .from('channel_roles')
-            .select('id', { count: 'exact', head: true })
-            .eq('room_id', roomId);
+          // Validasi room_id adalah channel yang terdaftar
+          const prefix = BRAND.supabaseRoomPrefix || 'ptt-room-';
+          if (roomId.startsWith(prefix)) {
+            const chNumStr = roomId.substring(prefix.length);
+            const chNum = parseInt(chNumStr, 10);
+            const channelExists = CHANNELS.some((ch) => ch.number === chNum);
 
-          if (!countError && count === 0) {
-            const defaultRole = {
-              room_id: roomId,
-              user_id: userId,
-              role: 'pjc' as ChannelRole,
-              status: 'active',
-              assigned_by: 'system',
-              assigned_at: new Date().toISOString(),
-            };
+            if (channelExists) {
+              const { count, error: countError } = await supabaseInstance
+                .from('channel_roles')
+                .select('id', { count: 'exact', head: true })
+                .eq('room_id', roomId);
 
-            const { data: inserted } = await supabaseInstance
-              .from('channel_roles')
-              .insert(defaultRole)
-              .select('role, status')
-              .maybeSingle();
+              if (!countError && count === 0) {
+                const defaultRole = {
+                  room_id: roomId,
+                  user_id: userId,
+                  role: 'pjc' as ChannelRole,
+                  status: 'active',
+                  assigned_by: 'system',
+                  assigned_at: new Date().toISOString(),
+                };
 
-            if (inserted) {
-              data = inserted;
+                const { data: inserted } = await supabaseInstance
+                  .from('channel_roles')
+                  .insert(defaultRole)
+                  .select('role, status')
+                  .maybeSingle();
+
+                if (inserted) {
+                  data = inserted;
+                }
+              }
+            } else {
+              console.warn(`[Bootstrap PJC] Room ${roomId} is not a valid registered channel number.`);
             }
           }
         }

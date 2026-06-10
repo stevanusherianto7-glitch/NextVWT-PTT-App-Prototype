@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getSupabase } from '../../app/utils/supabase';
 import type { RealtimeChannel } from '@supabase/supabase-js';
+import { usePTTStore } from '../../app/store/usePTTStore';
 
 export interface ChannelSettings {
   room_id: string;
@@ -85,15 +86,23 @@ export function useChannelSettings(roomId: string, initialChannelName = 'Channel
             slow_mode_seconds: 0,
           };
 
-          const { data: inserted, error: insertError } = await supabaseInstance
-            .from('channel_settings')
-            .insert(defaults)
-            .select()
-            .maybeSingle();
+          const actorId = usePTTStore.getState().userId;
+          const { data: edgeResponse, error: insertError } = await supabaseInstance.functions.invoke('moderate-channel', {
+            body: {
+              action: 'UPDATE_SETTINGS',
+              room_id: roomId,
+              actor_user_id: actorId,
+              payload: {
+                settings: defaults
+              }
+            }
+          });
 
-          if (insertError) {
-            console.error('Error creating default settings:', insertError);
+          if (insertError || edgeResponse?.error) {
+            console.error('Error creating default settings via Edge Function:', insertError || edgeResponse?.error);
           }
+
+          const inserted = edgeResponse?.result;
 
           if (mounted) {
             setSettings((inserted || defaults) as ChannelSettings);
@@ -149,17 +158,21 @@ export function useChannelSettings(roomId: string, initialChannelName = 'Channel
       // Optimistic Update
       setSettings((prev) => (prev ? { ...prev, ...newSettings } : null));
 
-      const { error } = await supabaseInstance
-        .from('channel_settings')
-        .update({
-          ...newSettings,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('room_id', roomId);
+      const actorId = usePTTStore.getState().userId;
+      const { data: edgeResponse, error } = await supabaseInstance.functions.invoke('moderate-channel', {
+        body: {
+          action: 'UPDATE_SETTINGS',
+          room_id: roomId,
+          actor_user_id: actorId,
+          payload: {
+            settings: newSettings
+          }
+        }
+      });
 
-      if (error) {
-        console.error('Error updating channel settings:', error);
-        throw error;
+      if (error || edgeResponse?.error) {
+        console.error('Error updating channel settings via Edge Function:', error || edgeResponse?.error);
+        throw error || new Error(edgeResponse?.error || 'Gagal menyimpan pengaturan.');
       }
     } catch (err) {
       // Re-fetch to sync correct status on error

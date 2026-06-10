@@ -9,19 +9,38 @@ interface ModerationContext {
 }
 
 export function useModerationActions({ roomId, actorId, actorRole }: ModerationContext) {
-  async function logAction(action: string, targetUserId?: string, detail?: Record<string, any>) {
+  async function callEdgeFunction(
+    action: string,
+    targetUserId?: string,
+    payload?: Record<string, any>
+  ) {
     try {
       const supabaseInstance = await getSupabase();
-      await supabaseInstance.from('channel_moderation_logs').insert({
-        room_id: roomId,
-        actor_id: actorId,
-        actor_role: actorRole,
-        target_user_id: targetUserId || null,
-        action,
-        detail: detail || {},
+      const { data, error } = await supabaseInstance.functions.invoke('moderate-channel', {
+        body: {
+          action,
+          room_id: roomId,
+          target_user_id: targetUserId || null,
+          actor_user_id: actorId,
+          payload: payload || {},
+        },
       });
-    } catch (err) {
-      console.error('Failed to log moderation action:', err);
+
+      if (error) {
+        console.error(`Edge function error for ${action}:`, error);
+        throw new Error(
+          error.message || `Gagal mengeksekusi tindakan moderasi ${action} di server.`
+        );
+      }
+
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      return data;
+    } catch (err: any) {
+      console.error(`Error calling moderate-channel function for ${action}:`, err);
+      throw err;
     }
   }
 
@@ -46,22 +65,7 @@ export function useModerationActions({ roomId, actorId, actorRole }: ModerationC
       );
     }
 
-    const supabaseInstance = await getSupabase();
-    const { error } = await supabaseInstance.from('channel_roles').upsert({
-      room_id: roomId,
-      user_id: targetUserId,
-      role: nextRole,
-      status: 'active',
-      assigned_by: actorId,
-      assigned_at: new Date().toISOString(),
-    });
-
-    if (error) throw error;
-
-    await logAction('SET_USER_ROLE', targetUserId, {
-      previousRole: targetCurrentRole,
-      nextRole,
-    });
+    await callEdgeFunction('SET_USER_ROLE', targetUserId, { nextRole });
   }
 
   async function muteUser(
@@ -77,21 +81,7 @@ export function useModerationActions({ roomId, actorId, actorRole }: ModerationC
       throw new Error('Anda tidak bisa memoderasi user dengan tingkat setara atau lebih tinggi.');
     }
 
-    const expiresAt = minutes > 0 ? new Date(Date.now() + minutes * 60_000).toISOString() : null;
-
-    const supabaseInstance = await getSupabase();
-    const { error } = await supabaseInstance.from('channel_roles').upsert({
-      room_id: roomId,
-      user_id: targetUserId,
-      status: 'muted',
-      expires_at: expiresAt,
-      assigned_by: actorId,
-      assigned_at: new Date().toISOString(),
-    });
-
-    if (error) throw error;
-
-    await logAction('MUTE_USER', targetUserId, { minutes, expiresAt });
+    await callEdgeFunction('MUTE_USER', targetUserId, { minutes });
   }
 
   async function unmuteUser(targetUserId: string, targetCurrentRole: ChannelRole = 'guest') {
@@ -103,19 +93,7 @@ export function useModerationActions({ roomId, actorId, actorRole }: ModerationC
       throw new Error('Anda tidak bisa memoderasi user dengan tingkat setara atau lebih tinggi.');
     }
 
-    const supabaseInstance = await getSupabase();
-    const { error } = await supabaseInstance.from('channel_roles').upsert({
-      room_id: roomId,
-      user_id: targetUserId,
-      status: 'active',
-      expires_at: null,
-      assigned_by: actorId,
-      assigned_at: new Date().toISOString(),
-    });
-
-    if (error) throw error;
-
-    await logAction('UNMUTE_USER', targetUserId);
+    await callEdgeFunction('UNMUTE_USER', targetUserId);
   }
 
   async function blockPTT(
@@ -131,21 +109,7 @@ export function useModerationActions({ roomId, actorId, actorRole }: ModerationC
       throw new Error('Anda tidak bisa memoderasi user dengan tingkat setara atau lebih tinggi.');
     }
 
-    const expiresAt = minutes > 0 ? new Date(Date.now() + minutes * 60_000).toISOString() : null;
-
-    const supabaseInstance = await getSupabase();
-    const { error } = await supabaseInstance.from('channel_roles').upsert({
-      room_id: roomId,
-      user_id: targetUserId,
-      status: 'ptt_blocked',
-      expires_at: expiresAt,
-      assigned_by: actorId,
-      assigned_at: new Date().toISOString(),
-    });
-
-    if (error) throw error;
-
-    await logAction('BLOCK_PTT', targetUserId, { minutes, expiresAt });
+    await callEdgeFunction('BLOCK_PTT', targetUserId, { minutes });
   }
 
   async function unblockPTT(targetUserId: string, targetCurrentRole: ChannelRole = 'guest') {
@@ -157,19 +121,7 @@ export function useModerationActions({ roomId, actorId, actorRole }: ModerationC
       throw new Error('Anda tidak bisa memoderasi user dengan tingkat setara atau lebih tinggi.');
     }
 
-    const supabaseInstance = await getSupabase();
-    const { error } = await supabaseInstance.from('channel_roles').upsert({
-      room_id: roomId,
-      user_id: targetUserId,
-      status: 'active',
-      expires_at: null,
-      assigned_by: actorId,
-      assigned_at: new Date().toISOString(),
-    });
-
-    if (error) throw error;
-
-    await logAction('UNBLOCK_PTT', targetUserId);
+    await callEdgeFunction('UNBLOCK_PTT', targetUserId);
   }
 
   async function blockChat(
@@ -185,21 +137,7 @@ export function useModerationActions({ roomId, actorId, actorRole }: ModerationC
       throw new Error('Anda tidak bisa memoderasi user dengan tingkat setara atau lebih tinggi.');
     }
 
-    const expiresAt = minutes > 0 ? new Date(Date.now() + minutes * 60_000).toISOString() : null;
-
-    const supabaseInstance = await getSupabase();
-    const { error } = await supabaseInstance.from('channel_roles').upsert({
-      room_id: roomId,
-      user_id: targetUserId,
-      status: 'chat_blocked',
-      expires_at: expiresAt,
-      assigned_by: actorId,
-      assigned_at: new Date().toISOString(),
-    });
-
-    if (error) throw error;
-
-    await logAction('BLOCK_CHAT', targetUserId, { minutes, expiresAt });
+    await callEdgeFunction('BLOCK_CHAT', targetUserId, { minutes });
   }
 
   async function unblockChat(targetUserId: string, targetCurrentRole: ChannelRole = 'guest') {
@@ -211,19 +149,7 @@ export function useModerationActions({ roomId, actorId, actorRole }: ModerationC
       throw new Error('Anda tidak bisa memoderasi user dengan tingkat setara atau lebih tinggi.');
     }
 
-    const supabaseInstance = await getSupabase();
-    const { error } = await supabaseInstance.from('channel_roles').upsert({
-      room_id: roomId,
-      user_id: targetUserId,
-      status: 'active',
-      expires_at: null,
-      assigned_by: actorId,
-      assigned_at: new Date().toISOString(),
-    });
-
-    if (error) throw error;
-
-    await logAction('UNBLOCK_CHAT', targetUserId);
+    await callEdgeFunction('UNBLOCK_CHAT', targetUserId);
   }
 
   async function kickUser(targetUserId: string, targetCurrentRole: ChannelRole = 'guest') {
@@ -265,7 +191,7 @@ export function useModerationActions({ roomId, actorId, actorRole }: ModerationC
       });
     });
 
-    await logAction('KICK_USER', targetUserId);
+    await callEdgeFunction('KICK_USER', targetUserId);
   }
 
   async function banUser(
@@ -282,33 +208,7 @@ export function useModerationActions({ roomId, actorId, actorRole }: ModerationC
       throw new Error('Anda tidak bisa memoderasi user dengan tingkat setara atau lebih tinggi.');
     }
 
-    const expiresAt = minutes > 0 ? new Date(Date.now() + minutes * 60_000).toISOString() : null;
-
-    const supabaseInstance = await getSupabase();
-
-    // 1. Simpan ke channel_bans
-    const { error: banError } = await supabaseInstance.from('channel_bans').upsert({
-      room_id: roomId,
-      user_id: targetUserId,
-      reason: reason || null,
-      banned_by: actorId,
-      banned_at: new Date().toISOString(),
-      expires_at: expiresAt,
-    });
-
-    if (banError) throw banError;
-
-    // 2. Set status di channel_roles agar konsisten
-    await supabaseInstance.from('channel_roles').upsert({
-      room_id: roomId,
-      user_id: targetUserId,
-      status: 'banned',
-      expires_at: expiresAt,
-      assigned_by: actorId,
-      assigned_at: new Date().toISOString(),
-    });
-
-    await logAction('BAN_USER', targetUserId, { reason, expiresAt });
+    await callEdgeFunction('BAN_USER', targetUserId, { reason, minutes });
 
     // 3. Kick user keluar secara realtime
     await kickUser(targetUserId, targetCurrentRole);
@@ -319,28 +219,7 @@ export function useModerationActions({ roomId, actorId, actorRole }: ModerationC
       throw new Error('Anda tidak memiliki izin untuk membatalkan ban.');
     }
 
-    const supabaseInstance = await getSupabase();
-
-    // 1. Hapus dari channel_bans
-    const { error: unbanError } = await supabaseInstance
-      .from('channel_bans')
-      .delete()
-      .eq('room_id', roomId)
-      .eq('user_id', targetUserId);
-
-    if (unbanError) throw unbanError;
-
-    // 2. Kembalikan status di channel_roles menjadi active
-    await supabaseInstance.from('channel_roles').upsert({
-      room_id: roomId,
-      user_id: targetUserId,
-      status: 'active',
-      expires_at: null,
-      assigned_by: actorId,
-      assigned_at: new Date().toISOString(),
-    });
-
-    await logAction('UNBAN_USER', targetUserId);
+    await callEdgeFunction('UNBAN_USER', targetUserId);
   }
 
   return {

@@ -11,6 +11,7 @@ import { STATIC_CHANNELS, getChannelUserCount } from '../utils/constants';
 import { useAudioStreamer } from '../hooks/useAudioStreamer';
 import { toast } from 'sonner';
 import { BRAND } from '../utils/config';
+import logoNextvwt from '../../assets/logo_nextvwt.png';
 import { SettingsPanelSkeleton, KaraokePlayerSkeleton } from './SkeletonLoaders';
 import { FeedbackModal } from './FeedbackModal';
 import { useChannelRole } from '../../features/moderation/useChannelRole';
@@ -463,127 +464,12 @@ export function RadioLayout() {
                       </div>
                     </div>
                   )}
-                  <svg
-                    viewBox="0 0 100 100"
-                    className={`h-[55px] w-auto relative z-20 transition-all duration-300 ${isTransmitting ? 'logo-transmitting' : ''}`}
+                  <img
+                    src={logoNextvwt}
+                    alt="NextVWT Logo"
+                    className={`w-[52px] h-[52px] object-contain relative z-20 transition-all duration-300 ${isTransmitting ? 'logo-transmitting' : ''}`}
                     style={{ filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.25))' }}
-                  >
-                    <defs>
-                      <radialGradient id="nextvwtSphere3D" cx="32%" cy="30%" r="68%">
-                        <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
-                        <stop offset="18%" stopColor="#ff6b6b" />
-                        <stop offset="50%" stopColor="#cc0000" />
-                        <stop offset="80%" stopColor="#800000" />
-                        <stop offset="100%" stopColor="#3d0000" />
-                      </radialGradient>
-                    </defs>
-
-                    <path
-                      d="M 22 77 A 38 38 0 1 1 78 77"
-                      stroke="#0a2e1a"
-                      strokeWidth="6"
-                      strokeLinecap="round"
-                      fill="none"
-                      transform="translate(1, 1.2)"
-                      opacity="0.5"
-                    />
-                    <path
-                      d="M 22 77 A 38 38 0 1 1 78 77"
-                      stroke="#34D399"
-                      strokeWidth="6"
-                      strokeLinecap="round"
-                      fill="none"
-                    />
-                    <path
-                      d="M 22 77 A 38 38 0 1 1 78 77"
-                      stroke="#a7f3d0"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      fill="none"
-                      opacity="0.65"
-                      transform="translate(-0.6, -0.7)"
-                    />
-
-                    <path
-                      d="M 29 71 A 28 28 0 1 1 71 71"
-                      stroke="#064e3b"
-                      strokeWidth="6"
-                      strokeLinecap="round"
-                      fill="none"
-                      transform="translate(1, 1.2)"
-                      opacity="0.5"
-                    />
-                    <path
-                      d="M 29 71 A 28 28 0 1 1 71 71"
-                      stroke="#10B981"
-                      strokeWidth="6"
-                      strokeLinecap="round"
-                      fill="none"
-                    />
-                    <path
-                      d="M 29 71 A 28 28 0 1 1 71 71"
-                      stroke="#6ee7b7"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      fill="none"
-                      opacity="0.65"
-                      transform="translate(-0.6, -0.7)"
-                    />
-
-                    <path
-                      d="M 36 65 A 18 18 0 1 1 64 65"
-                      stroke="#003a17"
-                      strokeWidth="6"
-                      strokeLinecap="round"
-                      fill="none"
-                      transform="translate(1, 1.2)"
-                      opacity="0.5"
-                    />
-                    <path
-                      d="M 36 65 A 18 18 0 1 1 64 65"
-                      stroke="#00C853"
-                      strokeWidth="6"
-                      strokeLinecap="round"
-                      fill="none"
-                    />
-                    <path
-                      d="M 36 65 A 18 18 0 1 1 64 65"
-                      stroke="#69f0ae"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      fill="none"
-                      opacity="0.65"
-                      transform="translate(-0.6, -0.7)"
-                    />
-
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="11"
-                      fill="#1a0000"
-                      transform="translate(1.2, 1.5)"
-                      opacity="0.45"
-                    />
-                    <circle cx="50" cy="50" r="11" fill="url(#nextvwtSphere3D)" />
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="11"
-                      fill="none"
-                      stroke="#ff4444"
-                      strokeWidth="0.8"
-                      opacity="0.4"
-                    />
-                    <ellipse
-                      cx="46.5"
-                      cy="45.5"
-                      rx="3.2"
-                      ry="2.2"
-                      fill="white"
-                      opacity="0.7"
-                      transform="rotate(-25, 46.5, 45.5)"
-                    />
-                  </svg>
+                  />
                 </div>
                 <div
                   className={`flex flex-col justify-center relative z-20 transition-all duration-300 ${isTransmitting ? 'logo-transmitting' : ''} ml-2`}
