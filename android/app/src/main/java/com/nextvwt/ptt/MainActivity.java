@@ -24,6 +24,7 @@ public class MainActivity extends BridgeActivity {
             WindowManager.LayoutParams.FLAG_SECURE
         );
         registerPlugin(AppSecurityPlugin.class);
+        registerPlugin(BackgroundSurvivalPlugin.class);
     }
 }
 
