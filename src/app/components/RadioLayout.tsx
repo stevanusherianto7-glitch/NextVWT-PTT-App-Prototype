@@ -31,6 +31,7 @@ import fireAnimation from '../../assets/reactions/fire.json';
 import crownAnimation from '../../assets/reactions/crown.json';
 import confettiAnimation from '../../assets/reactions/confetti.json';
 import kissAnimation from '../../assets/reactions/kiss.json';
+import bartSvg from '../../assets/reactions/bart.svg';
 
 // Helper to catch dynamic import chunk loading failures (typically after a new deploy)
 // and automatically reload the page to fetch the latest assets
@@ -751,6 +752,24 @@ export function RadioLayout() {
                   {isPowerOn && (
                     <div className="absolute w-[280px] h-[135px] pointer-events-none overflow-hidden z-30 rounded-[14px] top-[10px] left-1/2 -translate-x-1/2">
                       {floatingReactions.map((r) => {
+                        if (r.reaction === 'bart') {
+                          return (
+                            <div
+                              key={r.id}
+                              className="absolute bottom-0 w-20 h-20 animate-float-up flex items-center justify-center"
+                              style={{
+                                left: `${r.x}%`,
+                              }}
+                            >
+                              <img
+                                src={bartSvg}
+                                className="w-[80px] h-[80px] object-contain"
+                                alt="Bart Simpson"
+                              />
+                            </div>
+                          );
+                        }
+
                         const animationMap: Record<string, any> = {
                           applause: applauseAnimation,
                           love: loveAnimation,

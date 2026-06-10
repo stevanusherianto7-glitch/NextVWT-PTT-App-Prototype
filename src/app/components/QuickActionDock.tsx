@@ -31,6 +31,7 @@ export function QuickActionDock({
     { kind: 'fire', emoji: '🔥' },
     { kind: 'crown', emoji: '👑' },
     { kind: 'confetti', emoji: '🎉' },
+    { kind: 'bart', emoji: '🛹' },
   ];
 
   // Close reaction selector when clicking outside
