@@ -647,7 +647,7 @@ export function RadioLayout() {
                   style={{
                     borderRadius: '40px 40px 200px 200px / 40px 40px 90px 90px',
                     boxShadow:
-                      'inset 0 1.5px 2px rgba(255, 255, 255, 0.95), inset 0 3px 4px rgba(0, 0, 0, 0.4), inset 0 -3px 4px rgba(0, 0, 0, 0.4), inset 3px 0 4px rgba(0, 0, 0, 0.3), inset -3px 0 4px rgba(0, 0, 0, 0.3)',
+                      'inset 0 6px 12px rgba(0, 0, 0, 0.55), inset 0 -4px 10px rgba(0, 0, 0, 0.45), inset 5px 0 10px rgba(0, 0, 0, 0.45), inset -5px 0 10px rgba(0, 0, 0, 0.45), inset 0 1.5px 1.5px rgba(255, 255, 255, 0.15)',
                   }}
                 />
                 {/* LCD Panel */}

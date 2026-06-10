@@ -47,7 +47,7 @@ export function ControlButtons({
             </linearGradient>
 
             <filter id="dpad-inset-shadow" x="-10%" y="-10%" width="120%" height="120%">
-              {/* Highlight at Top-Left */}
+              {/* Dark Inner Shadow at Top-Left */}
               <feOffset dx="1.5" dy="2" />
               <feGaussianBlur stdDeviation="1.5" result="offset-blur-top" />
               <feComposite
@@ -57,13 +57,13 @@ export function ControlButtons({
                 result="inverse-top"
               />
               <feFlood
-                floodColor="white"
-                floodOpacity="var(--dpad-shadow-top-opacity)"
+                floodColor="black"
+                floodOpacity="0.45"
                 result="color-top"
               />
               <feComposite operator="in" in="color-top" in2="inverse-top" result="shadow-top" />
 
-              {/* Shadow at Bottom-Right */}
+              {/* Softer Dark Inner Shadow at Bottom-Right */}
               <feOffset dx="-2" dy="-2.5" />
               <feGaussianBlur stdDeviation="2" result="offset-blur-bottom" />
               <feComposite
@@ -73,8 +73,8 @@ export function ControlButtons({
                 result="inverse-bottom"
               />
               <feFlood
-                floodColor="var(--dpad-shadow-bottom-color)"
-                floodOpacity="0.45"
+                floodColor="black"
+                floodOpacity="0.3"
                 result="color-bottom"
               />
               <feComposite
