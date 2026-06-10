@@ -96,17 +96,17 @@ export function QuickActionDock({
       <div className="flex items-center justify-around relative">
         {actionButtons.map((btn) => (
           <div key={btn.id} className="flex flex-col items-center relative">
-            {/* Popover Reaction above the Reaction button */}
+             {/* Popover Reaction above the Reaction button */}
             {btn.id === 'reaction' && showReactions && (
               <div
                 ref={popoverRef}
-                className="absolute bottom-16 left-1/2 -translate-x-[15%] bg-slate-950/90 backdrop-blur-md border border-slate-800 p-2 rounded-xl flex gap-2 shadow-2xl z-40 animate-in fade-in slide-in-from-bottom-2 duration-100"
+                className="absolute bottom-16 left-1/2 -translate-x-1/2 bg-slate-950/95 backdrop-blur-md border border-slate-800/80 p-2.5 rounded-2xl grid grid-cols-4 gap-2 shadow-[0_8px_32px_rgba(0,0,0,0.6)] z-40 animate-in fade-in slide-in-from-bottom-2 duration-100 min-w-[180px]"
               >
                 {reactions.map((r) => (
                   <button
                     key={r.kind}
                     onClick={() => handleReactionClick(r.kind)}
-                    className="text-2xl hover:scale-130 active:scale-95 transition-all duration-100 p-1 cursor-pointer focus:outline-none"
+                    className="w-10 h-10 flex items-center justify-center text-2xl hover:bg-slate-800/60 hover:scale-115 active:scale-95 transition-all duration-150 rounded-xl cursor-pointer focus:outline-none"
                     title={r.kind}
                   >
                     {r.emoji}
