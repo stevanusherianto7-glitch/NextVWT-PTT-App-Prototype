@@ -403,7 +403,7 @@ export function RadioLayout() {
     setOnReactionReceived((payload) => {
       if (isPowerOn) {
         const id = payload.id || Math.random().toString();
-        const x = 20 + Math.random() * 60;
+        const x = 30 + Math.random() * 40;
         setFloatingReactions((prev) => [...prev, { id, reaction: payload.reaction, x }]);
         setTimeout(() => {
           setFloatingReactions((prev) => prev.filter((r) => r.id !== id));
@@ -420,7 +420,7 @@ export function RadioLayout() {
 
     // Trigger local animation instantly (optimistic)
     const localId = Math.random().toString();
-    const x = 20 + Math.random() * 60;
+    const x = 30 + Math.random() * 40;
     setFloatingReactions((prev) => [...prev, { id: localId, reaction: reactionType, x }]);
     setTimeout(() => {
       setFloatingReactions((prev) => prev.filter((r) => r.id !== localId));
@@ -757,16 +757,18 @@ export function RadioLayout() {
                           return (
                             <div
                               key={r.id}
-                              className="absolute bottom-0 w-20 h-20 animate-float-up flex items-center justify-center"
+                              className="absolute bottom-0 -translate-x-1/2 w-[110px] h-[110px] flex items-center justify-center"
                               style={{
                                 left: `${r.x}%`,
                               }}
                             >
-                              <img
-                                src={bartSvg}
-                                className="w-[80px] h-[80px] object-contain"
-                                alt="Bart Simpson"
-                              />
+                              <div className="animate-float-up w-full h-full flex items-center justify-center">
+                                <img
+                                  src={bartSvg}
+                                  className="w-[110px] h-[110px] object-contain"
+                                  alt="Bart Simpson"
+                                />
+                              </div>
                             </div>
                           );
                         }
@@ -775,16 +777,18 @@ export function RadioLayout() {
                           return (
                             <div
                               key={r.id}
-                              className="absolute bottom-0 w-20 h-20 animate-float-up flex items-center justify-center"
+                              className="absolute bottom-0 -translate-x-1/2 w-[180px] h-[180px] flex items-center justify-center"
                               style={{
                                 left: `${r.x}%`,
                               }}
                             >
-                              <img
-                                src={foxSvg}
-                                className="w-[130px] h-[130px] object-contain"
-                                alt="Cute Fox"
-                              />
+                              <div className="animate-float-up w-full h-full flex items-center justify-center">
+                                <img
+                                  src={foxSvg}
+                                  className="w-[180px] h-[180px] object-contain"
+                                  alt="Cute Fox"
+                                />
+                              </div>
                             </div>
                           );
                         }
@@ -802,21 +806,23 @@ export function RadioLayout() {
                         return (
                           <div
                             key={r.id}
-                            className="absolute bottom-0 w-20 h-20 animate-float-up flex items-center justify-center"
+                            className="absolute bottom-0 -translate-x-1/2 w-[110px] h-[110px] flex items-center justify-center"
                             style={{
                               left: `${r.x}%`,
                             }}
                           >
-                            {animData ? (
-                              <Player
-                                autoplay
-                                loop={false}
-                                src={animData}
-                                style={{ width: '80px', height: '80px' }}
-                              />
-                            ) : (
-                              <span className="text-3xl">🔥</span>
-                            )}
+                            <div className="animate-float-up w-full h-full flex items-center justify-center">
+                              {animData ? (
+                                <Player
+                                  autoplay
+                                  loop={false}
+                                  src={animData}
+                                  style={{ width: '110px', height: '110px' }}
+                                />
+                              ) : (
+                                <span className="text-4xl">🔥</span>
+                              )}
+                            </div>
                           </div>
                         );
                       })}
