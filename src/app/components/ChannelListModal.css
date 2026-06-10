@@ -64,10 +64,10 @@
 }
 
 .logo-word {
-  font-family: 'Montserrat', 'Poppins', 'Arial Black', system-ui, sans-serif;
-  font-size: clamp(24px, 5.5vw, 30px); /* Increased by 3pt (4px) from clamp(20px, 5.5vw, 26px) */
-  font-weight: 950;
-  letter-spacing: 0.045em;
+  font-family: 'Syncopate', sans-serif;
+  font-size: clamp(18px, 4.5vw, 24px);
+  font-weight: 700;
+  letter-spacing: 0.02em;
   line-height: 1;
   text-transform: uppercase;
   position: relative;

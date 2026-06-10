@@ -1,12 +1,12 @@
-# NextVWT PTT App — Moderation Mode Icon Design Specification
+# NextVWT PTT App — Premium Design Specifications
 
-Dokumen ini mendefinisikan spesifikasi teknis dan visual untuk ikon penanda mode pengguna/staf (`voice`, `operator`, `moderator`) yang dipasang sebagai lencana (badge) di atas foto profil/avatar anggota pada aplikasi NextVWT PTT.
+Dokumen ini mendefinisikan spesifikasi desain visual, token kegayaan, tata letak, komponen UI, serta integrasi aset biner dan tipografi untuk aplikasi NextVWT PTT.
 
 ---
 
-## 🏗️ 1. Tata Letak & Geometri (Layout & Geometry)
+## 🏗️ 1. Tata Letak & Geometri Ikon Mode (Layout & Geometry)
 
-Lencana mode diposisikan secara absolut menindih sudut kanan bawah dari foto profil pengguna di dalam komponen `UserListModal.tsx`.
+Lencana mode (`voice`, `operator`, `moderator`) diposisikan secara absolut menindih sudut kanan bawah dari foto profil pengguna di dalam komponen [UserListModal.tsx](file:///c:/Users/ASUS/Downloads/NextVWT%20PTT%20App%20Prototype%20-%20Clone/src/app/components/UserListModal.tsx).
 
 * **Dimensi Avatar**: Lingkaran berdiameter `52px` (`w-[52px] h-[52px]`).
 * **Dimensi Lencana**: Tinggi dan lebar `21px` (`w-[21px] h-[21px]`).
@@ -17,7 +17,7 @@ Lencana mode diposisikan secara absolut menindih sudut kanan bawah dari foto pro
 
 ---
 
-## 🎨 2. Transparansi & Bayangan (Transparency & Drop Shadow)
+## 🎨 2. Transparansi & Bayangan Ikon Mode (Transparency & Drop Shadow)
 
 Untuk menjaga estetika antarmuka yang bersih dan premium, lencana mode dirender secara transparan tanpa pembungkus latar belakang warna putih.
 
@@ -116,3 +116,39 @@ function getUserMode(username: string): UserMode {
   );
 })()}
 ```
+
+---
+
+## 🔤 6. Spesifikasi Tipografi Brand Premium (Syncopate Typography)
+
+Untuk memberikan citra merek (branding) yang futuristik, eksklusif, dan modern, jenis huruf utama untuk nama brand **NextVWT** dialihkan ke Google Font **Syncopate**.
+
+### A. Pengaturan Font Global (`src/styles/fonts.css`)
+Font diimpor secara dinamis melalui Google Fonts API bersama dengan font pendukung:
+```css
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Orbitron:wght@400;700;900&family=Syncopate:wght@400;700&display=swap');
+```
+
+### B. Implementasi & Parameter Kegayaan (Typography Styling)
+
+1. **Header Sasis Walkie-Talkie (`RadioLayout.tsx`)**:
+   * **Font Family**: `'Syncopate', sans-serif`
+   * **Ukuran Font**: `13.5px` (`text-[13.5px]`)
+   * **Ketebalan**: `bold` (700)
+   * **Kasus Teks**: `uppercase` (Huruf kapital)
+   * **Jarak Antar Huruf (Tracking)**: `0.05em` (`tracking-[0.05em]`) untuk mempertegas proporsi horizontal sasis.
+   * **Warna**: Mengikuti variabel `--header-text-color`.
+
+2. **Gerbang Masuk Aplikasi (`LoginGate.tsx`)**:
+   * **Font Family**: `'Syncopate', sans-serif`
+   * **Ukuran Font**: `20px` (`text-xl`)
+   * **Ketebalan**: `bold` (700)
+   * **Kasus Teks**: `uppercase`
+   * **Jarak Antar Huruf (Tracking)**: `0.1em` (`tracking-[0.1em]`) untuk memberikan impresi mewah yang kokoh saat pertama kali aplikasi dibuka.
+
+3. **Logo Premium Dialog Modal (`ChannelListModal.css`)**:
+   * **Font Family**: `'Syncopate', sans-serif`
+   * **Ukuran Font**: `clamp(18px, 4.5vw, 24px)` (Sifat responsif terkompresi dari sebelumnya 24px-30px agar tidak terjadi overflow akibat lebar karakter Syncopate).
+   * **Ketebalan**: `700` (bold)
+   * **Jarak Antar Huruf (Tracking)**: `0.02em` (`letter-spacing: 0.02em`)
+   * **Efek Gradasi 3D**: Tetap dilapisi efek metalik beveled emas-hijau menggunakan `-webkit-background-clip: text` dan bayangan bertumpuk `text-shadow`.
