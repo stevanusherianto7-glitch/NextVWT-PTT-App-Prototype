@@ -31,6 +31,8 @@ export const createUISlice: StateCreator<
     | 'setHasCompletedOnboarding'
     | 'setShowFeedbackModal'
     | 'setLastFeedbackTime'
+    | 'onReactionReceived'
+    | 'setOnReactionReceived'
   >
 > = (set, get) => ({
   isPowerOn: true,
@@ -212,4 +214,6 @@ export const createUISlice: StateCreator<
     safeSetStorage({ lastFeedbackTime: time });
     set({ lastFeedbackTime: time });
   },
+  onReactionReceived: null,
+  setOnReactionReceived: (callback) => set({ onReactionReceived: callback }),
 });

@@ -19,6 +19,10 @@ import { canUsePTT } from '../../features/moderation/permissions';
 import { getSupabase } from '../utils/supabase';
 import { WalletPanel } from '../../features/payment/WalletPanel';
 import { ROIPBridgePanel } from '../../features/roip/ROIPBridgePanel';
+import { QuickActionDock } from './QuickActionDock';
+import { ChatRoomPanel } from '../../features/chat/ChatRoomPanel';
+import { KaraokeQueuePanel } from '../../features/karaoke-queue/KaraokeQueuePanel';
+import { PrivateChannelPanel } from '../../features/moderation/PrivateChannelPanel';
 
 // Helper to catch dynamic import chunk loading failures (typically after a new deploy)
 // and automatically reload the page to fetch the latest assets
@@ -82,6 +86,10 @@ export function RadioLayout() {
   const [isManageOpen, setIsManageOpen] = useState(false);
   const [isWalletOpen, setIsWalletOpen] = useState(false);
   const [isRoipOpen, setIsRoipOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isQueueOpen, setIsQueueOpen] = useState(false);
+  const [isPrivateOpen, setIsPrivateOpen] = useState(false);
+  const [floatingReactions, setFloatingReactions] = useState<Array<{ id: string; reaction: string; x: number }>>([]);
   const [txStartTime, setTxStartTime] = useState<number>(0);
 
   const { startRecording, stopRecording, playAudioChunk, flushAudioQueue } = useAudioStreamer();
@@ -275,6 +283,9 @@ export function RadioLayout() {
       setIsManageOpen(false);
       setIsWalletOpen(false);
       setIsRoipOpen(false);
+      setIsChatOpen(false);
+      setIsQueueOpen(false);
+      setIsPrivateOpen(false);
     }
   }, [isPowerOn, setIsKaraokePlayerOpen]);
 
@@ -375,6 +386,55 @@ export function RadioLayout() {
     };
   }, [roomId, userId, isPowerOn, setIsPowerOn]);
 
+  const setOnReactionReceived = usePTTStore((state) => state.setOnReactionReceived);
+
+  // Reaction receiver hook
+  useEffect(() => {
+    setOnReactionReceived((payload) => {
+      if (isPowerOn) {
+        const id = payload.id || Math.random().toString();
+        const x = 20 + Math.random() * 60;
+        setFloatingReactions((prev) => [...prev, { id, reaction: payload.reaction, x }]);
+        setTimeout(() => {
+          setFloatingReactions((prev) => prev.filter((r) => r.id !== id));
+        }, 2500);
+      }
+    });
+    return () => {
+      setOnReactionReceived(null);
+    };
+  }, [isPowerOn, setOnReactionReceived]);
+
+  const handleSendReaction = (reactionType: string) => {
+    if (!isPowerOn) return;
+
+    // Trigger local animation instantly (optimistic)
+    const localId = Math.random().toString();
+    const x = 20 + Math.random() * 60;
+    setFloatingReactions((prev) => [...prev, { id: localId, reaction: reactionType, x }]);
+    setTimeout(() => {
+      setFloatingReactions((prev) => prev.filter((r) => r.id !== localId));
+    }, 2500);
+
+    // Broadcast to other peers on the channel
+    import('../store/subscription').then(({ activeChannelSubscription }) => {
+      if (activeChannelSubscription && isConnected) {
+        activeChannelSubscription.send({
+          type: 'broadcast',
+          event: 'reaction',
+          payload: {
+            id: localId,
+            roomId: roomId,
+            senderId: userId,
+            senderName: infoText || 'User',
+            reaction: reactionType,
+            createdAt: Date.now(),
+          },
+        });
+      }
+    }).catch(err => console.warn('Failed to broadcast reaction:', err));
+  };
+
   const handleSet = () => {
     if (isPowerOn) {
       setIsSettingsOpen(true);
@@ -421,6 +481,12 @@ export function RadioLayout() {
         <WalletPanel onClose={() => setIsWalletOpen(false)} />
       ) : isRoipOpen ? (
         <ROIPBridgePanel onClose={() => setIsRoipOpen(false)} />
+      ) : isChatOpen ? (
+        <ChatRoomPanel onClose={() => setIsChatOpen(false)} />
+      ) : isQueueOpen ? (
+        <KaraokeQueuePanel onClose={() => setIsQueueOpen(false)} />
+      ) : isPrivateOpen ? (
+        <PrivateChannelPanel onClose={() => setIsPrivateOpen(false)} onOpenWallet={() => setIsWalletOpen(true)} />
       ) : isSettingsOpen ? (
         // Suspense boundary: tampilkan skeleton saat SettingsPanel sedang dimuat
         // (hanya terjadi pada kali pertama Settings dibuka dalam sesi ini)
@@ -642,8 +708,9 @@ export function RadioLayout() {
                 onClose={() => setIsUserListOpen(false)}
               />
             ) : (
-              /* Themed Faceplate Container */
-              <div
+              <>
+                {/* Themed Faceplate Container */}
+                <div
                 className="w-full flex flex-col items-center pt-6 pb-3 relative z-10 transition-all duration-300"
                 style={{
                   borderRadius: '40px 40px 200px 200px / 40px 40px 90px 90px',
@@ -696,7 +763,18 @@ export function RadioLayout() {
                 </div>
 
               </div>
-            )}
+
+              {/* Quick Action Dock */}
+              <QuickActionDock
+                onOpenChat={() => setIsChatOpen(true)}
+                onOpenQueue={() => setIsQueueOpen(true)}
+                onOpenPrivate={() => setIsPrivateOpen(true)}
+                onSendReaction={handleSendReaction}
+                isPowerOn={isPowerOn}
+                showPrivate={role === 'noc' || role === 'sys_admin'}
+              />
+            </>
+          )}
 
             {/* PTT Button */}
             {showPTT && (
@@ -737,6 +815,31 @@ export function RadioLayout() {
                 </Suspense>
               </div>
             )}
+
+            {/* Floating Reactions Overlay */}
+            <div className="absolute inset-x-0 bottom-36 top-0 pointer-events-none overflow-hidden z-50">
+              {floatingReactions.map((r) => {
+                const emojiMap: Record<string, string> = {
+                  applause: '👏',
+                  love: '❤️',
+                  wow: '😮',
+                  fire: '🔥',
+                  crown: '👑',
+                  confetti: '🎉',
+                };
+                return (
+                  <span
+                    key={r.id}
+                    className="absolute bottom-0 text-3xl animate-float-up"
+                    style={{
+                      left: `${r.x}%`,
+                    }}
+                  >
+                    {emojiMap[r.reaction] || '🔥'}
+                  </span>
+                );
+              })}
+            </div>
           </div>
         </div>
       )}

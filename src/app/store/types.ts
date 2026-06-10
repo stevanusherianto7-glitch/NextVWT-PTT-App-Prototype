@@ -131,6 +131,11 @@ export interface PTTState {
   ) => void;
   broadcastWebRTCSignaling: (payload: WebRTCSignalingPayload) => void;
 
+  // Reaction actions
+  onReactionReceived: ((payload: { id: string; reaction: string; senderName: string }) => void) | null;
+  setOnReactionReceived: (callback: ((payload: { id: string; reaction: string; senderName: string }) => void) | null) => void;
+
+
   // Channels online DB actions
   channels: ChannelItem[];
   fetchChannels: () => Promise<void>;

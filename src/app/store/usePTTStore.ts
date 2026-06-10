@@ -161,6 +161,17 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
               usePTTStore.setState({ activeTransmitter: null, progress: 0 });
             }
           }
+        )
+        .on(
+          'broadcast',
+          { event: 'reaction' },
+          ({ payload }: { payload: { id: string; reaction: string; senderName: string } }) => {
+            if (activeChannelSubscription !== channelInstance) return;
+            const state = usePTTStore.getState();
+            if (state.onReactionReceived) {
+              state.onReactionReceived(payload);
+            }
+          }
         );
 
       channelInstance.subscribe((status: string) => {
