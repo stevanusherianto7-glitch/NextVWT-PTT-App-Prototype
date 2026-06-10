@@ -200,10 +200,9 @@ export function LoginGate({ onLogin, onGuestLogin }: LoginGateProps) {
           Virtual Walkie-Talkie
         </p>
 
-        <div className="w-full bg-black/35 rounded-xl p-3 border border-white/5 mb-6 text-left">
+        <div className="w-full bg-black/35 rounded-xl p-3 border border-white/5 mb-6 text-center">
           <p className="text-[11px] text-gray-400 leading-normal">
-            Hubungkan diri Anda ke saluran frekuensi digital. Masuk menggunakan akun Google Anda
-            untuk mensinkronisasikan profil secara instan.
+            Hubungkan ke frekuensi digital. Masuk dengan Google untuk sinkronisasi profil instan.
           </p>
         </div>
 
@@ -278,7 +277,7 @@ export function LoginGate({ onLogin, onGuestLogin }: LoginGateProps) {
       </div>
 
       <div className="absolute bottom-6 left-0 right-0 text-[10px] text-gray-500 font-bold uppercase tracking-widest">
-        NextVWT Transceiver App
+        NextVWT App
       </div>
     </div>
   );
