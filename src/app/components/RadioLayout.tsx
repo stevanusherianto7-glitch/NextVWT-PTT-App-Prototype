@@ -772,6 +772,7 @@ export function RadioLayout() {
                 onSendReaction={handleSendReaction}
                 isPowerOn={isPowerOn}
                 showPrivate={role === 'noc' || role === 'sys_admin'}
+                showSocialFeatures={activeChannelObj?.type === 'red'}
               />
             </>
           )}

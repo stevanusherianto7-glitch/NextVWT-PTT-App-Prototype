@@ -8,6 +8,7 @@ interface QuickActionDockProps {
   onSendReaction: (reaction: string) => void;
   isPowerOn: boolean;
   showPrivate?: boolean;
+  showSocialFeatures?: boolean;
 }
 
 export function QuickActionDock({
@@ -17,6 +18,7 @@ export function QuickActionDock({
   onSendReaction,
   isPowerOn,
   showPrivate = false,
+  showSocialFeatures = false,
 }: QuickActionDockProps) {
   const [showReactions, setShowReactions] = useState(false);
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -74,9 +76,12 @@ export function QuickActionDock({
     },
   ];
 
-  const actionButtons = showPrivate 
-    ? allButtons 
-    : allButtons.filter((btn) => btn.id !== 'private');
+  const actionButtons = allButtons.filter((btn) => {
+    if (btn.id === 'private') return showPrivate;
+    return showSocialFeatures;
+  });
+
+  if (actionButtons.length === 0) return null;
 
   return (
     <div 
