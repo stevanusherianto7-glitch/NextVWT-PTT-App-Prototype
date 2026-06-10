@@ -194,7 +194,7 @@ export function LoginGate({ onLogin }: LoginGateProps) {
           />
         </svg>
 
-        <h1 className="text-xl font-bold text-white uppercase tracking-[0.1em] mb-1" style={{ fontFamily: "'Syncopate', sans-serif" }}>NextVWT</h1>
+        <h1 className="text-2xl font-black text-white tracking-wider mb-1" style={{ fontFamily: "'Orbitron', sans-serif" }}>NextVWT</h1>
         <p className="text-xs text-gray-400 font-medium mb-6 uppercase tracking-wider">
           Virtual Walkie-Talkie
         </p>

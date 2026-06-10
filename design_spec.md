@@ -119,36 +119,34 @@ function getUserMode(username: string): UserMode {
 
 ---
 
-## 🔤 6. Spesifikasi Tipografi Brand Premium (Syncopate Typography)
+## 🔤 6. Spesifikasi Tipografi Brand Premium (Orbitron Typography)
 
-Untuk memberikan citra merek (branding) yang futuristik, eksklusif, dan modern, jenis huruf utama untuk nama brand **NextVWT** dialihkan ke Google Font **Syncopate**.
+Untuk memberikan citra merek (branding) yang futuristik, berciri khas peralatan militer/taktis digital, kokoh, dan kompak, jenis huruf utama untuk nama brand **NextVWT** dialihkan ke Google Font **Orbitron**.
 
 ### A. Pengaturan Font Global (`src/styles/fonts.css`)
 Font diimpor secara dinamis melalui Google Fonts API bersama dengan font pendukung:
 ```css
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Orbitron:wght@400;700;900&family=Syncopate:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Orbitron:wght@400;700;900&display=swap');
 ```
 
 ### B. Implementasi & Parameter Kegayaan (Typography Styling)
 
 1. **Header Sasis Walkie-Talkie (`RadioLayout.tsx`)**:
-   * **Font Family**: `'Syncopate', sans-serif`
-   * **Ukuran Font**: `13.5px` (`text-[13.5px]`)
-   * **Ketebalan**: `bold` (700)
-   * **Kasus Teks**: `uppercase` (Huruf kapital)
-   * **Jarak Antar Huruf (Tracking)**: `0.05em` (`tracking-[0.05em]`) untuk mempertegas proporsi horizontal sasis.
+   * **Font Family**: `'Orbitron', sans-serif`
+   * **Ukuran Font**: `18px` (`text-[18px]`)
+   * **Ketebalan**: `black` (900)
+   * **Jarak Antar Huruf (Tracking)**: `normal` (`tracking-wide` untuk Orbitron) agar proporsional dan tegas.
    * **Warna**: Mengikuti variabel `--header-text-color`.
 
 2. **Gerbang Masuk Aplikasi (`LoginGate.tsx`)**:
-   * **Font Family**: `'Syncopate', sans-serif`
-   * **Ukuran Font**: `20px` (`text-xl`)
-   * **Ketebalan**: `bold` (700)
-   * **Kasus Teks**: `uppercase`
-   * **Jarak Antar Huruf (Tracking)**: `0.1em` (`tracking-[0.1em]`) untuk memberikan impresi mewah yang kokoh saat pertama kali aplikasi dibuka.
+   * **Font Family**: `'Orbitron', sans-serif`
+   * **Ukuran Font**: `24px` (`text-2xl`)
+   * **Ketebalan**: `black` (900)
+   * **Jarak Antar Huruf (Tracking)**: `wider` (`tracking-wider`) untuk memunculkan impresi visual digital yang kokoh dan eye-catching saat pertama kali aplikasi dibuka.
 
 3. **Logo Premium Dialog Modal (`ChannelListModal.css`)**:
-   * **Font Family**: `'Syncopate', sans-serif`
-   * **Ukuran Font**: `clamp(18px, 4.5vw, 24px)` (Sifat responsif terkompresi dari sebelumnya 24px-30px agar tidak terjadi overflow akibat lebar karakter Syncopate).
-   * **Ketebalan**: `700` (bold)
-   * **Jarak Antar Huruf (Tracking)**: `0.02em` (`letter-spacing: 0.02em`)
+   * **Font Family**: `'Orbitron', sans-serif`
+   * **Ukuran Font**: `clamp(24px, 5.5vw, 30px)` (Kembali menggunakan ukuran optimal yang tebal dan menonjol karena karakter Orbitron kompak secara horizontal).
+   * **Ketebalan**: `900` (black)
+   * **Jarak Antar Huruf (Tracking)**: `0.03em` (`letter-spacing: 0.03em`)
    * **Efek Gradasi 3D**: Tetap dilapisi efek metalik beveled emas-hijau menggunakan `-webkit-background-clip: text` dan bayangan bertumpuk `text-shadow`.
