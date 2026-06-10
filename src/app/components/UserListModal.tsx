@@ -528,13 +528,15 @@ export function UserListModal({
                   {(() => {
                     const mode = getUserMode(profile.userId || profile.displayName);
                     return (
-                      <img
-                        src={MODE_ICONS[mode]}
-                        alt={MODE_LABELS[mode]}
-                        title={MODE_LABELS[mode]}
-                        className="absolute -bottom-[1px] -right-[1px] w-[21px] h-[21px] object-contain drop-shadow-[0_1.5px_2.5px_rgba(0,0,0,0.35)]"
-                        draggable={false}
-                      />
+                      <div className="absolute -bottom-[2px] -right-[2px] w-[22px] h-[22px] rounded-full bg-white flex items-center justify-center shadow-[0_2px_5px_rgba(0,0,0,0.2)] border border-gray-100 select-none">
+                        <img
+                          src={MODE_ICONS[mode]}
+                          alt={MODE_LABELS[mode]}
+                          title={MODE_LABELS[mode]}
+                          className="w-[15px] h-[15px] object-contain"
+                          draggable={false}
+                        />
+                      </div>
                     );
                   })()}
                 </div>
