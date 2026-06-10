@@ -22,12 +22,24 @@ export const createChannelSlice: StateCreator<
 > = (set, get) => ({
   channelNumber: BRAND.defaultChannel,
   channelId: getChannelUUID(BRAND.defaultChannel),
-  channels: CHANNELS as ChannelItem[],
+  channels: (() => {
+    try {
+      const cached = localStorage.getItem('nextvwt:channels');
+      return cached ? JSON.parse(cached) : (CHANNELS as ChannelItem[]);
+    } catch {
+      return CHANNELS as ChannelItem[];
+    }
+  })(),
 
   fetchChannels: async () => {
     try {
       const dbChannels = await fetchChannelsFromConfig();
       set({ channels: dbChannels as ChannelItem[] });
+      try {
+        localStorage.setItem('nextvwt:channels', JSON.stringify(dbChannels));
+      } catch (cacheErr) {
+        console.warn('Failed to save channels cache to localStorage:', cacheErr);
+      }
     } catch (err) {
       console.warn('Failed to fetch channels in store:', err);
     }
