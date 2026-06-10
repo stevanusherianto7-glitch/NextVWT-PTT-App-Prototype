@@ -10,8 +10,15 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { performSecurityAudit } from './utils/appSecurity';
 
 export default function App() {
-  const { initializeSession, user, setUser, updateSettings, signInWithGoogle } =
-    usePTTStore();
+  const {
+    initializeSession,
+    user,
+    setUser,
+    updateSettings,
+    signInWithGoogle,
+    signInWithFacebook,
+    signInWithTikTok,
+  } = usePTTStore();
 
   useEffect(() => {
     performSecurityAudit()
@@ -73,7 +80,15 @@ export default function App() {
             }}
           >
             <LoginGate
-              onLogin={signInWithGoogle}
+              onLogin={async (provider) => {
+                if (provider === 'google') {
+                  await signInWithGoogle();
+                } else if (provider === 'facebook') {
+                  await signInWithFacebook();
+                } else if (provider === 'tiktok') {
+                  await signInWithTikTok();
+                }
+              }}
             />
           </div>
         ) : (

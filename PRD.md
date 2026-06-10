@@ -182,6 +182,8 @@ Every feature is tagged **[P0]** (Must Have), **[P1]** (Should Have), **[P2]** (
 | AUTH-06 | Unggah foto kustom | P1 | Foto profil dari galeri |
 | AUTH-07 | Callsign otomatis | P0 | 5 karakter alfanumerik acak, persisten |
 | AUTH-08 | Logout | P0 | Keluar akun dan clear session |
+| AUTH-09 | Login Facebook OAuth | P1 | Login satu klik via akun Facebook |
+| AUTH-10 | Login TikTok OAuth | P1 | Login satu klik via akun TikTok |
 
 **Penerimaan AUTH-02 (Guest Login):**
 - UUID guest harus unik per sesi: `guest-{crypto.randomUUID()}`

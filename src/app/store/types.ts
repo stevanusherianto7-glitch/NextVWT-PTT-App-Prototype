@@ -99,6 +99,8 @@ export interface PTTState {
   updateSettings: (settings: Partial<PTTState>) => void;
   setUser: (user: AppUser | null) => void;
   signInWithGoogle: () => Promise<void>;
+  signInWithFacebook: () => Promise<void>;
+  signInWithTikTok: () => Promise<void>;
   signOut: () => Promise<void>;
   setKaraokePlayerOpen: (open: boolean) => void;
   subscribeToChannel: (channelNum: number) => void;

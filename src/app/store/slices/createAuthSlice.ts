@@ -8,7 +8,14 @@ export const createAuthSlice: StateCreator<
   [],
   Pick<
     PTTState,
-    'user' | 'activeTransmitter' | 'activeUsers' | 'setUser' | 'signInWithGoogle' | 'signOut'
+    | 'user'
+    | 'activeTransmitter'
+    | 'activeUsers'
+    | 'setUser'
+    | 'signInWithGoogle'
+    | 'signInWithFacebook'
+    | 'signInWithTikTok'
+    | 'signOut'
   >
 > = (set, _get) => ({
   user: null,
@@ -29,6 +36,36 @@ export const createAuthSlice: StateCreator<
     } catch (err) {
       console.error('Google Sign In Error', err);
       set({ error: 'Failed to initialize Google Sign In' });
+    }
+  },
+
+  signInWithFacebook: async () => {
+    try {
+      const supabase = await getSupabase();
+      await supabase.auth.signInWithOAuth({
+        provider: 'facebook',
+        options: {
+          redirectTo: `${window.location.origin}/`,
+        },
+      });
+    } catch (err) {
+      console.error('Facebook Sign In Error', err);
+      set({ error: 'Failed to initialize Facebook Sign In' });
+    }
+  },
+
+  signInWithTikTok: async () => {
+    try {
+      const supabase = await getSupabase();
+      await supabase.auth.signInWithOAuth({
+        provider: 'tiktok' as any,
+        options: {
+          redirectTo: `${window.location.origin}/`,
+        },
+      });
+    } catch (err) {
+      console.error('TikTok Sign In Error', err);
+      set({ error: 'Failed to initialize TikTok Sign In' });
     }
   },
 
