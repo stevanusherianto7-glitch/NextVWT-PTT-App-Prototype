@@ -10,7 +10,6 @@ import { ChannelListModal } from './ChannelListModal';
 import { STATIC_CHANNELS, getChannelUserCount } from '../utils/constants';
 import { useAudioStreamer } from '../hooks/useAudioStreamer';
 import { toast } from 'sonner';
-import { BRAND } from '../utils/config';
 import { SettingsPanelSkeleton, KaraokePlayerSkeleton } from './SkeletonLoaders';
 import { FeedbackModal } from './FeedbackModal';
 import { useChannelRole } from '../../features/moderation/useChannelRole';
@@ -589,13 +588,13 @@ export function RadioLayout() {
                   className={`flex flex-col justify-center relative z-20 transition-all duration-300 ${isTransmitting ? 'logo-transmitting' : ''} ml-2`}
                 >
                   <span
-                    className="text-[18px] font-black leading-none tracking-wide"
+                    className="text-[19px] leading-none tracking-wide select-none"
                     style={{
-                      fontFamily: "'Orbitron', sans-serif",
-                      color: 'var(--header-text-color)',
+                      fontFamily: "'Outfit', sans-serif",
                     }}
                   >
-                    {BRAND.name}
+                    <span className="font-medium" style={{ color: 'var(--header-text-color)' }}>Next</span>
+                    <span className="font-black text-[#00C853]">VWT</span>
                   </span>
                   <div className="w-[120px] overflow-hidden whitespace-nowrap relative h-[16px] mt-0.5">
                     <div

@@ -194,7 +194,10 @@ export function LoginGate({ onLogin }: LoginGateProps) {
           />
         </svg>
 
-        <h1 className="text-2xl font-black text-white tracking-wider mb-1" style={{ fontFamily: "'Orbitron', sans-serif" }}>NextVWT</h1>
+        <h1 className="text-3xl tracking-wide mb-1 select-none" style={{ fontFamily: "'Outfit', sans-serif" }}>
+          <span className="font-medium text-white">Next</span>
+          <span className="font-black text-[#00C853]">VWT</span>
+        </h1>
         <p className="text-xs text-gray-400 font-medium mb-6 uppercase tracking-wider">
           Virtual Walkie-Talkie
         </p>

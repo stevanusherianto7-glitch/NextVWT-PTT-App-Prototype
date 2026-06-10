@@ -119,9 +119,9 @@ function getUserMode(username: string): UserMode {
 
 ---
 
-## 🔤 6. Spesifikasi Tipografi Brand Premium (Orbitron Typography)
+## 🔤 6. Spesifikasi Tipografi Brand Premium (Outfit Mixed Weights)
 
-Untuk memberikan citra merek (branding) yang futuristik, berciri khas peralatan militer/taktis digital, kokoh, dan kompak, jenis huruf utama untuk nama brand **NextVWT** dialihkan ke Google Font **Orbitron**.
+Untuk memberikan citra merek (branding) yang dinamis, modern, premium, dan sangat eye-catching (meniru merek walkie-talkie komersial elit seperti Motorola atau Garmin), jenis huruf utama untuk nama brand **NextVWT** menggunakan Google Font **Outfit** dengan konsep **Mixed Weights & Signal Accents**.
 
 ### A. Pengaturan Font Global (`src/styles/fonts.css`)
 Font diimpor secara dinamis melalui Google Fonts API bersama dengan font pendukung:
@@ -131,22 +131,27 @@ Font diimpor secara dinamis melalui Google Fonts API bersama dengan font penduku
 
 ### B. Implementasi & Parameter Kegayaan (Typography Styling)
 
-1. **Header Sasis Walkie-Talkie (`RadioLayout.tsx`)**:
-   * **Font Family**: `'Orbitron', sans-serif`
-   * **Ukuran Font**: `18px` (`text-[18px]`)
-   * **Ketebalan**: `black` (900)
-   * **Jarak Antar Huruf (Tracking)**: `normal` (`tracking-wide` untuk Orbitron) agar proporsional dan tegas.
-   * **Warna**: Mengikuti variabel `--header-text-color`.
+1. **Header Sasis Walkie-Talkie ([RadioLayout.tsx](file:///c:/Users/ASUS/Downloads/NextVWT%20PTT%20App%20Prototype%20-%20Clone/src/app/components/RadioLayout.tsx))**:
+   * **Font Family**: `'Outfit', sans-serif`
+   * **Ukuran Font**: `19px` (`text-[19px]`)
+   * **Ketebalan (Weights)**: 
+     * **Next**: `font-medium` (500) - berwarna sesuai sasis default (`var(--header-text-color)`).
+     * **VWT**: `font-black` (900) - berwarna hijau sinyal/emerald (`#00C853`).
+   * **Jarak Antar Huruf (Tracking)**: `wide` (`tracking-wide`) untuk keterbacaan yang kokoh.
 
-2. **Gerbang Masuk Aplikasi (`LoginGate.tsx`)**:
-   * **Font Family**: `'Orbitron', sans-serif`
-   * **Ukuran Font**: `24px` (`text-2xl`)
-   * **Ketebalan**: `black` (900)
-   * **Jarak Antar Huruf (Tracking)**: `wider` (`tracking-wider`) untuk memunculkan impresi visual digital yang kokoh dan eye-catching saat pertama kali aplikasi dibuka.
+2. **Gerbang Masuk Aplikasi ([LoginGate.tsx](file:///c:/Users/ASUS/Downloads/NextVWT%20PTT%20App%20Prototype%20-%20Clone/src/app/components/LoginGate.tsx))**:
+   * **Font Family**: `'Outfit', sans-serif`
+   * **Ukuran Font**: `30px` (`text-3xl`)
+   * **Ketebalan (Weights)**:
+     * **Next**: `font-medium` (500) - berwarna putih bersih (`text-white`).
+     * **VWT**: `font-black` (900) - berwarna hijau sinyal/emerald (`#00C853`).
+   * **Jarak Antar Huruf (Tracking)**: `wide` (`tracking-wide`) untuk memberikan kesan visual yang modern, berwibawa, dan premium saat pertama kali aplikasi dibuka.
 
-3. **Logo Premium Dialog Modal (`ChannelListModal.css`)**:
-   * **Font Family**: `'Orbitron', sans-serif`
-   * **Ukuran Font**: `clamp(24px, 5.5vw, 30px)` (Kembali menggunakan ukuran optimal yang tebal dan menonjol karena karakter Orbitron kompak secara horizontal).
-   * **Ketebalan**: `900` (black)
-   * **Jarak Antar Huruf (Tracking)**: `0.03em` (`letter-spacing: 0.03em`)
-   * **Efek Gradasi 3D**: Tetap dilapisi efek metalik beveled emas-hijau menggunakan `-webkit-background-clip: text` dan bayangan bertumpuk `text-shadow`.
+3. **Logo Premium Dialog Modal ([ChannelListModal.css](file:///c:/Users/ASUS/Downloads/NextVWT%20PTT%20App%20Prototype%20-%20Clone/src/app/components/ChannelListModal.css))**:
+   * **Font Family**: `'Outfit', sans-serif`
+   * **Ukuran Font**: `clamp(24px, 5.5vw, 30px)`
+   * **Ketebalan (Weights)**:
+     * **Next** (`.logo-next`): `font-weight: 500` dengan gradasi metalik perak-putih bersih (`linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%)`).
+     * **VWT** (`.logo-vwt`): `font-weight: 900` dengan gradasi mint-to-emerald (`linear-gradient(180deg, #a7f3d0 0%, #00C853 45%, #007c31 100%)`).
+   * **Jarak Antar Huruf (Tracking)**: `0.045em` untuk Next, `0.02em` untuk VWT.
+   * **Efek Gradasi 3D & Bayangan**: Menggunakan `-webkit-background-clip: text` dan bayangan bertumpuk `text-shadow` dengan rona hijau untuk menegaskan kedalaman taktil 3D.
