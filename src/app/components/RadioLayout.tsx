@@ -782,7 +782,7 @@ export function RadioLayout() {
                             >
                               <img
                                 src={foxSvg}
-                                className="w-[80px] h-[80px] object-contain"
+                                className="w-[130px] h-[130px] object-contain"
                                 alt="Cute Fox"
                               />
                             </div>
