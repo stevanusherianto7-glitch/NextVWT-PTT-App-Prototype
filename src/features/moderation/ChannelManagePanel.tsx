@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useChannelRole } from './useChannelRole';
 import { useChannelSettings } from './useChannelSettings';
 import { ChannelMemberList } from './ChannelMemberList';
 import { ChannelSettingsPanel } from './ChannelSettingsPanel';
 import { ModerationLogPanel } from './ModerationLogPanel';
 import { canPerformAction, type ChannelRole } from './permissions';
-import { X, Shield, Radio, Lock, Loader2 } from 'lucide-react';
+import { X, Shield, Radio, Loader2 } from 'lucide-react';
 import './moderation.css';
 
 interface ChannelManagePanelProps {
@@ -13,6 +13,7 @@ interface ChannelManagePanelProps {
   userId: string;
   initialChannelName?: string;
   onClose: () => void;
+  onOpenPrivate?: () => void;
 }
 
 type TabType = 'info' | 'members' | 'settings' | 'logs';
@@ -22,9 +23,20 @@ export function ChannelManagePanel({
   userId,
   initialChannelName = 'Channel',
   onClose,
+  onOpenPrivate,
 }: ChannelManagePanelProps) {
   const { role, status, loading: roleLoading } = useChannelRole(roomId, userId);
-  const { settings, loading: settingsLoading } = useChannelSettings(roomId, initialChannelName);
+  const { settings, loading: settingsLoading, updateSettings } = useChannelSettings(roomId, initialChannelName);
+
+  const [localName, setLocalName] = useState(settings?.channel_name || initialChannelName || '');
+  const [localDesc, setLocalDesc] = useState(settings?.channel_description || '');
+
+  useEffect(() => {
+    if (settings) {
+      setLocalName(settings.channel_name || '');
+      setLocalDesc(settings.channel_description || '');
+    }
+  }, [settings, settings?.channel_name, settings?.channel_description]);
   const [activeTab, setActiveTab] = useState<TabType>('info');
 
   // Check if role is loaded and authorized to view panel
@@ -42,32 +54,11 @@ export function ChannelManagePanel({
     );
   }
 
-  if (!isAuthorized) {
-    return (
-      <div className="moderation-overlay">
-        <div className="moderation-container flex flex-col items-center justify-center gap-4 text-center max-w-sm mx-auto">
-          <div className="h-16 w-16 bg-red-500/10 border border-red-500/30 rounded-full flex items-center justify-center text-red-500">
-            <Lock className="h-8 w-8" />
-          </div>
-          <h2 className="text-lg font-bold text-white uppercase tracking-wider">Akses Ditolak</h2>
-          <p className="text-xs text-slate-400 leading-relaxed">
-            Halaman ini hanya dapat diakses oleh operator, penanggung jawab channel (PJC), admin,
-            atau N.O.C. Status Anda saat ini adalah{' '}
-            <span className="text-slate-200 font-bold">{role.toUpperCase()}</span>.
-          </p>
-          <button type="button" onClick={onClose} className="moderation-btn-destructive w-full py-2">
-            Kembali ke Radio
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // Define tab navigation buttons based on role permissions
   const tabs: { id: TabType; label: string }[] = [{ id: 'info', label: 'INFO' }];
 
-  // Operator only gets Info and cannot access settings/members/logs
-  if (!isOperatorOnly) {
+  // Operator only gets Info and cannot access settings/members/logs.
+  // Regular users also only get Info.
+  if (isAuthorized && !isOperatorOnly) {
     tabs.push(
       { id: 'members', label: 'ANGGOTA' },
       { id: 'settings', label: 'SETELAN' },
@@ -138,7 +129,17 @@ export function ChannelManagePanel({
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <div className="flex flex-col gap-0.5">
                     <span className="text-slate-500 font-semibold">Nama Channel:</span>
-                    <span className="text-white font-medium">{settings?.channel_name}</span>
+                    {isAuthorized && !isOperatorOnly ? (
+                      <input
+                        type="text"
+                        value={localName}
+                        onChange={(e) => setLocalName(e.target.value)}
+                        onBlur={() => updateSettings({ channel_name: localName })}
+                        className="bg-white text-slate-800 border border-slate-300 rounded px-2 py-1 outline-none text-xs w-full focus:border-emerald-500/50 transition-colors"
+                      />
+                    ) : (
+                      <span className="text-white font-medium">{settings?.channel_name}</span>
+                    )}
                   </div>
                   <div className="flex flex-col gap-0.5">
                     <span className="text-slate-500 font-semibold">Nomor Channel:</span>
@@ -147,16 +148,44 @@ export function ChannelManagePanel({
                     </span>
                   </div>
                   <div className="flex flex-col gap-0.5 col-span-2">
-                    <span className="text-slate-500 font-semibold">Deskripsi:</span>
-                    <span className="text-slate-300 leading-normal">
-                      {settings?.channel_description || 'Tidak ada deskripsi untuk channel ini.'}
-                    </span>
+                    <span className="text-slate-500 font-semibold">Info Channel:</span>
+                    {isAuthorized && !isOperatorOnly ? (
+                      <input
+                        type="text"
+                        value={localDesc}
+                        onChange={(e) => setLocalDesc(e.target.value)}
+                        onBlur={() => updateSettings({ channel_description: localDesc })}
+                        placeholder="Tambahkan info channel..."
+                        className="bg-white text-slate-800 border border-slate-300 rounded px-2 py-1 outline-none text-xs w-full focus:border-emerald-500/50 transition-colors"
+                      />
+                    ) : (
+                      <span className="text-white leading-normal">
+                        {settings?.channel_description || 'Tidak ada info untuk channel ini.'}
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-col gap-0.5">
                     <span className="text-slate-500 font-semibold">Mode Channel:</span>
-                    <span className="text-emerald-400 font-medium capitalize">
-                      {settings?.channel_mode}
-                    </span>
+                    {isAuthorized && !isOperatorOnly ? (
+                      <select
+                        value={settings?.channel_mode || 'public'}
+                        onChange={(e) => {
+                          const newMode = e.target.value as 'public' | 'private';
+                          updateSettings({ channel_mode: newMode });
+                          if (newMode === 'private' && onOpenPrivate) {
+                            onOpenPrivate();
+                          }
+                        }}
+                        className="bg-white text-slate-800 border border-slate-300 rounded px-2 py-1 outline-none text-xs capitalize mt-1 cursor-pointer focus:border-emerald-500/50 hover:border-emerald-500/50 transition-colors"
+                      >
+                        <option value="public">Public</option>
+                        <option value="private">Private</option>
+                      </select>
+                    ) : (
+                      <span className="text-emerald-400 font-medium capitalize mt-1">
+                        {settings?.channel_mode}
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-col gap-0.5">
                     <span className="text-slate-500 font-semibold">Warna Aksen Tema:</span>

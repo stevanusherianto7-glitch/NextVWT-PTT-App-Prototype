@@ -683,20 +683,7 @@ export function UserListModal({ channel, channelName: _channelName, users }: Use
 
       {/* User List Container (Scrollable) */}
       <div className="flex-1 overflow-y-auto bg-[#fafbfc] divide-y divide-gray-100 custom-scrollbar">
-        {/* Server Row */}
-        <div className="w-full flex items-center px-4 py-2.5 border-b border-gray-100 bg-[#f4f7f6]">
-          <div className="w-[52px] h-[52px] shrink-0 rounded-full bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center shadow-inner relative">
-            <svg className="w-7 h-7 text-white fill-current" viewBox="0 0 24 24">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-            </svg>
-          </div>
-          <div className="ml-3 flex-1 min-w-0 text-left">
-            <div className="text-sm font-medium text-gray-900">Server</div>
-            <div className="text-[10px] text-gray-500 font-normal uppercase mt-0.5 tracking-wider">
-              SERVER NextVWT
-            </div>
-          </div>
-        </div>
+
 
         {/* Users List */}
         {modalUsers.length > 0 ? (

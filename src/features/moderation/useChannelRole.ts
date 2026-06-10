@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getSupabase } from '../../app/utils/supabase';
 import type { ChannelRole } from './permissions';
+import { getGlobalRole } from './permissions';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { CHANNELS, BRAND } from '../../app/utils/config';
 import { usePTTStore } from '../../app/store/usePTTStore';
@@ -18,6 +19,7 @@ export function useChannelRole(roomId: string, userId: string) {
     const localUserObj = store.user;
     const localName = localUserObj?.user_metadata?.full_name || store.infoText || 'Pebe Herianto';
     const localCallSign = store.callSign;
+    
     const isOperatorUser =
       userId === 'Pebri Haryanto' ||
       userId === '2DYUA' ||
@@ -25,14 +27,9 @@ export function useChannelRole(roomId: string, userId: string) {
         (localName === 'Pebri Haryanto' ||
           localCallSign === '2DYUA'));
 
-    const isNocUser =
-      userId === 'noc_global' ||
-      userId === 'Pebe Herianto' ||
-      (isLocalUser && (localName === 'NOC Global' || localName === 'Pebe Herianto' || localCallSign === 'NOC-01'));
-
-    const isSysAdminUser =
-      userId === 'sys_admin_vwt' ||
-      (isLocalUser && (localName === 'Sys Admin VWT' || localCallSign === 'SYS-01'));
+    const globalRole = getGlobalRole(userId, isLocalUser ? localName : undefined, isLocalUser ? localCallSign : undefined);
+    const isNocUser = globalRole === 'noc';
+    const isSysAdminUser = globalRole === 'sys_admin';
 
     if (isOperatorUser) {
       if (!localRole || localRole === 'guest') {

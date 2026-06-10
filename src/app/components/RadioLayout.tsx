@@ -34,6 +34,55 @@ import kissAnimation from '../../assets/reactions/kiss.json';
 import bartSvg from '../../assets/reactions/bart.svg';
 import foxSvg from '../../assets/reactions/fox.svg';
 
+const playReactionSound = (kind: string) => {
+  try {
+    const AudioContextClass = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioContextClass) return;
+    const audioCtx = new AudioContextClass();
+    const osc = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    
+    osc.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    
+    if (kind === 'laugh') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.1);
+      osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.2);
+      gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.3);
+    } else if (kind === 'buzzer') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(100, audioCtx.currentTime);
+      gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.5);
+    } else if (kind === 'horn') {
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(500, audioCtx.currentTime + 0.2);
+      gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.6);
+    } else {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.1);
+      gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.2);
+    }
+  } catch(e) {
+    console.warn("Audio play failed:", e);
+  }
+};
+
 // Helper to catch dynamic import chunk loading failures (typically after a new deploy)
 // and automatically reload the page to fetch the latest assets
 const lazyRetry = <Props extends object>(
@@ -112,9 +161,10 @@ export function RadioLayout() {
   const [isQueueOpen, setIsQueueOpen] = useState(false);
   const [isPrivateOpen, setIsPrivateOpen] = useState(false);
   const [floatingReactions, setFloatingReactions] = useState<
-    Array<{ id: string; reaction: string; x: number }>
+    Array<{ id: string; category?: string; reaction: string; x: number }>
   >([]);
   const [txStartTime, setTxStartTime] = useState<number>(0);
+  const [waitTimer, setWaitTimer] = useState<number | null>(null);
 
   const { startRecording, stopRecording, playAudioChunk, flushAudioQueue } = useAudioStreamer();
 
@@ -147,6 +197,29 @@ export function RadioLayout() {
     if (t === 'theme-monokrom' || t.includes('monokrom') || t === 'mono') return 'theme-monokrom';
     return 'theme-classic';
   };
+
+  // Reset progress when not transmitting and not receiving
+  useEffect(() => {
+    if (status === 'wait') {
+      if (waitTimer === null) setWaitTimer(30);
+    } else {
+      setWaitTimer(null);
+    }
+  }, [status, waitTimer]); // Only trigger if status becomes wait
+
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
+    if (waitTimer !== null && waitTimer > 0) {
+      interval = setInterval(() => {
+        setWaitTimer((prev) => (prev ? prev - 1 : 0));
+      }, 1000);
+    } else if (waitTimer === 0) {
+      localStorage.setItem(`channel-status:${roomId}:${userId}`, 'active');
+      window.dispatchEvent(new Event('channel-role-changed'));
+      setWaitTimer(null);
+    }
+    return () => clearInterval(interval);
+  }, [waitTimer, roomId, userId]);
 
   // Reset progress when not transmitting and not receiving
   useEffect(() => {
@@ -268,7 +341,7 @@ export function RadioLayout() {
   // Manage incoming audio chunks from other users
   useEffect(() => {
     setOnVoiceChunkReceived((base64) => {
-      if (isPowerOn && channel !== 100) {
+      if (isPowerOn && channel !== 100 && status !== 'muted') {
         playAudioChunk(base64);
         if (resetWatchdogRef.current) {
           resetWatchdogRef.current();
@@ -278,7 +351,7 @@ export function RadioLayout() {
     return () => {
       setOnVoiceChunkReceived(null);
     };
-  }, [isPowerOn, channel, setOnVoiceChunkReceived, playAudioChunk]);
+  }, [isPowerOn, channel, status, setOnVoiceChunkReceived, playAudioChunk]);
 
   // Stop recording and flush queue on power off
   useEffect(() => {
@@ -425,7 +498,8 @@ export function RadioLayout() {
       if (isPowerOn) {
         const id = payload.id || Math.random().toString();
         const x = 30 + Math.random() * 40;
-        setFloatingReactions((prev) => [...prev, { id, reaction: payload.reaction, x }]);
+        setFloatingReactions((prev) => [...prev, { id, category: payload.category, reaction: payload.reaction, x }]);
+        if (payload.category === 'sound') playReactionSound(payload.reaction);
         setTimeout(() => {
           setFloatingReactions((prev) => prev.filter((r) => r.id !== id));
         }, 5000);
@@ -436,36 +510,22 @@ export function RadioLayout() {
     };
   }, [isPowerOn, setOnReactionReceived]);
 
-  const handleSendReaction = (reactionType: string) => {
+  const broadcastReaction = usePTTStore((state) => state.broadcastReaction);
+
+  const handleSendReaction = (category: 'animation' | 'sound' | 'gift', reactionType: string) => {
     if (!isPowerOn) return;
 
     // Trigger local animation instantly (optimistic)
     const localId = Math.random().toString();
     const x = 30 + Math.random() * 40;
-    setFloatingReactions((prev) => [...prev, { id: localId, reaction: reactionType, x }]);
+    setFloatingReactions((prev) => [...prev, { id: localId, category, reaction: reactionType, x }]);
+    if (category === 'sound') playReactionSound(reactionType);
     setTimeout(() => {
       setFloatingReactions((prev) => prev.filter((r) => r.id !== localId));
     }, 5000);
 
     // Broadcast to other peers on the channel
-    import('../store/subscription')
-      .then(({ activeChannelSubscription }) => {
-        if (activeChannelSubscription && isConnected) {
-          activeChannelSubscription.send({
-            type: 'broadcast',
-            event: 'reaction',
-            payload: {
-              id: localId,
-              roomId: roomId,
-              senderId: userId,
-              senderName: infoText || 'User',
-              reaction: reactionType,
-              createdAt: Date.now(),
-            },
-          });
-        }
-      })
-      .catch((err) => console.warn('Failed to broadcast reaction:', err));
+    broadcastReaction(category, reactionType);
   };
 
   const handleSet = () => {
@@ -509,6 +569,7 @@ export function RadioLayout() {
           userId={userId}
           initialChannelName={activeChannelObj?.name}
           onClose={() => setIsManageOpen(false)}
+          onOpenPrivate={() => { setIsManageOpen(false); setIsPrivateOpen(true); }}
         />
       ) : isWalletOpen ? (
         <WalletPanel onClose={() => setIsWalletOpen(false)} />
@@ -619,7 +680,7 @@ export function RadioLayout() {
 
                     <path
                       d="M 29 71 A 28 28 0 1 1 71 71"
-                      stroke="#064e3b"
+                      stroke="#713f12"
                       strokeWidth="6"
                       strokeLinecap="round"
                       fill="none"
@@ -628,14 +689,14 @@ export function RadioLayout() {
                     />
                     <path
                       d="M 29 71 A 28 28 0 1 1 71 71"
-                      stroke="#10B981"
+                      stroke="#eab308"
                       strokeWidth="6"
                       strokeLinecap="round"
                       fill="none"
                     />
                     <path
                       d="M 29 71 A 28 28 0 1 1 71 71"
-                      stroke="#6ee7b7"
+                      stroke="#fef08a"
                       strokeWidth="1.5"
                       strokeLinecap="round"
                       fill="none"
@@ -781,6 +842,33 @@ export function RadioLayout() {
                     {isPowerOn && (
                       <div className="absolute w-[280px] h-[135px] pointer-events-none z-30 rounded-[14px] top-[10px] left-1/2 -translate-x-1/2">
                         {floatingReactions.map((r) => {
+                          if (r.category === 'sound') {
+                            const soundEmojis: Record<string, string> = { laugh: '🤣', buzzer: '❌', drum: '🥁', horn: '🎺' };
+                            return (
+                              <div
+                                key={r.id}
+                                className="absolute bottom-0 -translate-x-1/2 w-[60px] h-[60px] flex items-center justify-center pointer-events-none"
+                                style={{ left: `${r.x}%` }}
+                              >
+                                <div className="animate-float-up w-full h-full flex items-center justify-center opacity-80">
+                                  <span className="text-[32px]">{soundEmojis[r.reaction] || '🎵'}</span>
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          if (r.category === 'gift') {
+                            const giftEmojis: Record<string, string> = { giftbox: '🎁', rose: '🌹', diamond: '💎', coffee: '☕' };
+                            return (
+                              <div
+                                key={r.id}
+                                className="fixed inset-0 m-auto w-[150px] h-[150px] flex items-center justify-center animate-bounce z-[100] pointer-events-none drop-shadow-2xl"
+                              >
+                                <span className="text-[120px] filter drop-shadow-[0_0_20px_rgba(255,255,255,0.8)]">{giftEmojis[r.reaction] || '🎁'}</span>
+                              </div>
+                            );
+                          }
+
                           if (r.reaction === 'bart') {
                             return (
                               <div
@@ -885,11 +973,10 @@ export function RadioLayout() {
                 <QuickActionDock
                   onOpenChat={() => setIsChatOpen(true)}
                   onOpenQueue={() => setIsQueueOpen(true)}
-                  onOpenPrivate={() => setIsPrivateOpen(true)}
                   onSendReaction={handleSendReaction}
                   isPowerOn={isPowerOn}
-                  showPrivate={role === 'noc' || role === 'sys_admin'}
                   showSocialFeatures={isPowerOn}
+                  themeKey={getThemeClass(themeText)}
                 />
               </>
             )}
@@ -904,6 +991,8 @@ export function RadioLayout() {
                   <PTTButton
                     isActive={isTransmitting}
                     isBusy={isBusy}
+                    isMuted={status === 'muted'}
+                    waitCountdown={waitTimer}
                     onPressStart={() => {
                       if (isPowerOn) {
                         if (!pttAllowed) {

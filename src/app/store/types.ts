@@ -132,11 +132,12 @@ export interface PTTState {
   broadcastWebRTCSignaling: (payload: WebRTCSignalingPayload) => void;
 
   // Reaction actions
+  broadcastReaction: (category: 'animation' | 'sound' | 'gift', reaction: string) => void;
   onReactionReceived:
-    | ((payload: { id: string; reaction: string; senderName: string }) => void)
+    | ((payload: { id: string; category: 'animation' | 'sound' | 'gift'; reaction: string; senderName: string }) => void)
     | null;
   setOnReactionReceived: (
-    callback: ((payload: { id: string; reaction: string; senderName: string }) => void) | null
+    callback: ((payload: { id: string; category: 'animation' | 'sound' | 'gift'; reaction: string; senderName: string }) => void) | null
   ) => void;
 
   // Channels online DB actions

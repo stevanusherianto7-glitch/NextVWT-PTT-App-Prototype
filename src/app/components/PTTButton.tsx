@@ -6,6 +6,8 @@ interface PTTButtonProps {
   onPressEnd: () => void;
   isActive?: boolean;
   isBusy?: boolean;
+  isMuted?: boolean;
+  waitCountdown?: number | null;
 }
 
 const createStaticNoise = (
@@ -114,6 +116,8 @@ export function PTTButton({
   onPressEnd,
   isActive = false,
   isBusy = false,
+  isMuted = false,
+  waitCountdown = null,
 }: PTTButtonProps) {
   const [isDepressed, setIsDepressed] = useState(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -302,24 +306,26 @@ export function PTTButton({
         className="relative w-[326px] h-[96px] flex items-center justify-center overflow-hidden focus:outline-none"
         style={{
           borderRadius: '48px',
-          background: !isPowerOn
-            ? 'linear-gradient(to bottom, #a3a3a3 0%, #737373 100%)' // Gray when power is off
-            : isBusy
-              ? 'linear-gradient(to bottom, #f97316 0%, #ea580c 100%)' // Orange when busy
+          background: (!isPowerOn || isMuted)
+            ? 'linear-gradient(to bottom, #a3a3a3 0%, #737373 100%)' // Gray when power is off or muted
+            : (waitCountdown !== null || isBusy)
+              ? 'linear-gradient(to bottom, #f97316 0%, #ea580c 100%)' // Orange when busy or wait
               : isActive
                 ? 'linear-gradient(to bottom, #d62828 0%, #a01010 100%)' // Red when active
                 : 'linear-gradient(to bottom, #2cdb66 0%, #19ba42 100%)', // Green when idle
           boxShadow: isDepressed
             ? 'inset 0 8px 12px rgba(0, 0, 0, 0.85), inset 0 -2px 3px rgba(0, 0, 0, 0.2)'
-            : isBusy
-              ? 'inset 0 3px 6px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.2), 0 4px 10px rgba(249, 115, 22, 0.4)'
-              : isActive
-                ? 'inset 0 3px 6px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.2), 0 4px 6px rgba(0,0,0,0.3)'
-                : 'inset 0 3px 6px rgba(255, 255, 255, 0.8), 0 4px 10px rgba(44, 219, 102, 0.4)',
+            : (!isPowerOn || isMuted)
+              ? 'inset 0 3px 6px rgba(255,255,255,0.25), inset 0 -2px 4px rgba(0,0,0,0.3), 0 4px 8px rgba(0,0,0,0.25)'
+              : (waitCountdown !== null || isBusy)
+                ? 'inset 0 3px 6px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.2), 0 4px 10px rgba(249, 115, 22, 0.4)'
+                : isActive
+                  ? 'inset 0 3px 6px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.2), 0 4px 6px rgba(0,0,0,0.3)'
+                  : 'inset 0 3px 6px rgba(255, 255, 255, 0.8), 0 4px 10px rgba(44, 219, 102, 0.4)',
           transform: isDepressed ? 'translateY(4px)' : 'translateY(0)',
-          border: !isPowerOn
+          border: (!isPowerOn || isMuted)
             ? '1px solid #666666'
-            : isBusy
+            : (waitCountdown !== null || isBusy)
               ? '1px solid #c2410c'
               : isActive
                 ? '1px solid #730e0e'
@@ -340,7 +346,7 @@ export function PTTButton({
                 : '1px 1px 2px rgba(0,0,0,0.3)',
           }}
         >
-          {isBusy ? 'BUSY' : 'PTT'}
+          {waitCountdown !== null ? waitCountdown.toString() : isBusy ? 'BUSY' : 'PTT'}
         </span>
 
         {/* Top inner glass highlight (convex effect) */}

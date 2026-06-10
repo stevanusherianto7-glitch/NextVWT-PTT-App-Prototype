@@ -8,6 +8,28 @@ export type ChannelUserStatus =
   | 'suspended'
   | 'banned';
 
+export function getGlobalRole(userId: string, displayName?: string, callSign?: string): 'noc' | 'sys_admin' | null {
+  if (
+    userId === 'noc_global' ||
+    userId === 'Pebe Herianto' ||
+    displayName === 'NOC Global' ||
+    displayName === 'Pebe Herianto' ||
+    callSign === 'NOC-01'
+  ) {
+    return 'noc';
+  }
+  
+  if (
+    userId === 'sys_admin_vwt' ||
+    displayName === 'Sys Admin VWT' ||
+    callSign === 'SYS-01'
+  ) {
+    return 'sys_admin';
+  }
+  
+  return null;
+}
+
 export type ModerationAction =
   | 'VIEW_ADMIN_PANEL'
   | 'MANAGE_CHANNEL'

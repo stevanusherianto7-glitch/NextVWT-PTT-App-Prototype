@@ -229,20 +229,20 @@ export function LCDPanel({
 
         {/* Content */}
         <div
-          className={`relative p-2.5 h-full flex flex-col justify-between transition-opacity duration-300 z-10 ${_isPowerOn ? 'opacity-100' : 'opacity-0'}`}
+          className={`relative p-2.5 h-full flex flex-col justify-between transition-opacity duration-300 z-10 opacity-100 ${_isPowerOn ? '' : 'pointer-events-none'}`}
         >
           {/* Top status bar */}
           <div className="flex items-start justify-between">
             {/* Top Left: Username Icon and Letter */}
             <div className="flex items-end gap-1.5 pt-1">
-              <div className="relative shrink-0 select-none flex items-end justify-center w-[38px] h-[38px] -ml-0.5">
+              <div className="relative shrink-0 select-none flex items-end justify-center w-[38px] h-[38px] ml-1">
                 <img
                   src={activeRole === 'operator' ? iconOperator : usernameIcon}
                   alt="Username Icon"
                   className={
                     activeRole === 'operator'
                       ? 'h-[30px] w-[30px] object-contain mb-[1px]'
-                      : 'h-[52px] w-[50px] object-contain absolute -top-[18px] -left-1.5'
+                      : 'h-[70px] w-[62px] object-contain absolute -top-[16px] left-0'
                   }
                   style={{ filter: 'drop-shadow(1px 1px 0px rgba(0,0,0,0.2))' }}
                 />
@@ -267,7 +267,7 @@ export function LCDPanel({
             {/* OFFLINE Badge */}
             {isOffline && (
               <div
-                className="absolute left-1/2 -translate-x-1/2 top-3 px-2 py-0.5 rounded-full bg-[#E53935] flex items-center gap-1"
+                className="absolute left-1/2 -translate-x-1/2 top-1 px-2 py-0.5 rounded-full bg-[#E53935] flex items-center gap-1"
                 style={{ boxShadow: '0 2px 4px rgba(0,0,0,0.3)', border: '1px solid #d32f2f' }}
               >
                 <svg
@@ -295,7 +295,7 @@ export function LCDPanel({
             {!isOffline && isReceiving && (
               <div
                 data-testid="lcd-busy-badge"
-                className="absolute left-1/2 -translate-x-1/2 top-3 px-2 py-0.5 rounded-full bg-[#f97316] flex items-center gap-1"
+                className="absolute left-1/2 -translate-x-1/2 top-1 px-2 py-0.5 rounded-full bg-[#f97316] flex items-center gap-1"
                 style={{ boxShadow: '0 2px 4px rgba(0,0,0,0.3)', border: '1px solid #ea580c' }}
               >
                 <span className="text-[10px] text-white font-bold tracking-wide uppercase animate-pulse">
@@ -310,7 +310,7 @@ export function LCDPanel({
               className="flex items-end h-[28px] relative gap-1 mt-1 mr-1 cursor-pointer select-none"
             >
               {isOffline && (
-                <span className="text-[#d32f2f] font-black text-base leading-none absolute -left-2 top-0 z-10 drop-shadow-[1px_1px_0px_rgba(255,255,255,0.6)]">
+                <span className="text-[#d32f2f] font-black text-3xl leading-none absolute -left-3 -top-2 z-10 drop-shadow-[1px_1px_0px_rgba(255,255,255,0.6)]">
                   ×
                 </span>
               )}

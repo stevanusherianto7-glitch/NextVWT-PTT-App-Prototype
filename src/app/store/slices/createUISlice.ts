@@ -33,6 +33,7 @@ export const createUISlice: StateCreator<
     | 'setLastFeedbackTime'
     | 'onReactionReceived'
     | 'setOnReactionReceived'
+    | 'broadcastReaction'
   >
 > = (set, get) => ({
   isPowerOn: true,
@@ -220,4 +221,23 @@ export const createUISlice: StateCreator<
   },
   onReactionReceived: null,
   setOnReactionReceived: (callback) => set({ onReactionReceived: callback }),
+  broadcastReaction: (category, reaction) => {
+    const state = get();
+    if (!state.isConnected) return;
+    if (activeChannelSubscription) {
+      activeChannelSubscription.send({
+        type: 'broadcast',
+        event: 'reaction',
+        payload: {
+          id: Math.random().toString(),
+          roomId: state.channelId,
+          senderId: state.userId,
+          senderName: state.infoText || 'User',
+          category,
+          reaction,
+          createdAt: Date.now(),
+        },
+      });
+    }
+  },
 });

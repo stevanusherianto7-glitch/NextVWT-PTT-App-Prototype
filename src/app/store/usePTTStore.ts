@@ -179,7 +179,7 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
         .on(
           'broadcast',
           { event: 'reaction' },
-          ({ payload }: { payload: { id: string; reaction: string; senderName: string } }) => {
+          ({ payload }: { payload: { id: string; category: 'animation' | 'sound' | 'gift'; reaction: string; senderName: string } }) => {
             if (activeChannelSubscription !== channelInstance) return;
             const state = usePTTStore.getState();
             if (state.onReactionReceived) {

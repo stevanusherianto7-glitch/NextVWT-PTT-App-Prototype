@@ -7,6 +7,7 @@ import {
   canModerateRole,
   canPerformAction,
   roleRank,
+  getGlobalRole,
   type ChannelRole,
   type ChannelUserStatus,
 } from './permissions';
@@ -21,7 +22,9 @@ import {
   UserX,
   X,
   Shield,
+  UserPlus,
 } from 'lucide-react';
+import { USER_PROFILES } from '../../app/components/UserListModal';
 
 interface MemberRoleStatus {
   user_id: string;
@@ -62,6 +65,12 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
   const [bannedUsers, setBannedUsers] = useState<BannedUser[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'online' | 'banned'>('online');
+
+  // Add Member states
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newMemberId, setNewMemberId] = useState('');
+  const [newMemberName, setNewMemberName] = useState('');
+  const [isAddingMember, setIsAddingMember] = useState(false);
 
   // Modal states
   const [selectedUser, setSelectedUser] = useState<{
@@ -158,6 +167,55 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
     };
   }, [roomId]);
 
+  // Auto-fill member name based on ID (callSign)
+  useEffect(() => {
+    if (newMemberId.length >= 2) {
+      const foundProfile = Object.values(USER_PROFILES).find(
+        (p) => p.callSign.toUpperCase() === newMemberId.toUpperCase()
+      );
+      if (foundProfile) {
+        setNewMemberName(foundProfile.displayName);
+      }
+    }
+  }, [newMemberId]);
+
+  const handleAddMember = async () => {
+    if (!newMemberId || !newMemberName) {
+      setErrorMessage('ID User dan Nama harus diisi');
+      setTimeout(() => setErrorMessage(''), 3000);
+      return;
+    }
+
+    setIsAddingMember(true);
+    const foundProfileId = Object.keys(USER_PROFILES).find(
+      (k) => USER_PROFILES[k].callSign.toUpperCase() === newMemberId.toUpperCase()
+    );
+    const userIdToSave = foundProfileId || newMemberId.toUpperCase();
+
+    try {
+      await setUserRole(userIdToSave, 'guest', 'guest');
+      setIsAddingMember(false);
+      setSuccessMessage('Warga tetap berhasil ditambahkan');
+      setNewMemberId('');
+      setNewMemberName('');
+      setShowAddForm(false);
+      setDbRoles((prev) => ({
+        ...prev,
+        [userIdToSave]: {
+          user_id: userIdToSave,
+          role: 'guest',
+          status: 'active',
+        },
+      }));
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (error: unknown) {
+      setIsAddingMember(false);
+      const err = error as Error;
+      setErrorMessage(err.message || 'Gagal menambahkan warga');
+      setTimeout(() => setErrorMessage(''), 3000);
+    }
+  };
+
   const handleOpenActions = (userId: string, displayName: string) => {
     const userDbInfo = dbRoles[userId] || { role: 'guest', status: 'active' };
     setSelectedUser({
@@ -189,6 +247,10 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
   };
 
   const filteredOnlineUsers = activeUsers.filter((u) => {
+    // NOC tidak termasuk dalam hirarki pengelolaan channel manapun
+    const globalRole = getGlobalRole(u.userId, u.displayName, u.callSign);
+    if (globalRole === 'noc') return false;
+
     const matchesSearch =
       u.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       u.callSign.toLowerCase().includes(searchQuery.toLowerCase());
@@ -240,17 +302,63 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
         )}
       </div>
 
-      {/* Search Input */}
+      {/* Actions & Search */}
       {activeTab === 'online' && (
-        <div className="relative">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
-          <input
-            type="text"
-            placeholder="Cari nama atau callsign..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="moderation-input pl-9"
-          />
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
+              <input
+                type="text"
+                placeholder="Cari nama atau callsign..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="moderation-input pl-9"
+              />
+            </div>
+            {canPerformAction(actorRole, 'MANAGE_ROLES') && (
+              <button
+                type="button"
+                onClick={() => setShowAddForm(!showAddForm)}
+                className={`p-2 rounded-lg transition-colors ${
+                  showAddForm ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                }`}
+                title="Tambah Warga Tetap"
+              >
+                <UserPlus className="h-5 w-5" />
+              </button>
+            )}
+          </div>
+
+          {showAddForm && (
+            <div className="p-3 bg-slate-800 rounded-lg border border-slate-700 animate-in fade-in slide-in-from-top-2">
+              <h4 className="text-sm font-semibold text-white mb-2">Tambah Warga Tetap</h4>
+              <div className="flex flex-col gap-2">
+                <input
+                  type="text"
+                  placeholder="ID User (5 karakter)..."
+                  value={newMemberId}
+                  onChange={(e) => setNewMemberId(e.target.value.toUpperCase())}
+                  className="moderation-input"
+                  maxLength={5}
+                />
+                <input
+                  type="text"
+                  placeholder="Nama User..."
+                  value={newMemberName}
+                  onChange={(e) => setNewMemberName(e.target.value)}
+                  className="moderation-input"
+                />
+                <button
+                  onClick={handleAddMember}
+                  disabled={isAddingMember || !newMemberId || !newMemberName}
+                  className="w-full mt-1 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold py-2 px-4 rounded-lg disabled:opacity-50 transition-colors"
+                >
+                  {isAddingMember ? 'Menyimpan...' : 'Tambahkan'}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

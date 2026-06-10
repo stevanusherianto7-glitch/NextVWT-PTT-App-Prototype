@@ -18,26 +18,45 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
 
   const { channels, userId, user, infoText, callSign } = usePTTStore();
   const [hasBadge, setHasBadge] = useState(false);
+  const [channelInfos, setChannelInfos] = useState<Record<string, string>>({});
 
-  // Check badge status on mount
+  // Check badge status and load channel infos on mount
   useEffect(() => {
-    if (!userId) return;
     let active = true;
     (async () => {
       try {
         const { getSupabase } = await import('../utils/supabase');
         const supabase = await getSupabase();
-        const { data, error } = await supabase
-          .from('user_badges')
-          .select('*')
-          .eq('user_id', userId)
-          .eq('badge_key', 'badge_merah')
-          .maybeSingle();
-        if (active && !error && data) {
-          setHasBadge(true);
+        
+        // Fetch badge status
+        if (userId) {
+          const { data: badgeData, error: badgeError } = await supabase
+            .from('user_badges')
+            .select('*')
+            .eq('user_id', userId)
+            .eq('badge_key', 'badge_merah')
+            .maybeSingle();
+          if (active && !badgeError && badgeData) {
+            setHasBadge(true);
+          }
+        }
+
+        // Fetch channel infos
+        const { data: settingsData, error: settingsError } = await supabase
+          .from('channel_settings')
+          .select('room_id, channel_description');
+        
+        if (active && !settingsError && settingsData) {
+          const infos: Record<string, string> = {};
+          settingsData.forEach((row) => {
+            if (row.channel_description) {
+              infos[row.room_id] = row.channel_description;
+            }
+          });
+          setChannelInfos(infos);
         }
       } catch (err) {
-        console.warn('Failed to check badge status in ChannelListModal:', err);
+        console.warn('Failed to load initial data in ChannelListModal:', err);
       }
     })();
     return () => {
@@ -150,6 +169,9 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
                     badgeClass = 'badge-red';
                   }
 
+                  const roomId = `ptt-room-${ch.number}`;
+                  const customInfo = channelInfos[roomId];
+
                   const activeUserCount = ch.users.length;
                   let activeUsersStr =
                     activeUserCount > 0
@@ -159,6 +181,8 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
                   if (ch.number === 0) {
                     activeUsersStr = 'WWW.NEXTVWT.ID';
                   }
+
+                  const row2Text = customInfo || activeUsersStr;
 
                   return (
                     <button type="button"
@@ -177,7 +201,7 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
                       <div className="ml-3 pr-3 flex-1 min-w-0 py-1">
                         <div className="text-xs font-bold text-black truncate">{ch.name}</div>
                         <div className="text-[10px] text-gray-500 font-semibold truncate mt-0.5 uppercase">
-                          {activeUsersStr}
+                          {row2Text}
                         </div>
                       </div>
                     </button>
@@ -395,7 +419,9 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
               <div className="flex border-t border-b border-gray-100 py-1 text-[14px]">
                 <span className="w-14 font-bold text-gray-400 shrink-0">Info</span>
                 <span className="font-semibold text-gray-700 flex-1 min-w-0 break-words">
-                  {infoChannel.users.length > 0 ? (
+                  {channelInfos[`ptt-room-${infoChannel.number}`] ? (
+                    <span>{channelInfos[`ptt-room-${infoChannel.number}`]}</span>
+                  ) : infoChannel.users.length > 0 ? (
                     <span>
                       {infoChannel.users.length} Pengguna • {infoChannel.users.join(', ')}
                     </span>

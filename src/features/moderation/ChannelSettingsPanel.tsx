@@ -114,71 +114,95 @@ export function ChannelSettingsPanel({ roomId, actorRole }: ChannelSettingsPanel
           />
         </div>
 
-        <div className="setting-row">
-          <div className="setting-info">
+        <div className="flex flex-col pt-2 pb-1 border-b border-slate-200">
+          <div className="setting-info !max-w-full mb-3">
             <span className="setting-label">Cooldown PTT (detik)</span>
             <span className="setting-desc">
               Jeda waktu minimum yang harus dipenuhi sebelum boleh berbicara kembali
             </span>
           </div>
-          <select
-            title="Cooldown PTT (detik)"
-            aria-label="Cooldown PTT (detik)"
-            value={settings.ptt_cooldown_seconds}
-            disabled={!hasSettingsPerm}
-            onChange={(e) => handleSelectChange('ptt_cooldown_seconds', Number(e.target.value))}
-            className="moderation-select text-xs"
-          >
-            <option value={0}>Tanpa Cooldown</option>
-            <option value={1}>1 Detik</option>
-            <option value={2}>2 Detik</option>
-            <option value={3}>3 Detik</option>
-            <option value={5}>5 Detik</option>
-          </select>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { value: 0, label: 'Tanpa Cooldown' },
+              { value: 1, label: '1 Detik' },
+              { value: 2, label: '2 Detik' },
+              { value: 3, label: '3 Detik' },
+              { value: 5, label: '5 Detik' },
+            ].map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => handleSelectChange('ptt_cooldown_seconds', opt.value)}
+                disabled={!hasSettingsPerm}
+                className={`p-2 rounded-lg border text-xs font-bold transition-all text-center disabled:opacity-50 disabled:cursor-not-allowed ${
+                  settings.ptt_cooldown_seconds === opt.value
+                    ? 'bg-emerald-50 border-emerald-500 text-emerald-700 shadow-sm'
+                    : 'bg-white border-slate-200 text-slate-600 hover:border-emerald-300 hover:bg-slate-50'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="setting-row">
-          <div className="setting-info">
+        <div className="flex flex-col pt-2 pb-1 border-b border-slate-200">
+          <div className="setting-info !max-w-full mb-3">
             <span className="setting-label">Durasi Bicara Tamu (detik)</span>
             <span className="setting-desc">Batas durasi maksimum bicara tamu sekali tekan PTT</span>
           </div>
-          <select
-            title="Durasi Bicara Tamu (detik)"
-            aria-label="Durasi Bicara Tamu (detik)"
-            value={settings.guest_max_ptt_seconds}
-            disabled={!hasSettingsPerm}
-            onChange={(e) => handleSelectChange('guest_max_ptt_seconds', Number(e.target.value))}
-            className="moderation-select text-xs"
-          >
-            <option value={5}>5 Detik</option>
-            <option value={10}>10 Detik</option>
-            <option value={15}>15 Detik</option>
-            <option value={30}>30 Detik</option>
-            <option value={60}>60 Detik</option>
-          </select>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { value: 5, label: '5 Detik' },
+              { value: 10, label: '10 Detik' },
+              { value: 15, label: '15 Detik' },
+              { value: 30, label: '30 Detik' },
+              { value: 60, label: '60 Detik' },
+            ].map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => handleSelectChange('guest_max_ptt_seconds', opt.value)}
+                disabled={!hasSettingsPerm}
+                className={`p-2 rounded-lg border text-xs font-bold transition-all text-center disabled:opacity-50 disabled:cursor-not-allowed ${
+                  settings.guest_max_ptt_seconds === opt.value
+                    ? 'bg-emerald-50 border-emerald-500 text-emerald-700 shadow-sm'
+                    : 'bg-white border-slate-200 text-slate-600 hover:border-emerald-300 hover:bg-slate-50'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="setting-row">
-          <div className="setting-info">
+        <div className="flex flex-col pt-2 pb-1">
+          <div className="setting-info !max-w-full mb-3">
             <span className="setting-label">Durasi Bicara Anggota (detik)</span>
             <span className="setting-desc">
               Batas durasi maksimum bicara anggota / operator sekali tekan PTT
             </span>
           </div>
-          <select
-            title="Durasi Bicara Anggota (detik)"
-            aria-label="Durasi Bicara Anggota (detik)"
-            value={settings.member_max_ptt_seconds}
-            disabled={!hasSettingsPerm}
-            onChange={(e) => handleSelectChange('member_max_ptt_seconds', Number(e.target.value))}
-            className="moderation-select text-xs"
-          >
-            <option value={30}>30 Detik</option>
-            <option value={60}>60 Detik (1 Menit)</option>
-            <option value={120}>120 Detik (2 Menit)</option>
-            <option value={300}>300 Detik (5 Menit)</option>
-            <option value={0}>Tanpa Batas</option>
-          </select>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { value: 30, label: '30 Detik' },
+              { value: 60, label: '60 Detik (1 Menit)' },
+              { value: 120, label: '120 Detik (2 Menit)' },
+              { value: 300, label: '300 Detik (5 Menit)' },
+              { value: 0, label: 'Tanpa Batas' },
+            ].map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => handleSelectChange('member_max_ptt_seconds', opt.value)}
+                disabled={!hasSettingsPerm}
+                className={`p-2 rounded-lg border text-xs font-bold transition-all text-center disabled:opacity-50 disabled:cursor-not-allowed ${
+                  settings.member_max_ptt_seconds === opt.value
+                    ? 'bg-emerald-50 border-emerald-500 text-emerald-700 shadow-sm'
+                    : 'bg-white border-slate-200 text-slate-600 hover:border-emerald-300 hover:bg-slate-50'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -224,27 +248,35 @@ export function ChannelSettingsPanel({ roomId, actorRole }: ChannelSettingsPanel
           />
         </div>
 
-        <div className="setting-row">
-          <div className="setting-info">
+        <div className="flex flex-col pt-2 pb-1">
+          <div className="setting-info !max-w-full mb-3">
             <span className="setting-label">Slow Mode Chat (detik)</span>
             <span className="setting-desc">
               Jeda waktu antar pesan yang dikirim oleh user biasa
             </span>
           </div>
-          <select
-            title="Slow Mode Chat (detik)"
-            aria-label="Slow Mode Chat (detik)"
-            value={settings.slow_mode_seconds}
-            disabled={!hasSettingsPerm || !settings.chat_enabled}
-            onChange={(e) => handleSelectChange('slow_mode_seconds', Number(e.target.value))}
-            className="moderation-select text-xs"
-          >
-            <option value={0}>Nonaktif (0s)</option>
-            <option value={3}>3 Detik</option>
-            <option value={5}>5 Detik</option>
-            <option value={10}>10 Detik</option>
-            <option value={30}>30 Detik</option>
-          </select>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { value: 0, label: 'Nonaktif (0s)' },
+              { value: 3, label: '3 Detik' },
+              { value: 5, label: '5 Detik' },
+              { value: 10, label: '10 Detik' },
+              { value: 30, label: '30 Detik' },
+            ].map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => handleSelectChange('slow_mode_seconds', opt.value)}
+                disabled={!hasSettingsPerm || !settings.chat_enabled}
+                className={`p-2 rounded-lg border text-xs font-bold transition-all text-center disabled:opacity-50 disabled:cursor-not-allowed ${
+                  settings.slow_mode_seconds === opt.value
+                    ? 'bg-emerald-50 border-emerald-500 text-emerald-700 shadow-sm'
+                    : 'bg-white border-slate-200 text-slate-600 hover:border-emerald-300 hover:bg-slate-50'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -327,26 +359,28 @@ export function ChannelSettingsPanel({ roomId, actorRole }: ChannelSettingsPanel
           <h3 className="text-xs font-bold text-white flex items-center gap-2 pb-1.5 border-b border-white/5">
             <Palette className="h-3.5 w-3.5 text-pink-400" /> TEMA SKIN CHANNEL
           </h3>
-          <div className="setting-row">
-            <div className="setting-info">
+          <div className="flex flex-col pt-1">
+            <div className="setting-info !max-w-full mb-3">
               <span className="setting-label">Pilih Skin Visual</span>
               <span className="setting-desc">
                 Mengubah skin/warna tema channel secara visual untuk seluruh pendengar
               </span>
             </div>
-            <select
-              title="Pilih Skin Visual"
-              aria-label="Pilih Skin Visual"
-              value={settings.theme_key}
-              onChange={(e) => handleSelectChange('theme_key', e.target.value)}
-              className="moderation-select text-xs"
-            >
+            <div className="grid grid-cols-2 gap-2">
               {THEMES.map((t) => (
-                <option key={t.key} value={t.key}>
+                <button
+                  key={t.key}
+                  onClick={() => handleSelectChange('theme_key', t.key)}
+                  className={`p-2 rounded-lg border text-xs font-bold transition-all text-center ${
+                    settings.theme_key === t.key
+                      ? 'bg-emerald-50 border-emerald-500 text-emerald-700 shadow-sm'
+                      : 'bg-white border-slate-200 text-slate-600 hover:border-emerald-300 hover:bg-slate-50'
+                  }`}
+                >
                   {t.label}
-                </option>
+                </button>
               ))}
-            </select>
+            </div>
           </div>
         </div>
       )}

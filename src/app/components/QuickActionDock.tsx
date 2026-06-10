@@ -1,29 +1,41 @@
 import { useState, useRef, useEffect } from 'react';
-import { Smile, MessageSquare, Music, Shield } from 'lucide-react';
+import { Smile, MessageSquare, Music } from 'lucide-react';
 
 interface QuickActionDockProps {
   onOpenChat: () => void;
   onOpenQueue: () => void;
-  onOpenPrivate: () => void;
-  onSendReaction: (reaction: string) => void;
+  onSendReaction: (category: 'animation' | 'sound' | 'gift', reaction: string) => void;
   isPowerOn: boolean;
-  showPrivate?: boolean;
   showSocialFeatures?: boolean;
+  themeKey?: string;
 }
 
 export function QuickActionDock({
   onOpenChat,
   onOpenQueue,
-  onOpenPrivate,
   onSendReaction,
   isPowerOn,
-  showPrivate = false,
   showSocialFeatures = false,
+  themeKey = 'theme-classic',
 }: QuickActionDockProps) {
   const [showReactions, setShowReactions] = useState(false);
+  const [activeTab, setActiveTab] = useState<'animation' | 'sound' | 'gift'>('animation');
   const popoverRef = useRef<HTMLDivElement>(null);
 
-  const reactions = [
+  // Map each theme to an accent color for the dock
+  const THEME_ACCENT: Record<string, { color: string; glow: string; tint: string }> = {
+    'theme-classic':  { color: '#00C853', glow: 'rgba(0,200,83,0.25)',   tint: 'rgba(0,200,83,0.08)'  },
+    'theme-v1':       { color: '#00b4d8', glow: 'rgba(0,180,216,0.25)',  tint: 'rgba(0,180,216,0.08)' },
+    'theme-v2':       { color: '#10b981', glow: 'rgba(16,185,129,0.25)', tint: 'rgba(16,185,129,0.08)'},
+    'theme-v3':       { color: '#00e5ff', glow: 'rgba(0,229,255,0.25)',  tint: 'rgba(0,229,255,0.08)' },
+    'theme-v4':       { color: '#39ff14', glow: 'rgba(57,255,20,0.25)',  tint: 'rgba(57,255,20,0.08)' },
+    'theme-v5':       { color: '#e040fb', glow: 'rgba(224,64,251,0.25)', tint: 'rgba(224,64,251,0.08)'},
+    'theme-v6':       { color: '#0077b6', glow: 'rgba(0,119,182,0.25)',  tint: 'rgba(0,119,182,0.08)' },
+    'theme-monokrom': { color: '#64748b', glow: 'rgba(100,116,139,0.2)', tint: 'rgba(100,116,139,0.06)'},
+  };
+  const accent = THEME_ACCENT[themeKey] ?? THEME_ACCENT['theme-classic'];
+
+  const animationReactions = [
     { kind: 'applause', emoji: '👏' },
     { kind: 'love', emoji: '❤️' },
     { kind: 'kiss', emoji: '😘' },
@@ -33,6 +45,20 @@ export function QuickActionDock({
     { kind: 'confetti', emoji: '🎉' },
     { kind: 'bart', emoji: '🛹' },
     { kind: 'fox', emoji: '🦊' },
+  ];
+
+  const soundReactions = [
+    { kind: 'laugh', emoji: '🤣' },
+    { kind: 'buzzer', emoji: '❌' },
+    { kind: 'drum', emoji: '🥁' },
+    { kind: 'horn', emoji: '🎺' },
+  ];
+
+  const giftReactions = [
+    { kind: 'giftbox', emoji: '🎁' },
+    { kind: 'rose', emoji: '🌹' },
+    { kind: 'diamond', emoji: '💎' },
+    { kind: 'coffee', emoji: '☕' },
   ];
 
   useEffect(() => {
@@ -45,9 +71,9 @@ export function QuickActionDock({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleReactionClick = (kind: string) => {
+  const handleReactionClick = (category: 'animation' | 'sound' | 'gift', kind: string) => {
     if (!isPowerOn) return;
-    onSendReaction(kind);
+    onSendReaction(category, kind);
     setShowReactions(false);
   };
 
@@ -79,21 +105,9 @@ export function QuickActionDock({
       onClick: onOpenQueue,
       active: false,
     },
-    {
-      id: 'private',
-      label: 'Private',
-      icon: <Shield className="w-5 h-5" />,
-      iconColor: '#fb7185',
-      glowColor: 'rgba(251,113,133,0.35)',
-      onClick: onOpenPrivate,
-      active: false,
-    },
   ];
 
-  const actionButtons = allButtons.filter((btn) => {
-    if (btn.id === 'private') return showPrivate;
-    return showSocialFeatures;
-  });
+  const actionButtons = allButtons.filter(() => showSocialFeatures);
 
   if (actionButtons.length === 0) return null;
 
@@ -104,7 +118,7 @@ export function QuickActionDock({
       {showReactions && (
         <div
           ref={popoverRef}
-          className="absolute bottom-[80px] left-1/2 -translate-x-1/2 z-50 p-2 rounded-2xl grid grid-cols-4 gap-1.5 min-w-[176px]"
+          className="absolute bottom-[80px] left-1/2 -translate-x-1/2 z-50 p-2 rounded-2xl flex flex-col gap-2 min-w-[200px]"
           style={{
             background:
               'linear-gradient(160deg, rgba(22,26,38,0.97) 0%, rgba(12,14,22,0.98) 100%)',
@@ -121,25 +135,52 @@ export function QuickActionDock({
             animation: 'qdPopIn 0.18s cubic-bezier(0.34,1.56,0.64,1) both',
           }}
         >
-          {reactions.map((r) => (
+          {/* Tabs */}
+          <div className="flex bg-black/40 p-1 rounded-xl">
             <button
-              type="button"
-              key={r.kind}
-              onClick={() => handleReactionClick(r.kind)}
-              className="w-10 h-10 flex items-center justify-center text-[22px] rounded-xl cursor-pointer focus:outline-none transition-all duration-100 active:scale-90"
-              style={{ background: 'transparent' }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background =
-                  'linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04))';
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-              }}
-              title={r.kind}
+              onClick={() => setActiveTab('animation')}
+              className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-colors ${activeTab === 'animation' ? 'text-white' : 'text-white/50 hover:text-white'}`}
+              style={activeTab === 'animation' ? { background: accent.tint, color: '#ffffff', boxShadow: `0 0 8px ${accent.glow}` } : {}}
             >
-              {r.emoji}
+              Animasi
             </button>
-          ))}
+            <button
+              onClick={() => setActiveTab('sound')}
+              className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-colors ${activeTab === 'sound' ? 'text-white' : 'text-white/50 hover:text-white'}`}
+              style={activeTab === 'sound' ? { background: accent.tint, color: '#ffffff', boxShadow: `0 0 8px ${accent.glow}` } : {}}
+            >
+              Suara
+            </button>
+            <button
+              onClick={() => setActiveTab('gift')}
+              className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-colors ${activeTab === 'gift' ? 'text-white' : 'text-white/50 hover:text-white'}`}
+              style={activeTab === 'gift' ? { background: accent.tint, color: '#ffffff', boxShadow: `0 0 8px ${accent.glow}` } : {}}
+            >
+              Gifts
+            </button>
+          </div>
+
+          <div className="grid grid-cols-4 gap-1.5">
+            {(activeTab === 'animation' ? animationReactions : activeTab === 'sound' ? soundReactions : giftReactions).map((r) => (
+              <button
+                type="button"
+                key={r.kind}
+                onClick={() => handleReactionClick(activeTab, r.kind)}
+                className="w-10 h-10 flex items-center justify-center text-[22px] rounded-xl cursor-pointer focus:outline-none transition-all duration-100 active:scale-90"
+                style={{ background: 'transparent' }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background =
+                    'linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04))';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+                }}
+                title={r.kind}
+              >
+                {r.emoji}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
@@ -149,31 +190,31 @@ export function QuickActionDock({
           isPowerOn ? '' : 'opacity-35 pointer-events-none'
         }`}
         style={{
-          /* Glassmorphic base */
-          background: 'linear-gradient(145deg, rgba(30,34,46,0.82) 0%, rgba(15,18,28,0.92) 100%)',
+      /* Glassmorphic base tinted by theme */
+          background: `linear-gradient(145deg, ${accent.tint} 0%, rgba(15,18,28,0.92) 100%)`,
           backdropFilter: 'blur(20px) saturate(160%)',
           WebkitBackdropFilter: 'blur(20px) saturate(160%)',
           /* Skeuomorphic bevel: bright top-left, dark bottom-right */
-          border: '1px solid rgba(255,255,255,0.10)',
-          borderTop: '1px solid rgba(255,255,255,0.18)',
-          borderLeft: '1px solid rgba(255,255,255,0.13)',
+          border: `1px solid ${accent.glow}`,
+          borderTop: `1px solid ${accent.color}44`,
+          borderLeft: `1px solid ${accent.color}22`,
           borderBottom: '1px solid rgba(0,0,0,0.45)',
           borderRight: '1px solid rgba(0,0,0,0.35)',
           /* Floating elevation shadow */
           boxShadow: [
-            '0 2px 0 rgba(255,255,255,0.06) inset' /* top inner highlight */,
+            `0 2px 0 ${accent.color}18 inset` /* top inner accent highlight */,
             '0 -1px 0 rgba(0,0,0,0.5) inset' /* bottom inner shadow */,
-            '0 8px 32px rgba(0,0,0,0.55)' /* main drop shadow */,
-            '0 2px 8px rgba(0,0,0,0.4)' /* close shadow */,
+            `0 8px 32px rgba(0,0,0,0.55)` /* main drop shadow */,
+            `0 4px 16px ${accent.glow}` /* theme glow */,
             '0 0 0 1px rgba(0,0,0,0.25)' /* outer edge */,
           ].join(', '),
         }}
       >
-        {/* Subtle top-edge gloss strip */}
+        {/* Subtle top-edge gloss strip — tinted with theme accent */}
         <div
           className="absolute top-0 left-3 right-3 h-px pointer-events-none rounded-full"
           style={{
-            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent)',
+            background: `linear-gradient(90deg, transparent, ${accent.color}55, transparent)`,
           }}
         />
 
@@ -290,7 +331,7 @@ export function QuickActionDock({
             {/* Label */}
             <span
               className="text-[8.5px] font-bold uppercase tracking-widest select-none leading-none"
-              style={{ color: 'rgba(148,163,184,0.65)' }}
+              style={{ color: 'rgba(255,255,255,0.90)' }}
             >
               {btn.label}
             </span>
@@ -300,8 +341,8 @@ export function QuickActionDock({
 
       <style>{`
         @keyframes qdPopIn {
-          from { opacity: 0; transform: translateX(-50%) translateY(8px) scale(0.90); }
-          to   { opacity: 1; transform: translateX(-50%) translateY(0)   scale(1);    }
+          from { opacity: 0; transform: translateY(8px) scale(0.90); }
+          to   { opacity: 1; transform: translateY(0)   scale(1);    }
         }
       `}</style>
     </div>
