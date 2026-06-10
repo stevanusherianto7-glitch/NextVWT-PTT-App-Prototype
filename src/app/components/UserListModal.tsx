@@ -8,6 +8,7 @@ import iconControlled from '../../assets/icon_controlled.png';
 import iconSilent from '../../assets/icon_silent.png';
 import iconWait from '../../assets/icon_wait.png';
 import iconWaitControlled from '../../assets/icon_wait_controlled.png';
+import iconUserBaru from '../../assets/icon_user_baru.png';
 
 interface UserListModalProps {
   channel: number;
@@ -728,9 +729,13 @@ export function UserListModal({
                       {profile.callSign}
                     </span>
                     {isNewUserJoined(profile) && (
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 ml-1">
-                        Baru
-                      </span>
+                      <img
+                        src={iconUserBaru}
+                        alt="Baru"
+                        className="h-[14px] w-auto object-contain ml-1 select-none"
+                        style={{ filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.15))' }}
+                        draggable={false}
+                      />
                     )}
                     <span className="text-gray-500 font-normal uppercase">{profile.location}</span>
                   </div>
@@ -791,9 +796,13 @@ export function UserListModal({
                 {activeZoomedAvatar.callSign}
               </span>
               {isNewUserJoined(activeZoomedAvatar) && (
-                <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/10 border border-emerald-500/20 text-emerald-600">
-                  Baru
-                </span>
+                <img
+                  src={iconUserBaru}
+                  alt="Baru"
+                  className="h-[14px] w-auto object-contain select-none"
+                  style={{ filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.15))' }}
+                  draggable={false}
+                />
               )}
             </div>
             <div className="text-xs text-gray-500 mt-0.5 uppercase tracking-wide">
