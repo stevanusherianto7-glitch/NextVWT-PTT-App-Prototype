@@ -732,7 +732,7 @@ export function UserListModal({
                       <img
                         src={iconUserBaru}
                         alt="Baru"
-                        className="h-[14px] w-auto object-contain ml-1 select-none"
+                        className="h-[10px] w-auto object-contain ml-1 select-none"
                         style={{ filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.15))' }}
                         draggable={false}
                       />
@@ -799,7 +799,7 @@ export function UserListModal({
                 <img
                   src={iconUserBaru}
                   alt="Baru"
-                  className="h-[14px] w-auto object-contain select-none"
+                  className="h-[12px] w-auto object-contain select-none"
                   style={{ filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.15))' }}
                   draggable={false}
                 />
