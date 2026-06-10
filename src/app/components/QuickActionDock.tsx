@@ -98,10 +98,10 @@ export function QuickActionDock({
   if (actionButtons.length === 0) return null;
 
   return (
-    <div className="flex justify-center mt-3 relative z-30">
+    <div className="w-full mt-3 relative z-30">
       {/* ── Floating Skeuomorphic + Glassmorphic Container ── */}
       <div
-        className={`relative inline-flex items-end gap-3 px-4 py-3 rounded-2xl transition-all duration-300 ${
+        className={`relative w-full flex items-end justify-around px-4 py-3 rounded-2xl transition-all duration-300 ${
           isPowerOn ? '' : 'opacity-35 pointer-events-none'
         }`}
         style={{
