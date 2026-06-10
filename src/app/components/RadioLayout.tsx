@@ -737,7 +737,7 @@ export function RadioLayout() {
                   }}
                 />
                 {/* LCD Panel */}
-                <div className="transition-opacity duration-300 flex justify-center w-full">
+                <div className="transition-opacity duration-300 flex justify-center w-full relative">
                   <LCDPanel
                     channel={channel}
                     userCount={dynamicUserCount}
@@ -745,6 +745,43 @@ export function RadioLayout() {
                     isPowerOn={isPowerOn}
                     onUserCountClick={() => setIsUserListOpen(true)}
                   />
+
+                  {/* Floating Reactions Overlay (di depan LCD Panel, tidak menutupi D-pad & PTT) */}
+                  {isPowerOn && (
+                    <div className="absolute w-[280px] h-[135px] pointer-events-none overflow-hidden z-30 rounded-[14px] top-[10px] left-1/2 -translate-x-1/2">
+                      {floatingReactions.map((r) => {
+                        const animationMap: Record<string, any> = {
+                          applause: applauseAnimation,
+                          love: loveAnimation,
+                          wow: wowAnimation,
+                          fire: fireAnimation,
+                          crown: crownAnimation,
+                          confetti: confettiAnimation,
+                        };
+                        const animData = animationMap[r.reaction];
+                        return (
+                          <div
+                            key={r.id}
+                            className="absolute bottom-0 w-12 h-12 animate-float-up flex items-center justify-center"
+                            style={{
+                              left: `${r.x}%`,
+                            }}
+                          >
+                            {animData ? (
+                              <Player
+                                autoplay
+                                loop={false}
+                                src={animData}
+                                style={{ width: '45px', height: '45px' }}
+                              />
+                            ) : (
+                              <span className="text-xl">🔥</span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
 
                 {/* Progress Bar */}
@@ -824,40 +861,7 @@ export function RadioLayout() {
               </div>
             )}
 
-            {/* Floating Reactions Overlay */}
-            <div className="absolute inset-x-0 bottom-36 top-0 pointer-events-none overflow-hidden z-50">
-              {floatingReactions.map((r) => {
-                const animationMap: Record<string, any> = {
-                  applause: applauseAnimation,
-                  love: loveAnimation,
-                  wow: wowAnimation,
-                  fire: fireAnimation,
-                  crown: crownAnimation,
-                  confetti: confettiAnimation,
-                };
-                const animData = animationMap[r.reaction];
-                return (
-                  <div
-                    key={r.id}
-                    className="absolute bottom-0 w-20 h-20 animate-float-up flex items-center justify-center"
-                    style={{
-                      left: `${r.x}%`,
-                    }}
-                  >
-                    {animData ? (
-                      <Player
-                        autoplay
-                        loop={false}
-                        src={animData}
-                        style={{ width: '75px', height: '75px' }}
-                      />
-                    ) : (
-                      <span className="text-3xl">🔥</span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+
           </div>
         </div>
       )}
