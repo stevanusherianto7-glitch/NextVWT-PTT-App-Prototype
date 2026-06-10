@@ -6,13 +6,21 @@ import { PROVINCE_CITIES } from '../data/provinceCities';
 import { useChannelRole } from '../../features/moderation/useChannelRole';
 import { canPerformAction } from '../../features/moderation/permissions';
 import { Shield, ChevronRight } from 'lucide-react';
+import { requestBatteryWhitelist } from '../utils/backgroundSurvival';
 
 interface SettingsPanelProps {
   onClose: () => void;
   onOpenModeration?: () => void;
+  onOpenWallet?: () => void;
+  onOpenRoip?: () => void;
 }
 
-export function SettingsPanel({ onClose, onOpenModeration }: SettingsPanelProps) {
+export function SettingsPanel({
+  onClose,
+  onOpenModeration,
+  onOpenWallet,
+  onOpenRoip,
+}: SettingsPanelProps) {
   const {
     infoText,
     locationText,
@@ -44,6 +52,7 @@ export function SettingsPanel({ onClose, onOpenModeration }: SettingsPanelProps)
     customPhotoUrl,
     userId,
     channelNumber: channel,
+    noiseMode,
   } = usePTTStore();
 
   const [isPhraseModalOpen, setIsPhraseModalOpen] = useState(false);
@@ -114,6 +123,7 @@ export function SettingsPanel({ onClose, onOpenModeration }: SettingsPanelProps)
   const setThemeText = (val: string) => updateSettings({ themeText: val });
   const setBuiltInEcho = (val: boolean) => updateSettings({ builtInEcho: val });
   const setEchoFeedback = (val: number) => updateSettings({ echoFeedback: val });
+  const setNoiseMode = (val: 'normal' | 'ojol' | 'wind' | 'crowd' | 'emergency') => updateSettings({ noiseMode: val });
 
   const getThemeLabel = (theme: string) => {
     const t = theme?.toLowerCase() || '';
@@ -361,6 +371,37 @@ export function SettingsPanel({ onClose, onOpenModeration }: SettingsPanelProps)
               </div>
               <ChevronRight className="h-5 w-5 text-gray-400" />
             </button>
+          </div>
+        )}
+
+        {/* FITUR DEVELOPER & NOC */}
+        {(role === 'noc' || role === 'sys_admin') && (
+          <div className="w-full bg-[#e2e8f0] py-2 px-6 border-b border-gray-200 flex flex-col gap-2.5">
+            <span className="text-[10px] font-bold text-[#475569] uppercase tracking-wider">
+              Akses Khusus NOC & Developer
+            </span>
+            <div className="flex gap-3 pb-1.5">
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  if (onOpenWallet) onOpenWallet();
+                }}
+                className="flex-1 text-center py-2 text-xs font-bold rounded text-white bg-gradient-to-b from-amber-400 to-amber-500 border-t border-white/30 border-b border-black/20 shadow-[0_2.5px_0_#b45309] active:translate-y-[1.5px] active:shadow-none hover:brightness-105 cursor-pointer focus:outline-none flex items-center justify-center gap-1"
+              >
+                Dompet Koin
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  if (onOpenRoip) onOpenRoip();
+                }}
+                className="flex-1 text-center py-2 text-xs font-bold rounded text-white bg-gradient-to-b from-sky-400 to-sky-500 border-t border-white/30 border-b border-black/20 shadow-[0_2.5px_0_#0369a1] active:translate-y-[1.5px] active:shadow-none hover:brightness-105 cursor-pointer focus:outline-none flex items-center justify-center gap-1"
+              >
+                Jembatan ROIP
+              </button>
+            </div>
           </div>
         )}
 
@@ -739,6 +780,57 @@ export function SettingsPanel({ onClose, onOpenModeration }: SettingsPanelProps)
               </button>
             </div>
           )}
+        </div>
+
+        {/* PEREDAM BISING & BACKGROUND SURVIVAL SECTION */}
+        <div className="w-full bg-[#e2e8f0] py-1.5 px-6 text-[11px] font-bold text-[#475569] uppercase tracking-wider">
+          Peredam Bising & Siaga Latar Belakang
+        </div>
+        <div className="bg-white px-6 py-5 border-b border-gray-200 flex flex-col gap-4">
+          {/* Dropdown pemilih Mode Peredam Bising */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold text-gray-700">Mode Peredam Bising Adaptif (HPF/AGC/Bandpass)</label>
+            <select
+              value={noiseMode}
+              onChange={(e) => setNoiseMode(e.target.value as any)}
+              className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm bg-white text-black font-semibold outline-none focus:border-blue-500 cursor-pointer"
+            >
+              <option value="normal">Mode Normal (Ruangan/Kantor)</option>
+              <option value="ojol">Mode Ojol / Jalan Raya (Bising Motor/Klakson)</option>
+              <option value="wind">Mode Hujan / Angin (Wind Rustle & Broadband)</option>
+              <option value="crowd">Mode Keramaian (Pasar/Terminal/Babble Noise)</option>
+              <option value="emergency">Mode Darurat / Critical (Ekstraksi Vokal Agresif)</option>
+            </select>
+            <p className="text-[10px] text-gray-500 leading-relaxed mt-0.5">
+              Pilih profil peredaman kebisingan yang sesuai dengan kondisi lingkungan Anda saat mengudara.
+            </p>
+          </div>
+
+          {/* Tombol Whitelisting Baterai */}
+          <div className="flex flex-col gap-2 border-t border-gray-100 pt-3">
+            <div className="flex flex-col mb-1">
+              <span className="text-xs font-semibold text-gray-700">Optimalisasi Baterai Latar Belakang</span>
+              <span className="text-[10px] text-gray-500 leading-normal">
+                Kecualikan NextVWT dari penghemat daya OS agar koneksi audio tetap hidup saat layar mati (Deep Sleep).
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={async () => {
+                const res = await requestBatteryWhitelist();
+                if (res === 'not_native') {
+                  toast.info('Fitur ini hanya tersedia pada aplikasi Android native.');
+                } else if (res === 'error') {
+                  toast.error('Gagal membuka pengaturan optimalisasi baterai.');
+                } else {
+                  toast.success('Pengaturan baterai diminta.');
+                }
+              }}
+              className="w-full text-center py-2.5 text-xs font-bold rounded text-slate-800 bg-gradient-to-b from-white via-[#f1f5f9] to-[#cbd5e1] border-t border-white/40 border-b border-black/20 shadow-[0_3px_0_#94a3b8,inset_0_1px_0_rgba(255,255,255,0.8)] active:translate-y-[2px] active:shadow-none hover:brightness-105 transition-all duration-100 cursor-pointer focus:outline-none"
+            >
+              Izinkan Berjalan di Latar Belakang (Whitelist)
+            </button>
+          </div>
         </div>
 
         {/* PTT SECTION */}

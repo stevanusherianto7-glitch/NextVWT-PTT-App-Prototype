@@ -94,6 +94,7 @@ export const PERSISTED_KEYS: Array<keyof PTTState> = [
   'customPhotoUrl',
   'hasCompletedOnboarding',
   'lastFeedbackTime',
+  'noiseMode',
 ];
 
 /**

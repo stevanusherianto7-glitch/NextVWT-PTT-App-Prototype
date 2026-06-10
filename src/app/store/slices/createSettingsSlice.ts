@@ -42,6 +42,8 @@ export const createSettingsSlice: StateCreator<
     | 'echoFeedback'
     | 'profilePhotoOption'
     | 'customPhotoUrl'
+    | 'noiseMode'
+    | 'codecFallbackActive'
     | 'updateSettings'
     | 'setKaraokePlayerOpen'
     | 'initializeSession'
@@ -73,6 +75,8 @@ export const createSettingsSlice: StateCreator<
   echoFeedback: 35,
   profilePhotoOption: 'custom',
   customPhotoUrl: '',
+  noiseMode: 'normal',
+  codecFallbackActive: false,
   userId: '',
   callSign: '',
 

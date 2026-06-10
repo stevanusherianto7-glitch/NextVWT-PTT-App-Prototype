@@ -44,6 +44,7 @@ export interface PTTState {
     userId: string;
     displayName: string;
     callSign: string;
+    role?: string;
     isNewUser?: boolean;
   } | null;
   activeUsers: Array<{
@@ -80,6 +81,10 @@ export interface PTTState {
   echoFeedback: number;
   profilePhotoOption: 'google' | 'custom';
   customPhotoUrl: string;
+  noiseMode: 'normal' | 'ojol' | 'wind' | 'crowd' | 'emergency';
+  codecFallbackActive: boolean;
+  coins: number;
+  fetchCoins: () => Promise<void>;
 
   // Fase 1: Onboarding & Feedback
   hasCompletedOnboarding: boolean;

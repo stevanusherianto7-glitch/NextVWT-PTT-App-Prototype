@@ -17,6 +17,8 @@ import { useChannelSettings } from '../../features/moderation/useChannelSettings
 import { ChannelManagePanel } from '../../features/moderation/ChannelManagePanel';
 import { canUsePTT } from '../../features/moderation/permissions';
 import { getSupabase } from '../utils/supabase';
+import { WalletPanel } from '../../features/payment/WalletPanel';
+import { ROIPBridgePanel } from '../../features/roip/ROIPBridgePanel';
 
 // Helper to catch dynamic import chunk loading failures (typically after a new deploy)
 // and automatically reload the page to fetch the latest assets
@@ -78,6 +80,8 @@ export function RadioLayout() {
   const [isChannelListOpen, setIsChannelListOpen] = useState(false);
   const [isUserListOpen, setIsUserListOpen] = useState(false);
   const [isManageOpen, setIsManageOpen] = useState(false);
+  const [isWalletOpen, setIsWalletOpen] = useState(false);
+  const [isRoipOpen, setIsRoipOpen] = useState(false);
   const [txStartTime, setTxStartTime] = useState<number>(0);
 
   const { startRecording, stopRecording, playAudioChunk, flushAudioQueue } = useAudioStreamer();
@@ -269,6 +273,8 @@ export function RadioLayout() {
       setIsUserListOpen(false);
       setIsKaraokePlayerOpen(false);
       setIsManageOpen(false);
+      setIsWalletOpen(false);
+      setIsRoipOpen(false);
     }
   }, [isPowerOn, setIsKaraokePlayerOpen]);
 
@@ -411,6 +417,10 @@ export function RadioLayout() {
           initialChannelName={activeChannelObj?.name}
           onClose={() => setIsManageOpen(false)}
         />
+      ) : isWalletOpen ? (
+        <WalletPanel onClose={() => setIsWalletOpen(false)} />
+      ) : isRoipOpen ? (
+        <ROIPBridgePanel onClose={() => setIsRoipOpen(false)} />
       ) : isSettingsOpen ? (
         // Suspense boundary: tampilkan skeleton saat SettingsPanel sedang dimuat
         // (hanya terjadi pada kali pertama Settings dibuka dalam sesi ini)
@@ -418,6 +428,8 @@ export function RadioLayout() {
           <SettingsPanel
             onClose={() => setIsSettingsOpen(false)}
             onOpenModeration={() => setIsManageOpen(true)}
+            onOpenWallet={() => setIsWalletOpen(true)}
+            onOpenRoip={() => setIsRoipOpen(true)}
           />
         </Suspense>
       ) : (
@@ -682,6 +694,7 @@ export function RadioLayout() {
                     isScanning={isScanning}
                   />
                 </div>
+
               </div>
             )}
 

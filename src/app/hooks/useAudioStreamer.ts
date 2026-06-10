@@ -18,11 +18,17 @@ export function useAudioStreamer() {
     source: MediaStreamAudioSourceNode | null;
     delay: DelayNode | null;
     feedback: GainNode | null;
+    hpf: BiquadFilterNode | null;
+    bandpass: BiquadFilterNode | null;
+    agc: DynamicsCompressorNode | null;
     dest: MediaStreamAudioDestinationNode | null;
   }>({
     source: null,
     delay: null,
     feedback: null,
+    hpf: null,
+    bandpass: null,
+    agc: null,
     dest: null,
   });
 
@@ -75,6 +81,152 @@ export function useAudioStreamer() {
   const isPowerOn = usePTTStore((state) => state.isPowerOn);
   const userId = usePTTStore((state) => state.userId);
   const channelNumber = usePTTStore((state) => state.channelNumber);
+
+  const noiseMode = usePTTStore((state) => state.noiseMode);
+
+  const updateAudioNodesParams = useCallback((mode: 'normal' | 'ojol' | 'wind' | 'crowd' | 'emergency') => {
+    const nodes = audioNodesRef.current;
+    if (!nodes.hpf && !nodes.agc && !nodes.bandpass) return;
+
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    if (mode === 'normal') {
+      if (nodes.hpf) {
+        nodes.hpf.type = 'highpass';
+        nodes.hpf.frequency.setValueAtTime(80, now);
+      }
+      if (nodes.bandpass) {
+        nodes.bandpass.type = 'allpass';
+      }
+      if (nodes.agc) {
+        nodes.agc.threshold.setValueAtTime(-20, now);
+        nodes.agc.ratio.setValueAtTime(4, now);
+        nodes.agc.attack.setValueAtTime(0.01, now);
+        nodes.agc.release.setValueAtTime(0.25, now);
+      }
+    } else if (mode === 'ojol') {
+      if (nodes.hpf) {
+        nodes.hpf.type = 'highpass';
+        nodes.hpf.frequency.setValueAtTime(200, now);
+      }
+      if (nodes.bandpass) {
+        nodes.bandpass.type = 'allpass';
+      }
+      if (nodes.agc) {
+        nodes.agc.threshold.setValueAtTime(-35, now);
+        nodes.agc.ratio.setValueAtTime(12, now);
+        nodes.agc.attack.setValueAtTime(0.005, now);
+        nodes.agc.release.setValueAtTime(0.15, now);
+      }
+    } else if (mode === 'wind') {
+      if (nodes.hpf) {
+        nodes.hpf.type = 'highpass';
+        nodes.hpf.frequency.setValueAtTime(150, now);
+      }
+      if (nodes.bandpass) {
+        nodes.bandpass.type = 'allpass';
+      }
+      if (nodes.agc) {
+        nodes.agc.threshold.setValueAtTime(-30, now);
+        nodes.agc.ratio.setValueAtTime(8, now);
+        nodes.agc.attack.setValueAtTime(0.002, now);
+        nodes.agc.release.setValueAtTime(0.05, now);
+      }
+    } else if (mode === 'crowd') {
+      if (nodes.hpf) {
+        nodes.hpf.type = 'highpass';
+        nodes.hpf.frequency.setValueAtTime(150, now);
+      }
+      if (nodes.bandpass) {
+        nodes.bandpass.type = 'bandpass';
+        nodes.bandpass.frequency.setValueAtTime(1200, now);
+        nodes.bandpass.Q.setValueAtTime(1.0, now);
+      }
+      if (nodes.agc) {
+        nodes.agc.threshold.setValueAtTime(-25, now);
+        nodes.agc.ratio.setValueAtTime(6, now);
+        nodes.agc.attack.setValueAtTime(0.01, now);
+        nodes.agc.release.setValueAtTime(0.2, now);
+      }
+    } else if (mode === 'emergency') {
+      if (nodes.hpf) {
+        nodes.hpf.type = 'highpass';
+        nodes.hpf.frequency.setValueAtTime(400, now);
+      }
+      if (nodes.bandpass) {
+        nodes.bandpass.type = 'bandpass';
+        nodes.bandpass.frequency.setValueAtTime(1500, now);
+        nodes.bandpass.Q.setValueAtTime(2.0, now);
+      }
+      if (nodes.agc) {
+        nodes.agc.threshold.setValueAtTime(-45, now);
+        nodes.agc.ratio.setValueAtTime(20, now);
+        nodes.agc.attack.setValueAtTime(0.001, now);
+        nodes.agc.release.setValueAtTime(0.1, now);
+      }
+    }
+  }, [getAudioContext]);
+
+  useEffect(() => {
+    updateAudioNodesParams(noiseMode);
+  }, [noiseMode, updateAudioNodesParams]);
+
+  // WebRTC Stats Monitoring for Codec2 Fallback
+  useEffect(() => {
+    if (!isConnected) {
+      usePTTStore.getState().updateSettings({ codecFallbackActive: false });
+      return;
+    }
+
+    const interval = setInterval(async () => {
+      const pcs = peerConnectionsRef.current;
+      if (pcs.size === 0) {
+        usePTTStore.getState().updateSettings({ codecFallbackActive: false });
+        return;
+      }
+
+      let maxPacketLoss = 0;
+      let maxLatency = 0;
+
+      for (const pc of pcs.values()) {
+        try {
+          const stats = await pc.getStats();
+          stats.forEach((report) => {
+            if (report.type === 'inbound-rtp' && report.kind === 'audio') {
+              const packetsLost = report.packetsLost || 0;
+              const packetsReceived = report.packetsReceived || 0;
+              if (packetsReceived > 0) {
+                const loss = (packetsLost / (packetsReceived + packetsLost)) * 100;
+                if (loss > maxPacketLoss) {
+                  maxPacketLoss = loss;
+                }
+              }
+            }
+            if (report.type === 'candidate-pair' && report.state === 'succeeded') {
+              const rtt = (report.currentRoundTripTime || 0) * 1000;
+              if (rtt > maxLatency) {
+                maxLatency = rtt;
+              }
+            }
+          });
+        } catch (err) {
+          console.warn('Failed to fetch WebRTC stats:', err);
+        }
+      }
+
+      const shouldFallback = maxPacketLoss > 40 || maxLatency > 600;
+      const currentFallback = usePTTStore.getState().codecFallbackActive;
+      if (shouldFallback !== currentFallback) {
+        usePTTStore.getState().updateSettings({ codecFallbackActive: shouldFallback });
+      }
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [isConnected, peerConnectionsRef]);
 
   useEffect(() => {
     if (!isPowerOn || !isConnected || BRAND.isolatedChannels.includes(channelNumber)) {
@@ -247,36 +399,74 @@ export function useAudioStreamer() {
         const micTrack = stream.getAudioTracks()[0];
         let finalTrack = micTrack;
 
-        if (isMusicMode && store.builtInEcho) {
-          const ctx = getAudioContext();
-          if (ctx) {
-            const sourceNode = ctx.createMediaStreamSource(stream);
-            const destNode = ctx.createMediaStreamDestination();
+        const ctx = getAudioContext();
+        if (ctx) {
+          const sourceNode = ctx.createMediaStreamSource(stream);
+          const destNode = ctx.createMediaStreamDestination();
 
-            // 1. Direct path (clean vocal)
-            sourceNode.connect(destNode);
+          if (isMusicMode) {
+            if (store.builtInEcho) {
+              // 1. Direct path (clean vocal)
+              sourceNode.connect(destNode);
 
-            // 2. Echo/Delay path (Feedback loop)
-            const delayNode = ctx.createDelay(1.0);
-            delayNode.delayTime.value = 0.25; // 250ms delay time
-            const feedbackNode = ctx.createGain();
-            feedbackNode.gain.value = store.echoFeedback / 100; // dynamic feedback volume from store
+              // 2. Echo/Delay path (Feedback loop)
+              const delayNode = ctx.createDelay(1.0);
+              delayNode.delayTime.value = 0.25; // 250ms delay time
+              const feedbackNode = ctx.createGain();
+              feedbackNode.gain.value = store.echoFeedback / 100; // dynamic feedback volume from store
 
-            sourceNode.connect(delayNode);
-            delayNode.connect(feedbackNode);
-            feedbackNode.connect(delayNode); // loop feedback
-            feedbackNode.connect(destNode); // mix echo output into destination
+              sourceNode.connect(delayNode);
+              delayNode.connect(feedbackNode);
+              feedbackNode.connect(delayNode); // loop feedback
+              feedbackNode.connect(destNode); // mix echo output into destination
 
-            finalTrack = destNode.stream.getAudioTracks()[0];
+              // Track for cleanup
+              audioNodesRef.current = {
+                source: sourceNode,
+                delay: delayNode,
+                feedback: feedbackNode,
+                hpf: null,
+                bandpass: null,
+                agc: null,
+                dest: destNode,
+              };
+            } else {
+              sourceNode.connect(destNode);
+              audioNodesRef.current = {
+                source: sourceNode,
+                delay: null,
+                feedback: null,
+                hpf: null,
+                bandpass: null,
+                agc: null,
+                dest: destNode,
+              };
+            }
+          } else {
+            // Non-music mode: HPF -> Bandpass -> AGC -> dest
+            const hpfNode = ctx.createBiquadFilter();
+            const bandpassNode = ctx.createBiquadFilter();
+            const agcNode = ctx.createDynamicsCompressor();
 
-            // Track for cleanup
+            sourceNode.connect(hpfNode);
+            hpfNode.connect(bandpassNode);
+            bandpassNode.connect(agcNode);
+            agcNode.connect(destNode);
+
             audioNodesRef.current = {
               source: sourceNode,
-              delay: delayNode,
-              feedback: feedbackNode,
+              delay: null,
+              feedback: null,
+              hpf: hpfNode,
+              bandpass: bandpassNode,
+              agc: agcNode,
               dest: destNode,
             };
+
+            updateAudioNodesParams(store.noiseMode);
           }
+
+          finalTrack = destNode.stream.getAudioTracks()[0];
         }
 
         if (store.isConnected) {
@@ -357,7 +547,7 @@ export function useAudioStreamer() {
         throw err;
       }
     },
-    [stopRecording, startVAD, getAudioContext, peerConnectionsRef, streamRef]
+    [stopRecording, startVAD, getAudioContext, peerConnectionsRef, streamRef, updateAudioNodesParams]
   );
 
   const playAudioChunk = useCallback(

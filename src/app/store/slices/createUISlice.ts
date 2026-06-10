@@ -3,6 +3,8 @@ import { PTTState } from '../types';
 import { pttRateLimiter } from '../../utils/rateLimiter';
 import { activeChannelSubscription, setActiveChannelSubscription } from '../subscription';
 import { safeSetStorage } from '../storeUtils';
+import { startBackgroundService, stopBackgroundService } from '../../utils/backgroundSurvival';
+import { toast } from 'sonner';
 
 export const createUISlice: StateCreator<
   PTTState,
@@ -48,6 +50,7 @@ export const createUISlice: StateCreator<
         activeChannelSubscription.unsubscribe();
         setActiveChannelSubscription(null);
       }
+      stopBackgroundService().catch((err) => console.warn('Failed to stop background service:', err));
       set({
         isPowerOn: false,
         isConnected: false,
@@ -59,6 +62,8 @@ export const createUISlice: StateCreator<
     }
     // Re-establish subscription on power on
     setTimeout(() => get().subscribeToChannel(state.channelNumber), 0);
+    const info = `Siaga di Saluran ${String(state.channelNumber).padStart(3, '0')}`;
+    startBackgroundService(info).catch((err) => console.warn('Failed to start background service:', err));
     set({ isPowerOn: true, isConnected: true });
   },
 
@@ -68,14 +73,63 @@ export const createUISlice: StateCreator<
     const state = get();
     if (!state.isPowerOn) return;
 
-    if (transmitting && !pttRateLimiter.canProceed()) {
-      console.warn('[Rate Limit] PTT transmission toggle ignored due to flood control');
-      return;
+    if (transmitting) {
+      if (!pttRateLimiter.canProceed()) {
+        console.warn('[Rate Limit] PTT transmission toggle ignored due to flood control');
+        return;
+      }
+
+      // Check simulated COR busy signal
+      const isCorActive = localStorage.getItem('nextvwt:cor_active') === 'true';
+      if (isCorActive) {
+        toast.warning('Frekuensi sedang sibuk (COR aktif)! Transmisi ditolak.');
+        return;
+      }
+
+      // Stateful Floor Control & Priority check
+      const activeTx = state.activeTransmitter;
+      const roomId = `ptt-room-${state.channelNumber}`;
+      const myRole = localStorage.getItem(`channel-role:${roomId}:${state.userId}`) || 'guest';
+
+      const ROLE_PRIORITY: Record<string, number> = {
+        noc: 5,
+        sys_admin: 4,
+        pjc: 3,
+        operator: 2,
+        member: 1.5,
+        guest: 1
+      };
+
+      if (activeTx && activeTx.userId !== state.userId) {
+        const myPriority = ROLE_PRIORITY[myRole] || 1;
+        const activePriority = ROLE_PRIORITY[activeTx.role || 'guest'] || 1;
+
+        // Emergency Override: NOC/SysAdmin/PJC can hijack the floor
+        const isEmergencyRank = myRole === 'noc' || myRole === 'sys_admin' || myRole === 'pjc';
+        if (isEmergencyRank && myPriority > activePriority) {
+          if (activeChannelSubscription && state.isConnected) {
+            activeChannelSubscription.send({
+              type: 'broadcast',
+              event: 'hang_up',
+              payload: {
+                targetUserId: activeTx.userId,
+                moderatorName: `${state.infoText || 'System'} (Emergency Override)`,
+              },
+            });
+          }
+          toast.success(`Emergency Override! Mengambil alih saluran dari ${activeTx.displayName}.`);
+        } else {
+          toast.error(`Saluran sedang digunakan oleh ${activeTx.displayName}. Menunggu giliran.`);
+          return;
+        }
+      }
     }
 
     if (activeChannelSubscription && state.isConnected) {
       const userMeta = state.user;
       const displayName = state.infoText || userMeta?.user_metadata?.full_name || 'Pebe Herianto';
+      const roomId = `ptt-room-${state.channelNumber}`;
+      const myRole = localStorage.getItem(`channel-role:${roomId}:${state.userId}`) || 'guest';
 
       activeChannelSubscription.send({
         type: 'broadcast',
@@ -85,6 +139,7 @@ export const createUISlice: StateCreator<
           displayName: displayName,
           callSign: state.callSign || '2DYUA',
           isTransmitting: transmitting,
+          role: myRole,
         },
       });
     }

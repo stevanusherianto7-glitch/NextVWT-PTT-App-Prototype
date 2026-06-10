@@ -39,6 +39,7 @@ interface PttStatePayload {
   displayName: string;
   callSign: string;
   isTransmitting: boolean;
+  role?: string;
   isNewUser?: boolean;
 }
 
@@ -58,6 +59,12 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
 
       // Optimistic connection state for smooth fallback and instant UX
       usePTTStore.setState({ isConnected: true });
+
+      // Update Foreground Service notification
+      const channelStr = String(channelNum).padStart(3, '0');
+      import('../utils/backgroundSurvival').then(({ startBackgroundService }) => {
+        startBackgroundService(`Siaga di Saluran ${channelStr}`);
+      }).catch((err) => console.warn('Failed to start/update background service:', err));
 
       const store = usePTTStore.getState();
       const supabase = await getSupabase();
@@ -101,6 +108,7 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
                 userId: payload.userId,
                 displayName: payload.displayName,
                 callSign: payload.callSign,
+                role: payload.role,
                 isNewUser: payload.isNewUser,
               },
             });
