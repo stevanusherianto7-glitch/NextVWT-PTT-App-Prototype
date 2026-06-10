@@ -12,7 +12,7 @@ interface PrivateChannelPanelProps {
 }
 
 export function PrivateChannelPanel({ onClose, onOpenWallet }: PrivateChannelPanelProps) {
-  const { channelNumber, userId, coins, fetchCoins, setChannelNumber } = usePTTStore();
+  const { channelNumber, userId, coins, fetchCoins, setChannelNumber, user, infoText, callSign } = usePTTStore();
   const roomId = `ptt-room-${channelNumber}`;
 
   const [hasBadge, setHasBadge] = useState(false);
@@ -25,7 +25,19 @@ export function PrivateChannelPanel({ onClose, onOpenWallet }: PrivateChannelPan
 
   const { role } = useChannelRole(roomId, userId);
 
-  const isImplicitAllowed = role === 'operator' || role === 'pjc' || role === 'sys_admin' || role === 'noc';
+  const isLocalUser = true;
+  const localName = user?.user_metadata?.full_name || infoText || 'Pebe Herianto';
+  const localCallSign = callSign;
+
+  const isNocUser =
+    userId === 'noc_global' ||
+    (isLocalUser && (localName === 'NOC Global' || localCallSign === 'NOC-01'));
+
+  const isSysAdminUser =
+    userId === 'sys_admin_vwt' ||
+    (isLocalUser && (localName === 'Sys Admin VWT' || localCallSign === 'SYS-01'));
+
+  const isImplicitAllowed = role === 'operator' || role === 'pjc' || role === 'sys_admin' || role === 'noc' || isNocUser || isSysAdminUser;
   const hasAccess = isImplicitAllowed || hasBadge;
 
   // Fetch badges to check if user has 'badge_merah'

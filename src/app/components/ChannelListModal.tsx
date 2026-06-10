@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChannelItem } from '../utils/constants';
 import { usePTTStore } from '../store/usePTTStore';
 import { NextVWTPremiumLogo } from './NextVWTPremiumLogo';
@@ -16,7 +16,65 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
   const [restrictedChannel, setRestrictedChannel] = useState<ChannelItem | null>(null);
   const [infoChannel, setInfoChannel] = useState<ChannelItem | null>(null);
 
-  const { channels } = usePTTStore();
+  const { channels, userId, user, infoText, callSign } = usePTTStore();
+  const [hasBadge, setHasBadge] = useState(false);
+
+  // Check badge status on mount
+  useEffect(() => {
+    if (!userId) return;
+    let active = true;
+    (async () => {
+      try {
+        const { getSupabase } = await import('../utils/supabase');
+        const supabase = await getSupabase();
+        const { data, error } = await supabase
+          .from('user_badges')
+          .select('*')
+          .eq('user_id', userId)
+          .eq('badge_key', 'badge_merah')
+          .maybeSingle();
+        if (active && !error && data) {
+          setHasBadge(true);
+        }
+      } catch (err) {
+        console.warn('Failed to check badge status in ChannelListModal:', err);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [userId]);
+
+  const checkHasAccess = (ch: ChannelItem) => {
+    const isLocalUser = true;
+    const localName = user?.user_metadata?.full_name || infoText || 'Pebe Herianto';
+    const localCallSign = callSign;
+
+    const isNocUser =
+      userId === 'noc_global' ||
+      (isLocalUser && (localName === 'NOC Global' || localCallSign === 'NOC-01'));
+
+    const isSysAdminUser =
+      userId === 'sys_admin_vwt' ||
+      (isLocalUser && (localName === 'Sys Admin VWT' || localCallSign === 'SYS-01'));
+
+    const isOperatorUser =
+      userId === 'Pebri Haryanto' ||
+      userId === 'Pebe Herianto' ||
+      userId === '2DYUA' ||
+      (isLocalUser && (localName === 'Pebri Haryanto' || localName === 'Pebe Herianto' || localCallSign === '2DYUA'));
+
+    if (isNocUser || isSysAdminUser || isOperatorUser) return true;
+
+    // Check specific role in localStorage for this room
+    const roomId = `ptt-room-${ch.number}`;
+    const localRole = localStorage.getItem(`channel-role:${roomId}:${userId}`);
+    if (localRole === 'noc' || localRole === 'sys_admin' || localRole === 'operator' || localRole === 'pjc') {
+      return true;
+    }
+
+    return hasBadge;
+  };
 
   const filteredChannels = channels.filter(
     (ch) =>
@@ -146,7 +204,7 @@ export function ChannelListModal({ onClose, onSelectChannel }: ChannelListModalP
                 onClick={() => {
                   const ch = activePrivateChannel;
                   setActivePrivateChannel(null);
-                  if (ch.type === 'red') {
+                  if (ch.type === 'red' && !checkHasAccess(ch)) {
                     setRestrictedChannel(ch);
                   } else {
                     onSelectChannel(ch.number);

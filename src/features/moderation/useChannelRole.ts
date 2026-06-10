@@ -22,11 +22,33 @@ export function useChannelRole(roomId: string, userId: string) {
       userId === '2DYUA' ||
       (isLocalUser && (localName === 'Pebri Haryanto' || localName === 'Pebe Herianto' || localCallSign === '2DYUA'));
 
+    const isNocUser =
+      userId === 'noc_global' ||
+      (isLocalUser && (localName === 'NOC Global' || localCallSign === 'NOC-01'));
+
+    const isSysAdminUser =
+      userId === 'sys_admin_vwt' ||
+      (isLocalUser && (localName === 'Sys Admin VWT' || localCallSign === 'SYS-01'));
+
     if (isOperatorUser) {
       if (!localRole || localRole === 'guest') {
         // Automatically save to localStorage
         localStorage.setItem(`channel-role:${roomId}:${userId}`, 'operator');
         return 'operator';
+      }
+    }
+
+    if (isNocUser) {
+      if (!localRole || localRole === 'guest') {
+        localStorage.setItem(`channel-role:${roomId}:${userId}`, 'noc');
+        return 'noc';
+      }
+    }
+
+    if (isSysAdminUser) {
+      if (!localRole || localRole === 'guest') {
+        localStorage.setItem(`channel-role:${roomId}:${userId}`, 'sys_admin');
+        return 'sys_admin';
       }
     }
     
@@ -140,9 +162,23 @@ export function useChannelRole(roomId: string, userId: string) {
           userId === '2DYUA' ||
           (isLocalUser && (localName === 'Pebri Haryanto' || localName === 'Pebe Herianto' || localCallSign === '2DYUA'));
 
+        const isNocUser =
+          userId === 'noc_global' ||
+          (isLocalUser && (localName === 'NOC Global' || localCallSign === 'NOC-01'));
+
+        const isSysAdminUser =
+          userId === 'sys_admin_vwt' ||
+          (isLocalUser && (localName === 'Sys Admin VWT' || localCallSign === 'SYS-01'));
+
         if (isOperatorUser && (!localRole || localRole === 'guest')) {
           setRole('operator');
           localStorage.setItem(`channel-role:${roomId}:${userId}`, 'operator');
+        } else if (isNocUser && (!localRole || localRole === 'guest')) {
+          setRole('noc');
+          localStorage.setItem(`channel-role:${roomId}:${userId}`, 'noc');
+        } else if (isSysAdminUser && (!localRole || localRole === 'guest')) {
+          setRole('sys_admin');
+          localStorage.setItem(`channel-role:${roomId}:${userId}`, 'sys_admin');
         } else if (localRole) {
           setRole(localRole);
         } else if (data?.role) {
