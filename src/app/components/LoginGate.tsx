@@ -2,10 +2,9 @@ import { useState } from 'react';
 
 interface LoginGateProps {
   onLogin: () => void;
-  onGuestLogin: () => void;
 }
 
-export function LoginGate({ onLogin, onGuestLogin }: LoginGateProps) {
+export function LoginGate({ onLogin }: LoginGateProps) {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
@@ -238,42 +237,7 @@ export function LoginGate({ onLogin, onGuestLogin }: LoginGateProps) {
           )}
         </button>
 
-        <button
-          onClick={onGuestLogin}
-          className="w-full h-12 mt-3 text-slate-900 font-bold rounded-full flex items-center justify-center gap-3 transition-all duration-300 active:scale-95 border border-slate-400/80 cursor-pointer shadow-[0_4px_10px_rgba(0,0,0,0.3)]"
-          style={{
-            background: 'linear-gradient(180deg, #ffffff 0%, #f1f5f9 40%, #cbd5e1 50%, #94a3b8 100%)',
-            boxShadow: 'inset 0 1.5px 0 rgba(255,255,255,0.95), 0 4px 10px rgba(0,0,0,0.25)',
-            textShadow: '0 1px 0 rgba(255,255,255,0.85)'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background =
-              'linear-gradient(180deg, #ffffff 0%, #f8fafc 40%, #e2e8f0 50%, #cbd5e1 100%)';
-            e.currentTarget.style.boxShadow =
-              'inset 0 1.5px 0 rgba(255,255,255,0.95), 0 0 15px rgba(255, 255, 255, 0.4), 0 6px 14px rgba(0,0,0,0.3)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background =
-              'linear-gradient(180deg, #ffffff 0%, #f1f5f9 40%, #cbd5e1 50%, #94a3b8 100%)';
-            e.currentTarget.style.boxShadow =
-              'inset 0 1.5px 0 rgba(255,255,255,0.95), 0 4px 10px rgba(0,0,0,0.25)';
-          }}
-        >
-          <svg
-            className="w-5 h-5 text-slate-700"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-            />
-          </svg>
-          <span>Masuk sebagai Tamu</span>
-        </button>
+
       </div>
 
       <div className="absolute bottom-6 left-0 right-0 text-[10px] text-gray-500 font-bold uppercase tracking-widest">

@@ -1,7 +1,5 @@
 import { useEffect } from 'react';
 import { usePTTStore } from './store/usePTTStore';
-import { generateUUID } from './store/storeUtils';
-import type { GuestUser } from './store/types';
 import { Toaster } from './components/ui/sonner';
 import { getSupabase } from './utils/supabase';
 import type { Subscription } from '@supabase/supabase-js';
@@ -12,7 +10,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { performSecurityAudit } from './utils/appSecurity';
 
 export default function App() {
-  const { initializeSession, user, setUser, infoText, updateSettings, signInWithGoogle } =
+  const { initializeSession, user, setUser, updateSettings, signInWithGoogle } =
     usePTTStore();
 
   useEffect(() => {
@@ -36,10 +34,6 @@ export default function App() {
 
     getSupabase().then((supabase) => {
       supabase.auth.getSession().then(({ data: { session } }) => {
-        const currentStore = usePTTStore.getState();
-        if (currentStore.user && (currentStore.user as GuestUser).isGuest && !session?.user) {
-          return; // Prevent overwriting guest session with null from delayed getSession
-        }
         const u = session?.user || null;
         setUser(u);
         if (u) {
@@ -51,10 +45,6 @@ export default function App() {
       const {
         data: { subscription },
       } = supabase.auth.onAuthStateChange((_event, session) => {
-        const currentStore = usePTTStore.getState();
-        if (currentStore.user && (currentStore.user as GuestUser).isGuest && !session?.user) {
-          return;
-        }
         const u = session?.user || null;
         setUser(u);
         if (u) {
@@ -84,23 +74,6 @@ export default function App() {
           >
             <LoginGate
               onLogin={signInWithGoogle}
-              onGuestLogin={() => {
-                const guestId = `guest-${generateUUID()}`;
-                const shortId = guestId.slice(-4).toUpperCase();
-                setUser({
-                  id: guestId,
-                  isGuest: true,
-                  email: `${guestId}@guest.nextvwt.local`,
-                  user_metadata: {
-                    full_name: infoText || `Tamu ${shortId}`,
-                  },
-                  app_metadata: {
-                    provider: 'guest',
-                  },
-                  aud: 'authenticated',
-                  created_at: new Date().toISOString(),
-                });
-              }}
             />
           </div>
         ) : (
