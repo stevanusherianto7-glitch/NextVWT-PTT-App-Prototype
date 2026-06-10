@@ -23,6 +23,13 @@ import { QuickActionDock } from './QuickActionDock';
 import { ChatRoomPanel } from '../../features/chat/ChatRoomPanel';
 import { KaraokeQueuePanel } from '../../features/karaoke-queue/KaraokeQueuePanel';
 import { PrivateChannelPanel } from '../../features/moderation/PrivateChannelPanel';
+import { Player } from '@lottiefiles/react-lottie-player';
+import applauseAnimation from '../../assets/reactions/applause.json';
+import loveAnimation from '../../assets/reactions/love.json';
+import wowAnimation from '../../assets/reactions/wow.json';
+import fireAnimation from '../../assets/reactions/fire.json';
+import crownAnimation from '../../assets/reactions/crown.json';
+import confettiAnimation from '../../assets/reactions/confetti.json';
 
 // Helper to catch dynamic import chunk loading failures (typically after a new deploy)
 // and automatically reload the page to fetch the latest assets
@@ -820,24 +827,34 @@ export function RadioLayout() {
             {/* Floating Reactions Overlay */}
             <div className="absolute inset-x-0 bottom-36 top-0 pointer-events-none overflow-hidden z-50">
               {floatingReactions.map((r) => {
-                const emojiMap: Record<string, string> = {
-                  applause: '👏',
-                  love: '❤️',
-                  wow: '😮',
-                  fire: '🔥',
-                  crown: '👑',
-                  confetti: '🎉',
+                const animationMap: Record<string, any> = {
+                  applause: applauseAnimation,
+                  love: loveAnimation,
+                  wow: wowAnimation,
+                  fire: fireAnimation,
+                  crown: crownAnimation,
+                  confetti: confettiAnimation,
                 };
+                const animData = animationMap[r.reaction];
                 return (
-                  <span
+                  <div
                     key={r.id}
-                    className="absolute bottom-0 text-3xl animate-float-up"
+                    className="absolute bottom-0 w-20 h-20 animate-float-up flex items-center justify-center"
                     style={{
                       left: `${r.x}%`,
                     }}
                   >
-                    {emojiMap[r.reaction] || '🔥'}
-                  </span>
+                    {animData ? (
+                      <Player
+                        autoplay
+                        loop={false}
+                        src={animData}
+                        style={{ width: '75px', height: '75px' }}
+                      />
+                    ) : (
+                      <span className="text-3xl">🔥</span>
+                    )}
+                  </div>
                 );
               })}
             </div>
