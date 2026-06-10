@@ -32,6 +32,7 @@ import crownAnimation from '../../assets/reactions/crown.json';
 import confettiAnimation from '../../assets/reactions/confetti.json';
 import kissAnimation from '../../assets/reactions/kiss.json';
 import bartSvg from '../../assets/reactions/bart.svg';
+import foxSvg from '../../assets/reactions/fox.svg';
 
 // Helper to catch dynamic import chunk loading failures (typically after a new deploy)
 // and automatically reload the page to fetch the latest assets
@@ -765,6 +766,24 @@ export function RadioLayout() {
                                 src={bartSvg}
                                 className="w-[80px] h-[80px] object-contain"
                                 alt="Bart Simpson"
+                              />
+                            </div>
+                          );
+                        }
+
+                        if (r.reaction === 'fox') {
+                          return (
+                            <div
+                              key={r.id}
+                              className="absolute bottom-0 w-20 h-20 animate-float-up flex items-center justify-center"
+                              style={{
+                                left: `${r.x}%`,
+                              }}
+                            >
+                              <img
+                                src={foxSvg}
+                                className="w-[80px] h-[80px] object-contain"
+                                alt="Cute Fox"
                               />
                             </div>
                           );
