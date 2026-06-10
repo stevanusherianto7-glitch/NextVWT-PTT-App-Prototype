@@ -406,7 +406,7 @@ export function RadioLayout() {
         setFloatingReactions((prev) => [...prev, { id, reaction: payload.reaction, x }]);
         setTimeout(() => {
           setFloatingReactions((prev) => prev.filter((r) => r.id !== id));
-        }, 2500);
+        }, 5000);
       }
     });
     return () => {
@@ -423,7 +423,7 @@ export function RadioLayout() {
     setFloatingReactions((prev) => [...prev, { id: localId, reaction: reactionType, x }]);
     setTimeout(() => {
       setFloatingReactions((prev) => prev.filter((r) => r.id !== localId));
-    }, 2500);
+    }, 5000);
 
     // Broadcast to other peers on the channel
     import('../store/subscription').then(({ activeChannelSubscription }) => {
