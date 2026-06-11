@@ -67,17 +67,4 @@ async function bootstrap() {
 
 bootstrap();
 
-// Register Service Worker for PWA (Option B) - Only in Production to prevent HMR caching issues in dev mode
-if (import.meta.env.PROD && 'serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker
-      .register('./sw.js')
-      .then((registration) => {
-        // eslint-disable-next-line no-console
-        console.log('[PWA] Service Worker registered successfully with scope:', registration.scope);
-      })
-      .catch((error) => {
-        console.error('[PWA] Service Worker registration failed:', error);
-      });
-  });
-}
+// PWA Service Worker is auto-registered by vite-plugin-pwa in production mode

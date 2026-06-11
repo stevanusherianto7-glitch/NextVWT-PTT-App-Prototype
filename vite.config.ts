@@ -2,6 +2,7 @@ import { defineConfig, loadEnv, type PluginOption } from 'vite'
 import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
+import { VitePWA } from 'vite-plugin-pwa'
 
 
 function figmaAssetResolver() {
@@ -116,6 +117,54 @@ export default defineConfig(({ command: _command, mode }) => {
       // Tailwind is not being actively used – do not remove them
       react(),
       tailwindcss(),
+      VitePWA({
+        registerType: 'autoUpdate',
+        includeAssets: ['pwa-192x192.png', 'pwa-512x512.png'],
+        manifest: {
+          name: 'NextVWT Walkie Talkie',
+          short_name: 'NextVWT',
+          description: 'Next Virtual Walkie Talkie - Real-time PTT communication platform',
+          theme_color: '#0c62a8',
+          background_color: '#0a1423',
+          display: 'standalone',
+          orientation: 'portrait',
+          start_url: './index.html',
+          icons: [
+            {
+              src: 'pwa-192x192.png',
+              sizes: '192x192',
+              type: 'image/png',
+              purpose: 'any'
+            },
+            {
+              src: 'pwa-512x512.png',
+              sizes: '512x512',
+              type: 'image/png',
+              purpose: 'any'
+            },
+            {
+              src: 'pwa-512x512.png',
+              sizes: '512x512',
+              type: 'image/png',
+              purpose: 'maskable'
+            }
+          ]
+        },
+        workbox: {
+          globPatterns: ['**/*.{js,css,html,png,svg,woff,woff2}'],
+          runtimeCaching: [
+            {
+              urlPattern: ({ url }) => {
+                return (
+                  url.host.includes('supabase.co') ||
+                  url.pathname.includes('/api/')
+                )
+              },
+              handler: 'NetworkOnly'
+            }
+          ]
+        }
+      })
     ].filter(Boolean) as PluginOption[],
 
     resolve: {
