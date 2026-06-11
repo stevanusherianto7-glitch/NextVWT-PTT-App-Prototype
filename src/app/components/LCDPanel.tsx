@@ -1,9 +1,10 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import twinHeadsIcon from '../../imports/ikon_kepala_kembar-2.png';
 import usernameIcon from '../../imports/ikon_username1.png';
+import iconNoc from '../../assets/components/icon_star_noc.svg';
 import { usePTTStore } from '../store/usePTTStore';
 import { AquariumSkeleton } from './SkeletonLoaders';
-import iconOperator from '../../assets/icon_operator_otomatis.png';
+import iconOperator from '../../assets/components/icon_star_operator.svg';
 import iconModerator from '../../assets/icon_moderator.png';
 import iconControlled from '../../assets/icon_controlled.png';
 import iconSilent from '../../assets/icon_silent.png';
@@ -237,16 +238,24 @@ export function LCDPanel({
             <div className="flex items-end gap-1.5 pt-1">
               <div className="relative shrink-0 select-none flex items-end justify-center w-[38px] h-[38px] ml-1">
                 <img
-                  src={activeRole === 'operator' ? iconOperator : usernameIcon}
-                  alt="Username Icon"
+                  src={
+                    activeRole === 'noc'
+                      ? iconNoc
+                      : activeRole === 'operator'
+                      ? iconOperator
+                      : usernameIcon
+                  }
+                  alt={activeRole === 'noc' ? "NOC Icon" : "Username Icon"}
                   className={
-                    activeRole === 'operator'
+                    activeRole === 'noc'
+                      ? 'h-[32px] w-[32px] object-contain mb-[2px]'
+                      : activeRole === 'operator'
                       ? 'h-[30px] w-[30px] object-contain mb-[1px]'
                       : 'h-[70px] w-[62px] object-contain absolute -top-[16px] left-0'
                   }
                   style={{ filter: 'drop-shadow(1px 1px 0px rgba(0,0,0,0.2))' }}
                 />
-                {activeUserModeIcon && activeUserModeIcon !== iconOperator && (
+                {activeUserModeIcon && activeUserModeIcon !== iconOperator && activeRole !== 'noc' && (
                   <img
                     src={activeUserModeIcon}
                     alt="Role/Status Icon"

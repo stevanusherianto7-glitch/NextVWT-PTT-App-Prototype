@@ -22,6 +22,7 @@ export const createUISlice: StateCreator<
     | 'setConnected'
     | 'setTransmitting'
     | 'hangUpUser'
+    | 'kickUser'
     | 'setScanning'
     | 'setProgress'
     | 'setError'
@@ -191,6 +192,28 @@ export const createUISlice: StateCreator<
     // If we are hanging up ourselves, stop our own transmission
     if (targetUserId === state.userId && state.isTransmitting) {
       set({ isTransmitting: false, progress: 0 });
+    }
+  },
+
+  kickUser: (targetUserId: string, reason?: string) => {
+    const state = get();
+    if (!state.isPowerOn) return;
+
+    if (activeChannelSubscription && state.isConnected) {
+      activeChannelSubscription.send({
+        type: 'broadcast',
+        event: 'kick',
+        payload: {
+          targetUserId,
+          reason,
+        },
+      });
+    }
+
+    // Optimistically clear the active transmitter locally if it matches the target
+    const currentTx = state.activeTransmitter;
+    if (currentTx && currentTx.userId === targetUserId) {
+      set({ activeTransmitter: null, progress: 0 });
     }
   },
 

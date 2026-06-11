@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { usePTTStore } from '../store/usePTTStore';
 import { ChannelRole } from '../../features/moderation/permissions';
 import iconVoice from '../../assets/icon_voice.png';
-import iconOperator from '../../assets/icon_operator_otomatis.png';
+import iconOperator from '../../assets/components/icon_star_operator.svg';
 import iconModerator from '../../assets/icon_moderator.png';
 import iconControlled from '../../assets/icon_controlled.png';
 import iconSilent from '../../assets/icon_silent.png';
 import iconWait from '../../assets/icon_wait.png';
 import iconWaitControlled from '../../assets/icon_wait_controlled.png';
 import iconUserBaru from '../../assets/components/icon_tag_baru.svg';
+import iconNoc from '../../assets/components/icon_star_noc.svg';
 
 interface UserListModalProps {
   channel: number;
@@ -416,7 +417,7 @@ function AvatarImage({
   if (hasError || !src) {
     return (
       <div
-        className="w-full h-full rounded-full flex items-center justify-center text-white font-bold text-[22px] shadow-[inset_0_2px_4px_rgba(255,255,255,0.4)] border border-white/20"
+        className="w-full h-full rounded-sm flex items-center justify-center text-white font-bold text-[22px] shadow-[inset_0_2px_4px_rgba(255,255,255,0.4)] border border-white/20"
         style={{ backgroundColor: avatarColor }}
       >
         {initial}
@@ -429,7 +430,7 @@ function AvatarImage({
       src={src}
       alt={displayName}
       onError={() => setHasError(true)}
-      className="w-full h-full rounded-full object-cover shadow-[0_2px_4px_rgba(0,0,0,0.15)] border border-white/20"
+      className="w-full h-full rounded-sm object-cover shadow-[0_2px_4px_rgba(0,0,0,0.15)] border border-white/20"
     />
   );
 }
@@ -708,7 +709,7 @@ export function UserListModal({ channel, channelName: _channelName, users }: Use
             return (
               <div
                 key={`${profile.callSign}-${idx}`}
-                className={`w-full flex items-center px-4 py-2.5 hover:bg-white active:bg-gray-100 transition-all duration-300 border-b border-gray-300/70 cursor-pointer ${
+                className={`w-full flex items-center pr-4 pl-1.5 py-2.5 hover:bg-white active:bg-gray-100 transition-all duration-300 border-b border-gray-300/70 cursor-pointer ${
                   isSpeaking ? 'active-user-glow z-10' : 'bg-[#fafbfc]'
                 }`}
                 onClick={() => {
@@ -728,6 +729,17 @@ export function UserListModal({ channel, channelName: _channelName, users }: Use
                   {/* Mode icon badge at bottom-right */}
                   {(() => {
                     const mode = getUserMode(profile);
+                    if (profile.role === 'noc') {
+                      return (
+                        <img
+                          src={iconNoc}
+                          alt="NOC Crown"
+                          title="NOC"
+                          className="absolute -bottom-[2px] -right-[2px] w-[20px] h-[20px] object-contain drop-shadow-[0_1.5px_2.5px_rgba(0,0,0,0.35)]"
+                          draggable={false}
+                        />
+                      );
+                    }
                     if (mode === 'voice') return null; // Hide badge for default voice users
                     return (
                       <img
@@ -792,7 +804,7 @@ export function UserListModal({ channel, channelName: _channelName, users }: Use
             onClick={(e) => e.stopPropagation()}
           >
             {/* Expanded Avatar */}
-            <div className="w-40 h-40 rounded-full overflow-hidden shadow-lg border-2 border-[#00C853] relative flex items-center justify-center bg-gray-100">
+            <div className="w-40 h-40 rounded-md overflow-hidden shadow-lg border-2 border-[#00C853] relative flex items-center justify-center bg-gray-100">
               {activeZoomedAvatar.avatarUrl ? (
                 <img
                   src={activeZoomedAvatar.avatarUrl}
@@ -980,6 +992,33 @@ export function UserListModal({ channel, channelName: _channelName, users }: Use
                     Moderator
                   </button>
                 </div>
+
+                {/* NOC Only: Banned Button */}
+                {localRole === 'noc' && (
+                  <button type="button"
+                    id="btn-banned-user"
+                    onClick={() => {
+                      // 1. Mark target user as silent/muted globally (optional, but good practice)
+                      handleUpdateStatus(activeZoomedAvatar.userId, 'muted');
+                      // 2. Broadcast kick/banned to force target user to jump to CH 302
+                      usePTTStore.getState().kickUser(activeZoomedAvatar.userId, 'Banned by NOC');
+                      // 3. Move NOC themselves to CH 302 to handle the user
+                      usePTTStore.getState().setChannelNumber(302);
+                      // 4. Close modal
+                      setActiveZoomedAvatar(null);
+                    }}
+                    className="w-full flex items-center justify-center gap-1.5 px-2.5 py-1.5 mt-2.5 rounded-lg border text-[11px] font-semibold transition-all duration-200 bg-red-800 border-red-900 text-white shadow-md hover:bg-red-700 active:scale-[0.98]"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="w-3.5 h-3.5 fill-current"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z" />
+                    </svg>
+                    Banned (Pindah ke CH 302)
+                  </button>
+                )}
               </div>
             )}
 

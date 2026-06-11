@@ -10,6 +10,7 @@ import {
   WebRTCSignalingPayloadSchema,
   HangUpPayloadSchema,
   ReactionPayloadSchema,
+  KickPayloadSchema,
   PresenceMetaSchema,
   safeParseRealtimePayload,
 } from './schemas/realtimePayloads';
@@ -194,6 +195,23 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
             const state = usePTTStore.getState();
             if (state.onReactionReceived) {
               state.onReactionReceived(payload);
+            }
+          }
+        )
+        .on(
+          'broadcast',
+          { event: 'kick' },
+          ({ payload: rawPayload }: { payload: unknown }) => {
+            if (activeChannelSubscription !== channelInstance) return;
+            // [F-04] Validate kick payload
+            const payload = safeParseRealtimePayload(KickPayloadSchema, rawPayload, 'kick');
+            if (!payload) return;
+            const state = usePTTStore.getState();
+            
+            if (payload.targetUserId === state.userId) {
+              console.warn(`[Kick] You have been kicked/banned. Reason: ${payload.reason || 'No reason'}. Moving to CH 302...`);
+              // Force channel change to 302
+              state.setChannelNumber(302);
             }
           }
         );
