@@ -8,7 +8,7 @@ import iconControlled from '../../assets/icon_controlled.png';
 import iconSilent from '../../assets/icon_silent.png';
 import iconWait from '../../assets/icon_wait.png';
 import iconWaitControlled from '../../assets/icon_wait_controlled.png';
-import iconUserBaru from '../../assets/icon_user_baru.png';
+import iconUserBaru from '../../assets/components/icon_tag_baru.svg';
 
 interface UserListModalProps {
   channel: number;
@@ -646,11 +646,11 @@ export function UserListModal({ channel, channelName: _channelName, users }: Use
     >
       <style>{`
         .user-list-modal {
-          height: 400px;
+          height: 380px;
         }
         @media (min-height: 700px) {
           .user-list-modal {
-            height: 535px;
+            height: 460px;
           }
         }
         .custom-scrollbar::-webkit-scrollbar {
@@ -746,7 +746,7 @@ export function UserListModal({ channel, channelName: _channelName, users }: Use
                   <div className="text-[14px] font-medium text-gray-800 truncate leading-snug">
                     <span className="truncate">{profile.displayName}</span>
                   </div>
-                  <div className="flex items-center text-[11px] mt-0.5 truncate gap-1.5 font-medium leading-none">
+                  <div className="flex items-center text-[11px] mt-0.5 truncate gap-1 font-medium leading-none">
                     <span className="text-[#00C853] font-medium tracking-wide">
                       {profile.callSign}
                     </span>
@@ -754,7 +754,7 @@ export function UserListModal({ channel, channelName: _channelName, users }: Use
                       <img
                         src={iconUserBaru}
                         alt="Baru"
-                        className="h-[10px] w-auto object-contain ml-1 select-none"
+                        className="h-[12px] w-auto object-contain select-none"
                         style={{ filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.15))' }}
                         draggable={false}
                       />
@@ -813,7 +813,7 @@ export function UserListModal({ channel, channelName: _channelName, users }: Use
             <h3 className="mt-4 text-lg font-bold text-gray-900 text-center truncate w-full">
               {activeZoomedAvatar.displayName}
             </h3>
-            <div className="flex items-center justify-center gap-1.5 mt-1">
+            <div className="flex items-center justify-center gap-1 mt-1">
               <span className="text-sm font-semibold text-[#00C853] tracking-wider">
                 {activeZoomedAvatar.callSign}
               </span>

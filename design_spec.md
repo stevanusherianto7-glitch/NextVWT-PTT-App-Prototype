@@ -359,4 +359,4 @@ Styling lencana: `w-[21px] h-[21px] object-contain drop-shadow-[0_1.5px_2.5px_rg
 | :--- | :--- | :--- |
 | User List Modal | `max-w-[340px]` | Container daftar user dengan scrollbar |
 | Zoomed Avatar / Profil Modal | `max-w-[340px]` | Modal overlay berisi avatar, info, dan panel moderasi |
-| Tinggi User List | `400px` (default), `535px` (layar ≥ 700px) | Responsif berdasarkan tinggi viewport |
+| Tinggi User List | `380px` (default), `460px` (layar ≥ 700px) | Responsif berdasarkan tinggi viewport |
