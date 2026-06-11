@@ -8,25 +8,26 @@ export type ChannelUserStatus =
   | 'suspended'
   | 'banned';
 
-export function getGlobalRole(userId: string, displayName?: string, callSign?: string): 'noc' | 'sys_admin' | null {
-  if (
-    userId === 'noc_global' ||
-    userId === 'Pebe Herianto' ||
-    displayName === 'NOC Global' ||
-    displayName === 'Pebe Herianto' ||
-    callSign === 'NOC-01'
-  ) {
-    return 'noc';
-  }
-  
-  if (
-    userId === 'sys_admin_vwt' ||
-    displayName === 'Sys Admin VWT' ||
-    callSign === 'SYS-01'
-  ) {
-    return 'sys_admin';
-  }
-  
+/**
+ * @deprecated REMOVED — Hardcoded userIds/displayNames are a critical security hole.
+ *
+ * Role authority MUST come exclusively from the `channel_roles` Supabase table,
+ * not from client-side display name comparisons. Anyone could register with the
+ * display name "Pebe Herianto" and receive NOC-level access.
+ *
+ * To assign global roles (NOC / sys_admin):
+ *   1. Insert a row into `public.channel_roles` via the Supabase Dashboard
+ *      or a server-side Edge Function using the service_role key.
+ *   2. The `useChannelRole` hook reads the role from the DB on each channel join.
+ *
+ * This function now always returns null — it is kept as a stub so callers
+ * that still reference it get a compile error guiding them to the DB approach.
+ *
+ * @see src/features/moderation/useChannelRole.ts
+ */
+export function getGlobalRole(_userId: string, _displayName?: string, _callSign?: string): null {
+  // ⛔ DO NOT restore hardcoded checks here.
+  // Role checks must be server-authoritative (Supabase channel_roles table).
   return null;
 }
 

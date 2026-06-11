@@ -21,7 +21,11 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
+    // [SECURITY] Log error details ONLY to console/monitoring — never display to user.
+    // error.message can expose internal file paths, function names, and stack traces.
     console.error('[NextVWT ErrorBoundary]', error, info);
+    // TODO: Send to Sentry or internal monitoring in production:
+    // Sentry.captureException(error, { extra: info });
   }
 
   handleReset = () => {
@@ -59,7 +63,10 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
               textAlign: 'center',
             }}
           >
-            {this.state.error?.message || 'Terjadi error yang tidak terduga.'}
+            {/* [SECURITY] DO NOT display error.message here — it can leak internal
+                file paths, function names, or library details to end users.
+                Internal details are logged via componentDidCatch above. */}
+            Terjadi gangguan tak terduga pada aplikasi. Silakan coba lagi atau restart aplikasi.
           </p>
           <button type="button"
             onClick={this.handleReset}

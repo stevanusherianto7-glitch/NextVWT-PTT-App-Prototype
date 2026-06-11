@@ -116,9 +116,43 @@ export const createAuthSlice: StateCreator<
 
   signOut: async () => {
     try {
+      // [F-08] Step 1: Unsubscribe from active channel to stop receiving broadcasts
+      // This MUST happen before auth.signOut() to prevent spurious state updates
+      // from arriving after the user session is cleared.
+      const { activeChannelSubscription, setActiveChannelSubscription } = await import('../subscription');
+      if (activeChannelSubscription) {
+        try {
+          activeChannelSubscription.unsubscribe();
+        } catch {
+          // Ignore — channel may already be closed
+        }
+        setActiveChannelSubscription(null);
+      }
+
+      // [F-08] Step 2: Unsubscribe coins realtime listener
+      if (coinsSubscription) {
+        try {
+          coinsSubscription.unsubscribe();
+        } catch {
+          // Ignore
+        }
+        coinsSubscription = null;
+      }
+
+      // [F-08] Step 3: Sign out from Supabase Auth
       const supabase = await getSupabase();
       await supabase.auth.signOut();
-      set({ user: null });
+
+      // [F-08] Step 4: Reset all user-related state atomically
+      set({
+        user: null,
+        coins: 0,
+        activeUsers: [],
+        activeTransmitter: null,
+        isTransmitting: false,
+        isConnected: false,
+        progress: 0,
+      });
     } catch (err) {
       console.error('Sign Out Error', err);
     }

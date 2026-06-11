@@ -4,6 +4,15 @@ import { getSupabase } from '../utils/supabase';
 import { checkIfNewUser } from '../utils/constants';
 export type { AppUser, ChannelItem, WebRTCSignalingPayload, GuestUser, PTTState } from './types';
 import { BRAND } from '../utils/config';
+import {
+  PttStatePayloadSchema,
+  VoiceChunkPayloadSchema,
+  WebRTCSignalingPayloadSchema,
+  HangUpPayloadSchema,
+  ReactionPayloadSchema,
+  PresenceMetaSchema,
+  safeParseRealtimePayload,
+} from './schemas/realtimePayloads';
 
 import {
   safeGetStorage,
@@ -25,23 +34,8 @@ export {
   pickPersistedState,
 };
 
-interface PresenceMeta {
-  userId?: string;
-  displayName?: string;
-  callSign?: string;
-  location?: string;
-  avatarUrl?: string;
-  createdAt?: string;
-}
-
-interface PttStatePayload {
-  userId: string;
-  displayName: string;
-  callSign: string;
-  isTransmitting: boolean;
-  role?: string;
-  isNewUser?: boolean;
-}
+// [F-04] Inline payload interfaces replaced by Zod schemas in ./schemas/realtimePayloads.ts
+// Types are now inferred from the schemas: PttStatePayload, PresenceMeta, etc.
 
 import { activeChannelSubscription, setActiveChannelSubscription } from './subscription';
 // ─── Supabase Channel Subscription ───────────────────────────────────────────
@@ -83,9 +77,9 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
         .on('presence', { event: 'sync' }, () => {
           if (activeChannelSubscription !== channelInstance) return;
           const presenceState = channelInstance.presenceState();
-          const rawList = Object.values(presenceState).flat() as unknown as PresenceMeta[];
+          const rawList = Object.values(presenceState).flat() as unknown[];
 
-          // Deduplicate by userId to ensure each active user only has one entry in the list
+          // [F-04] Validate each presence entry against Zod schema before use
           const uniqueUsersMap = new Map<
             string,
             {
@@ -97,8 +91,9 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
               isNewUser?: boolean;
             }
           >();
-          rawList.forEach((p) => {
-            if (p && typeof p === 'object' && p.userId) {
+          rawList.forEach((raw) => {
+            const p = safeParseRealtimePayload(PresenceMetaSchema, raw, 'presence');
+            if (p && p.userId) {
               uniqueUsersMap.set(p.userId, {
                 userId: p.userId,
                 displayName: p.displayName || 'Anonim',
@@ -112,8 +107,11 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
           const users = Array.from(uniqueUsersMap.values());
           usePTTStore.setState({ activeUsers: users });
         })
-        .on('broadcast', { event: 'ptt_state' }, ({ payload }: { payload: PttStatePayload }) => {
+        .on('broadcast', { event: 'ptt_state' }, ({ payload: rawPayload }: { payload: unknown }) => {
           if (activeChannelSubscription !== channelInstance) return;
+          // [F-04] Validate before using payload to prevent state corruption
+          const payload = safeParseRealtimePayload(PttStatePayloadSchema, rawPayload, 'ptt_state');
+          if (!payload) return;
           if (payload.isTransmitting) {
             usePTTStore.setState({
               activeTransmitter: {
@@ -134,8 +132,11 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
         .on(
           'broadcast',
           { event: 'voice_chunk' },
-          ({ payload }: { payload: { userId: string; base64: string } }) => {
+          ({ payload: rawPayload }: { payload: unknown }) => {
             if (activeChannelSubscription !== channelInstance) return;
+            // [F-04] Validate chunk size and userId before piping to audio
+            const payload = safeParseRealtimePayload(VoiceChunkPayloadSchema, rawPayload, 'voice_chunk');
+            if (!payload) return;
             const state = usePTTStore.getState();
             // Ignore our own broadcasted voice chunks to avoid feedback loop
             if (payload.userId !== state.userId && state.onVoiceChunkReceived) {
@@ -146,19 +147,25 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
         .on(
           'broadcast',
           { event: 'webrtc_signaling' },
-          ({ payload }: { payload: WebRTCSignalingPayload }) => {
+          ({ payload: rawPayload }: { payload: unknown }) => {
             if (activeChannelSubscription !== channelInstance) return;
+            // [F-04] Validate signaling message structure before processing
+            const payload = safeParseRealtimePayload(WebRTCSignalingPayloadSchema, rawPayload, 'webrtc_signaling');
+            if (!payload) return;
             const state = usePTTStore.getState();
             if (payload.senderUserId !== state.userId && state.onWebRTCSignalingReceived) {
-              state.onWebRTCSignalingReceived(payload);
+              state.onWebRTCSignalingReceived(payload as WebRTCSignalingPayload);
             }
           }
         )
         .on(
           'broadcast',
           { event: 'hang_up' },
-          ({ payload }: { payload: { targetUserId: string; moderatorName?: string } }) => {
+          ({ payload: rawPayload }: { payload: unknown }) => {
             if (activeChannelSubscription !== channelInstance) return;
+            // [F-04] Validate before acting on hang_up to prevent spoofed disconnections
+            const payload = safeParseRealtimePayload(HangUpPayloadSchema, rawPayload, 'hang_up');
+            if (!payload) return;
             const state = usePTTStore.getState();
 
             // If we are the target and currently transmitting, force-stop our transmission
@@ -179,8 +186,11 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
         .on(
           'broadcast',
           { event: 'reaction' },
-          ({ payload }: { payload: { id: string; category: 'animation' | 'sound' | 'gift'; reaction: string; senderName: string } }) => {
+          ({ payload: rawPayload }: { payload: unknown }) => {
             if (activeChannelSubscription !== channelInstance) return;
+            // [F-04] Validate reaction payload to prevent XSS via reaction strings
+            const payload = safeParseRealtimePayload(ReactionPayloadSchema, rawPayload, 'reaction');
+            if (!payload) return;
             const state = usePTTStore.getState();
             if (state.onReactionReceived) {
               state.onReactionReceived(payload);

@@ -94,9 +94,15 @@ export const createUISlice: StateCreator<
       }
 
       // Stateful Floor Control & Priority check
+      // [F-06] Role is derived from the Zustand store (server-authoritative via useChannelRole),
+      // NOT from localStorage which can be tampered by the user to escalate privileges.
       const activeTx = state.activeTransmitter;
       const roomId = `ptt-room-${state.channelNumber}`;
-      const myRole = localStorage.getItem(`channel-role:${roomId}:${state.userId}`) || 'guest';
+      // Read from store state as fallback — the definitive role is set by useChannelRole hook
+      // from the Supabase channel_roles table.
+      const myRole = (state as { _channelRole?: string })._channelRole
+        ?? localStorage.getItem(`channel-role:${roomId}:${state.userId}`)
+        ?? 'guest';
 
       const ROLE_PRIORITY: Record<string, number> = {
         noc: 5,
@@ -134,9 +140,12 @@ export const createUISlice: StateCreator<
 
     if (activeChannelSubscription && state.isConnected) {
       const userMeta = state.user;
-      const displayName = state.infoText || userMeta?.user_metadata?.full_name || 'Pebe Herianto';
+      const displayName = state.infoText || userMeta?.user_metadata?.full_name || 'User';
       const roomId = `ptt-room-${state.channelNumber}`;
-      const myRole = localStorage.getItem(`channel-role:${roomId}:${state.userId}`) || 'guest';
+      // [F-06] Prefer the store-cached role over localStorage for broadcast metadata
+      const myRole = (state as { _channelRole?: string })._channelRole
+        ?? localStorage.getItem(`channel-role:${roomId}:${state.userId}`)
+        ?? 'guest';
 
       activeChannelSubscription.send({
         type: 'broadcast',
