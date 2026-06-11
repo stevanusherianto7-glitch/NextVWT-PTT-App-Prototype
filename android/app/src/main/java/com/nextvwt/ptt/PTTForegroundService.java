@@ -126,7 +126,7 @@ public class PTTForegroundService extends Service {
         return new NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("NextVWT PTT Aktif")
             .setContentText(text)
-            .setSmallIcon(android.R.drawable.presence_micro_phone) // microphone drawable fallback
+            .setSmallIcon(R.mipmap.ic_launcher) // app icon fallback
             .setContentIntent(pendingIntent)
             .setOngoing(true)
             .build();

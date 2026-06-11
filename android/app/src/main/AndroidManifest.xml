@@ -33,7 +33,8 @@
             android:name=".PTTForegroundService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="microphone|dataSync" />
+            android:foregroundServiceType="microphone|dataSync"
+        />
     </application>
 
     <!-- Permissions -->

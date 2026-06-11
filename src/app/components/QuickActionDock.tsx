@@ -81,7 +81,7 @@ export function QuickActionDock({
     {
       id: 'reaction',
       label: 'Reaksi',
-      icon: <Smile className="w-5 h-5" />,
+      icon: <Smile className="w-[18px] h-[18px]" />,
       iconColor: '#fbbf24',
       glowColor: 'rgba(251,191,36,0.35)',
       onClick: () => setShowReactions(!showReactions),
@@ -90,7 +90,7 @@ export function QuickActionDock({
     {
       id: 'chat',
       label: 'Chat',
-      icon: <MessageSquare className="w-5 h-5" />,
+      icon: <MessageSquare className="w-[18px] h-[18px]" />,
       iconColor: '#38bdf8',
       glowColor: 'rgba(56,189,248,0.35)',
       onClick: onOpenChat,
@@ -99,7 +99,7 @@ export function QuickActionDock({
     {
       id: 'queue',
       label: 'Queue',
-      icon: <Music className="w-5 h-5" />,
+      icon: <Music className="w-[18px] h-[18px]" />,
       iconColor: '#a78bfa',
       glowColor: 'rgba(167,139,250,0.35)',
       onClick: onOpenQueue,
@@ -112,7 +112,7 @@ export function QuickActionDock({
   if (actionButtons.length === 0) return null;
 
   return (
-    <div className="w-full mt-3 relative z-30 flex justify-center">
+    <div className="w-full mt-1.5 relative z-30 flex justify-center">
       
       {/* ── Reaction Popover (Centered over the dock) ── */}
       {showReactions && (
@@ -186,7 +186,7 @@ export function QuickActionDock({
 
       {/* ── Floating Skeuomorphic + Glassmorphic Container ── */}
       <div
-        className={`relative w-full flex items-end justify-around px-4 py-3 rounded-2xl transition-all duration-300 ${
+        className={`relative max-w-[230px] w-full flex items-end justify-around px-3 py-1.5 rounded-2xl transition-all duration-300 ${
           isPowerOn ? '' : 'opacity-35 pointer-events-none'
         }`}
         style={{
@@ -219,11 +219,11 @@ export function QuickActionDock({
         />
 
         {actionButtons.map((btn, index) => (
-          <div key={btn.id} className="relative flex flex-col items-center gap-1.5">
+          <div key={btn.id} className="relative flex flex-col items-center gap-1">
             {/* Vertical divider between buttons */}
             {index > 0 && (
               <div
-                className="absolute left-[-6px] top-[4px] bottom-[16px] w-px pointer-events-none"
+                className="absolute left-[-12px] top-[4px] bottom-[16px] w-px pointer-events-none"
                 style={{
                   background:
                     'linear-gradient(180deg, transparent, rgba(255,255,255,0.07) 40%, rgba(255,255,255,0.07) 60%, transparent)',
@@ -238,7 +238,7 @@ export function QuickActionDock({
               onClick={btn.onClick}
               disabled={!isPowerOn}
               title={btn.label}
-              className="relative w-11 h-11 rounded-xl flex items-center justify-center cursor-pointer focus:outline-none transition-all duration-100 group"
+              className="relative w-9 h-9 rounded-xl flex items-center justify-center cursor-pointer focus:outline-none transition-all duration-100 group"
               style={{
                 background: btn.active
                   ? `linear-gradient(160deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.4) 100%)`
