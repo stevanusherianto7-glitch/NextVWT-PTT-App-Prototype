@@ -249,30 +249,14 @@ export function LCDPanel({
           <div className="flex items-start justify-between">
             {/* Top Left: Username Icon and Letter */}
             <div className="flex items-end gap-1.5 pt-1">
-              {/* Single User Icon — 3D Glossy */}
-              <div
-                className="relative shrink-0 select-none flex items-center justify-center w-[32px] h-[32px] ml-1 rounded-full overflow-hidden"
-                style={{
-                  background: 'radial-gradient(circle at 38% 32%, #6ec6ff 0%, #1e88e5 45%, #0d47a1 100%)',
-                  boxShadow:
-                    '0 3px 6px rgba(0,0,0,0.45), 0 1px 2px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.55)',
-                }}
-              >
-                {/* Icon image */}
+              {/* Single User Icon — glossy baked into PNG */}
+              <div className="relative shrink-0 select-none flex items-center justify-center w-[32px] h-[32px] ml-1">
                 <img
                   src={activeUserModeIcon || usernameIcon}
                   alt="Role Icon"
-                  className="h-[22px] w-[22px] object-contain relative z-10"
-                  style={{ filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.35)) brightness(1.15)' }}
+                  className="h-[28px] w-[28px] object-contain"
+                  style={{ filter: 'drop-shadow(0px 1.5px 2px rgba(0,0,0,0.3))' }}
                   draggable={false}
-                />
-                {/* Glossy specular highlight */}
-                <div
-                  className="absolute inset-0 rounded-full pointer-events-none z-20"
-                  style={{
-                    background:
-                      'radial-gradient(ellipse at 45% 25%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.18) 45%, transparent 70%)',
-                  }}
                 />
               </div>
               <span
