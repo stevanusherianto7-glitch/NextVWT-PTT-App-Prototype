@@ -484,23 +484,33 @@ export function useAudioStreamer() {
         }
         startVAD(stream, micTrack);
 
-        // Keep local chunking MediaRecorder for fallback loopback and E2E test asserts
-        let activeRecorder: MediaRecorder | null = null;
-        let recordInterval: ReturnType<typeof setInterval> | null = null;
-
-        const recordNextChunk = () => {
-          if (!isRecordingRef.current || !streamRef.current) {
-            cleanup();
-            return;
+        // Robust MediaRecorder initialization with proper Codec Selection & Timeslicing
+        const getSupportedMimeType = () => {
+          const types = [
+            'audio/webm;codecs=opus',
+            'audio/webm',
+            'audio/ogg;codecs=opus',
+            'audio/mp4;codecs=mp4a.40.2', // Fallback for Safari
+            'audio/mp4',
+            '' // Native browser fallback
+          ];
+          for (const t of types) {
+            if (t === '' || MediaRecorder.isTypeSupported(t)) return t;
           }
+          return '';
+        };
+
+        const initRobustRecorder = () => {
+          if (!isRecordingRef.current || !streamRef.current) return;
 
           try {
-            const recorder = new MediaRecorder(streamRef.current);
-            activeRecorder = recorder;
+            const mimeType = getSupportedMimeType();
+            const options = mimeType ? { mimeType, audioBitsPerSecond: 64000 } : undefined;
+            const recorder = new MediaRecorder(streamRef.current, options);
             mediaRecorderRef.current = recorder;
 
             recorder.ondataavailable = async (event) => {
-              if (event.data && event.data.size > 0) {
+              if (event.data && event.data.size > 0 && isRecordingRef.current) {
                 try {
                   const arrayBuffer = await event.data.arrayBuffer();
                   const base64 = arrayBufferToBase64(arrayBuffer);
@@ -511,39 +521,29 @@ export function useAudioStreamer() {
               }
             };
 
-            recorder.start();
+            // Start with a 250ms timeslice. 
+            // The recorder will automatically fire ondataavailable every 250ms natively
+            // WITHOUT needing to be destroyed and recreated, saving massive mobile CPU.
+            recorder.start(250);
 
-            setTimeout(() => {
-              if (recorder.state !== 'inactive') {
-                try {
-                  recorder.stop();
-                } catch {
-                  // Ignore state errors on concurrent stop
-                }
-              }
-            }, 250);
           } catch (err) {
-            console.error('Failed to create or start MediaRecorder:', err);
+            console.error('Failed to create robust MediaRecorder:', err);
           }
         };
 
         const cleanup = () => {
-          if (recordInterval) {
-            clearInterval(recordInterval);
-            recordInterval = null;
-          }
-          if (activeRecorder && activeRecorder.state !== 'inactive') {
+          const recorder = mediaRecorderRef.current;
+          if (recorder && recorder.state !== 'inactive') {
             try {
-              activeRecorder.stop();
+              recorder.stop();
             } catch {
-              void 0;
+              // Ignore concurrent stop errors
             }
           }
         };
 
         currentCleanupRef.current = cleanup;
-        recordNextChunk();
-        recordInterval = setInterval(recordNextChunk, 255);
+        initRobustRecorder();
       } catch (err) {
         console.error('Failed to access microphone:', err);
         isRecordingRef.current = false;
