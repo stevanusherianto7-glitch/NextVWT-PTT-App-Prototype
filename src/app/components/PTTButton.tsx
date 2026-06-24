@@ -10,38 +10,212 @@ interface PTTButtonProps {
   waitCountdown?: number | null;
 }
 
-const createStaticNoise = (
+
+// ─── Walkie-Talkie Classic Sound Engine ───────────────────────────────────────
+
+/**
+ * Generates layered analog radio noise (colored noise via bandpass cascade)
+ * simulating the warm, band-limited static of a classic VHF/UHF radio.
+ */
+const createRadioNoise = (
   ctx: AudioContext,
-  masterGain: GainNode,
+  dest: AudioNode,
   duration: number,
-  startTime: number
+  startTime: number,
+  peakGain: number = 0.3
 ) => {
-  const bufferSize = ctx.sampleRate * duration;
+  const bufferSize = Math.ceil(ctx.sampleRate * duration);
   const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
   const data = buffer.getChannelData(0);
+
+  // Pink-ish noise: bias toward lower frequencies
+  let b0 = 0, b1 = 0, b2 = 0;
   for (let i = 0; i < bufferSize; i++) {
-    data[i] = Math.random() * 2 - 1; // white noise
+    const white = Math.random() * 2 - 1;
+    b0 = 0.99886 * b0 + white * 0.0555179;
+    b1 = 0.99332 * b1 + white * 0.0750759;
+    b2 = 0.96900 * b2 + white * 0.1538520;
+    data[i] = (b0 + b1 + b2 + white * 0.5362) / 4.5;
   }
-  const noiseSource = ctx.createBufferSource();
-  noiseSource.buffer = buffer;
 
-  const bandpass = ctx.createBiquadFilter();
-  bandpass.type = 'bandpass';
-  bandpass.frequency.value = 1200; // Warmer, more mid-focused radio speaker frequency
-  bandpass.Q.value = 1.2;
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
 
-  const staticGain = ctx.createGain();
-  staticGain.gain.setValueAtTime(0.28, startTime); // Heavy, clear static presence
-  staticGain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+  // Layer 1: Radio speaker band (700–3500 Hz — classic walkie-talkie narrowband)
+  const hpf = ctx.createBiquadFilter();
+  hpf.type = 'highpass';
+  hpf.frequency.value = 700;
+  hpf.Q.value = 0.8;
 
-  noiseSource.connect(bandpass);
-  bandpass.connect(staticGain);
-  staticGain.connect(masterGain);
+  const lpf = ctx.createBiquadFilter();
+  lpf.type = 'lowpass';
+  lpf.frequency.value = 3200;
+  lpf.Q.value = 0.9;
 
-  noiseSource.start(startTime);
-  noiseSource.stop(startTime + duration);
+  // Layer 2: Presence boost at ~1.8kHz (radio mic resonance)
+  const presence = ctx.createBiquadFilter();
+  presence.type = 'peaking';
+  presence.frequency.value = 1800;
+  presence.Q.value = 1.5;
+  presence.gain.value = 5;
+
+  // Gain envelope: sharp attack, exponential decay
+  const gainNode = ctx.createGain();
+  gainNode.gain.setValueAtTime(0, startTime);
+  gainNode.gain.linearRampToValueAtTime(peakGain, startTime + 0.008);
+  gainNode.gain.setValueAtTime(peakGain, startTime + 0.015);
+  gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+
+  source.connect(hpf);
+  hpf.connect(lpf);
+  lpf.connect(presence);
+  presence.connect(gainNode);
+  gainNode.connect(dest);
+
+  source.start(startTime);
+  source.stop(startTime + duration);
 };
 
+/**
+ * Mechanical key-click + burst static: the physical sound of pressing a
+ * spring-loaded PTT button on an analog transceiver.
+ */
+const playPressSound = (ctx: AudioContext, masterGain: GainNode) => {
+  const t = ctx.currentTime;
+
+  // 1. Mechanical thump (low-freq body impact ~80Hz)
+  const thump = ctx.createOscillator();
+  const thumpEnv = ctx.createGain();
+  thump.type = 'sine';
+  thump.frequency.setValueAtTime(90, t);
+  thump.frequency.exponentialRampToValueAtTime(40, t + 0.06);
+  thumpEnv.gain.setValueAtTime(0, t);
+  thumpEnv.gain.linearRampToValueAtTime(0.55, t + 0.005);
+  thumpEnv.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+  thump.connect(thumpEnv);
+  thumpEnv.connect(masterGain);
+  thump.start(t);
+  thump.stop(t + 0.08);
+
+  // 2. Pre-chirp: rapid dual-tone sweep (classic trunking "bweeep")
+  const osc1 = ctx.createOscillator();
+  const osc2 = ctx.createOscillator();
+  const chirpEnv = ctx.createGain();
+  osc1.type = 'triangle';
+  osc2.type = 'square';
+
+  // Sweep up fast (like a fast DTMF or control channel burst)
+  osc1.frequency.setValueAtTime(820, t + 0.01);
+  osc1.frequency.linearRampToValueAtTime(1150, t + 0.065);
+  osc2.frequency.setValueAtTime(1100, t + 0.01);
+  osc2.frequency.linearRampToValueAtTime(1480, t + 0.065);
+
+  chirpEnv.gain.setValueAtTime(0, t + 0.01);
+  chirpEnv.gain.linearRampToValueAtTime(0.18, t + 0.022);
+  chirpEnv.gain.setValueAtTime(0.18, t + 0.055);
+  chirpEnv.gain.exponentialRampToValueAtTime(0.001, t + 0.085);
+
+  // Narrow bandpass filter on chirp for RF character
+  const chirpBP = ctx.createBiquadFilter();
+  chirpBP.type = 'bandpass';
+  chirpBP.frequency.value = 1200;
+  chirpBP.Q.value = 2.2;
+
+  osc1.connect(chirpEnv);
+  osc2.connect(chirpEnv);
+  chirpEnv.connect(chirpBP);
+  chirpBP.connect(masterGain);
+
+  osc1.start(t + 0.01);
+  osc2.start(t + 0.01);
+  osc1.stop(t + 0.1);
+  osc2.stop(t + 0.1);
+
+  // 3. RF static burst (channel open noise)
+  createRadioNoise(ctx, masterGain, 0.09, t + 0.04, 0.22);
+};
+
+/**
+ * Roger Beep + Squelch Tail: the unmistakable end-of-transmission signature
+ * of a classic Motorola/Kenwood HT transceiver.
+ *
+ * Sequence (timeline):
+ *   0.00s – Squelch tail bursts open (white noise + bandpass)
+ *   0.18s – Roger Beep tone 1 (1450 Hz, 85ms)
+ *   0.30s – Roger Beep tone 2 (1150 Hz, 85ms)
+ *   0.42s – Roger Beep tone 3 (1320 Hz, 75ms)
+ *   0.52s – Squelch tail collapses with hard gate click
+ */
+const playReleaseSound = (ctx: AudioContext, masterGain: GainNode) => {
+  const t = ctx.currentTime;
+
+  // ── Squelch Tail Open ──────────────────────────────────────────────
+  createRadioNoise(ctx, masterGain, 0.20, t, 0.32);
+
+  // ── Roger Beep Sequence ────────────────────────────────────────────
+  // Classic 3-tone Motorola roger: high → low → mid
+  const rogerTones = [
+    { freq: 1450, start: 0.20, dur: 0.085 },
+    { freq: 1150, start: 0.31, dur: 0.085 },
+    { freq: 1320, start: 0.42, dur: 0.075 },
+  ];
+
+  rogerTones.forEach(({ freq, start, dur }) => {
+    const osc = ctx.createOscillator();
+    const env = ctx.createGain();
+
+    // Slight harmonic distortion for RF warmth
+    const waveShaper = ctx.createWaveShaper();
+    const curve = new Float32Array(256);
+    for (let i = 0; i < 256; i++) {
+      const x = (i * 2) / 256 - 1;
+      curve[i] = x - (x * x * x) / 4; // soft clip
+    }
+    waveShaper.curve = curve;
+
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+
+    // Sharp ADSR: fast attack, sustain, fast decay
+    env.gain.setValueAtTime(0, t + start);
+    env.gain.linearRampToValueAtTime(0.52, t + start + 0.010);
+    env.gain.setValueAtTime(0.52, t + start + dur - 0.015);
+    env.gain.exponentialRampToValueAtTime(0.001, t + start + dur);
+
+    // Narrow bandpass to emulate radio speaker response
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = freq;
+    bp.Q.value = 8; // Tight Q for clear tone character
+
+    osc.connect(env);
+    env.connect(waveShaper);
+    waveShaper.connect(bp);
+    bp.connect(masterGain);
+
+    osc.start(t + start);
+    osc.stop(t + start + dur + 0.01);
+  });
+
+  // ── Squelch Tail Close ─────────────────────────────────────────────
+  // Brief crackle as channel gate slams shut after roger beep
+  createRadioNoise(ctx, masterGain, 0.06, t + 0.50, 0.18);
+
+  // Hard gate click (mechanical relay thud)
+  const gateClick = ctx.createOscillator();
+  const gateEnv = ctx.createGain();
+  gateClick.type = 'sine';
+  gateClick.frequency.setValueAtTime(60, t + 0.56);
+  gateClick.frequency.exponentialRampToValueAtTime(20, t + 0.60);
+  gateEnv.gain.setValueAtTime(0.35, t + 0.56);
+  gateEnv.gain.exponentialRampToValueAtTime(0.001, t + 0.61);
+  gateClick.connect(gateEnv);
+  gateEnv.connect(masterGain);
+  gateClick.start(t + 0.56);
+  gateClick.stop(t + 0.62);
+};
+
+// ─── Main Radio Sound Dispatcher ──────────────────────────────────────────────
 const playRadioSound = (
   type: 'press' | 'release',
   ctx: AudioContext,
@@ -50,66 +224,22 @@ const playRadioSound = (
 ) => {
   if (!toneOnStartEnd) return;
   try {
-    if (ctx.state === 'suspended') {
-      ctx.resume();
-    }
-    const gainNode = ctx.createGain();
-    gainNode.connect(ctx.destination);
-    gainNode.gain.value = 0.35 * (pttVolume / 100); // Scale volume dynamically
+    if (ctx.state === 'suspended') ctx.resume();
+
+    const masterGain = ctx.createGain();
+    masterGain.connect(ctx.destination);
+    masterGain.gain.value = Math.min(1.0, pttVolume / 100);
 
     if (type === 'press') {
-      // Authentic dual-tone metallic pre-chirp (vintage trunking tone)
-      const osc1 = ctx.createOscillator();
-      const osc2 = ctx.createOscillator();
-      const chirpGain = ctx.createGain();
-
-      osc1.type = 'sine';
-      osc2.type = 'sine';
-      osc1.frequency.setValueAtTime(950, ctx.currentTime);
-      osc2.frequency.setValueAtTime(1400, ctx.currentTime);
-
-      chirpGain.gain.setValueAtTime(0, ctx.currentTime);
-      chirpGain.gain.linearRampToValueAtTime(0.35, ctx.currentTime + 0.015);
-      chirpGain.gain.setValueAtTime(0.35, ctx.currentTime + 0.08);
-      chirpGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
-
-      osc1.connect(chirpGain);
-      osc2.connect(chirpGain);
-      chirpGain.connect(gainNode);
-
-      osc1.start(ctx.currentTime);
-      osc2.start(ctx.currentTime);
-      osc1.stop(ctx.currentTime + 0.15);
-      osc2.stop(ctx.currentTime + 0.15);
-
-      // Short microphone key click static hum
-      createStaticNoise(ctx, gainNode, 0.07, ctx.currentTime);
+      playPressSound(ctx, masterGain);
     } else {
-      // 1. Heavy squelch tail ("chhhkkk") on release
-      const squelchDuration = 0.22;
-      createStaticNoise(ctx, gainNode, squelchDuration, ctx.currentTime);
-
-      // 2. High-pitch Motorola-style Roger Beep tail
-      const osc = ctx.createOscillator();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(1380, ctx.currentTime + 0.15); // plays as squelch tail is ending
-
-      const beepGain = ctx.createGain();
-      beepGain.gain.setValueAtTime(0, ctx.currentTime + 0.15);
-      beepGain.gain.linearRampToValueAtTime(0.45, ctx.currentTime + 0.17); // sharp attack
-      beepGain.gain.setValueAtTime(0.45, ctx.currentTime + 0.26); // sustain
-      beepGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.33); // decay
-
-      osc.connect(beepGain);
-      beepGain.connect(gainNode);
-
-      osc.start(ctx.currentTime + 0.15);
-      osc.stop(ctx.currentTime + 0.35);
+      playReleaseSound(ctx, masterGain);
     }
   } catch (err) {
-    console.warn('Audio playback failed', err);
+    console.warn('PTT audio playback failed:', err);
   }
 };
+
 
 export function PTTButton({
   onPressStart,
