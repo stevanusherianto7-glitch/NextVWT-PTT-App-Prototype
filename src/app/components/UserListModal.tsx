@@ -524,12 +524,12 @@ function AvatarImage({
   if (hasError || !src) {
     return (
       <div
-        className="w-full h-full rounded-none flex items-center justify-center bg-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.4)] border border-white/20 p-0.5"
+        className="w-full h-full rounded-none flex items-center justify-center bg-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.4)] border border-white/20"
       >
         <img
           src={fallbackIconUrl}
           alt={displayName}
-          className="w-full h-full object-contain"
+          className="w-[65%] h-[65%] object-contain"
         />
       </div>
     );
