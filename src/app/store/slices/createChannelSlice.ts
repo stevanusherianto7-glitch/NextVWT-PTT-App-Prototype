@@ -24,8 +24,10 @@ export const createChannelSlice: StateCreator<
   channelId: getChannelUUID(BRAND.defaultChannel),
   channels: (() => {
     try {
-      const cached = localStorage.getItem('nextvwt:channels');
-      return cached ? JSON.parse(cached) : (CHANNELS as ChannelItem[]);
+      // Force ignore cache during testing to apply config.ts updates
+      // const cached = localStorage.getItem('nextvwt:channels');
+      // return cached ? JSON.parse(cached) : (CHANNELS as ChannelItem[]);
+      return CHANNELS as ChannelItem[];
     } catch {
       return CHANNELS as ChannelItem[];
     }

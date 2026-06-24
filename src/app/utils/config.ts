@@ -128,6 +128,10 @@ const BASE_CHANNELS: ChannelConfigItem[] = [
       'mock_wait_controlled',
       'mock_operator',
       'mock_guest',
+      'mock_test_1',
+      'mock_test_2',
+      'mock_test_3',
+      'mock_test_4',
     ],
   },
   {
