@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- NextVWT PTT App - Hardened Network Security Config -->
+<network-security-config>
+
+    <!-- ===== PRODUCTION: Strict pinning untuk Supabase ===== -->
+    <domain-config>
+        <domain includeSubdomains="true">supabase.co</domain>
+        <pin-set expiration="2028-01-01">
+            <!-- Let's Encrypt R3 Intermediate SPKI -->
+            <pin digest="SHA-256">jQlsT3JgSja1Ep8Cr+Y3OPa8/1AX5k+6Cym9e7yOtTE=</pin>
+            <!-- Let's Encrypt E1 Intermediate SPKI -->
+            <pin digest="SHA-256">VUYJtt22LlVzcG/UHMVQC4gWwE6s3Gvk7R108dOam18=</pin>
+            <!-- Cloudflare Inc ECC CA-3 SPKI -->
+            <pin digest="SHA-256">x4QzPSC8Tv7fJueURup4QWwBl8TfJ85Re5DsUUMvJNs=</pin>
+            <!-- ISRG Root X1 Root SPKI (Backup/Fallback) -->
+            <pin digest="SHA-256">C5+T0K+iauJHISAhArCwppbBHswiDJEIh7GDWSu3aKQ=</pin>
+        </pin-set>
+    </domain-config>
+
+    <!-- ===== DEBUG ONLY: Relaxed config untuk local development & emulators ===== -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">10.0.2.2</domain>
+        <domain includeSubdomains="true">192.168.1.0/24</domain>
+    </domain-config>
+
+    <!-- ===== GLOBAL: Block semua cleartext traffic lainnya ===== -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+
+</network-security-config>

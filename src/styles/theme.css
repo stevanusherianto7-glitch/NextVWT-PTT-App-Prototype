@@ -1,0 +1,960 @@
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 16px;
+  --background: #ffffff;
+  --foreground: oklch(0.145 0 0);
+  --card: #ffffff;
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: #030213;
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.95 0.0058 264.53);
+  --secondary-foreground: #030213;
+  --muted: #ececf0;
+  --muted-foreground: #717182;
+  --accent: #e9ebef;
+  --accent-foreground: #030213;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(0, 0, 0, 0.1);
+  --input: transparent;
+  --input-background: #f3f3f5;
+  --switch-background: #cbced4;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: #030213;
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.145 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.269 0 0);
+  --ring: oklch(0.439 0 0);
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family:
+      'Inter',
+      system-ui,
+      -apple-system,
+      sans-serif;
+  }
+
+  /**
+  * Default typography styles for HTML elements (h1-h4, p, label, button, input).
+  * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
+  */
+
+  html {
+    font-size: var(--font-size);
+  }
+
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    font-family: 'Outfit', 'Orbitron', system-ui, sans-serif;
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    font-family: 'Outfit', 'Orbitron', system-ui, sans-serif;
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    font-family: 'Outfit', 'Orbitron', system-ui, sans-serif;
+  }
+
+  h4 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    font-family: 'Outfit', 'Orbitron', system-ui, sans-serif;
+  }
+
+  label {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    font-family:
+      'Inter',
+      system-ui,
+      -apple-system,
+      sans-serif;
+  }
+
+  button {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    font-family: 'Outfit', 'Orbitron', system-ui, sans-serif;
+  }
+
+  input {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+    font-family:
+      'Inter',
+      system-ui,
+      -apple-system,
+      sans-serif;
+  }
+}
+
+/* Thin custom vertical scrollbar for all scrollable containers */
+::-webkit-scrollbar {
+  width: 1px;
+  height: 1px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Firefox support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.08) transparent;
+}
+
+/* Custom Toggle Switch for Settings Checkboxes (Uiverse.io scaling) */
+.settings-checkbox-input {
+  display: none;
+}
+
+.settings-toggle-switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 50px;
+  height: 25px;
+  background-color: rgb(199, 199, 199);
+  border-radius: 12.5px;
+  cursor: pointer;
+  transition-duration: 0.3s;
+  flex-shrink: 0;
+}
+
+.settings-toggle-switch::after {
+  content: '';
+  position: absolute;
+  height: 25px;
+  width: 25px;
+  left: 0px;
+  background: conic-gradient(
+    rgb(104, 104, 104),
+    white,
+    rgb(104, 104, 104),
+    white,
+    rgb(104, 104, 104)
+  );
+  border-radius: 50%;
+  transition-duration: 0.3s;
+  box-shadow: 2px 1px 3px rgba(8, 8, 8, 0.3);
+}
+
+.settings-checkbox-input:checked + .settings-toggle-switch::after {
+  transform: translateX(100%);
+  transition-duration: 0.3s;
+}
+
+/* Switch background change */
+.settings-checkbox-input:checked + .settings-toggle-switch {
+  background-color: #cbd5e1;
+  box-shadow:
+    0 0 8px rgba(255, 255, 255, 0.8),
+    inset 0 0 4px rgba(255, 255, 255, 0.5);
+  transition-duration: 0.3s;
+}
+
+/* PB Range Slider Design with Silver Glowing Thumbs */
+.PB-range-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 5px;
+  background: #d5dbe1;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: 0.2s;
+  transition: opacity 0.2s;
+}
+
+.PB-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    #f8fafc 10%,
+    #cbd5e1 25%,
+    #ffffff 45%,
+    #ffffff 48%,
+    #94a3b8 55%,
+    #475569 80%,
+    #0f172a 100%
+  );
+  border: 1px solid #475569;
+  box-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 1),
+    inset 0 -1.5px 2px rgba(0, 0, 0, 0.6),
+    0 3px 6px rgba(15, 23, 42, 0.4),
+    0 0 6px rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition:
+    transform 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
+}
+
+.PB-range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 1),
+    inset 0 -1.5px 2px rgba(0, 0, 0, 0.6),
+    0 4px 10px rgba(15, 23, 42, 0.5),
+    0 0 8px rgba(255, 255, 255, 0.95);
+}
+
+.PB-range-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    #f8fafc 10%,
+    #cbd5e1 25%,
+    #ffffff 45%,
+    #ffffff 48%,
+    #94a3b8 55%,
+    #475569 80%,
+    #0f172a 100%
+  );
+  border: 1px solid #475569;
+  box-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 1),
+    inset 0 -1.5px 2px rgba(0, 0, 0, 0.6),
+    0 3px 6px rgba(15, 23, 42, 0.4),
+    0 0 6px rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition:
+    transform 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
+}
+
+.PB-range-slider::-moz-range-thumb:hover {
+  transform: scale(1.1);
+  box-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 1),
+    inset 0 -1.5px 2px rgba(0, 0, 0, 0.6),
+    0 4px 10px rgba(15, 23, 42, 0.5),
+    0 0 8px rgba(255, 255, 255, 0.95);
+}
+
+.PB-range-slider-div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #c6cace;
+  box-shadow: 0px 1px 2px 0px #1f1e241f;
+}
+
+.PB-range-slidervalue {
+  font-weight: 600;
+  font-size: 11px;
+  color: #475569;
+  width: 2.25rem;
+  text-align: right;
+}
+
+/* Glass Crystal Design System Themes */
+
+/* Default / Classic / V2 variables mapped on :root */
+:root {
+  --device-bg: linear-gradient(to bottom, #d5dbe1 0%, #a4b0be 100%);
+  --device-shadow:
+    inset 0 3px 0 rgba(255, 255, 255, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 8px 15px rgba(0, 0, 0, 0.04), inset 0 -25px 50px rgba(0, 0, 0, 0.15),
+    inset 15px 0 30px rgba(0, 0, 0, 0.08), 0 15px 35px rgba(0, 0, 0, 0.18),
+    0 5px 15px rgba(0, 0, 0, 0.1);
+  --device-border: 1px solid #c8d1db;
+  --header-bg: linear-gradient(to bottom, #ffffff 0%, #f0f3f6 40%, #dee4ea 85%, #cbd4de 100%);
+  --header-border: 1px solid #a4b0be;
+  --header-shadow:
+    0 6px 12px -6px rgba(0, 0, 0, 0.25), 0 2px 4px -2px rgba(0, 0, 0, 0.15),
+    inset 0 -6px 8px -4px rgba(0, 0, 0, 0.35), inset 0 3px 5px rgba(255, 255, 255, 0.95),
+    0 0 1px rgba(255, 255, 255, 0.4);
+  --header-text-color: #030213;
+  --panel-bg: #f0f3f6;
+  --panel-border: 1px solid #dbe2e9;
+  --panel-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.22), 0 6px 15px rgba(0, 0, 0, 0.12), 0 -2px 4px rgba(0, 0, 0, 0.08),
+    inset 0 0 24px rgba(0, 0, 0, 0.2), inset 0 4px 8px rgba(0, 0, 0, 0.25),
+    inset 0 -6px 12px rgba(0, 0, 0, 0.18), inset 8px 0 12px rgba(0, 0, 0, 0.08),
+    inset -8px 0 12px rgba(0, 0, 0, 0.08);
+  --panel-blur: none;
+  --panel-text-color: #475569;
+  --lcd-bg: linear-gradient(to bottom, #ff9500 0%, #d87d00 100%);
+  --lcd-border-top: #f4d59a;
+  --lcd-border-right: #c2954f;
+  --lcd-border-bottom: #8c5d26;
+  --lcd-border-left: #e6ba70;
+  --lcd-glow:
+    2px 2px 4px rgba(0, 0, 0, 0.45),
+    inset 0 0 8px rgba(255, 255, 255, 0.3);
+  --lcd-text-color: #ffffff;
+  --lcd-label-color: #1a1a1a;
+  --ptt-bg-idle: linear-gradient(to bottom, #2cdb66 0%, #19ba42 100%);
+  --ptt-bg-active: linear-gradient(to bottom, #d62828 0%, #a01010 100%);
+  --ptt-border: 1px solid #149c35;
+  --ptt-border-active: 1px solid #730e0e;
+  --ptt-glow:
+    inset 0 4px 6px rgba(255, 255, 255, 0.85), inset 0 -3px 4px rgba(0, 0, 0, 0.2),
+    0 6px 12px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.1);
+  --ptt-glow-active:
+    inset 0 8px 12px rgba(0, 0, 0, 0.85), inset 0 -2px 3px rgba(0, 0, 0, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.15);
+  --dpad-bg: linear-gradient(to bottom, #ffffff, #e8ebf0);
+  --dpad-bg-start: #ffffff;
+  --dpad-bg-end: #e8ebf0;
+  --dpad-border: 1px solid #64748b;
+  --dpad-border-color: #64748b;
+  --dpad-bezel-highlight: rgba(255, 255, 255, 0.95);
+  --dpad-shadow:
+    inset 0 8px 12px rgba(255, 255, 255, 1), inset 0 -6px 12px rgba(0, 0, 0, 0.2),
+    inset 0 0 28px rgba(0, 0, 0, 0.32), 0 4px 8px rgba(0, 0, 0, 0.12);
+  --dpad-shadow-top-opacity: 1;
+  --dpad-shadow-bottom-color: #000000;
+  --dpad-shadow-bottom-opacity: 0.2;
+  --btn-bg: linear-gradient(to bottom, #4a4a4a 0%, #1a1a1a 100%);
+  --btn-border: 2px solid #000;
+  --btn-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 0.25), inset 0 -2px 4px rgba(0, 0, 0, 0.6),
+    0 4px 8px rgba(0, 0, 0, 0.45);
+  --rocker-bg: linear-gradient(to right, #2a2a2a, #1a1a1a);
+  --rocker-border: 2px solid #000;
+  --progress-bg: #f1f5f9;
+}
+
+/* Classic theme (Explicit) */
+.theme-classic {
+  /* Inherits from :root defaults */
+}
+
+/* V1: Glass Crystal V1 (Hybrid - Crystal chassis, solid plastic faceplate) */
+.theme-v1 {
+  --device-bg: linear-gradient(
+    135deg,
+    rgba(230, 239, 249, 0.95) 0%,
+    rgba(168, 197, 229, 0.95) 50%,
+    rgba(125, 162, 207, 0.95) 100%
+  );
+  --device-shadow:
+    inset 0 3px 0 rgba(255, 255, 255, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 10px 20px rgba(255, 255, 255, 0.9), inset 0 -15px 30px rgba(0, 0, 0, 0.18),
+    inset 10px 0 20px rgba(255, 255, 255, 0.55), inset -10px 0 20px rgba(0, 0, 0, 0.18),
+    0 15px 35px rgba(0, 0, 0, 0.15);
+  --device-border: 1px solid rgba(255, 255, 255, 0.75);
+  --header-bg: linear-gradient(to bottom, #ffffff 0%, #f0f3f6 40%, #dee4ea 85%, #cbd4de 100%);
+  --header-border: 1px solid #a4b0be;
+  --header-shadow:
+    0 6px 12px -6px rgba(0, 0, 0, 0.25), inset 0 -6px 8px -4px rgba(0, 0, 0, 0.35),
+    inset 0 3px 5px rgba(255, 255, 255, 0.95), 0 0 1px rgba(255, 255, 255, 0.4);
+  --header-text-color: #030213;
+  --panel-bg: #f0f3f6;
+  --panel-border: 1px solid #dbe2e9;
+  --panel-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.22), 0 6px 15px rgba(0, 0, 0, 0.12), 0 -2px 4px rgba(0, 0, 0, 0.08),
+    inset 0 0 24px rgba(0, 0, 0, 0.2), inset 0 4px 8px rgba(0, 0, 0, 0.25),
+    inset 0 -6px 12px rgba(0, 0, 0, 0.18);
+  --panel-blur: none;
+  --panel-text-color: #475569;
+  --lcd-bg: linear-gradient(to bottom, #ff9500 0%, #d87d00 100%);
+  --lcd-border-top: #f4d59a;
+  --lcd-border-right: #c2954f;
+  --lcd-border-bottom: #8c5d26;
+  --lcd-border-left: #e6ba70;
+  --lcd-glow:
+    2px 2px 4px rgba(0, 0, 0, 0.45);
+  --lcd-text-color: #ffffff;
+  --lcd-label-color: #1a1a1a;
+  --ptt-bg-idle: linear-gradient(to bottom, #2cdb66 0%, #19ba42 100%);
+  --ptt-bg-active: linear-gradient(to bottom, #d62828 0%, #a01010 100%);
+  --ptt-border: 1px solid #149c35;
+  --ptt-border-active: 1px solid #730e0e;
+  --ptt-glow:
+    inset 0 4px 6px rgba(255, 255, 255, 0.85), inset 0 -3px 4px rgba(0, 0, 0, 0.2),
+    0 6px 12px rgba(0, 0, 0, 0.25);
+  --ptt-glow-active: inset 0 8px 12px rgba(0, 0, 0, 0.85), inset 0 -2px 3px rgba(0, 0, 0, 0.3);
+  --dpad-bg: linear-gradient(to bottom, #ffffff, #e8ebf0);
+  --dpad-bg-start: #ffffff;
+  --dpad-bg-end: #e8ebf0;
+  --dpad-border: 1px solid #64748b;
+  --dpad-border-color: #64748b;
+  --dpad-bezel-highlight: rgba(255, 255, 255, 0.95);
+  --dpad-shadow:
+    inset 0 8px 12px rgba(255, 255, 255, 1), inset 0 -6px 12px rgba(0, 0, 0, 0.2),
+    inset 0 0 28px rgba(0, 0, 0, 0.32);
+  --dpad-shadow-top-opacity: 1;
+  --dpad-shadow-bottom-color: #000000;
+  --dpad-shadow-bottom-opacity: 0.2;
+  --btn-bg: linear-gradient(to bottom, #4a4a4a 0%, #1a1a1a 100%);
+  --btn-border: 2px solid #000;
+  --btn-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 0.25), inset 0 -2px 4px rgba(0, 0, 0, 0.6),
+    0 4px 8px rgba(0, 0, 0, 0.45);
+  --rocker-bg: linear-gradient(to right, #2a2a2a, #1a1a1a);
+  --rocker-border: 2px solid #000;
+  --progress-bg: #f1f5f9;
+}
+
+/* V2: Glass Crystal V2 (Premium Crystal - Full Crystal chassis & faceplate) */
+.theme-v2 {
+  --device-bg: linear-gradient(
+    135deg,
+    rgba(235, 244, 255, 0.9) 0%,
+    rgba(210, 228, 250, 0.8) 40%,
+    rgba(160, 195, 235, 0.8) 70%,
+    rgba(225, 238, 255, 0.85) 100%
+  );
+  --device-shadow:
+    /* Beveled edge facets (zero-blur highlights to simulate diamond-cut crystal) */
+    inset 4px 4px 0 rgba(255, 255, 255, 0.95), inset -4px -4px 0 rgba(100, 145, 195, 0.5),
+    /* Soft diffuse inner glow */ inset 0 30px 45px rgba(255, 255, 255, 0.95),
+    inset 0 -40px 50px rgba(125, 170, 215, 0.5),
+    /* Corner refractions */ inset 10px 0 20px rgba(255, 255, 255, 0.7),
+    inset -10px 0 20px rgba(100, 145, 195, 0.3),
+    /* Outer drop shadow and soft glass glow */ 0 15px 35px rgba(135, 175, 220, 0.38),
+    0 5px 15px rgba(255, 255, 255, 0.5), 0 0 1px rgba(255, 255, 255, 0.8);
+  --device-border: 1.5px solid rgba(255, 255, 255, 0.85);
+  --header-bg: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.75) 0%,
+    rgba(235, 242, 250, 0.45) 100%
+  );
+  --header-border: 1px solid rgba(255, 255, 255, 0.7);
+  --header-shadow:
+    0 4px 15px rgba(135, 175, 220, 0.15), inset 0 3px 5px rgba(255, 255, 255, 0.95),
+    0 0 1px rgba(255, 255, 255, 0.5);
+  --header-text-color: #0c264c;
+  --panel-bg: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(215, 230, 245, 0.25) 100%
+  );
+  --panel-border: 1.5px solid rgba(255, 255, 255, 0.85);
+  --panel-shadow:
+    0 25px 45px rgba(0, 0, 0, 0.12), 0 5px 15px rgba(0, 0, 0, 0.06),
+    inset 0 3px 6px rgba(0, 0, 0, 0.18), inset 0 -6px 10px rgba(0, 0, 0, 0.04);
+  --panel-blur: blur(20px);
+  --panel-text-color: #0c264c;
+  --lcd-bg: linear-gradient(to bottom, #ffa726 0%, #f57c00 100%);
+  --lcd-border-top: #ffe0b2;
+  --lcd-border-right: #ffb74d;
+  --lcd-border-bottom: #e65100;
+  --lcd-border-left: #ffe0b2;
+  --lcd-glow:
+    2px 2px 4px rgba(0, 0, 0, 0.35),
+    inset 0 0 10px rgba(255, 255, 255, 0.4);
+  --lcd-text-color: #ffffff;
+  --lcd-label-color: #ffffff;
+  --ptt-bg-idle: linear-gradient(180deg, #52e783 0%, #10b981 45%, #047857 100%);
+  --ptt-bg-active: linear-gradient(180deg, #f87171 0%, #ef4444 45%, #b91c1c 100%);
+  --ptt-border: 1.5px solid rgba(255, 255, 255, 0.5);
+  --ptt-border-active: 1.5px solid rgba(255, 255, 255, 0.3);
+  --ptt-glow:
+    inset 0 4px 6px rgba(255, 255, 255, 0.95), inset 0 -3px 4px rgba(0, 0, 0, 0.25),
+    0 4px 15px rgba(16, 185, 129, 0.55), 0 2px 6px rgba(0, 0, 0, 0.15);
+  --ptt-glow-active:
+    inset 0 8px 12px rgba(0, 0, 0, 0.85), inset 0 -2px 3px rgba(0, 0, 0, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.2);
+  --dpad-bg: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(205, 225, 250, 0.3) 100%
+  );
+  --dpad-bg-start: rgba(255, 255, 255, 0.55);
+  --dpad-bg-end: rgba(205, 225, 250, 0.3);
+  --dpad-border: 1.5px solid rgba(255, 255, 255, 0.85);
+  --dpad-border-color: rgba(255, 255, 255, 0.95);
+  --dpad-bezel-highlight: rgba(255, 255, 255, 0.95);
+  --dpad-shadow:
+    inset 0 5px 10px rgba(255, 255, 255, 0.95), inset 0 -5px 10px rgba(125, 170, 215, 0.4),
+    0 4px 8px rgba(135, 175, 220, 0.2);
+  --dpad-shadow-top-opacity: 0.95;
+  --dpad-shadow-bottom-color: #7da2cf;
+  --dpad-shadow-bottom-opacity: 0.3;
+  --btn-bg: linear-gradient(to bottom, #1e40af 0%, #1e3a8a 100%);
+  --btn-border: 1.5px solid rgba(255, 255, 255, 0.4);
+  --btn-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.4), inset 0 -2px 3px rgba(0, 0, 0, 0.5),
+    0 3px 6px rgba(0, 0, 0, 0.35);
+  --rocker-bg: linear-gradient(to right, #1d4ed8 0%, #1e3a8a 100%);
+  --rocker-border: 1.5px solid rgba(255, 255, 255, 0.4);
+  --progress-bg: rgba(30, 58, 138, 0.25);
+}
+
+/* V3: Glass Rounded (Soft Crystal) */
+.theme-v3 {
+  --device-bg: linear-gradient(
+    135deg,
+    rgba(224, 247, 250, 0.9) 0%,
+    rgba(178, 235, 242, 0.8) 40%,
+    rgba(77, 208, 225, 0.75) 70%,
+    rgba(224, 247, 250, 0.85) 100%
+  );
+  --device-shadow:
+    inset 0 3px 0 rgba(255, 255, 255, 0.85), inset 0 8px 20px rgba(255, 255, 255, 0.95),
+    inset 0 -12px 25px rgba(0, 184, 212, 0.25), inset 0 35px 50px rgba(255, 255, 255, 0.85),
+    inset 0 -45px 55px rgba(77, 208, 225, 0.48), inset 12px 0 24px rgba(255, 255, 255, 0.75),
+    inset -12px 0 24px rgba(0, 172, 193, 0.28), 0 15px 35px rgba(0, 180, 216, 0.28),
+    0 5px 15px rgba(255, 255, 255, 0.4);
+  --device-border: 1.5px solid rgba(255, 255, 255, 0.8);
+  --header-bg: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(178, 235, 242, 0.45) 100%
+  );
+  --header-border: 1px solid rgba(255, 255, 255, 0.7);
+  --header-shadow:
+    0 4px 15px rgba(0, 180, 216, 0.15), inset 0 3px 5px rgba(255, 255, 255, 0.95),
+    0 0 1px rgba(255, 255, 255, 0.5);
+  --header-text-color: #004d40;
+  --panel-bg: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(128, 222, 234, 0.25) 100%
+  );
+  --panel-border: 1.5px solid rgba(255, 255, 255, 0.85);
+  --panel-shadow:
+    0 25px 45px rgba(0, 180, 216, 0.12), inset 0 3px 6px rgba(0, 0, 0, 0.18),
+    inset 0 -6px 10px rgba(0, 184, 212, 0.1);
+  --panel-blur: blur(20px);
+  --panel-text-color: #004d40;
+  --lcd-bg: linear-gradient(to bottom, #00e5ff 0%, #00b0ff 100%);
+  --lcd-border-top: #e0f7fa;
+  --lcd-border-right: #80deea;
+  --lcd-border-bottom: #00acc1;
+  --lcd-border-left: #e0f7fa;
+  --lcd-glow:
+    2px 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 0 8px rgba(255, 255, 255, 0.4);
+  --lcd-text-color: #ffffff;
+  --lcd-label-color: #ffffff;
+  --ptt-bg-idle: linear-gradient(180deg, #00e5ff 0%, #00b0ff 45%, #2979ff 100%);
+  --ptt-bg-active: linear-gradient(180deg, #f50057 0%, #ff4081 45%, #c51162 100%);
+  --ptt-border: 1.5px solid rgba(255, 255, 255, 0.5);
+  --ptt-border-active: 1.5px solid rgba(255, 255, 255, 0.3);
+  --ptt-glow:
+    inset 0 4px 6px rgba(255, 255, 255, 0.95), inset 0 -3px 4px rgba(0, 0, 0, 0.2),
+    0 4px 15px rgba(0, 229, 255, 0.6);
+  --ptt-glow-active: inset 0 8px 12px rgba(0, 0, 0, 0.85), inset 0 -2px 3px rgba(0, 0, 0, 0.25);
+  --dpad-bg: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(128, 222, 234, 0.3) 100%
+  );
+  --dpad-bg-start: rgba(255, 255, 255, 0.55);
+  --dpad-bg-end: rgba(128, 222, 234, 0.3);
+  --dpad-border: 1.5px solid rgba(255, 255, 255, 0.85);
+  --dpad-border-color: rgba(255, 255, 255, 0.95);
+  --dpad-bezel-highlight: rgba(255, 255, 255, 0.95);
+  --dpad-shadow:
+    inset 0 5px 10px rgba(255, 255, 255, 0.95), inset 0 -5px 10px rgba(0, 184, 212, 0.3);
+  --dpad-shadow-top-opacity: 0.95;
+  --dpad-shadow-bottom-color: #00acc1;
+  --dpad-shadow-bottom-opacity: 0.3;
+  --btn-bg: linear-gradient(to bottom, #00838f 0%, #004d40 100%);
+  --btn-border: 1.5px solid rgba(255, 255, 255, 0.4);
+  --btn-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.4), inset 0 -2px 3px rgba(0, 0, 0, 0.5),
+    0 3px 6px rgba(0, 0, 0, 0.35);
+  --rocker-bg: linear-gradient(to right, #00838f 0%, #004d40 100%);
+  --rocker-border: 1.5px solid rgba(255, 255, 255, 0.4);
+  --progress-bg: rgba(255, 255, 255, 0.35);
+}
+
+/* V4: Dark Glass (Smoked Crystal) */
+.theme-v4 {
+  --device-bg: linear-gradient(
+    135deg,
+    rgba(38, 50, 56, 0.95) 0%,
+    rgba(20, 27, 30, 0.9) 40%,
+    rgba(8, 12, 14, 0.95) 70%,
+    rgba(38, 50, 56, 0.93) 100%
+  );
+  --device-shadow:
+    inset 0 3px 0 rgba(255, 255, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 25px 40px rgba(255, 255, 255, 0.1), inset 0 -35px 50px rgba(0, 0, 0, 0.92),
+    inset 8px 0 16px rgba(255, 255, 255, 0.08), inset -8px 0 16px rgba(0, 0, 0, 0.75),
+    0 15px 35px rgba(0, 0, 0, 0.55), 0 0 25px rgba(57, 255, 20, 0.18);
+  --device-border: 1.5px solid rgba(255, 255, 255, 0.15);
+  --header-bg: linear-gradient(to bottom, rgba(38, 50, 56, 0.85) 0%, rgba(16, 23, 26, 0.95) 100%);
+  --header-border: 1px solid rgba(0, 230, 70, 0.3);
+  --header-shadow: 0 4px 15px rgba(0, 0, 0, 0.35), inset 0 2px 3px rgba(255, 255, 255, 0.15);
+  --header-text-color: #ffffff;
+  --panel-bg: linear-gradient(135deg, rgba(38, 50, 56, 0.75) 0%, rgba(16, 23, 26, 0.85) 100%);
+  --panel-border: 1.5px solid rgba(0, 230, 70, 0.4);
+  --panel-shadow:
+    0 25px 45px rgba(0, 0, 0, 0.45), inset 0 3px 6px rgba(0, 0, 0, 0.45),
+    inset 0 -6px 12px rgba(0, 0, 0, 0.5), 0 0 20px rgba(57, 255, 20, 0.18);
+  --panel-blur: blur(16px);
+  --panel-text-color: #a7f3d0;
+  --lcd-bg: linear-gradient(to bottom, #00c853 0%, #007c31 100%);
+  --lcd-border-top: #a7f3d0;
+  --lcd-border-right: #059669;
+  --lcd-border-bottom: #064e3b;
+  --lcd-border-left: #34d399;
+  --lcd-glow:
+    2px 2px 4px rgba(0, 0, 0, 0.55),
+    inset 0 0 8px rgba(57, 255, 20, 0.3);
+  --lcd-text-color: #ffffff;
+  --lcd-label-color: #ffffff;
+  --ptt-bg-idle: linear-gradient(180deg, #39ff14 0%, #00e64d 45%, #00a330 100%);
+  --ptt-bg-active: linear-gradient(180deg, #ff3d00 0%, #d50000 45%, #900000 100%);
+  --ptt-border: 1.5px solid rgba(255, 255, 255, 0.2);
+  --ptt-border-active: 1.5px solid rgba(255, 255, 255, 0.1);
+  --ptt-glow:
+    inset 0 3px 6px rgba(255, 255, 255, 0.45), inset 0 -2px 3px rgba(0, 0, 0, 0.3),
+    0 4px 15px rgba(57, 255, 20, 0.65);
+  --ptt-glow-active: inset 0 8px 12px rgba(0, 0, 0, 0.85), inset 0 -2px 3px rgba(0, 0, 0, 0.25);
+  --dpad-bg: linear-gradient(to bottom, rgba(38, 50, 56, 0.8) 0%, rgba(16, 23, 26, 0.9) 100%);
+  --dpad-bg-start: rgba(38, 50, 56, 0.8);
+  --dpad-bg-end: rgba(16, 23, 26, 0.9);
+  --dpad-border: 1.5px solid rgba(0, 230, 70, 0.45);
+  --dpad-border-color: rgba(0, 230, 70, 0.45);
+  --dpad-bezel-highlight: rgba(57, 255, 20, 0.35);
+  --dpad-shadow: inset 0 3px 6px rgba(255, 255, 255, 0.2), inset 0 -5px 10px rgba(0, 0, 0, 0.75);
+  --dpad-shadow-top-opacity: 0.25;
+  --dpad-shadow-bottom-color: #000000;
+  --dpad-shadow-bottom-opacity: 0.65;
+  --btn-bg: linear-gradient(to bottom, #065f46 0%, #064e3b 100%);
+  --btn-border: 1.5px solid rgba(57, 255, 20, 0.45);
+  --btn-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.25), inset 0 -2px 3px rgba(0, 0, 0, 0.6),
+    0 3px 6px rgba(0, 0, 0, 0.55);
+  --rocker-bg: linear-gradient(to right, #065f46 0%, #064e3b 100%);
+  --rocker-border: 1.5px solid rgba(57, 255, 20, 0.45);
+  --progress-bg: rgba(0, 0, 0, 0.55);
+}
+
+/* V5: Aurora Glass (Color Crystal) */
+.theme-v5 {
+  --device-bg: linear-gradient(
+    135deg,
+    rgba(243, 229, 245, 0.95) 0%,
+    rgba(206, 147, 216, 0.85) 40%,
+    rgba(171, 71, 188, 0.8) 70%,
+    rgba(243, 229, 245, 0.9) 100%
+  );
+  --device-shadow:
+    inset 0 3px 0 rgba(255, 255, 255, 0.85), inset 0 6px 0 rgba(255, 255, 255, 0.9),
+    inset -4px -4px 0 rgba(142, 36, 170, 0.38), inset 0 25px 40px rgba(255, 255, 255, 0.78),
+    inset 0 -35px 50px rgba(142, 36, 170, 0.48), inset 8px 0 18px rgba(255, 255, 255, 0.68),
+    inset -8px 0 18px rgba(106, 27, 154, 0.35), 0 15px 35px rgba(224, 64, 251, 0.35),
+    0 5px 15px rgba(255, 255, 255, 0.4);
+  --device-border: 1.5px solid rgba(255, 255, 255, 0.8);
+  --header-bg: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(206, 147, 216, 0.5) 100%
+  );
+  --header-border: 1px solid rgba(255, 255, 255, 0.65);
+  --header-shadow:
+    0 4px 15px rgba(224, 64, 251, 0.15), inset 0 3px 5px rgba(255, 255, 255, 0.95),
+    0 0 1px rgba(255, 255, 255, 0.5);
+  --header-text-color: #4a148c;
+  --panel-bg: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(206, 147, 216, 0.25) 50%,
+    rgba(224, 64, 251, 0.2) 100%
+  );
+  --panel-border: 1.5px solid rgba(255, 255, 255, 0.85);
+  --panel-shadow:
+    0 25px 45px rgba(224, 64, 251, 0.18), inset 0 3px 6px rgba(0, 0, 0, 0.18),
+    inset 0 -6px 10px rgba(186, 104, 200, 0.1);
+  --panel-blur: blur(20px);
+  --panel-text-color: #4a148c;
+  --lcd-bg: linear-gradient(to bottom, #ff4081 0%, #e040fb 100%);
+  --lcd-border-top: #f8bbd0;
+  --lcd-border-right: #ec407a;
+  --lcd-border-bottom: #c2185b;
+  --lcd-border-left: #f48fb1;
+  --lcd-glow:
+    2px 2px 4px rgba(0, 0, 0, 0.35),
+    inset 0 0 8px rgba(255, 255, 255, 0.4);
+  --lcd-text-color: #ffffff;
+  --lcd-label-color: #ffffff;
+  --ptt-bg-idle: linear-gradient(180deg, #e040fb 0%, #aa00ff 45%, #7000c0 100%);
+  --ptt-bg-active: linear-gradient(180deg, #ff4081 0%, #f50057 45%, #c51162 100%);
+  --ptt-border: 1.5px solid rgba(255, 255, 255, 0.5);
+  --ptt-border-active: 1.5px solid rgba(255, 255, 255, 0.3);
+  --ptt-glow:
+    inset 0 4px 6px rgba(255, 255, 255, 0.95), inset 0 -3px 4px rgba(0, 0, 0, 0.2),
+    0 4px 15px rgba(224, 64, 251, 0.55);
+  --ptt-glow-active: inset 0 8px 12px rgba(0, 0, 0, 0.85), inset 0 -2px 3px rgba(0, 0, 0, 0.25);
+  --dpad-bg: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(206, 147, 216, 0.3) 100%
+  );
+  --dpad-bg-start: rgba(255, 255, 255, 0.55);
+  --dpad-bg-end: rgba(206, 147, 216, 0.3);
+  --dpad-border: 1.5px solid rgba(255, 255, 255, 0.85);
+  --dpad-border-color: rgba(255, 255, 255, 0.95);
+  --dpad-bezel-highlight: rgba(255, 255, 255, 0.95);
+  --dpad-shadow:
+    inset 0 5px 10px rgba(255, 255, 255, 0.95), inset 0 -5px 10px rgba(186, 104, 200, 0.3);
+  --dpad-shadow-top-opacity: 0.95;
+  --dpad-shadow-bottom-color: #ba68c8;
+  --dpad-shadow-bottom-opacity: 0.3;
+  --btn-bg: linear-gradient(to bottom, #d81b60 0%, #880e4f 100%);
+  --btn-border: 1.5px solid rgba(255, 255, 255, 0.4);
+  --btn-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.4), inset 0 -2px 3px rgba(0, 0, 0, 0.5),
+    0 3px 6px rgba(0, 0, 0, 0.35);
+  --rocker-bg: linear-gradient(to right, #d81b60 0%, #880e4f 100%);
+  --rocker-border: 1.5px solid rgba(255, 255, 255, 0.4);
+  --progress-bg: rgba(255, 255, 255, 0.35);
+}
+
+/* V6: Glass Crystal V6 (Live Aquarium) */
+.theme-v6 {
+  --device-bg: linear-gradient(135deg, #03045e 0%, #0077b6 50%, #0096c7 100%);
+  --device-shadow:
+    inset 0 3px 0 rgba(255, 255, 255, 0.45), inset 0 10px 20px rgba(255, 255, 255, 0.45),
+    inset 0 -15px 30px rgba(0, 0, 0, 0.45), 0 15px 30px rgba(0, 0, 0, 0.35);
+  --device-border: 1px solid rgba(0, 180, 216, 0.55);
+  --header-bg: linear-gradient(to bottom, rgba(3, 4, 94, 0.65) 0%, rgba(0, 119, 182, 0.35) 100%);
+  --header-border: 1px solid rgba(0, 180, 216, 0.45);
+  --header-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), inset 0 2px 3px rgba(255, 255, 255, 0.25);
+  --header-text-color: #90e0ef;
+  --panel-bg: linear-gradient(
+    135deg,
+    rgba(3, 4, 94, 0.5) 0%,
+    rgba(0, 119, 182, 0.25) 50%,
+    rgba(0, 180, 216, 0.4) 100%
+  );
+  --panel-border: 1px solid rgba(0, 180, 216, 0.55);
+  --panel-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.35), inset 0 3px 6px rgba(0, 0, 0, 0.25),
+    inset 0 -5px 10px rgba(0, 0, 0, 0.15);
+  --panel-blur: blur(12px);
+  --panel-text-color: #caf0f8;
+  --lcd-bg: linear-gradient(to bottom, #03045e 0%, #023e8a 100%);
+  --lcd-border-top: #0077b6;
+  --lcd-border-right: #0096c7;
+  --lcd-border-bottom: #03045e;
+  --lcd-border-left: #0077b6;
+  --lcd-glow:
+    2px 2px 4px rgba(0, 0, 0, 0.35),
+    inset 0 0 8px rgba(0, 0, 0, 0.4);
+  --lcd-text-color: #ffffff;
+  --lcd-label-color: #90e0ef;
+  --ptt-bg-idle: linear-gradient(to bottom, #0096c7 0%, #0077b6 100%);
+  --ptt-bg-active: linear-gradient(to bottom, #d62828 0%, #a01010 100%);
+  --ptt-border: 1px solid #0077b6;
+  --ptt-border-active: 1px solid #730e0e;
+  --ptt-glow:
+    inset 0 3px 6px rgba(255, 255, 255, 0.85), inset 0 -2px 3px rgba(0, 0, 0, 0.2),
+    0 4px 10px rgba(0, 180, 216, 0.45);
+  --ptt-glow-active: inset 0 8px 12px rgba(0, 0, 0, 0.85), inset 0 -2px 3px rgba(0, 0, 0, 0.25);
+  --dpad-bg: linear-gradient(to bottom, rgba(255, 255, 255, 0.3) 0%, rgba(0, 119, 182, 0.15) 100%);
+  --dpad-bg-start: rgba(255, 255, 255, 0.3);
+  --dpad-bg-end: rgba(0, 119, 182, 0.15);
+  --dpad-border: 1px solid rgba(0, 180, 216, 0.65);
+  --dpad-border-color: rgba(0, 180, 216, 0.65);
+  --dpad-bezel-highlight: rgba(255, 255, 255, 0.65);
+  --dpad-shadow:
+    inset 0 6px 10px rgba(255, 255, 255, 0.55), inset 0 -4px 8px rgba(0, 0, 0, 0.15),
+    inset 0 0 20px rgba(0, 0, 0, 0.08);
+  --dpad-shadow-top-opacity: 0.55;
+  --dpad-shadow-bottom-color: rgb(0, 119, 182);
+  --dpad-shadow-bottom-opacity: 0.2;
+  --btn-bg: linear-gradient(to bottom, #0077b6 0%, #03045e 100%);
+  --btn-border: 1px solid rgba(0, 180, 216, 0.45);
+  --btn-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 0.3), inset 0 -2px 4px rgba(0, 0, 0, 0.6),
+    0 4px 8px rgba(0, 180, 216, 0.25);
+  --rocker-bg: linear-gradient(to right, #023e8a, #03045e);
+  --rocker-border: 1px solid rgba(0, 180, 216, 0.35);
+  --progress-bg: rgba(0, 0, 0, 0.25);
+}
+
+/* Monokrom (Legacy retro LCD) */
+.theme-monokrom {
+  --device-bg: linear-gradient(to bottom, #f1f5f9 0%, #cbd5e1 100%);
+  --device-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -10px 20px rgba(0, 0, 0, 0.05),
+    0 4px 12px rgba(0, 0, 0, 0.05);
+  --device-border: 1px solid #cbd5e1;
+  --header-bg: linear-gradient(to bottom, #f8fafc, #f1f5f9);
+  --header-border: 1px solid #cbd5e1;
+  --header-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  --header-text-color: #0f172a;
+  --panel-bg: linear-gradient(to bottom, #f8fafc, #f1f5f9);
+  --panel-border: 1px solid #cbd5e1;
+  --panel-shadow: none;
+  --panel-blur: none;
+  --panel-text-color: #334155;
+  --lcd-bg: linear-gradient(to bottom, #94a3b8 0%, #64748b 100%);
+  --lcd-border-top: #cbd5e1;
+  --lcd-border-right: #475569;
+  --lcd-border-bottom: #1e293b;
+  --lcd-border-left: #94a3b8;
+  --lcd-glow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  --lcd-text-color: #ffffff;
+  --lcd-label-color: #1a1a1a;
+  --ptt-bg-idle: linear-gradient(to bottom, #64748b 0%, #475569 100%);
+  --ptt-bg-active: linear-gradient(to bottom, #334155 0%, #0f172a 100%);
+  --ptt-border: 1px solid #475569;
+  --ptt-border-active: 1px solid #0f172a;
+  --ptt-glow: inset 0 3px 6px rgba(255, 255, 255, 0.5), 0 4px 6px rgba(0, 0, 0, 0.15);
+  --ptt-glow-active: inset 0 8px 12px rgba(0, 0, 0, 0.85);
+  --dpad-bg: linear-gradient(to bottom, #f8fafc, #cbd5e1);
+  --dpad-bg-start: #f8fafc;
+  --dpad-bg-end: #cbd5e1;
+  --dpad-border: 1px solid #475569;
+  --dpad-border-color: #475569;
+  --dpad-bezel-highlight: rgba(255, 255, 255, 0.9);
+  --dpad-shadow: none;
+  --dpad-shadow-top-opacity: 0;
+  --dpad-shadow-bottom-color: #000000;
+  --dpad-shadow-bottom-opacity: 0;
+  --btn-bg: linear-gradient(to bottom, #64748b, #334155);
+  --btn-border: 1px solid #475569;
+  --btn-shadow: none;
+  --rocker-bg: linear-gradient(to right, #334155, #1e293b);
+  --rocker-border: 1px solid #475569;
+  --progress-bg: #e2e8f0;
+}
+
+/* Uniform Modal Sizing (based on UserListModal) */
+.app-uniform-modal {
+  width: 100% !important;
+  max-width: 340px !important;
+  height: 400px !important;
+}
+@media (min-height: 700px) {
+  .app-uniform-modal {
+    height: 535px !important;
+  }
+}

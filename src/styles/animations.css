@@ -1,0 +1,104 @@
+@keyframes signalRadiate {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.logo-transmitting {
+  animation: signalRadiate 1.5s ease-in-out infinite;
+}
+
+.logo-transmitting-bg {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-transmitting-bg::before,
+.logo-transmitting-bg::after,
+.logo-transmitting-bg .extra-ripple {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  border: 3px solid rgba(0, 255, 102, 0);
+  box-shadow: 0 0 0 rgba(0, 255, 102, 0);
+  animation: radialSignal 1.5s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+}
+
+.logo-transmitting-bg::after {
+  animation-delay: 0.5s;
+}
+
+.logo-transmitting-bg .extra-ripple {
+  animation-delay: 1s;
+}
+
+@keyframes radialSignal {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    border-color: rgba(0, 255, 102, 1);
+    border-width: 4px;
+    box-shadow:
+      0 0 12px rgba(0, 255, 102, 0.8),
+      inset 0 0 8px rgba(0, 255, 102, 0.6);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.5);
+    border-color: rgba(0, 255, 102, 0);
+    border-width: 1px;
+    box-shadow:
+      0 0 20px rgba(0, 255, 102, 0),
+      inset 0 0 20px rgba(0, 255, 102, 0);
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 8s linear infinite;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) translateX(0) scale(0.6);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(-10px) translateX(2px) scale(1.1);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(-40px) translateX(-5px) scale(1);
+  }
+  100% {
+    transform: translateY(-55px) translateX(2px) scale(0.95);
+    opacity: 0;
+  }
+}
+
+.animate-float-up {
+  animation: floatUp 4.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}

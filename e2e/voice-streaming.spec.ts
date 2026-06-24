@@ -1,0 +1,211 @@
+/**
+ * e2e/voice-streaming.spec.ts
+ * NextVWT – Real-time Voice Streaming E2E Tests
+ */
+import { test, expect } from '@playwright/test';
+
+test.describe('Real-time Voice Streaming & Delivery', () => {
+  test('should record audio chunks from microphone and broadcast them to channel peers', async ({
+    browser,
+  }) => {
+    // 1. Instantiate browser contexts with microphone permissions granted
+    const contextAlfa = await browser.newContext({ permissions: ['microphone'] });
+    const pageAlfa = await contextAlfa.newPage();
+    pageAlfa.on('console', (msg) => console.log('PAGE ALFA LOG:', msg.text()));
+
+    const contextBeta = await browser.newContext({ permissions: ['microphone'] });
+    const pageBeta = await contextBeta.newPage();
+    pageBeta.on('console', (msg) => console.log('PAGE BETA LOG:', msg.text()));
+
+    // 2. Open pages and bypass login and feedback modal
+    await pageAlfa.addInitScript(() => {
+      window.localStorage.setItem('nextvwt_settings', JSON.stringify({
+        hasCompletedOnboarding: true,
+        lastFeedbackTime: Date.now(),
+      }));
+    });
+    await pageAlfa.goto('/');
+
+    await pageBeta.addInitScript(() => {
+      window.localStorage.setItem('nextvwt_settings', JSON.stringify({
+        hasCompletedOnboarding: true,
+        lastFeedbackTime: Date.now(),
+      }));
+    });
+    await pageBeta.goto('/');
+    const guestBtnAlfa = pageAlfa.locator('button:has-text("Masuk sebagai Tamu")');
+    await guestBtnAlfa.waitFor({ state: 'visible', timeout: 5000 });
+    await guestBtnAlfa.click();
+
+    const guestBtnBeta = pageBeta.locator('button:has-text("Masuk sebagai Tamu")');
+    await guestBtnBeta.waitFor({ state: 'visible', timeout: 5000 });
+    await guestBtnBeta.click();
+
+    // 3. Set display names to ensure they can identify each other
+    await pageAlfa.click('button:has-text("SET")');
+    const nameInputAlfa = pageAlfa.locator('input[type="text"]').first();
+    await nameInputAlfa.clear();
+    await nameInputAlfa.fill('Speaker Alfa');
+    await pageAlfa.click('button:has-text("Simpan")');
+
+    await pageBeta.click('button:has-text("SET")');
+    const nameInputBeta = pageBeta.locator('input[type="text"]').first();
+    await nameInputBeta.clear();
+    await nameInputBeta.fill('Listener Beta');
+    await pageBeta.click('button:has-text("Simpan")');
+
+    // Set channel to a normal non-isolated channel (Channel 16) for both users to allow network broadcasting to be tested
+    await pageAlfa.evaluate(() => (window as any).__store__.getState().setChannelNumber(16));
+    await pageBeta.evaluate(() => (window as any).__store__.getState().setChannelNumber(16));
+
+    // Retrieve User IDs
+    const userIdAlfa = await pageAlfa.evaluate(() => (window as any).__store__.getState().userId);
+    const userIdBeta = await pageBeta.evaluate(() => (window as any).__store__.getState().userId);
+
+    // 4. Inject presence metadata to sync them into the channel
+    await pageAlfa.evaluate((betaId) => {
+      const store = (window as any).__store__;
+      if (store) {
+        store.setState({
+          activeUsers: [
+            {
+              userId: store.getState().userId,
+              displayName: 'Speaker Alfa',
+              callSign: 'ALFA',
+              location: 'ALFA',
+            },
+            { userId: betaId, displayName: 'Listener Beta', callSign: 'BETA', location: 'BETA' },
+          ],
+        });
+      }
+    }, userIdBeta);
+
+    await pageBeta.evaluate((alfaId) => {
+      const store = (window as any).__store__;
+      if (store) {
+        store.setState({
+          activeUsers: [
+            {
+              userId: store.getState().userId,
+              displayName: 'Listener Beta',
+              callSign: 'BETA',
+              location: 'BETA',
+            },
+            { userId: alfaId, displayName: 'Speaker Alfa', callSign: 'ALFA', location: 'ALFA' },
+          ],
+        });
+      }
+    }, userIdAlfa);
+
+    // 5. Mock getUserMedia to return a real synthetic Web Audio destination stream
+    const mockUserMediaScript = () => {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const ctx = new AudioContextClass();
+      const dest = ctx.createMediaStreamDestination();
+      const osc = ctx.createOscillator();
+      osc.connect(dest);
+      osc.start();
+      
+      ctx.resume().catch(() => {});
+
+      navigator.mediaDevices.getUserMedia = async () => {
+        return dest.stream;
+      };
+
+      // Mock MediaRecorder to bypass NotSupportedError in headless Chromium with synthetic streams
+      class MockMediaRecorder {
+        stream: MediaStream;
+        ondataavailable: ((e: any) => void) | null = null;
+        intervalId: any = null;
+        constructor(stream: MediaStream) {
+          this.stream = stream;
+        }
+        start(timeslice: number) {
+          this.intervalId = setInterval(() => {
+            if (this.ondataavailable) {
+              this.ondataavailable({ data: new Blob(["dummy audio data"], { type: "audio/webm" }) });
+            }
+          }, timeslice || 250);
+        }
+        stop() {
+          if (this.intervalId) clearInterval(this.intervalId);
+        }
+      }
+      window.MediaRecorder = MockMediaRecorder as any;
+    };
+
+    await pageAlfa.evaluate(mockUserMediaScript);
+    await pageBeta.evaluate(mockUserMediaScript);
+
+    // Set up interceptor/spy for voice chunk broadcast on Alfa
+    await pageAlfa.evaluate(() => {
+      (window as any).recordedVoiceChunks = [];
+      const store = (window as any).__store__;
+      const originalBroadcast = store.getState().broadcastVoiceChunk;
+      store.getState().broadcastVoiceChunk = (base64: string) => {
+        (window as any).recordedVoiceChunks.push(base64);
+        originalBroadcast(base64);
+      };
+    });
+
+    // Set up spy for voice chunk reception on Beta
+    await pageBeta.evaluate(() => {
+      (window as any).receivedVoiceChunks = [];
+      const store = (window as any).__store__;
+
+      // Override setOnVoiceChunkReceived to capture chunks when they arrive
+      const originalSet = store.getState().setOnVoiceChunkReceived;
+      store.getState().setOnVoiceChunkReceived = (callback: any) => {
+        const wrappedCallback = (base64: string) => {
+          (window as any).receivedVoiceChunks.push(base64);
+          if (callback) callback(base64);
+        };
+        originalSet(wrappedCallback);
+      };
+    });
+
+    // 6. Disable Toggle PTT (enable Hold-to-Talk) for Speaker Alfa
+    await pageAlfa.click('button:has-text("SET")');
+    await pageAlfa.click('label[for="toggle-togglePtt"]');
+    await pageAlfa.click('button:has-text("Simpan")');
+
+    // 7. Simulating User Alfa speaking by starting PTT transmission via store
+    await pageAlfa.evaluate(() => (window as any).__store__.getState().setTransmitting(true));
+    await pageAlfa.waitForTimeout(1500);
+
+    // Stop PTT transmission via store
+    await pageAlfa.evaluate(() => (window as any).__store__.getState().setTransmitting(false));
+    await pageAlfa.waitForTimeout(500);
+
+    // 8. Assertions: check if chunks were recorded on User Alfa
+    const recordedChunksCount = await pageAlfa.evaluate(
+      () => (window as any).recordedVoiceChunks.length
+    );
+    expect(recordedChunksCount).toBeGreaterThan(0);
+
+    // 9. Assertions: check if chunks were received on User Beta
+    // Wait up to 3 seconds for WebSocket transmission to finish delivering to Beta
+    await expect
+      .poll(
+        async () => {
+          return await pageBeta.evaluate(() => (window as any).receivedVoiceChunks.length);
+        },
+        {
+          intervals: [200, 500],
+          timeout: 3000,
+        }
+      )
+      .toBeGreaterThan(0);
+
+    // Confirm that the received chunk on Beta matches a Base64 format string
+    const sampleReceivedChunk = await pageBeta.evaluate(
+      () => (window as any).receivedVoiceChunks[0]
+    );
+    expect(sampleReceivedChunk).not.toBeNull();
+    expect(sampleReceivedChunk).toMatch(/^[A-Za-z0-9+/=]+$/);
+
+    // Close contexts
+    await contextAlfa.close();
+    await contextBeta.close();
+  });
+});
