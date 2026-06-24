@@ -45,6 +45,9 @@ export function QuickActionDock({
     { kind: 'confetti', emoji: '🎉' },
     { kind: 'bart', emoji: '🛹' },
     { kind: 'fox', emoji: '🦊' },
+    { kind: 'rocket', emoji: '🚀' },
+    { kind: 'lightning', emoji: '⚡' },
+    { kind: 'star3d', emoji: '🌟' },
   ];
 
   const soundReactions = [

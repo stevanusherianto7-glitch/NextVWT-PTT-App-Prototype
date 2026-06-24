@@ -901,6 +901,69 @@ export function RadioLayout() {
                             );
                           }
 
+                          if (r.reaction === 'rocket') {
+                            return (
+                              <div
+                                key={r.id}
+                                className="absolute bottom-0 -translate-x-1/2 w-[80px] h-[80px] flex items-center justify-center"
+                                style={{ left: `${r.x}%` }}
+                              >
+                                <div className="animate-rocket-launch w-full h-full flex items-center justify-center">
+                                  <span
+                                    className="text-[52px] select-none"
+                                    style={{
+                                      display: 'inline-block',
+                                      animation: 'rocket3d 4s ease-out forwards',
+                                      filter: 'drop-shadow(0 0 10px rgba(255,140,0,0.9)) drop-shadow(0 6px 12px rgba(0,0,0,0.5))',
+                                    }}
+                                  >🚀</span>
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          if (r.reaction === 'lightning') {
+                            return (
+                              <div
+                                key={r.id}
+                                className="absolute bottom-0 -translate-x-1/2 w-[70px] h-[100px] flex items-center justify-center"
+                                style={{ left: `${r.x}%` }}
+                              >
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <span
+                                    className="text-[58px] select-none"
+                                    style={{
+                                      display: 'inline-block',
+                                      animation: 'lightning3d 4s ease-out forwards',
+                                      filter: 'drop-shadow(0 0 16px rgba(255,255,60,1)) drop-shadow(0 0 32px rgba(255,200,0,0.7))',
+                                    }}
+                                  >⚡</span>
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          if (r.reaction === 'star3d') {
+                            return (
+                              <div
+                                key={r.id}
+                                className="absolute bottom-0 -translate-x-1/2 w-[90px] h-[90px] flex items-center justify-center"
+                                style={{ left: `${r.x}%` }}
+                              >
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <span
+                                    className="text-[56px] select-none"
+                                    style={{
+                                      display: 'inline-block',
+                                      animation: 'star3dSpin 4.5s ease-out forwards',
+                                      filter: 'drop-shadow(0 0 14px rgba(255,220,0,0.95)) drop-shadow(0 0 28px rgba(255,180,0,0.6))',
+                                    }}
+                                  >🌟</span>
+                                </div>
+                              </div>
+                            );
+                          }
+
                           const animationMap: Record<string, unknown> = {
                             applause: applauseAnimation,
                             love: loveAnimation,
