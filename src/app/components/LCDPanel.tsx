@@ -249,11 +249,11 @@ export function LCDPanel({
           <div className="flex items-start justify-between">
             {/* Top Left: Username Icon and Letter */}
             <div className="flex items-end gap-1.5 pt-1">
-              <div className="relative shrink-0 select-none flex items-end justify-center w-[38px] h-[38px] ml-1">
+              <div className="relative shrink-0 select-none flex items-end justify-center w-[40px] h-[40px] ml-1">
                 <img
                   src={activeUserModeIcon || usernameIcon}
                   alt="Role Icon"
-                  className="h-[26px] w-[26px] object-contain mb-[2px]"
+                  className="h-[38px] w-[38px] object-contain mb-[1px]"
                   style={{ filter: 'drop-shadow(1px 1px 0px rgba(0,0,0,0.2))' }}
                   draggable={false}
                 />
