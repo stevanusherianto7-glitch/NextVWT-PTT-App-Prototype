@@ -244,6 +244,18 @@ img.signal-dot.mic-orb {
     linear-gradient(180deg, #ff3333 0%, #b30000 100%);
 }
 
+.badge-violet {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.5) 0%,
+      rgba(255, 255, 255, 0.12) 48%,
+      transparent 52%,
+      rgba(0, 0, 0, 0.08) 100%
+    ),
+    linear-gradient(180deg, #9f33ff 0%, #4c0099 100%);
+}
+
 .badge-green-light {
   background:
     linear-gradient(

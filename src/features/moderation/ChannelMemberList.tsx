@@ -25,6 +25,8 @@ import {
   UserPlus,
 } from 'lucide-react';
 import { USER_PROFILES } from '../../app/components/UserListModal';
+import iconVoice from '../../assets/icon_voice.png';
+
 
 interface MemberRoleStatus {
   user_id: string;
@@ -390,7 +392,11 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
                             className="h-full w-full rounded-full object-cover"
                           />
                         ) : (
-                          u.displayName.substring(0, 2).toUpperCase()
+                          <img
+                            src={iconVoice}
+                            alt={u.displayName}
+                            className="h-full w-full rounded-full object-contain p-[3px] opacity-90"
+                          />
                         )}
                       </div>
                       <div className="flex flex-col">
@@ -513,7 +519,6 @@ export function ChannelMemberList({ roomId, actorRole, actorId }: ChannelMemberL
                       }}
                       className="moderation-select flex-1"
                     >
-                      <option value="guest">Tamu (Guest)</option>
                       {roleRank[actorRole] > roleRank['operator'] && (
                         <option value="operator">Operator Otomatis</option>
                       )}

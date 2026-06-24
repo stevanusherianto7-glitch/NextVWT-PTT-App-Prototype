@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useChannelSettings, type ChannelSettings } from './useChannelSettings';
 import type { ChannelRole } from './permissions';
 import { canPerformAction } from './permissions';
 import { Mic, MessageSquare, Smile, Palette, Check, RefreshCw, Sliders } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface ChannelSettingsPanelProps {
   roomId: string;
@@ -12,6 +13,13 @@ interface ChannelSettingsPanelProps {
 export function ChannelSettingsPanel({ roomId, actorRole }: ChannelSettingsPanelProps) {
   const { settings, loading, updateSettings } = useChannelSettings(roomId);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
+  const [localProgramName, setLocalProgramName] = useState('');
+
+  useEffect(() => {
+    if (settings) {
+      setLocalProgramName(settings.channel_description || '');
+    }
+  }, [settings?.channel_description]);
 
   const hasSettingsPerm = canPerformAction(actorRole, 'MANAGE_SETTINGS');
   const hasThemePerm = canPerformAction(actorRole, 'MANAGE_THEME');
@@ -40,8 +48,9 @@ export function ChannelSettingsPanel({ roomId, actorRole }: ChannelSettingsPanel
       await updateSettings({ [key]: value });
       setSaveStatus('success');
       setTimeout(() => setSaveStatus('idle'), 1200);
-    } catch (err: unknown) {
+    } catch (err: any) {
       console.error(err);
+      toast.error(`Gagal menyimpan: ${err.message || 'Unknown error'}`);
       setSaveStatus('error');
     }
   };
@@ -53,8 +62,9 @@ export function ChannelSettingsPanel({ roomId, actorRole }: ChannelSettingsPanel
       await updateSettings({ [key]: value });
       setSaveStatus('success');
       setTimeout(() => setSaveStatus('idle'), 1200);
-    } catch (err: unknown) {
+    } catch (err: any) {
       console.error(err);
+      toast.error(`Gagal menyimpan: ${err.message || 'Unknown error'}`);
       setSaveStatus('error');
     }
   };
@@ -88,6 +98,38 @@ export function ChannelSettingsPanel({ roomId, actorRole }: ChannelSettingsPanel
         {saveStatus === 'error' && (
           <span className="text-[10px] text-red-400">Gagal menyimpan!</span>
         )}
+      </div>
+
+      {/* 0. Informasi Program */}
+      <div className="moderation-glass-card flex flex-col gap-2">
+        <h3 className="text-xs font-bold text-white flex items-center gap-2 pb-1.5 border-b border-white/5">
+          <MessageSquare className="h-3.5 w-3.5 text-emerald-400" /> INFORMASI PROGRAM
+        </h3>
+          <div className="flex flex-col pt-2 pb-1 border-b border-slate-200">
+          <div className="setting-info !max-w-full mb-3">
+            <span className="setting-label">Nama Program Saat Ini (Marquee)</span>
+            <span className="setting-desc">
+              Teks ini akan berjalan pada header utama (atas) seluruh pengguna. Kosongkan untuk menampilkan teks default.
+            </span>
+          </div>
+          <div className="flex flex-col gap-2">
+            <input
+              type="text"
+              placeholder="Contoh: Bincang Pagi, Karaoke Malam..."
+              value={localProgramName}
+              onChange={(e) => setLocalProgramName(e.target.value)}
+              disabled={!hasSettingsPerm}
+              className="w-full bg-black/20 border border-white/10 rounded-md px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500/50 transition-colors"
+            />
+            <button
+              onClick={() => handleSelectChange('channel_description', localProgramName)}
+              disabled={!hasSettingsPerm || localProgramName === (settings?.channel_description || '')}
+              className="w-full px-3 py-2 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-md transition-colors"
+            >
+              Simpan
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* 1. Pengaturan PTT */}

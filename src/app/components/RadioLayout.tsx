@@ -548,7 +548,10 @@ export function RadioLayout() {
   const displayUser = infoText ? infoText.toUpperCase() : 'USER';
   const displayLoc = locationText ? locationText.toUpperCase() : 'BANDUNG, JAWA BARAT';
   const channelNameStr = activeChannelObj ? activeChannelObj.name.toUpperCase() : 'STANDBY CHANNEL';
-  const marqueeText = `CHANNEL ${channel} • ${channelNameStr} • ${displayUser} (${displayLoc}) • STANDBY • READY`;
+  const programName = channelSettings?.channel_description;
+  const marqueeText = programName 
+    ? `PROGRAM SAAT INI: ${programName.toUpperCase()} • CHANNEL ${channel} • ${channelNameStr} • ${displayUser} (${displayLoc}) • STANDBY • READY`
+    : `CHANNEL ${channel} • ${channelNameStr} • ${displayUser} (${displayLoc}) • STANDBY • READY`;
 
   return (
     <div

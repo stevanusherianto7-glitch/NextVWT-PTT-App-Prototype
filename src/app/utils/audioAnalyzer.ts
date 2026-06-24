@@ -27,7 +27,7 @@ export const startStreamAnalyzer = (
   analyser.fftSize = 512;
   source.connect(analyser);
 
-  const bufferLength = analyser.frequencyBinCount;
+  const bufferLength = analyser.fftSize;
   const dataArray = new Float32Array(bufferLength);
   let animationFrameId: number;
 

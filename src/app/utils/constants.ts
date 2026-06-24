@@ -3,7 +3,7 @@ import { CHANNELS } from './config';
 export interface ChannelItem {
   number: number;
   name: string;
-  type: 'green' | 'red' | 'gray';
+  type: 'green' | 'red' | 'gray' | 'violet';
   users: string[];
 }
 

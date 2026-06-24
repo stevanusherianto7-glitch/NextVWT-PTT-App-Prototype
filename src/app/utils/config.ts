@@ -35,7 +35,7 @@ export interface BrandConfig {
 export interface ChannelConfigItem {
   number: number;
   name: string;
-  type: 'green' | 'red' | 'gray';
+  type: 'green' | 'red' | 'gray' | 'violet';
   users: string[];
 }
 
@@ -78,7 +78,7 @@ const BASE_CHANNELS: ChannelConfigItem[] = [
   {
     number: 100,
     name: 'LANDING-ECHO CHANNEL',
-    type: 'green',
+    type: 'violet',
     users: [
       'Pebri Haryanto',
       'antoni_99',
@@ -114,6 +114,13 @@ const BASE_CHANNELS: ChannelConfigItem[] = [
       'user_baru_nextvwt',
       'silent_user',
       'controlled_user',
+    ],
+  },
+  {
+    number: 101,
+    name: 'MOCK USERS / MODERATION TEST',
+    type: 'green',
+    users: [
       'mock_moderator',
       'mock_muted',
       'mock_controlled',
@@ -189,16 +196,21 @@ const BASE_CHANNELS: ChannelConfigItem[] = [
 ];
 
 // Generate 300 channels (0-299)
-export const CHANNELS: ChannelConfigItem[] = Array.from({ length: 300 }).map((_, i) => {
-  const existing = BASE_CHANNELS.find((c) => c.number === i);
-  if (existing) return existing;
-  return {
-    number: i,
-    name: `STANDBY CHANNEL ${i.toString().padStart(3, '0')}`,
-    type: 'gray',
-    users: [],
-  };
-});
+export const CHANNELS: ChannelConfigItem[] = Array.from({ length: 300 })
+  .map((_, i) => {
+    const existing = BASE_CHANNELS.find((c) => c.number === i);
+    if (existing) return existing;
+    return {
+      number: i,
+      name: `STANDBY CHANNEL ${i.toString().padStart(3, '0')}`,
+      type: 'gray',
+      users: [],
+    };
+  })
+  .sort((a, b) => {
+    const getSortOrder = (n: number) => (n === 100 ? 0.5 : n);
+    return getSortOrder(a.number) - getSortOrder(b.number);
+  });
 
 /**
  * ─── VISUAL CONFIGURATION ──────────────────────────────────────────────────────
@@ -367,10 +379,11 @@ export async function fetchChannels(): Promise<ChannelConfigItem[]> {
       const mapped = {
         number: ch.number,
         name: ch.name,
-        type: (ch.type === 'red' || ch.type === 'green' || ch.type === 'gray' ? ch.type : 'gray') as
+        type: (ch.type === 'red' || ch.type === 'green' || ch.type === 'gray' || ch.type === 'violet' ? ch.type : 'gray') as
           | 'green'
           | 'red'
-          | 'gray',
+          | 'gray'
+          | 'violet',
         users: [],
       };
       if (idx !== -1) {
@@ -380,7 +393,10 @@ export async function fetchChannels(): Promise<ChannelConfigItem[]> {
       }
     });
 
-    mergedChannels.sort((a, b) => a.number - b.number);
+    mergedChannels.sort((a, b) => {
+      const getSortOrder = (n: number) => (n === 100 ? 0.5 : n);
+      return getSortOrder(a.number) - getSortOrder(b.number);
+    });
     return mergedChannels;
   } catch (err) {
     console.warn(

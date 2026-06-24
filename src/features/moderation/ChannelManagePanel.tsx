@@ -193,6 +193,19 @@ export function ChannelManagePanel({
                       {settings?.theme_key.replace('-', ' ')}
                     </span>
                   </div>
+                  <div className="flex flex-col gap-0.5 col-span-2 mt-1">
+                    <span className="text-slate-500 font-semibold">PJC (Penanggung Jawab):</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
+                        <Shield className="h-3.5 w-3.5 text-emerald-400" />
+                      </div>
+                      <span className="text-emerald-400 font-bold tracking-wide">
+                        {settings?.pjc_user_id 
+                          ? settings.pjc_user_id.replace(/_/g, ' ').toUpperCase() 
+                          : 'ADMINISTRATOR VWT'}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
 

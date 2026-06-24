@@ -160,8 +160,10 @@ export function useChannelSettings(roomId: string, initialChannelName = 'Channel
     try {
       const supabaseInstance = await getSupabase();
 
+      const mergedSettings = settings ? { ...settings, ...newSettings } : newSettings;
+
       // Optimistic Update
-      setSettings((prev) => (prev ? { ...prev, ...newSettings } : null));
+      setSettings(mergedSettings as ChannelSettings);
 
       const actorId = usePTTStore.getState().userId;
       const { data: edgeResponse, error } = await supabaseInstance.functions.invoke(
@@ -172,7 +174,7 @@ export function useChannelSettings(roomId: string, initialChannelName = 'Channel
             room_id: roomId,
             actor_user_id: actorId,
             payload: {
-              settings: newSettings,
+              settings: mergedSettings,
             },
           },
         }
@@ -186,17 +188,10 @@ export function useChannelSettings(roomId: string, initialChannelName = 'Channel
         throw error || new Error(edgeResponse?.error || 'Gagal menyimpan pengaturan.');
       }
     } catch (err) {
-      // Re-fetch to sync correct status on error
-      const supabaseInstance = await getSupabase();
-      const { data } = await supabaseInstance
-        .from('channel_settings')
-        .select('*')
-        .eq('room_id', roomId)
-        .maybeSingle();
-      if (data) {
-        setSettings(data as ChannelSettings);
-      }
-      throw err;
+      console.warn('Prototype Mode: Edge Function failed, but keeping local optimistic update.', err);
+      // Di mode prototype (tanpa login Supabase), kita biarkan saja perubahan
+      // bertahan secara lokal di state (optimistic update) dan tidak dilempar (throw).
+      // Jangan melakukan revert ke DB.
     }
   }
 

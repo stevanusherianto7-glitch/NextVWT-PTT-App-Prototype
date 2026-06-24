@@ -529,7 +529,7 @@ function AvatarImage({
         <img
           src={fallbackIconUrl}
           alt={displayName}
-          className="w-[65%] h-[65%] object-contain"
+          className="w-[50%] h-[50%] object-contain"
         />
       </div>
     );
@@ -834,7 +834,7 @@ export function UserListModal({ channel, channelName: _channelName, users }: Use
             return (
               <div
                 key={`${profile.callSign}-${idx}`}
-                className={`w-full flex items-center pr-4 pl-0 hover:bg-white active:bg-gray-100 transition-all duration-300 border-b border-gray-300/70 cursor-pointer ${
+                className={`w-full flex items-center pr-4 pl-0 hover:bg-white active:bg-gray-100 transition-all duration-300 border-b border-gray-300 cursor-pointer ${
                   isSpeaking ? 'active-user-glow z-10' : 'bg-[#fafbfc]'
                 }`}
                 onClick={() => {
@@ -1068,19 +1068,7 @@ export function UserListModal({ channel, channelName: _channelName, users }: Use
                 <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider text-center mt-3.5 mb-2">
                   Peran / Jabatan Jalur
                 </div>
-                <div className="grid grid-cols-3 gap-1.5 w-full">
-                  {/* Guest */}
-                  <button type="button"
-                    onClick={() => handleUpdateRole(activeZoomedAvatar.userId, 'guest')}
-                    className={`py-1 rounded-lg border text-[10px] font-semibold transition-all duration-200 ${
-                      activeZoomedAvatar.role === 'guest'
-                        ? 'bg-slate-100 border-slate-500/30 text-slate-700 shadow-sm'
-                        : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100'
-                    }`}
-                  >
-                    Guest
-                  </button>
-
+                <div className="grid grid-cols-2 gap-1.5 w-full">
                   {/* Operator */}
                   <button type="button"
                     onClick={() => handleUpdateRole(activeZoomedAvatar.userId, 'operator')}

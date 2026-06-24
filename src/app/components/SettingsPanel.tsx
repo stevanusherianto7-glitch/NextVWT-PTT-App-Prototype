@@ -359,7 +359,7 @@ export function SettingsPanel({
       {/* Scrollable Form Body */}
       <div className="flex-1 overflow-y-auto w-full pb-8">
         {/* MODERATION CHANNEL TAB */}
-        {canPerformAction(role, 'VIEW_ADMIN_PANEL') && (
+        {canPerformAction(role, 'VIEW_ADMIN_PANEL') && channel !== 100 && (
           <div className="w-full bg-white border-b border-gray-200">
             <button type="button"
               onClick={handleOpenModeration}
