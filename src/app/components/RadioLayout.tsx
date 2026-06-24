@@ -1046,7 +1046,7 @@ export function RadioLayout() {
             {showPTT && (
               <div
                 className={`absolute left-0 right-0 w-full flex justify-center transition-opacity duration-300 opacity-100 ${isPowerOn ? '' : 'pointer-events-none'}`}
-                style={{ bottom: 'calc(24px + env(safe-area-inset-bottom, 12px))' }}
+                style={{ bottom: 'calc(12px + env(safe-area-inset-bottom, 8px))' }}
               >
                 <div onClick={(e) => e.stopPropagation()}>
                   <PTTButton
