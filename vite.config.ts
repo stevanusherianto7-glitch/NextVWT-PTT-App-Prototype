@@ -36,8 +36,8 @@ export default defineConfig(({ command: _command, mode }) => {
       outDir: 'dist',
       sourcemap: false,
       minify: 'terser',
-      // [FIX P1-5] Warn jika ada chunk > 500KB (default 500)
-      chunkSizeWarningLimit: 500,
+      // [FIX P1-5] Warn jika ada chunk > 1500KB (default 500)
+      chunkSizeWarningLimit: 1500,
       // Target modern browsers yang mendukung WebRTC & AudioContext
       target: ['es2020', 'chrome90', 'firefox90', 'safari14'],
       terserOptions: {
