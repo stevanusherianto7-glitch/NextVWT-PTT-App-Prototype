@@ -163,6 +163,9 @@ export default defineConfig(({ command: _command, mode }) => {
               handler: 'NetworkOnly'
             }
           ]
+        },
+        devOptions: {
+          enabled: true
         }
       })
     ].filter(Boolean) as PluginOption[],
