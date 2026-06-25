@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { usePTTStore } from '../store/usePTTStore';
+import { initGlobalAudioContext } from '../utils/audioContext';
 
 interface PTTButtonProps {
   onPressStart: () => void;
@@ -250,7 +251,6 @@ export function PTTButton({
   waitCountdown = null,
 }: PTTButtonProps) {
   const [isDepressed, setIsDepressed] = useState(false);
-  const audioCtxRef = useRef<AudioContext | null>(null);
 
   // Settings and states from Zustand store
   const isPowerOn = usePTTStore((state) => state.isPowerOn);
@@ -262,14 +262,7 @@ export function PTTButton({
   const pttBottom = usePTTStore((state) => state.pttBottom);
 
   const initAudio = () => {
-    if (!audioCtxRef.current) {
-      const AudioContextClass =
-        window.AudioContext ||
-        (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-      if (AudioContextClass) {
-        audioCtxRef.current = new AudioContextClass();
-      }
-    }
+    return initGlobalAudioContext();
   };
 
   const triggerHaptic = (duration: number) => {
@@ -290,12 +283,12 @@ export function PTTButton({
     }
     setIsDepressed(true);
     triggerHaptic(15);
-    initAudio();
+    const ctx = initAudio();
 
     if (!togglePtt && isPowerOn) {
       onPressStart();
-      if (audioCtxRef.current)
-        playRadioSound('press', audioCtxRef.current, toneOnStartEnd, pttVolume);
+      if (ctx)
+        playRadioSound('press', ctx, toneOnStartEnd, pttVolume);
     }
   };
 
@@ -305,22 +298,23 @@ export function PTTButton({
       e.preventDefault();
     }
 
+    const ctx = initAudio();
     if (isDepressed && isPowerOn) {
       if (togglePtt) {
         const nextState = !isActive;
         if (nextState) {
           onPressStart();
-          if (audioCtxRef.current)
-            playRadioSound('press', audioCtxRef.current, toneOnStartEnd, pttVolume);
+          if (ctx)
+            playRadioSound('press', ctx, toneOnStartEnd, pttVolume);
         } else {
           onPressEnd();
-          if (audioCtxRef.current)
-            playRadioSound('release', audioCtxRef.current, toneOnStartEnd, pttVolume);
+          if (ctx)
+            playRadioSound('release', ctx, toneOnStartEnd, pttVolume);
         }
       } else {
         onPressEnd();
-        if (audioCtxRef.current)
-          playRadioSound('release', audioCtxRef.current, toneOnStartEnd, pttVolume);
+        if (ctx)
+          playRadioSound('release', ctx, toneOnStartEnd, pttVolume);
       }
       triggerHaptic(10);
     }
@@ -329,11 +323,12 @@ export function PTTButton({
 
   const handleMouseLeave = () => {
     if (isBusy) return;
+    const ctx = initAudio();
     if (isDepressed && isPowerOn) {
       if (!togglePtt) {
         onPressEnd();
-        if (audioCtxRef.current)
-          playRadioSound('release', audioCtxRef.current, toneOnStartEnd, pttVolume);
+        if (ctx)
+          playRadioSound('release', ctx, toneOnStartEnd, pttVolume);
       }
       triggerHaptic(5);
     }
@@ -349,12 +344,12 @@ export function PTTButton({
         if (!isPowerOn || isBusy) return;
         setIsDepressed(true);
         triggerHaptic(15);
-        initAudio();
+        const ctx = initAudio();
 
         if (!togglePtt) {
           onPressStart();
-          if (audioCtxRef.current)
-            playRadioSound('press', audioCtxRef.current, toneOnStartEnd, pttVolume);
+          if (ctx)
+            playRadioSound('press', ctx, toneOnStartEnd, pttVolume);
         }
       }
     };
@@ -364,22 +359,23 @@ export function PTTButton({
         e.preventDefault(); // Prevent page scroll
         if (!isPowerOn || isBusy) return;
 
+        const ctx = initAudio();
         if (isDepressed) {
           if (togglePtt) {
             const nextState = !isActive;
             if (nextState) {
               onPressStart();
-              if (audioCtxRef.current)
-                playRadioSound('press', audioCtxRef.current, toneOnStartEnd, pttVolume);
+              if (ctx)
+                playRadioSound('press', ctx, toneOnStartEnd, pttVolume);
             } else {
               onPressEnd();
-              if (audioCtxRef.current)
-                playRadioSound('release', audioCtxRef.current, toneOnStartEnd, pttVolume);
+              if (ctx)
+                playRadioSound('release', ctx, toneOnStartEnd, pttVolume);
             }
           } else {
             onPressEnd();
-            if (audioCtxRef.current)
-              playRadioSound('release', audioCtxRef.current, toneOnStartEnd, pttVolume);
+            if (ctx)
+              playRadioSound('release', ctx, toneOnStartEnd, pttVolume);
           }
           triggerHaptic(10);
         }

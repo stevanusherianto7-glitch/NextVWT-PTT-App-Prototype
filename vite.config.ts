@@ -121,7 +121,7 @@ export default defineConfig(({ command: _command, mode }) => {
         registerType: 'autoUpdate',
         includeAssets: ['pwa-192x192.png', 'pwa-512x512.png'],
         manifest: {
-          name: 'NextVWT Walkie Talkie',
+          name: 'NextVWT',
           short_name: 'NextVWT',
           description: 'Next Virtual Walkie Talkie - Real-time PTT communication platform',
           theme_color: '#0c62a8',

@@ -23,14 +23,18 @@ export const arrayBufferToBase64 = (buffer: ArrayBuffer): string => {
   return window.btoa(binary);
 };
 
-// Global Singleton Audio Context to prevent memory leak on unmounts
-let globalAudioCtx: AudioContext | null = null;
+import { initGlobalAudioContext } from '../utils/audioContext';
+
+// Global Singleton Audio Context variables
+
 let globalPlaybackAnalyser: AnalyserNode | null = null;
 let playbackAnimationFrameId: number | null = null;
 let playbackTimeoutId: NodeJS.Timeout | null = null;
 
+import { __resetAudioContextForTest as __resetGlobalCtx } from '../utils/audioContext';
+
 export const __resetAudioContextForTest = () => {
-  globalAudioCtx = null;
+  __resetGlobalCtx();
   globalPlaybackAnalyser = null;
 };
 
@@ -39,21 +43,13 @@ export function useAudioPlayback() {
 
   // Initialize Audio Context lazily
   const getAudioContext = useCallback(() => {
-    if (!globalAudioCtx) {
-      const AudioContextClass =
-        window.AudioContext ||
-        (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-      if (AudioContextClass) {
-        globalAudioCtx = new AudioContextClass();
-        globalPlaybackAnalyser = globalAudioCtx.createAnalyser();
+    const ctx = initGlobalAudioContext();
+    if (ctx && !globalPlaybackAnalyser) {
+        globalPlaybackAnalyser = ctx.createAnalyser();
         globalPlaybackAnalyser.fftSize = 512;
-        globalPlaybackAnalyser.connect(globalAudioCtx.destination);
-      }
+        globalPlaybackAnalyser.connect(ctx.destination);
     }
-    if (globalAudioCtx && globalAudioCtx.state === 'suspended') {
-      globalAudioCtx.resume();
-    }
-    return globalAudioCtx;
+    return ctx;
   }, []);
 
   // Play an incoming Base64 voice chunk smoothly (used when WebRTC is not active)

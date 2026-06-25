@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">NextVWT PTT App</string>
-    <string name="title_activity_main">NextVWT PTT App</string>
+    <string name="app_name">NextVWT</string>
+    <string name="title_activity_main">NextVWT</string>
     <string name="package_name">com.nextvwt.ptt</string>
     <string name="custom_url_scheme">com.nextvwt.ptt</string>
 </resources>
