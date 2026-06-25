@@ -68,8 +68,8 @@ export const USER_PROFILES: Record<string, UserProfile> = {
       'https://randomuser.me/api/portraits/men/3.jpg',
     role: 'noc',
   },
-  agus_setiawan: {
-    displayName: 'Agus',
+  agus_santika: {
+    displayName: 'Agus Santika',
     callSign: 'MOD01',
     location: 'JAKARTA',
     avatarColor: '#4CAF50',

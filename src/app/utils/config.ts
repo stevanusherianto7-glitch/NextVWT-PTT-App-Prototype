@@ -121,7 +121,7 @@ const BASE_CHANNELS: ChannelConfigItem[] = [
     name: 'MOCK USERS / MODERATION TEST',
     type: 'green',
     users: [
-      'agus_setiawan',
+      'agus_santika',
       'budi_santoso',
       'citra_kirana',
       'dedi_pratama',
@@ -146,7 +146,7 @@ const BASE_CHANNELS: ChannelConfigItem[] = [
       'sys_admin_vwt',
       'pjc_room_manager',
       'mario_teguh',
-      'agus_setiawan',
+      'agus_santika',
       'budi_santoso',
       'citra_kirana',
       'dedi_pratama',
