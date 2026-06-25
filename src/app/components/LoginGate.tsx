@@ -202,7 +202,7 @@ export function LoginGate({ onLogin }: LoginGateProps) {
 
         <div className="w-full bg-black/35 rounded-xl p-3 border border-white/5 mb-6 text-center">
           <p className="text-[11px] text-gray-400 leading-normal">
-            Hubungkan ke frekuensi digital. Masuk dengan Google untuk
+            Hubungkan ke aplikasi NextVWT. Masuk dengan Google untuk
             sinkronisasi profil instan.
           </p>
         </div>
