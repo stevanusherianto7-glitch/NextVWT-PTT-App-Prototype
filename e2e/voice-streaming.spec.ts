@@ -19,18 +19,24 @@ test.describe('Real-time Voice Streaming & Delivery', () => {
 
     // 2. Open pages and bypass login and feedback modal
     await pageAlfa.addInitScript(() => {
-      window.localStorage.setItem('nextvwt_settings', JSON.stringify({
-        hasCompletedOnboarding: true,
-        lastFeedbackTime: Date.now(),
-      }));
+      window.localStorage.setItem(
+        'nextvwt_settings',
+        JSON.stringify({
+          hasCompletedOnboarding: true,
+          lastFeedbackTime: Date.now(),
+        })
+      );
     });
     await pageAlfa.goto('/');
 
     await pageBeta.addInitScript(() => {
-      window.localStorage.setItem('nextvwt_settings', JSON.stringify({
-        hasCompletedOnboarding: true,
-        lastFeedbackTime: Date.now(),
-      }));
+      window.localStorage.setItem(
+        'nextvwt_settings',
+        JSON.stringify({
+          hasCompletedOnboarding: true,
+          lastFeedbackTime: Date.now(),
+        })
+      );
     });
     await pageBeta.goto('/');
     const guestBtnAlfa = pageAlfa.locator('button:has-text("Masuk sebagai Tamu")');
@@ -105,7 +111,7 @@ test.describe('Real-time Voice Streaming & Delivery', () => {
       const osc = ctx.createOscillator();
       osc.connect(dest);
       osc.start();
-      
+
       ctx.resume().catch(() => {});
 
       navigator.mediaDevices.getUserMedia = async () => {
@@ -120,10 +126,15 @@ test.describe('Real-time Voice Streaming & Delivery', () => {
         constructor(stream: MediaStream) {
           this.stream = stream;
         }
+        static isTypeSupported(type: string) {
+          return true;
+        }
         start(timeslice: number) {
           this.intervalId = setInterval(() => {
             if (this.ondataavailable) {
-              this.ondataavailable({ data: new Blob(["dummy audio data"], { type: "audio/webm" }) });
+              this.ondataavailable({
+                data: new Blob(['dummy audio data'], { type: 'audio/webm' }),
+              });
             }
           }, timeslice || 250);
         }

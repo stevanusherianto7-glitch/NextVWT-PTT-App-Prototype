@@ -79,12 +79,17 @@ test.describe('User Modulation Activity Simulation', () => {
     await page.waitForTimeout(1000); // Wait for active modulation simulation
 
     // 4. Assert active modulation is happening (width is greater than 0)
-    await expect.poll(async () => {
-      return await progressBar.evaluate((el) => el.style.width);
-    }, {
-      message: 'Progress bar width should be greater than 0% during active modulation',
-      timeout: 5000,
-    }).not.toBe('0%');
+    await expect
+      .poll(
+        async () => {
+          return await progressBar.evaluate((el) => el.style.width);
+        },
+        {
+          message: 'Progress bar width should be greater than 0% during active modulation',
+          timeout: 5000,
+        }
+      )
+      .not.toBe('0%');
 
     // 5. Release mouse and return to standby
     await page.mouse.up();

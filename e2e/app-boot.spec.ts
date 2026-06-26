@@ -19,7 +19,7 @@ test.describe('App Boot & Initial State', () => {
         (window as any).__store__.getState().setUser({
           id: 'e2e-test-user',
           email: 'test@example.com',
-          isGuest: true
+          isGuest: true,
         });
       }
     });

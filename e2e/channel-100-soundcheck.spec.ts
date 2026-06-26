@@ -1,43 +1,46 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Channel 100 Sound Check (Parrot Echo Test)', () => {
-  test('should record audio and play it back locally when on Channel 100', async ({ page, context }) => {
+  test('should record audio and play it back locally when on Channel 100', async ({
+    page,
+    context,
+  }) => {
     // 1. Grant microphone permission
     await context.grantPermissions(['microphone']);
 
     // 2. Add Init Script to mock Supabase Auth session in localStorage (bypassing LoginGate)
     await page.addInitScript(() => {
       const fakeSession = {
-        access_token: "mock-access-token",
-        token_type: "bearer",
+        access_token: 'mock-access-token',
+        token_type: 'bearer',
         expires_in: 3600,
-        refresh_token: "mock-refresh-token",
+        refresh_token: 'mock-refresh-token',
         user: {
-          id: "e2e-test-user-id",
-          aud: "authenticated",
-          role: "authenticated",
-          email: "e2e@nextvwt.local",
-          email_confirmed_at: "2026-06-10T12:00:00Z",
-          phone: "",
-          confirmed_at: "2026-06-10T12:00:00Z",
-          last_sign_in_at: "2026-06-10T12:00:00Z",
+          id: 'e2e-test-user-id',
+          aud: 'authenticated',
+          role: 'authenticated',
+          email: 'e2e@nextvwt.local',
+          email_confirmed_at: '2026-06-10T12:00:00Z',
+          phone: '',
+          confirmed_at: '2026-06-10T12:00:00Z',
+          last_sign_in_at: '2026-06-10T12:00:00Z',
           app_metadata: {
-            provider: "google",
-            providers: ["google"]
+            provider: 'google',
+            providers: ['google'],
           },
           user_metadata: {
-            full_name: "E2E Tester",
-            avatar_url: ""
+            full_name: 'E2E Tester',
+            avatar_url: '',
           },
           identities: [],
-          created_at: "2026-06-10T12:00:00Z",
-          updated_at: "2026-06-10T12:00:00Z"
+          created_at: '2026-06-10T12:00:00Z',
+          updated_at: '2026-06-10T12:00:00Z',
         },
-        expires_at: 9999999999
+        expires_at: 9999999999,
       };
 
       const originalGetItem = window.localStorage.getItem;
-      window.localStorage.getItem = function(key) {
+      window.localStorage.getItem = function (key) {
         if (key && key.includes('auth-token')) {
           return JSON.stringify(fakeSession);
         }
@@ -112,7 +115,9 @@ test.describe('Channel 100 Sound Check (Parrot Echo Test)', () => {
 
     // Confirm that the recorded/played back array buffers exist
     const playedChunksCount = await page.evaluate(() => (window as any).decodedChunks.length);
-    console.log(`Successfully verified parrot echo test: played back ${playedChunksCount} audio chunks.`);
+    console.log(
+      `Successfully verified parrot echo test: played back ${playedChunksCount} audio chunks.`
+    );
     expect(playedChunksCount).toBeGreaterThan(0);
   });
 });

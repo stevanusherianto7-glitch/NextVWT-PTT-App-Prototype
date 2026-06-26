@@ -1,12 +1,11 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Robustness Simulator: Supabase Offline Fallback', () => {
-
   test('Graceful Boot-Up without Supabase API (Offline Start)', async ({ page }) => {
     // Memblokir semua traffic Supabase saat boot up
-    await page.route('**/*supabase.co/**', route => route.abort('failed'));
-    await page.route('**/realtime/v1/**', route => route.abort('failed'));
-    
+    await page.route('**/*supabase.co/**', (route) => route.abort('failed'));
+    await page.route('**/realtime/v1/**', (route) => route.abort('failed'));
+
     await page.goto('/');
 
     // Guest login (harus bisa masuk karena logic dijalankan lokal tanpa harus sukses daftar user ke db)
@@ -22,7 +21,7 @@ test.describe('Robustness Simulator: Supabase Offline Fallback', () => {
     // Karena kita memakai exponential backoff, status mungkin offline
     // Tunggu sejenak agar logic backoff berjalan
     await page.waitForTimeout(3000);
-    
+
     // UI seharusnya tidak white screen
     const channelDisplay = page.getByText('CH', { exact: true });
     await expect(channelDisplay).toBeVisible();
@@ -45,11 +44,11 @@ test.describe('Robustness Simulator: Supabase Offline Fallback', () => {
 
     // Mulai PTT (Transmisi aktif)
     await page.mouse.down({ button: 'left' });
-    
+
     // Skenario Terburuk: Tiba-tiba Supabase Server Down atau koneksi putus
-    await page.route('**/*supabase.co/**', route => route.abort('internetdisconnected'));
-    await page.route('**/realtime/v1/**', route => route.abort('internetdisconnected'));
-    
+    await page.route('**/*supabase.co/**', (route) => route.abort('internetdisconnected'));
+    await page.route('**/realtime/v1/**', (route) => route.abort('internetdisconnected'));
+
     // Sengaja jalankan evaluasi window offline untuk men-trigger fallback lokal
     await page.evaluate(() => window.dispatchEvent(new Event('offline')));
 
@@ -58,9 +57,12 @@ test.describe('Robustness Simulator: Supabase Offline Fallback', () => {
 
     // Tunggu sejenak, UI tidak boleh crash. Seharusnya tombol PTT kembali hijau/normal
     await page.waitForTimeout(2000);
-    
+
     // Pastikan channel masih berada di posisinya dan store lokal (localStorage) tetap jalan
-    const channelText = await page.locator('[data-testid="lcd-channel-number"]').first().innerText();
+    const channelText = await page
+      .locator('[data-testid="lcd-channel-number"]')
+      .first()
+      .innerText();
     expect(channelText).toBeDefined();
 
     // Cek apakah kita bisa pindah channel secara lokal tanpa error saat offline
@@ -69,9 +71,11 @@ test.describe('Robustness Simulator: Supabase Offline Fallback', () => {
       store.getState().channelUp();
     });
     await page.waitForTimeout(500);
-    
-    const newChannelText = await page.locator('[data-testid="lcd-channel-number"]').first().innerText();
+
+    const newChannelText = await page
+      .locator('[data-testid="lcd-channel-number"]')
+      .first()
+      .innerText();
     expect(newChannelText).not.toEqual(channelText);
   });
-
 });

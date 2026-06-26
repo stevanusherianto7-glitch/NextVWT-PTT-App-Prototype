@@ -18,7 +18,7 @@ test.describe('Visual UI Review & Regression Testing', () => {
 
     // Tunggu sampai layar utama stabil (RadioLayout muncul)
     await page.waitForSelector('button:has-text("PTT")', { timeout: 10000 });
-    
+
     // Mask dynamic elements like UUIDs or time if they cause visual flakiness
     // For now we assume standard static UI or stable dummy data.
     await page.waitForTimeout(1000); // Wait for micro-animations to settle
@@ -31,7 +31,7 @@ test.describe('Visual UI Review & Regression Testing', () => {
 
     // Buka Modal SCAN
     await page.click('button:has-text("SCAN")');
-    
+
     // Tunggu modal stabil
     await page.waitForSelector('input[placeholder="Cari channel..."]', { timeout: 5000 });
     await page.waitForTimeout(500); // settle modal animations

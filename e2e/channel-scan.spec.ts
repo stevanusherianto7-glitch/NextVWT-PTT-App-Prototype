@@ -35,7 +35,9 @@ test.describe('Channel Scan Flow', () => {
 
   test('modal lists channel entries with number badges', async ({ page }) => {
     await page.click('button:has-text("SCAN")');
-    await expect(page.getByText('DUKUNGAN & BANTUAN', { exact: false }).first()).toBeVisible({ timeout: 5_000 });
+    await expect(page.getByText('DUKUNGAN & BANTUAN', { exact: false }).first()).toBeVisible({
+      timeout: 5_000,
+    });
     await expect(page.getByText('KOPDAR NASIONAL UTAMA', { exact: false }).first()).toBeVisible();
   });
 

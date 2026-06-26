@@ -59,7 +59,7 @@ test.describe('Multi-User Real-time Modulation Delivery', () => {
       const osc = ctx.createOscillator();
       osc.connect(dest);
       osc.start();
-      
+
       ctx.resume().catch(() => {});
 
       navigator.mediaDevices.getUserMedia = async () => {
@@ -82,10 +82,15 @@ test.describe('Multi-User Real-time Modulation Delivery', () => {
         constructor(stream: MediaStream) {
           this.stream = stream;
         }
+        static isTypeSupported(type: string) {
+          return true;
+        }
         start(timeslice: number) {
           this.intervalId = setInterval(() => {
             if (this.ondataavailable) {
-              this.ondataavailable({ data: new Blob(["dummy audio data"], { type: "audio/webm" }) });
+              this.ondataavailable({
+                data: new Blob(['dummy audio data'], { type: 'audio/webm' }),
+              });
             }
           }, timeslice || 250);
         }
