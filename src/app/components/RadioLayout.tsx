@@ -947,7 +947,7 @@ export function RadioLayout() {
                 setIsUserListOpen(false);
               }
             }}
-            className="flex-1 min-h-0 w-full max-w-[400px] flex flex-col items-center pt-[14px] px-[10px] pb-20 relative cursor-default"
+            className="flex-1 min-h-0 w-full max-w-[400px] flex flex-col items-center pt-[14px] px-[10px] pb-28 relative cursor-default"
           >
             {isUserListOpen ? (
               <div className="w-full max-w-[340px] h-[426px] relative -mt-[14px] overflow-hidden">
@@ -1370,7 +1370,7 @@ export function RadioLayout() {
             {showPTT && (
               <div
                 className={`absolute left-0 right-0 w-full flex justify-center transition-opacity duration-300 opacity-100 ${isPowerOn ? '' : 'pointer-events-none'}`}
-                style={{ bottom: 'calc(12px + env(safe-area-inset-bottom, 8px))' }}
+                style={{ bottom: 'calc(28px + env(safe-area-inset-bottom, 8px))' }}
               >
                 <div onClick={(e) => e.stopPropagation()}>
                   <PTTButton
