@@ -83,7 +83,7 @@ test.describe('Channel 100 Sound Check (Parrot Echo Test)', () => {
         constructor(stream: MediaStream) {
           this.stream = stream;
         }
-        static isTypeSupported(type: string) {
+        static isTypeSupported(_type: string) {
           return true;
         }
         start(timeslice: number) {

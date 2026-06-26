@@ -82,7 +82,7 @@ test.describe('Multi-User Real-time Modulation Delivery', () => {
         constructor(stream: MediaStream) {
           this.stream = stream;
         }
-        static isTypeSupported(type: string) {
+        static isTypeSupported(_type: string) {
           return true;
         }
         start(timeslice: number) {

@@ -86,7 +86,7 @@ test.describe('PTT Resilience in Karaoke / Music Mode', () => {
         constructor(stream: MediaStream) {
           this.stream = stream;
         }
-        static isTypeSupported(type: string) {
+        static isTypeSupported(_type: string) {
           return true;
         }
         start(timeslice: number) {
