@@ -95,6 +95,7 @@ import { getSupabase } from '../utils/supabase';
 import { WalletPanel } from '../../features/payment/WalletPanel';
 import { ROIPBridgePanel } from '../../features/roip/ROIPBridgePanel';
 import { ChatRoomPanel } from '../../features/chat/ChatRoomPanel';
+import { QuickActionDock } from './QuickActionDock';
 import { KaraokeQueuePanel } from '../../features/karaoke-queue/KaraokeQueuePanel';
 import { PrivateChannelPanel } from '../../features/moderation/PrivateChannelPanel';
 import { Player } from '@lottiefiles/react-lottie-player';
@@ -995,11 +996,6 @@ export function RadioLayout() {
                       (r) => r.reaction === 'lion' || r.reaction === 'aquarium'
                     )
                   }
-                  onOpenChat={() => setIsChatOpen(true)}
-                  onOpenQueue={() => setIsQueueOpen(true)}
-                  onSendReaction={handleSendReaction}
-                  isPowerOn={isPowerOn}
-                  themeKey={getThemeClass(themeText)}
                 />
               </div>
             ) : (
@@ -1354,6 +1350,23 @@ export function RadioLayout() {
                     </div>
                   );
                 })}
+              </div>
+            )}
+
+            {/* Quick Action Dock - tampil hanya saat UserListModal terbuka, posisi sama seperti semula */}
+            {isUserListOpen && (
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="w-full flex justify-center z-20 mt-3"
+              >
+                <QuickActionDock
+                  onOpenChat={() => setIsChatOpen(true)}
+                  onOpenQueue={() => setIsQueueOpen(true)}
+                  onSendReaction={handleSendReaction}
+                  isPowerOn={isPowerOn}
+                  showSocialFeatures={isPowerOn}
+                  themeKey={getThemeClass(themeText)}
+                />
               </div>
             )}
 
