@@ -13,6 +13,80 @@ import { useAudioStreamer } from '../hooks/useAudioStreamer';
 import { toast } from 'sonner';
 import { SettingsPanelSkeleton, KaraokePlayerSkeleton } from './SkeletonLoaders';
 import { FeedbackModal } from './FeedbackModal';
+import { initGlobalAudioContext } from '../utils/audioContext';
+
+const SIMULATED_CANDIDATES = [
+  {
+    userId: 'JZ10A',
+    displayName: 'Bambang Supriadi',
+    callSign: 'JZ10A',
+    location: 'SOLO, JATENG',
+  },
+  {
+    userId: 'JZ10B',
+    displayName: 'Dewi Lestari',
+    callSign: 'JZ10B',
+    location: 'SEMARANG, JATENG',
+  },
+  {
+    userId: 'JZ10C',
+    displayName: 'Hendra Wijaya',
+    callSign: 'JZ10C',
+    location: 'SURABAYA, JATIM',
+  },
+  {
+    userId: 'JZ10D',
+    displayName: 'Siti Aminah',
+    callSign: 'JZ10D',
+    location: 'MAKASSAR, SULSEL',
+  },
+  {
+    userId: 'JZ10E',
+    displayName: 'Budi Rahardjo',
+    callSign: 'JZ10E',
+    location: 'BANDUNG, JABAR',
+  },
+];
+
+const playChirpSound = (isJoin: boolean) => {
+  try {
+    const ctx = initGlobalAudioContext();
+    if (!ctx) return;
+    
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    
+    const now = ctx.currentTime;
+    if (isJoin) {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(750, now);
+      osc.frequency.exponentialRampToValueAtTime(1250, now + 0.12);
+      
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(0.08, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+      
+      osc.start(now);
+      osc.stop(now + 0.15);
+    } else {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(950, now);
+      osc.frequency.exponentialRampToValueAtTime(450, now + 0.15);
+      
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(0.08, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+      
+      osc.start(now);
+      osc.stop(now + 0.2);
+    }
+  } catch (err) {
+    console.warn('Failed to play chirp sound:', err);
+  }
+};
 import { useChannelRole } from '../../features/moderation/useChannelRole';
 import { useChannelSettings } from '../../features/moderation/useChannelSettings';
 import { ChannelManagePanel } from '../../features/moderation/ChannelManagePanel';
@@ -168,6 +242,8 @@ export function RadioLayout() {
   >([]);
   const [txStartTime, setTxStartTime] = useState<number>(0);
   const [waitTimer, setWaitTimer] = useState<number | null>(null);
+  const [simulatedUsers, setSimulatedUsers] = useState<any[]>([]);
+
 
   const { startRecording, stopRecording, playAudioChunk, flushAudioQueue } = useAudioStreamer();
 
@@ -187,6 +263,14 @@ export function RadioLayout() {
     activeTransmitter && activeTransmitter.userId !== usePTTStore.getState().userId;
   const isFullDuplexActive = fullDuplex || audioMode === 'music';
   const isBusy = !isFullDuplexActive && !!isReceiving;
+
+  const safeActiveUsers = activeUsers || [];
+  const dynamicUserList = [
+    ...safeActiveUsers,
+    ...(activeChannelObj?.users || []),
+    ...simulatedUsers,
+  ];
+  const dynamicUserCount = dynamicUserList.length;
 
   const getThemeClass = (theme: string) => {
     const t = theme?.toLowerCase() || '';
@@ -223,6 +307,107 @@ export function RadioLayout() {
     }
     return () => clearInterval(interval);
   }, [waitTimer, roomId, userId]);
+
+  const prevUserIdsRef = useRef<string[]>([]);
+  const isFirstRender = useRef(true);
+
+  // Reset first render flag on channel change to avoid notification flood
+  useEffect(() => {
+    isFirstRender.current = true;
+  }, [channel]);
+
+  // Monitor dynamicUserList changes for Join/Leave chirp sounds
+  useEffect(() => {
+    if (!isPowerOn) return;
+    
+    const currentIds = dynamicUserList.map((u) => (typeof u === 'string' ? u : u.userId));
+
+    if (isFirstRender.current) {
+      prevUserIdsRef.current = currentIds;
+      isFirstRender.current = false;
+      return;
+    }
+
+    const prevUserIds = prevUserIdsRef.current;
+    const joinedIds = currentIds.filter((id) => !prevUserIds.includes(id));
+    const leftIds = prevUserIds.filter((id) => !currentIds.includes(id));
+
+    if (joinedIds.length > 0) {
+      playChirpSound(true);
+    } else if (leftIds.length > 0) {
+      playChirpSound(false);
+    }
+
+    prevUserIdsRef.current = currentIds;
+  }, [dynamicUserList, isPowerOn]);
+
+  const latestUserListRef = useRef<any[]>([]);
+  useEffect(() => {
+    latestUserListRef.current = dynamicUserList;
+  }, [dynamicUserList]);
+
+  // Automatic background user activity simulation
+  useEffect(() => {
+    if (!isPowerOn) {
+      setSimulatedUsers([]);
+      return;
+    }
+
+    const triggerEvent = () => {
+      setSimulatedUsers((prevSimulated) => {
+        const rand = Math.random();
+        if (rand < 0.55) {
+          const currentList = latestUserListRef.current;
+          const currentIds = currentList.map((u) => (typeof u === 'string' ? u : u.userId));
+          const available = SIMULATED_CANDIDATES.filter((cand) => !currentIds.includes(cand.userId));
+          
+          if (available.length > 0) {
+            const randomIndex = Math.floor(Math.random() * available.length);
+            const nextUser = available[randomIndex];
+            return [...prevSimulated, nextUser];
+          }
+        } else {
+          if (prevSimulated.length > 0) {
+            const randomIndex = Math.floor(Math.random() * prevSimulated.length);
+            const targetUser = prevSimulated[randomIndex];
+            return prevSimulated.filter((u) => u.userId !== targetUser.userId);
+          }
+        }
+        return prevSimulated;
+      });
+    };
+
+    const runSimulation = () => {
+      const nextDelay = 15000 + Math.random() * 10000;
+      timerId = setTimeout(() => {
+        triggerEvent();
+        runSimulation();
+      }, nextDelay);
+    };
+
+    let timerId: ReturnType<typeof setTimeout>;
+    
+    // Initial trigger after 8 seconds of power-on
+    timerId = setTimeout(() => {
+      setSimulatedUsers((prevSimulated) => {
+        const currentList = latestUserListRef.current;
+        const currentIds = currentList.map((u) => (typeof u === 'string' ? u : u.userId));
+        const available = SIMULATED_CANDIDATES.filter((cand) => !currentIds.includes(cand.userId));
+        
+        if (available.length > 0) {
+          const randomIndex = Math.floor(Math.random() * available.length);
+          const nextUser = available[randomIndex];
+          return [...prevSimulated, nextUser];
+        }
+        return prevSimulated;
+      });
+      runSimulation();
+    }, 8000);
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [isPowerOn]);
 
   // Reset progress when not transmitting and not receiving
   useEffect(() => {
@@ -576,12 +761,6 @@ export function RadioLayout() {
     }
   };
 
-  // activeChannelObj already declared at the top of the component
-  const safeActiveUsers = activeUsers || [];
-
-  const dynamicUserList = [...safeActiveUsers, ...(activeChannelObj?.users || [])];
-
-  const dynamicUserCount = dynamicUserList.length;
 
   const displayUser = infoText ? infoText.toUpperCase() : 'USER';
   const displayLoc = locationText ? locationText.toUpperCase() : 'BANDUNG, JABAR';
@@ -686,113 +865,13 @@ export function RadioLayout() {
                     className={`w-[68px] h-[68px] relative z-20 transition-all duration-300 ${isTransmitting ? 'logo-transmitting' : ''}`}
                     style={{ filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.25))' }}
                   >
-                    <defs>
-                      <radialGradient id="nextvwtSphere3D" cx="32%" cy="30%" r="68%">
-                        <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
-                        <stop offset="18%" stopColor="#ff6b6b" />
-                        <stop offset="50%" stopColor="#cc0000" />
-                        <stop offset="80%" stopColor="#800000" />
-                        <stop offset="100%" stopColor="#3d0000" />
-                      </radialGradient>
-                      <clipPath id="micClip">
-                        <circle cx="50" cy="50" r="36" />
-                      </clipPath>
-                    </defs>
-
-                    <path
-                      d="M 22 77 A 38 38 0 1 1 78 77"
-                      stroke="#0a2e1a"
-                      strokeWidth="6"
-                      strokeLinecap="round"
-                      fill="none"
-                      transform="translate(1, 1.2)"
-                      opacity="0.5"
-                    />
-                    <path
-                      d="M 22 77 A 38 38 0 1 1 78 77"
-                      stroke="#34D399"
-                      strokeWidth="6"
-                      strokeLinecap="round"
-                      fill="none"
-                    />
-                    <path
-                      d="M 22 77 A 38 38 0 1 1 78 77"
-                      stroke="#a7f3d0"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      fill="none"
-                      opacity="0.65"
-                      transform="translate(-0.6, -0.7)"
-                    />
-
-                    <path
-                      d="M 29 71 A 28 28 0 1 1 71 71"
-                      stroke="#713f12"
-                      strokeWidth="6"
-                      strokeLinecap="round"
-                      fill="none"
-                      transform="translate(1, 1.2)"
-                      opacity="0.5"
-                    />
-                    <path
-                      d="M 29 71 A 28 28 0 1 1 71 71"
-                      stroke="#eab308"
-                      strokeWidth="6"
-                      strokeLinecap="round"
-                      fill="none"
-                    />
-                    <path
-                      d="M 29 71 A 28 28 0 1 1 71 71"
-                      stroke="#fef08a"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      fill="none"
-                      opacity="0.65"
-                      transform="translate(-0.6, -0.7)"
-                    />
-
-                    <path
-                      d="M 36 65 A 18 18 0 1 1 64 65"
-                      stroke="#003a17"
-                      strokeWidth="6"
-                      strokeLinecap="round"
-                      fill="none"
-                      transform="translate(1, 1.2)"
-                      opacity="0.5"
-                    />
-                    <path
-                      d="M 36 65 A 18 18 0 1 1 64 65"
-                      stroke="#00C853"
-                      strokeWidth="6"
-                      strokeLinecap="round"
-                      fill="none"
-                    />
-                    <path
-                      d="M 36 65 A 18 18 0 1 1 64 65"
-                      stroke="#69f0ae"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      fill="none"
-                      opacity="0.65"
-                      transform="translate(-0.6, -0.7)"
-                    />
-
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="11"
-                      fill="#1a0000"
-                      transform="translate(1.2, 1.5)"
-                      opacity="0.45"
-                    />
                     <image
                       href={vintageMic}
-                      x="14"
-                      y="14"
-                      width="72"
-                      height="72"
-                      clipPath="url(#micClip)"
-                      preserveAspectRatio="xMidYMid slice"
+                      x="0"
+                      y="0"
+                      width="100"
+                      height="100"
+                      preserveAspectRatio="xMidYMid meet"
                     />
                   </svg>
                 </div>
@@ -836,6 +915,7 @@ export function RadioLayout() {
             }}
             className="flex-1 min-h-0 w-full max-w-[400px] flex flex-col items-center pt-[14px] px-[10px] pb-20 relative cursor-default"
           >
+
             {isUserListOpen ? (
               <UserListModal
                 channel={channel}

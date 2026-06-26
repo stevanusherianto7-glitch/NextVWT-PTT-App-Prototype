@@ -1,6 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import twinHeadsIcon from '../../imports/ikon_kepala_kembar-2.png';
-import usernameIcon from '../../imports/ikon_username1.png';
+import usernameIcon from '../../assets/icon_voice.png';
 import { usePTTStore } from '../store/usePTTStore';
 import { AquariumSkeleton } from './SkeletonLoaders';
 

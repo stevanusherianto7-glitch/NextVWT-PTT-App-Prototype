@@ -404,7 +404,7 @@ export const USER_PROFILES: Record<string, UserProfile> = {
   },
 };
 
-function getDeterministicProfile(username: string): UserProfile {
+export function getDeterministicProfile(username: string): UserProfile {
   let hash = 5381;
   for (let i = 0; i < username.length; i++) {
     hash = (hash * 33) ^ username.charCodeAt(i);
@@ -475,10 +475,12 @@ function AvatarImage({
   const [hasError, setHasError] = useState(false);
 
   if (hasError || !src) {
+    const isVoiceIcon = fallbackIconUrl === iconVoice;
+    const bgColor = isVoiceIcon ? '#ffffff' : (avatarColor || '#3F51B5');
     return (
       <div
         className="w-full h-full rounded-none flex items-center justify-center shadow-[inset_0_2px_4px_rgba(255,255,255,0.4)] border border-white/20"
-        style={{ backgroundColor: avatarColor || '#3F51B5' }}
+        style={{ backgroundColor: bgColor }}
       >
         <img src={fallbackIconUrl} alt={displayName} className="w-[35px] h-[35px] object-contain" />
       </div>
@@ -641,44 +643,36 @@ export function UserListModal({ channel, channelName: _channelName, users }: Use
     setModalUsers(mapUsers(users));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [users, channel]);
-
   const [notifications, setNotifications] = useState<
     Array<{ id: string; displayName: string; type: 'join' | 'leave' }>
   >([]);
-  const prevUserIdsRef = useRef<string[]>([]);
+  const prevModalUsersRef = useRef<any[]>([]);
   const isFirstRender = useRef(true);
 
   useEffect(() => {
-    const currentIds = users.map((u) => (typeof u === 'string' ? u : u.userId));
+    const currentMapped = mapUsers(users);
+    const prevMapped = prevModalUsersRef.current;
+
+    const currentIds = currentMapped.map((u) => u.userId);
+    const prevIds = prevMapped.map((u) => u.userId);
 
     if (isFirstRender.current) {
-      prevUserIdsRef.current = currentIds;
+      prevModalUsersRef.current = currentMapped;
       isFirstRender.current = false;
       return;
     }
 
-    const prevUserIds = prevUserIdsRef.current;
+    const joined = currentMapped.filter((u) => !prevIds.includes(u.userId));
+    const left = prevMapped.filter((u) => !currentIds.includes(u.userId));
 
-    const joinedIds = currentIds.filter((id) => !prevUserIds.includes(id));
-    const leftIds = prevUserIds.filter((id) => !currentIds.includes(id));
-
-    if (joinedIds.length > 0 || leftIds.length > 0) {
+    if (joined.length > 0 || left.length > 0) {
       const newNotifs: Array<{ id: string; displayName: string; type: 'join' | 'leave' }> = [];
 
-      joinedIds.forEach((id) => {
-        const userObj = users.find((u) => (typeof u === 'string' ? u === id : u.userId === id));
-        let name = 'User';
-        if (userObj) {
-          if (typeof userObj === 'string') {
-            name = USER_PROFILES[userObj]?.displayName || userObj;
-          } else {
-            name = userObj.displayName || userObj.userId;
-          }
-        }
+      joined.forEach((u) => {
         const notifId = Math.random().toString();
         newNotifs.push({
           id: notifId,
-          displayName: name,
+          displayName: u.displayName || u.userId,
           type: 'join',
         });
         setTimeout(() => {
@@ -686,12 +680,11 @@ export function UserListModal({ channel, channelName: _channelName, users }: Use
         }, 3600);
       });
 
-      leftIds.forEach((id) => {
-        const name = USER_PROFILES[id]?.displayName || id;
+      left.forEach((u) => {
         const notifId = Math.random().toString();
         newNotifs.push({
           id: notifId,
-          displayName: name,
+          displayName: u.displayName || u.userId,
           type: 'leave',
         });
         setTimeout(() => {
@@ -702,10 +695,9 @@ export function UserListModal({ channel, channelName: _channelName, users }: Use
       if (newNotifs.length > 0) {
         setNotifications((prev) => [...prev, ...newNotifs]);
       }
-      prevUserIdsRef.current = currentIds;
+      prevModalUsersRef.current = currentMapped;
     }
   }, [users]);
-
   const [activeZoomedAvatar, setActiveZoomedAvatar] = useState<(typeof modalUsers)[0] | null>(null);
 
   // Check if current logged-in user holds Moderator/Operator/NOC/SysAdmin position
@@ -856,6 +848,7 @@ export function UserListModal({ channel, channelName: _channelName, users }: Use
         .animate-leave-slide {
           animation: leaveSlideOut 3.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
+
       `}</style>
 
       {/* User List Container (Scrollable) */}
@@ -1209,7 +1202,6 @@ export function UserListModal({ channel, channelName: _channelName, users }: Use
           </div>
         </div>
       )}
-
       {/* Toast Notification for User Joins/Leaves */}
       <div className="absolute bottom-16 left-4 right-4 flex flex-col gap-2 pointer-events-none z-[60]">
         {notifications.map((notif) => (
