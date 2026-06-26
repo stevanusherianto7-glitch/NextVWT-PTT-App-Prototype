@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { PTTState, WebRTCSignalingPayload } from './types';
 import { getSupabase } from '../utils/supabase';
 import { checkIfNewUser } from '../utils/constants';
+import type { ChannelRole } from '../../features/moderation/permissions';
 export type { AppUser, ChannelItem, WebRTCSignalingPayload, GuestUser, PTTState } from './types';
 import { BRAND } from '../utils/config';
 import {
@@ -92,6 +93,11 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
               location: string;
               avatarUrl?: string;
               isNewUser?: boolean;
+              role?: ChannelRole;
+              isMuted?: boolean;
+              isControlled?: boolean;
+              isWait?: boolean;
+              isWaitControlled?: boolean;
             }
           >();
           rawList.forEach((raw) => {
@@ -104,6 +110,11 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
                 location: p.location || 'BANDUNG, JABAR',
                 avatarUrl: p.avatarUrl || '',
                 isNewUser: checkIfNewUser(p.createdAt),
+                role: p.role,
+                isMuted: p.status === 'muted',
+                isControlled: p.status === 'controlled',
+                isWait: p.status === 'wait',
+                isWaitControlled: p.status === 'wait_controlled',
               });
             }
           });
@@ -240,7 +251,50 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
               `channel-role:${roomId}:${payload.targetUserId}`,
               payload.nextRole
             );
+            localStorage.setItem(
+              `channel-role:${roomId}:${payload.targetUserId}`,
+              payload.nextRole
+            );
             window.dispatchEvent(new Event('channel-role-changed'));
+
+            // Re-track presence if the change is for the local user
+            const currentStore = usePTTStore.getState();
+            if (payload.targetUserId === currentStore.userId && activeChannelSubscription) {
+              const userMeta = currentStore.user;
+              const displayName =
+                currentStore.infoText || userMeta?.user_metadata?.full_name || 'Pebe Herianto';
+              const location = currentStore.locationText;
+              const avatarUrl =
+                currentStore.profilePhotoOption === 'google'
+                  ? userMeta?.user_metadata?.avatar_url || ''
+                  : currentStore.customPhotoUrl;
+
+              const localStatus =
+                localStorage.getItem(`channel-status:${roomId}:${currentStore.userId}`) || 'active';
+              let presenceStatus: 'normal' | 'muted' | 'controlled' | 'wait' | 'wait_controlled' =
+                'normal';
+              if (
+                localStatus === 'muted' ||
+                localStatus === 'controlled' ||
+                localStatus === 'wait' ||
+                localStatus === 'wait_controlled'
+              ) {
+                presenceStatus = localStatus as any;
+              }
+
+              activeChannelSubscription
+                .track({
+                  userId: currentStore.userId,
+                  displayName: displayName,
+                  callSign: currentStore.callSign || '2DYUA',
+                  location: location,
+                  avatarUrl: avatarUrl,
+                  createdAt: userMeta?.created_at,
+                  role: payload.nextRole,
+                  status: presenceStatus,
+                })
+                .catch((err) => console.warn('Failed to update presence on role sync:', err));
+            }
           }
         )
         .on(
@@ -256,15 +310,40 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
             );
             if (!payload) return;
             const roomId = `ptt-room-${channelNum}`;
-            if (payload.statusType === 'normal') {
-              sessionStorage.setItem(`channel-status:${roomId}:${payload.targetUserId}`, 'active');
-            } else {
-              sessionStorage.setItem(
-                `channel-status:${roomId}:${payload.targetUserId}`,
-                payload.statusType
-              );
-            }
+            const statusVal = payload.statusType === 'normal' ? 'active' : payload.statusType;
+            sessionStorage.setItem(`channel-status:${roomId}:${payload.targetUserId}`, statusVal);
+            localStorage.setItem(`channel-status:${roomId}:${payload.targetUserId}`, statusVal);
             window.dispatchEvent(new Event('channel-role-changed'));
+
+            // Re-track presence if the change is for the local user
+            const currentStore = usePTTStore.getState();
+            if (payload.targetUserId === currentStore.userId && activeChannelSubscription) {
+              const userMeta = currentStore.user;
+              const displayName =
+                currentStore.infoText || userMeta?.user_metadata?.full_name || 'Pebe Herianto';
+              const location = currentStore.locationText;
+              const avatarUrl =
+                currentStore.profilePhotoOption === 'google'
+                  ? userMeta?.user_metadata?.avatar_url || ''
+                  : currentStore.customPhotoUrl;
+
+              const localRole = (localStorage.getItem(
+                `channel-role:${roomId}:${currentStore.userId}`
+              ) || 'guest') as ChannelRole;
+
+              activeChannelSubscription
+                .track({
+                  userId: currentStore.userId,
+                  displayName: displayName,
+                  callSign: currentStore.callSign || '2DYUA',
+                  location: location,
+                  avatarUrl: avatarUrl,
+                  createdAt: userMeta?.created_at,
+                  role: localRole,
+                  status: payload.statusType,
+                })
+                .catch((err) => console.warn('Failed to update presence on status sync:', err));
+            }
           }
         );
 
@@ -298,6 +377,23 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
                 ? userMeta?.user_metadata?.avatar_url || ''
                 : currentStore.customPhotoUrl;
 
+            const roomId = `ptt-room-${channelNum}`;
+            const localRole = (localStorage.getItem(
+              `channel-role:${roomId}:${currentStore.userId}`
+            ) || 'guest') as ChannelRole;
+            const localStatus =
+              localStorage.getItem(`channel-status:${roomId}:${currentStore.userId}`) || 'active';
+            let presenceStatus: 'normal' | 'muted' | 'controlled' | 'wait' | 'wait_controlled' =
+              'normal';
+            if (
+              localStatus === 'muted' ||
+              localStatus === 'controlled' ||
+              localStatus === 'wait' ||
+              localStatus === 'wait_controlled'
+            ) {
+              presenceStatus = localStatus as any;
+            }
+
             channelInstance.track({
               userId: currentStore.userId,
               displayName: displayName,
@@ -305,6 +401,8 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
               location: location,
               avatarUrl: avatarUrl,
               createdAt: userMeta?.created_at,
+              role: localRole,
+              status: presenceStatus,
             });
           }
         }

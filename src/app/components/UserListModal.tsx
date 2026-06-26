@@ -738,6 +738,7 @@ export function UserListModal({
   const handleUpdateRole = (uId: string, nextRole: ChannelRole) => {
     const roomId = `ptt-room-${channel}`;
     sessionStorage.setItem(`channel-role:${roomId}:${uId}`, nextRole);
+    localStorage.setItem(`channel-role:${roomId}:${uId}`, nextRole);
     if (uId === localUserId || uId === '2DYUA' || uId === localName) {
       window.dispatchEvent(new Event('channel-role-changed'));
     }
@@ -764,11 +765,9 @@ export function UserListModal({
     statusType: 'normal' | 'muted' | 'controlled' | 'wait' | 'wait_controlled'
   ) => {
     const roomId = `ptt-room-${channel}`;
-    if (statusType === 'normal') {
-      sessionStorage.setItem(`channel-status:${roomId}:${uId}`, 'active');
-    } else {
-      sessionStorage.setItem(`channel-status:${roomId}:${uId}`, statusType);
-    }
+    const statusVal = statusType === 'normal' ? 'active' : statusType;
+    sessionStorage.setItem(`channel-status:${roomId}:${uId}`, statusVal);
+    localStorage.setItem(`channel-status:${roomId}:${uId}`, statusVal);
 
     if (uId === localUserId || uId === '2DYUA' || uId === localName) {
       window.dispatchEvent(new Event('channel-role-changed'));

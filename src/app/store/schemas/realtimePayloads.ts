@@ -90,6 +90,8 @@ export const PresenceMetaSchema = z.object({
   location: z.string().max(100).optional(),
   avatarUrl: z.string().url().or(z.literal('')).optional(),
   createdAt: z.string().optional(),
+  role: ChannelRoleSchema.optional(),
+  status: z.enum(['normal', 'muted', 'controlled', 'wait', 'wait_controlled']).optional(),
 });
 export type PresenceMeta = z.infer<typeof PresenceMetaSchema>;
 

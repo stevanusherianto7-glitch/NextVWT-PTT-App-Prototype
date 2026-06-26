@@ -1,4 +1,5 @@
 import type { User } from '@supabase/supabase-js';
+import type { ChannelRole } from '../../features/moderation/permissions';
 
 export interface GuestUser {
   id: string;
@@ -54,6 +55,11 @@ export interface PTTState {
     location: string;
     avatarUrl?: string;
     isNewUser?: boolean;
+    role?: ChannelRole;
+    isMuted?: boolean;
+    isControlled?: boolean;
+    isWait?: boolean;
+    isWaitControlled?: boolean;
   }>;
 
   // Settings State

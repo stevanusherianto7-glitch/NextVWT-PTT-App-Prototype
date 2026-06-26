@@ -1,6 +1,7 @@
 import { StateCreator } from 'zustand';
 import { PTTState } from '../types';
 import { BRAND } from '../../utils/config';
+import type { ChannelRole } from '../../../features/moderation/permissions';
 import {
   safeSetStorage,
   safeGetStorage,
@@ -97,6 +98,22 @@ export const createSettingsSlice: StateCreator<
             ? userMeta?.user_metadata?.avatar_url || ''
             : next.customPhotoUrl;
 
+        const roomId = `ptt-room-${next.channelNumber}`;
+        const localRole = (localStorage.getItem(`channel-role:${roomId}:${next.userId}`) ||
+          'guest') as ChannelRole;
+        const localStatus =
+          localStorage.getItem(`channel-status:${roomId}:${next.userId}`) || 'active';
+        let presenceStatus: 'normal' | 'muted' | 'controlled' | 'wait' | 'wait_controlled' =
+          'normal';
+        if (
+          localStatus === 'muted' ||
+          localStatus === 'controlled' ||
+          localStatus === 'wait' ||
+          localStatus === 'wait_controlled'
+        ) {
+          presenceStatus = localStatus as any;
+        }
+
         activeChannelSubscription
           .track({
             userId: next.userId,
@@ -105,6 +122,8 @@ export const createSettingsSlice: StateCreator<
             location: location,
             avatarUrl: avatarUrl,
             createdAt: userMeta?.created_at,
+            role: localRole,
+            status: presenceStatus,
           })
           .catch((err) => {
             console.warn('Failed to update presence metadata on settings update:', err);
