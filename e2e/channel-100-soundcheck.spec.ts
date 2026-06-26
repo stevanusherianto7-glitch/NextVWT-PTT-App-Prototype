@@ -63,7 +63,7 @@ test.describe('Channel 100 Sound Check (Parrot Echo Test)', () => {
     const channelNumberText = page.locator('[data-testid="lcd-channel-number"]').first();
     await expect(channelNumberText).toHaveText('100');
 
-    // 6. Mock getUserMedia to supply a synthetic Web Audio stream
+    // 6. Mock getUserMedia to supply a synthetic Web Audio stream and mock MediaRecorder
     await page.evaluate(() => {
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
       const ctx = new AudioContextClass();
@@ -75,6 +75,31 @@ test.describe('Channel 100 Sound Check (Parrot Echo Test)', () => {
       navigator.mediaDevices.getUserMedia = async () => {
         return dest.stream;
       };
+
+      class MockMediaRecorder {
+        stream: MediaStream;
+        ondataavailable: ((e: any) => void) | null = null;
+        intervalId: any = null;
+        constructor(stream: MediaStream) {
+          this.stream = stream;
+        }
+        static isTypeSupported(type: string) {
+          return true;
+        }
+        start(timeslice: number) {
+          this.intervalId = setInterval(() => {
+            if (this.ondataavailable) {
+              this.ondataavailable({
+                data: new Blob(['dummy audio data'], { type: 'audio/webm' }),
+              });
+            }
+          }, timeslice || 250);
+        }
+        stop() {
+          if (this.intervalId) clearInterval(this.intervalId);
+        }
+      }
+      window.MediaRecorder = MockMediaRecorder as any;
     });
 
     // 7. Inject spy on AudioContext.prototype.decodeAudioData to detect playbacks

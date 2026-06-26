@@ -66,7 +66,7 @@ test.describe('PTT Resilience in Karaoke / Music Mode', () => {
     const karaokePlayerText = page.getByText('NextVWT Karaoke Player', { exact: false }).first();
     await expect(karaokePlayerText).toBeVisible({ timeout: 15000 });
 
-    // 6. Mock getUserMedia to supply a synthetic Web Audio stream for CI environment compatibility
+    // 6. Mock getUserMedia to supply a synthetic Web Audio stream and mock MediaRecorder
     await page.evaluate(() => {
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
       const ctx = new AudioContextClass();
@@ -78,6 +78,31 @@ test.describe('PTT Resilience in Karaoke / Music Mode', () => {
       navigator.mediaDevices.getUserMedia = async () => {
         return dest.stream;
       };
+
+      class MockMediaRecorder {
+        stream: MediaStream;
+        ondataavailable: ((e: any) => void) | null = null;
+        intervalId: any = null;
+        constructor(stream: MediaStream) {
+          this.stream = stream;
+        }
+        static isTypeSupported(type: string) {
+          return true;
+        }
+        start(timeslice: number) {
+          this.intervalId = setInterval(() => {
+            if (this.ondataavailable) {
+              this.ondataavailable({
+                data: new Blob(['dummy audio data'], { type: 'audio/webm' }),
+              });
+            }
+          }, timeslice || 250);
+        }
+        stop() {
+          if (this.intervalId) clearInterval(this.intervalId);
+        }
+      }
+      window.MediaRecorder = MockMediaRecorder as any;
     });
 
     // 7. Setup Spy on broadcastVoiceChunk to collect base64 audio packets
