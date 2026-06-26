@@ -925,8 +925,7 @@ export function UserListModal({
                         style={
                           mode === 'operator'
                             ? {
-                                filter:
-                                  'drop-shadow(0px 1px 1.5px rgba(0,0,0,0.75))',
+                                filter: 'drop-shadow(0px 1px 1.5px rgba(0,0,0,0.75))',
                               }
                             : undefined
                         }
@@ -1188,8 +1187,7 @@ export function UserListModal({
                       src={iconOperator}
                       className="w-3.5 h-3.5 object-contain"
                       style={{
-                        filter:
-                          'drop-shadow(0px 1px 1.5px rgba(0,0,0,0.75))',
+                        filter: 'drop-shadow(0px 1px 1.5px rgba(0,0,0,0.75))',
                       }}
                       alt="Operator"
                     />

@@ -109,15 +109,13 @@ import kissAnimation from '../../assets/reactions/kiss.json';
 import bartSvg from '../../assets/reactions/bart.svg';
 import foxSvg from '../../assets/reactions/fox.svg';
 
-
-
 const playReactionSound = (kind: string) => {
   if (kind === 'ketawa_nular') {
     try {
       const audio = document.getElementById('audio-player-ketawa-nular') as HTMLAudioElement | null;
       if (audio) {
         audio.currentTime = 0;
-        audio.play().catch(err => console.warn('Failed to play audio-player-ketawa-nular:', err));
+        audio.play().catch((err) => console.warn('Failed to play audio-player-ketawa-nular:', err));
       }
     } catch (err) {
       console.warn('Failed to play ketawa_nular:', err);
@@ -129,7 +127,7 @@ const playReactionSound = (kind: string) => {
       const audio = document.getElementById('audio-player-ketawa-anjay') as HTMLAudioElement | null;
       if (audio) {
         audio.currentTime = 0;
-        audio.play().catch(err => console.warn('Failed to play audio-player-ketawa-anjay:', err));
+        audio.play().catch((err) => console.warn('Failed to play audio-player-ketawa-anjay:', err));
       }
     } catch (err) {
       console.warn('Failed to play ketawa_anjay:', err);
@@ -223,8 +221,6 @@ const FloatingKaraokePlayer = lazyRetry<
     >,
   };
 });
-
-
 
 export function RadioLayout() {
   const {
