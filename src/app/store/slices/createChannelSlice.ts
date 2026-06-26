@@ -1,7 +1,7 @@
 import { StateCreator } from 'zustand';
 import { PTTState, ChannelItem } from '../types';
 import { BRAND, CHANNELS, fetchChannels as fetchChannelsFromConfig } from '../../utils/config';
-import { getChannelUUID, safeSetStorage } from '../storeUtils';
+import { getChannelUUID, safeSetStorage, clearChannelOverrides } from '../storeUtils';
 import { channelSwitchRateLimiter } from '../../utils/rateLimiter';
 
 export const createChannelSlice: StateCreator<
@@ -57,6 +57,10 @@ export const createChannelSlice: StateCreator<
 
     const nextVal = typeof numOrFn === 'function' ? numOrFn(state.channelNumber) : numOrFn;
     const clamped = Math.max(0, Math.min(999, nextVal));
+
+    if (state.channelNumber !== clamped) {
+      clearChannelOverrides(state.channelNumber);
+    }
 
     // Subscribe to the new channel (Fast Click configures immediate or debounced delay reconnect)
     const delay = state.fastClick ? 0 : 800;

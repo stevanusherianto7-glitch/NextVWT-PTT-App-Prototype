@@ -110,3 +110,40 @@ export function pickPersistedState(state: Partial<PTTState>): Partial<PTTState> 
   }
   return result;
 }
+
+/**
+ * Membersihkan data override status dan role dari local/session storage untuk channel tertentu.
+ */
+export function clearChannelOverrides(channelNum: number): void {
+  try {
+    const roomId = `ptt-room-${channelNum}`;
+    const keysToRemove: string[] = [];
+
+    // Collect matching keys from localStorage
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (
+        key &&
+        (key.startsWith(`channel-status:${roomId}:`) || key.startsWith(`channel-role:${roomId}:`))
+      ) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach((key) => localStorage.removeItem(key));
+
+    // Collect matching keys from sessionStorage
+    const sessionKeysToRemove: string[] = [];
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i);
+      if (
+        key &&
+        (key.startsWith(`channel-status:${roomId}:`) || key.startsWith(`channel-role:${roomId}:`))
+      ) {
+        sessionKeysToRemove.push(key);
+      }
+    }
+    sessionKeysToRemove.forEach((key) => sessionStorage.removeItem(key));
+  } catch (err) {
+    console.warn('Failed to clear channel overrides:', err);
+  }
+}
