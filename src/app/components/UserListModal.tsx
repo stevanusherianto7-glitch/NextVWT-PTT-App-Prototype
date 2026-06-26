@@ -71,7 +71,7 @@ export const USER_PROFILES: Record<string, UserProfile> = {
   agus_santika: {
     displayName: 'Agus Santika',
     callSign: 'MOD01',
-    location: 'JAKARTA',
+    location: 'JAKARTA, DKI',
     avatarColor: '#4CAF50',
     avatarUrl: 'https://randomuser.me/api/portraits/women/4.jpg',
     role: 'operator',
@@ -89,7 +89,7 @@ export const USER_PROFILES: Record<string, UserProfile> = {
   citra_kirana: {
     displayName: 'Citra',
     callSign: 'CTR03',
-    location: 'YOGYAKARTA',
+    location: 'YOGYAKARTA, DIY',
     avatarColor: '#9C27B0',
     avatarUrl: 'https://randomuser.me/api/portraits/women/6.jpg',
     isControlled: true,
@@ -114,7 +114,7 @@ export const USER_PROFILES: Record<string, UserProfile> = {
   fajar_nugraha: {
     displayName: 'Fajar',
     callSign: 'OPR06',
-    location: 'BALI',
+    location: 'DENPASAR, BALI',
     avatarColor: '#00BCD4',
     avatarUrl: 'https://randomuser.me/api/portraits/men/9.jpg',
     role: 'operator',
@@ -122,7 +122,7 @@ export const USER_PROFILES: Record<string, UserProfile> = {
   gilang_ramadhan: {
     displayName: 'Gilang',
     callSign: 'GST07',
-    location: 'LOMBOK',
+    location: 'LOMBOK, NTB',
     avatarColor: '#607D8B',
     avatarUrl: 'https://randomuser.me/api/portraits/men/26.jpg',
     role: 'guest',
@@ -130,7 +130,7 @@ export const USER_PROFILES: Record<string, UserProfile> = {
   noc_global: {
     displayName: 'NOC Global',
     callSign: 'NOC00',
-    location: 'JAKARTA',
+    location: 'JAKARTA, DKI',
     avatarColor: '#3F51B5',
     avatarUrl: 'https://randomuser.me/api/portraits/women/10.jpg',
     role: 'noc',
@@ -139,7 +139,7 @@ export const USER_PROFILES: Record<string, UserProfile> = {
   sys_admin_vwt: {
     displayName: 'SysAdmin VWT',
     callSign: 'SYS99',
-    location: 'BANDUNG',
+    location: 'BANDUNG, JABAR',
     avatarColor: '#009688',
     avatarUrl: 'https://randomuser.me/api/portraits/men/11.jpg',
     role: 'sys_admin',
@@ -148,7 +148,7 @@ export const USER_PROFILES: Record<string, UserProfile> = {
   pjc_room_manager: {
     displayName: 'PJC Room Mgr',
     callSign: 'PJC01',
-    location: 'SURABAYA',
+    location: 'SURABAYA, JATIM',
     avatarColor: '#E91E63',
     avatarUrl: 'https://randomuser.me/api/portraits/women/12.jpg',
     role: 'pjc',
@@ -157,7 +157,7 @@ export const USER_PROFILES: Record<string, UserProfile> = {
   operator_otomatis: {
     displayName: 'Operator Auto',
     callSign: 'OPR99',
-    location: 'SEMARANG',
+    location: 'SEMARANG, JATENG',
     avatarColor: '#FF9800',
     avatarUrl: 'https://randomuser.me/api/portraits/men/13.jpg',
     role: 'operator',
@@ -165,7 +165,7 @@ export const USER_PROFILES: Record<string, UserProfile> = {
   mario_teguh: {
     displayName: 'Siswa Baru',
     callSign: 'NEW01',
-    location: 'MALANG',
+    location: 'MALANG, JATIM',
     avatarColor: '#4CAF50',
     avatarUrl: 'https://randomuser.me/api/portraits/women/14.jpg',
     isNewUser: true,
@@ -173,7 +173,7 @@ export const USER_PROFILES: Record<string, UserProfile> = {
   nina_marlina: {
     displayName: 'Pendengar Setia',
     callSign: 'LSTNR',
-    location: 'MEDAN',
+    location: 'MEDAN, SUMUT',
     avatarColor: '#9E9E9E',
     avatarUrl: 'https://randomuser.me/api/portraits/men/15.jpg',
     isMuted: true,
@@ -181,7 +181,7 @@ export const USER_PROFILES: Record<string, UserProfile> = {
   oscar_lawalata: {
     displayName: 'Tamu (Ctrl)',
     callSign: 'GST02',
-    location: 'BALI',
+    location: 'DENPASAR, BALI',
     avatarColor: '#9C27B0',
     avatarUrl: 'https://randomuser.me/api/portraits/women/16.jpg',
     isControlled: true,
@@ -189,7 +189,7 @@ export const USER_PROFILES: Record<string, UserProfile> = {
   test_user_1: {
     displayName: 'Test User 1',
     callSign: 'TST01',
-    location: 'JAKARTA SELATAN',
+    location: 'JAKARTA SELATAN, DKI',
     avatarColor: '#2196F3',
     avatarUrl: 'https://randomuser.me/api/portraits/men/44.jpg',
     role: 'operator',
@@ -197,7 +197,7 @@ export const USER_PROFILES: Record<string, UserProfile> = {
   test_user_2: {
     displayName: 'Test User 2',
     callSign: 'TST02',
-    location: 'BANDUNG UTARA',
+    location: 'BANDUNG UTARA, JABAR',
     avatarColor: '#8BC34A',
     avatarUrl: 'https://randomuser.me/api/portraits/women/45.jpg',
     role: 'guest',
@@ -205,7 +205,7 @@ export const USER_PROFILES: Record<string, UserProfile> = {
   test_user_3: {
     displayName: 'Test User 3',
     callSign: 'TST03',
-    location: 'SURABAYA BARAT',
+    location: 'SURABAYA BARAT, JATIM',
     avatarColor: '#FFC107',
     avatarUrl: 'https://randomuser.me/api/portraits/men/46.jpg',
     role: 'noc',
@@ -213,7 +213,7 @@ export const USER_PROFILES: Record<string, UserProfile> = {
   test_user_4: {
     displayName: 'Test User 4',
     callSign: 'TST04',
-    location: 'YOGYAKARTA',
+    location: 'YOGYAKARTA, DIY',
     avatarColor: '#9C27B0',
     avatarUrl: 'https://randomuser.me/api/portraits/women/47.jpg',
     role: 'operator',
@@ -944,6 +944,7 @@ export function UserListModal({ channel, channelName: _channelName, users }: Use
                     <span className="text-[#00C853] font-medium tracking-wide">
                       {profile.callSign}
                     </span>
+                    <span className="text-gray-400 font-normal mx-px">·</span>
                     <span className="text-gray-500 font-normal uppercase">{profile.location}</span>
                   </div>
                 </div>
