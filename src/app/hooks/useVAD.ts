@@ -1,7 +1,7 @@
 import { useRef, useCallback } from 'react';
 import { usePTTStore } from '../store/usePTTStore';
 
-import { globalAudioContext } from '../utils/audioContext';
+import { initGlobalAudioContext } from '../utils/audioContext';
 export function useVAD(threshold = 0.01, silenceTimeout = 1500) {
   const vadAnalyserRef = useRef<AnalyserNode | null>(null);
   const vadIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -10,12 +10,12 @@ export function useVAD(threshold = 0.01, silenceTimeout = 1500) {
   const startVAD = useCallback(
     (stream: MediaStream, micTrack: MediaStreamTrack) => {
       try {
-        const ctx = globalAudioContext;
+        const ctx = initGlobalAudioContext();
         if (!ctx) {
           console.warn('VAD initialization failed: globalAudioContext is null');
           return;
         }
-        
+
         // Ensure the context is running (it might be suspended if created early)
         if (ctx.state === 'suspended') {
           ctx.resume().catch(console.warn);

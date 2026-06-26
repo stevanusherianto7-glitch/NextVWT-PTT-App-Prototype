@@ -2,7 +2,8 @@
  * src/app/hooks/useVAD.test.ts
  * Unit tests untuk Voice Activity Detection hook
  *
- * Strategy: Mock AudioContext API karena tidak tersedia di jsdom (Vitest env)
+ * Strategy: Mock audioContext module karena AudioContext tidak tersedia di jsdom.
+ * initGlobalAudioContext() di-mock per-test untuk mengembalikan fake AudioContext.
  * Tests memverifikasi:
  *   1. startVAD menginisialisasi analyser dan memulai polling interval
  *   2. VAD mute microphone track saat silence terdeteksi
@@ -14,6 +15,16 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useVAD } from './useVAD';
 import { usePTTStore } from '../store/usePTTStore';
+import { initGlobalAudioContext } from '../utils/audioContext';
+
+// ─── Mock audioContext module ─────────────────────────────────────────────────
+// useVAD calls initGlobalAudioContext() at runtime — mock it so tests can
+// inject a controlled fake AudioContext without a real Web Audio API.
+// vi.mock is hoisted by Vitest and runs before any imports.
+vi.mock('../utils/audioContext', () => ({
+  initGlobalAudioContext: vi.fn(),
+  __resetAudioContextForTest: vi.fn(),
+}));
 
 // ─── Mock Supabase (offline-capable) ─────────────────────────────────────────
 vi.mock('../utils/supabase', () => {
@@ -61,7 +72,6 @@ const localStorageMock = (() => {
 Object.defineProperty(globalThis, 'localStorage', { value: localStorageMock, writable: true });
 
 // ─── Mock Web Audio API ───────────────────────────────────────────────────────
-// jsdom tidak mengimplementasikan AudioContext, jadi kita mock seluruhnya
 let mockAnalyserData: Float32Array;
 let mockAnalyserNode: {
   fftSize: number;
@@ -70,11 +80,12 @@ let mockAnalyserNode: {
 let mockAudioContext: {
   createMediaStreamSource: ReturnType<typeof vi.fn>;
   createAnalyser: ReturnType<typeof vi.fn>;
+  state: string;
+  resume: ReturnType<typeof vi.fn>;
 };
 
 const setupAudioMocks = (rmsValue = 0.05) => {
-  // Buat buffer dengan RMS sesuai rmsValue yang diinginkan
-  // RMS = sqrt(sum(x^2) / n) → untuk nilai tetap: setiap sample = rmsValue
+  // RMS = sqrt(mean(x^2)) — fill buffer with constant so RMS equals rmsValue
   mockAnalyserData = new Float32Array(512).fill(rmsValue);
 
   mockAnalyserNode = {
@@ -84,33 +95,19 @@ const setupAudioMocks = (rmsValue = 0.05) => {
     }),
   };
 
-  const mockSource = {
-    connect: vi.fn(),
-  };
+  const mockSource = { connect: vi.fn() };
 
   mockAudioContext = {
     createMediaStreamSource: vi.fn(() => mockSource),
     createAnalyser: vi.fn(() => mockAnalyserNode),
+    state: 'running',
+    resume: vi.fn(() => Promise.resolve()),
   };
 
-  // Expose ke globalThis dan window agar hook bisa menemukannya
-  const mockContextClass = vi.fn().mockImplementation(function () {
-    return mockAudioContext;
-  });
-
-  Object.defineProperty(globalThis, 'AudioContext', {
-    value: mockContextClass,
-    writable: true,
-    configurable: true,
-  });
-
-  if (typeof window !== 'undefined') {
-    Object.defineProperty(window, 'AudioContext', {
-      value: mockContextClass,
-      writable: true,
-      configurable: true,
-    });
-  }
+  // Wire fake context into the mocked module function
+  vi.mocked(initGlobalAudioContext).mockReturnValue(
+    mockAudioContext as unknown as AudioContext,
+  );
 };
 
 // ─── Mock MediaStreamTrack ────────────────────────────────────────────────────
@@ -133,15 +130,15 @@ describe('useVAD', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     localStorageMock.clear();
-    setupAudioMocks(0.05); // default: audio aktif (RMS di atas threshold 0.01)
+    setupAudioMocks(0.05);
 
-    // Reset store progress
     usePTTStore.setState({ progress: 0 });
   });
 
   afterEach(() => {
     vi.useRealTimers();
     vi.clearAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('should initialize with correct default refs', () => {
@@ -162,31 +159,26 @@ describe('useVAD', () => {
       result.current.startVAD(stream, track);
     });
 
-    // AudioContext harus diinisialisasi
+    expect(initGlobalAudioContext).toHaveBeenCalled();
     expect(mockAudioContext.createMediaStreamSource).toHaveBeenCalledWith(stream);
     expect(mockAudioContext.createAnalyser).toHaveBeenCalled();
     expect(mockAnalyserNode.fftSize).toBe(512);
-
-    // Analyser ref harus ter-set
     expect(result.current.vadAnalyserRef.current).toBe(mockAnalyserNode);
   });
 
   it('should update store progress when audio is active (above threshold)', () => {
-    // RMS = 0.05 → scaledProgress = min(100, round(0.05 * 400)) = 20
     setupAudioMocks(0.05);
 
     const { result } = renderHook(() => useVAD(0.01));
     const track = createMockTrack();
     const stream = createMockStream(track);
 
-    // Set isTransmitting to true to bypass store setProgress guard
     usePTTStore.setState({ isTransmitting: true });
 
     act(() => {
       result.current.startVAD(stream, track);
     });
 
-    // Advance timer untuk memicu checkVAD interval (100ms)
     act(() => {
       vi.advanceTimersByTime(150);
     });
@@ -197,10 +189,9 @@ describe('useVAD', () => {
   });
 
   it('should mute track after silence timeout exceeds threshold', () => {
-    // RMS = 0.001 → di bawah threshold 0.01 → silence detected
     setupAudioMocks(0.001);
 
-    const { result } = renderHook(() => useVAD(0.01, 300)); // 300ms silence timeout
+    const { result } = renderHook(() => useVAD(0.01, 300));
     const track = createMockTrack();
     const stream = createMockStream(track);
 
@@ -210,18 +201,15 @@ describe('useVAD', () => {
       result.current.startVAD(stream, track);
     });
 
-    // Advance melewati silence timeout (300ms) + beberapa interval (100ms each)
     act(() => {
       vi.advanceTimersByTime(500);
     });
 
-    // Track harus di-mute karena silence terdeteksi
     expect(track.enabled).toBe(false);
     expect(result.current.isVADSpeakingRef.current).toBe(false);
   });
 
   it('should unmute track when audio resumes after silence', () => {
-    // Mulai dengan silence
     setupAudioMocks(0.001);
 
     const { result } = renderHook(() => useVAD(0.01, 200));
@@ -232,19 +220,16 @@ describe('useVAD', () => {
       result.current.startVAD(stream, track);
     });
 
-    // Advance melewati silence timeout → mute
     act(() => {
       vi.advanceTimersByTime(400);
     });
     expect(track.enabled).toBe(false);
 
-    // Simulasikan audio kembali aktif — ganti data analyser
     mockAnalyserData = new Float32Array(512).fill(0.05);
     mockAnalyserNode.getFloatTimeDomainData.mockImplementation((arr: Float32Array) => {
       arr.set(mockAnalyserData);
     });
 
-    // Advance lagi → unmute
     act(() => {
       vi.advanceTimersByTime(200);
     });
@@ -262,45 +247,30 @@ describe('useVAD', () => {
       result.current.startVAD(stream, track);
     });
 
-    // Pastikan analyser ter-set
     expect(result.current.vadAnalyserRef.current).not.toBeNull();
 
     act(() => {
       result.current.stopVAD();
     });
 
-    // Refs harus dibersihkan
     expect(result.current.vadAnalyserRef.current).toBeNull();
-
-    // Store progress harus direset ke 0
     expect(usePTTStore.getState().progress).toBe(0);
   });
 
   it('should handle gracefully when AudioContext is not available', () => {
-    // Hapus AudioContext dari window untuk simulasi browser lama
-    Object.defineProperty(globalThis, 'AudioContext', {
-      value: undefined,
-      writable: true,
-      configurable: true,
-    });
-    Object.defineProperty(globalThis, 'webkitAudioContext', {
-      value: undefined,
-      writable: true,
-      configurable: true,
-    });
+    // Simulasikan browser lama: initGlobalAudioContext returns null
+    vi.mocked(initGlobalAudioContext).mockReturnValue(null as unknown as AudioContext);
 
     const { result } = renderHook(() => useVAD());
     const track = createMockTrack();
     const stream = createMockStream(track);
 
-    // Tidak boleh throw error
     expect(() => {
       act(() => {
         result.current.startVAD(stream, track);
       });
     }).not.toThrow();
 
-    // Analyser ref tetap null karena AudioContext tidak ada
     expect(result.current.vadAnalyserRef.current).toBeNull();
   });
 
