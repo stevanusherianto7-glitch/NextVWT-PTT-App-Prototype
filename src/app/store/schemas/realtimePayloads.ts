@@ -93,6 +93,20 @@ export const PresenceMetaSchema = z.object({
 });
 export type PresenceMeta = z.infer<typeof PresenceMetaSchema>;
 
+// ─── Update role broadcast (update_role event) ──────────────────────────────
+export const UpdateRolePayloadSchema = z.object({
+  targetUserId: UserIdSchema,
+  nextRole: ChannelRoleSchema,
+});
+export type UpdateRolePayload = z.infer<typeof UpdateRolePayloadSchema>;
+
+// ─── Update status broadcast (update_status event) ──────────────────────────
+export const UpdateStatusPayloadSchema = z.object({
+  targetUserId: UserIdSchema,
+  statusType: z.enum(['normal', 'muted', 'controlled', 'wait', 'wait_controlled']),
+});
+export type UpdateStatusPayload = z.infer<typeof UpdateStatusPayloadSchema>;
+
 // ─── Helper: safe parse dengan logging ──────────────────────────────────────
 
 /**

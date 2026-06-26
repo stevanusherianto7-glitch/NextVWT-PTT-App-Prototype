@@ -12,6 +12,8 @@ import {
   ReactionPayloadSchema,
   KickPayloadSchema,
   PresenceMetaSchema,
+  UpdateRolePayloadSchema,
+  UpdateStatusPayloadSchema,
   safeParseRealtimePayload,
 } from './schemas/realtimePayloads';
 
@@ -220,7 +222,51 @@ function subscribeToChannel(channelNum: number, retryCount = 0) {
             // Force channel change to 302
             state.setChannelNumber(302);
           }
-        });
+        })
+        .on(
+          'broadcast',
+          { event: 'update_role' },
+          ({ payload: rawPayload }: { payload: unknown }) => {
+            if (activeChannelSubscription !== channelInstance) return;
+            // [F-04] Validate update_role payload
+            const payload = safeParseRealtimePayload(
+              UpdateRolePayloadSchema,
+              rawPayload,
+              'update_role'
+            );
+            if (!payload) return;
+            const roomId = `ptt-room-${channelNum}`;
+            sessionStorage.setItem(
+              `channel-role:${roomId}:${payload.targetUserId}`,
+              payload.nextRole
+            );
+            window.dispatchEvent(new Event('channel-role-changed'));
+          }
+        )
+        .on(
+          'broadcast',
+          { event: 'update_status' },
+          ({ payload: rawPayload }: { payload: unknown }) => {
+            if (activeChannelSubscription !== channelInstance) return;
+            // [F-04] Validate update_status payload
+            const payload = safeParseRealtimePayload(
+              UpdateStatusPayloadSchema,
+              rawPayload,
+              'update_status'
+            );
+            if (!payload) return;
+            const roomId = `ptt-room-${channelNum}`;
+            if (payload.statusType === 'normal') {
+              sessionStorage.setItem(`channel-status:${roomId}:${payload.targetUserId}`, 'active');
+            } else {
+              sessionStorage.setItem(
+                `channel-status:${roomId}:${payload.targetUserId}`,
+                payload.statusType
+              );
+            }
+            window.dispatchEvent(new Event('channel-role-changed'));
+          }
+        );
 
       channelInstance.subscribe((status: string) => {
         if (activeChannelSubscription !== channelInstance) return;

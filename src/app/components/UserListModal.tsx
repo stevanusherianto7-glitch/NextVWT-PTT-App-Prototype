@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { usePTTStore } from '../store/usePTTStore';
+import { activeChannelSubscription } from '../store/subscription';
 import { ChannelRole } from '../../features/moderation/permissions';
 import iconVoice from '../../assets/icon_voice.png';
 import iconOperator from '../../assets/icon_operator_otomatis.png';
@@ -649,6 +650,17 @@ export function UserListModal({
     setModalUsers(mapUsers(users));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [users, channel]);
+
+  useEffect(() => {
+    const handleRoleChanged = () => {
+      setModalUsers(mapUsers(users));
+    };
+    window.addEventListener('channel-role-changed', handleRoleChanged);
+    return () => {
+      window.removeEventListener('channel-role-changed', handleRoleChanged);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [users, channel]);
   const [notifications, setNotifications] = useState<
     Array<{ id: string; displayName: string; type: 'join' | 'leave' }>
   >([]);
@@ -729,6 +741,18 @@ export function UserListModal({
     if (uId === localUserId || uId === '2DYUA' || uId === localName) {
       window.dispatchEvent(new Event('channel-role-changed'));
     }
+
+    if (activeChannelSubscription) {
+      activeChannelSubscription.send({
+        type: 'broadcast',
+        event: 'update_role',
+        payload: {
+          targetUserId: uId,
+          nextRole,
+        },
+      });
+    }
+
     setModalUsers((prev) => prev.map((u) => (u.userId === uId ? { ...u, role: nextRole } : u)));
     setActiveZoomedAvatar((prev) =>
       prev && prev.userId === uId ? { ...prev, role: nextRole } : prev
@@ -748,6 +772,17 @@ export function UserListModal({
 
     if (uId === localUserId || uId === '2DYUA' || uId === localName) {
       window.dispatchEvent(new Event('channel-role-changed'));
+    }
+
+    if (activeChannelSubscription) {
+      activeChannelSubscription.send({
+        type: 'broadcast',
+        event: 'update_status',
+        payload: {
+          targetUserId: uId,
+          statusType,
+        },
+      });
     }
 
     setModalUsers((prev) =>
