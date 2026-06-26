@@ -45,9 +45,9 @@ export function useAudioPlayback() {
   const getAudioContext = useCallback(() => {
     const ctx = initGlobalAudioContext();
     if (ctx && !globalPlaybackAnalyser) {
-        globalPlaybackAnalyser = ctx.createAnalyser();
-        globalPlaybackAnalyser.fftSize = 512;
-        globalPlaybackAnalyser.connect(ctx.destination);
+      globalPlaybackAnalyser = ctx.createAnalyser();
+      globalPlaybackAnalyser.fftSize = 512;
+      globalPlaybackAnalyser.connect(ctx.destination);
     }
     return ctx;
   }, []);

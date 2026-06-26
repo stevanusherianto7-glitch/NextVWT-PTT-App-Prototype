@@ -1,4 +1,18 @@
-export type ReactionKind = 'applause' | 'love' | 'wow' | 'fire' | 'crown' | 'confetti';
+export type ReactionKind =
+  | 'applause'
+  | 'love'
+  | 'kiss'
+  | 'wow'
+  | 'fire'
+  | 'crown'
+  | 'confetti'
+  | 'bart'
+  | 'fox'
+  | 'rocket'
+  | 'lightning'
+  | 'star3d'
+  | 'lion'
+  | 'aquarium';
 export interface RoomReactionEvent {
   id: string;
   roomId: string;

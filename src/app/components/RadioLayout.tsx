@@ -52,34 +52,34 @@ const playChirpSound = (isJoin: boolean) => {
   try {
     const ctx = initGlobalAudioContext();
     if (!ctx) return;
-    
+
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    
+
     osc.connect(gain);
     gain.connect(ctx.destination);
-    
+
     const now = ctx.currentTime;
     if (isJoin) {
       osc.type = 'sine';
       osc.frequency.setValueAtTime(750, now);
       osc.frequency.exponentialRampToValueAtTime(1250, now + 0.12);
-      
+
       gain.gain.setValueAtTime(0, now);
       gain.gain.linearRampToValueAtTime(0.08, now + 0.02);
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
-      
+
       osc.start(now);
       osc.stop(now + 0.15);
     } else {
       osc.type = 'sine';
       osc.frequency.setValueAtTime(950, now);
       osc.frequency.exponentialRampToValueAtTime(450, now + 0.15);
-      
+
       gain.gain.setValueAtTime(0, now);
       gain.gain.linearRampToValueAtTime(0.08, now + 0.02);
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
-      
+
       osc.start(now);
       osc.stop(now + 0.2);
     }
@@ -109,7 +109,53 @@ import kissAnimation from '../../assets/reactions/kiss.json';
 import bartSvg from '../../assets/reactions/bart.svg';
 import foxSvg from '../../assets/reactions/fox.svg';
 
+const reactionTimeouts: Record<string, ReturnType<typeof setTimeout>> = {};
+
 const playReactionSound = (kind: string) => {
+  if (kind === 'ketawa_nular') {
+    try {
+      const iframe = document.getElementById('youtube-player-ketawa-nular') as HTMLIFrameElement | null;
+      if (iframe && iframe.contentWindow) {
+        if (reactionTimeouts['ketawa_nular']) {
+          clearTimeout(reactionTimeouts['ketawa_nular']);
+        }
+        iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
+        iframe.contentWindow.postMessage('{"event":"command","func":"seekTo","args":[0,true]}', '*');
+        iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+
+        reactionTimeouts['ketawa_nular'] = setTimeout(() => {
+          if (iframe.contentWindow) {
+            iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+          }
+        }, 12000);
+      }
+    } catch (err) {
+      console.warn('Failed to play ketawa_nular:', err);
+    }
+    return;
+  }
+  if (kind === 'ketawa_anjay') {
+    try {
+      const iframe = document.getElementById('youtube-player-ketawa-anjay') as HTMLIFrameElement | null;
+      if (iframe && iframe.contentWindow) {
+        if (reactionTimeouts['ketawa_anjay']) {
+          clearTimeout(reactionTimeouts['ketawa_anjay']);
+        }
+        iframe.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
+        iframe.contentWindow.postMessage('{"event":"command","func":"seekTo","args":[0,true]}', '*');
+        iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+
+        reactionTimeouts['ketawa_anjay'] = setTimeout(() => {
+          if (iframe.contentWindow) {
+            iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+          }
+        }, 12000);
+      }
+    } catch (err) {
+      console.warn('Failed to play ketawa_anjay:', err);
+    }
+    return;
+  }
   try {
     const AudioContextClass =
       window.AudioContext ||
@@ -244,7 +290,6 @@ export function RadioLayout() {
   const [waitTimer, setWaitTimer] = useState<number | null>(null);
   const [simulatedUsers, setSimulatedUsers] = useState<any[]>([]);
 
-
   const { startRecording, stopRecording, playAudioChunk, flushAudioQueue } = useAudioStreamer();
 
   const roomId = `ptt-room-${channel}`;
@@ -319,7 +364,7 @@ export function RadioLayout() {
   // Monitor dynamicUserList changes for Join/Leave chirp sounds
   useEffect(() => {
     if (!isPowerOn) return;
-    
+
     const currentIds = dynamicUserList.map((u) => (typeof u === 'string' ? u : u.userId));
 
     if (isFirstRender.current) {
@@ -359,8 +404,10 @@ export function RadioLayout() {
         if (rand < 0.55) {
           const currentList = latestUserListRef.current;
           const currentIds = currentList.map((u) => (typeof u === 'string' ? u : u.userId));
-          const available = SIMULATED_CANDIDATES.filter((cand) => !currentIds.includes(cand.userId));
-          
+          const available = SIMULATED_CANDIDATES.filter(
+            (cand) => !currentIds.includes(cand.userId)
+          );
+
           if (available.length > 0) {
             const randomIndex = Math.floor(Math.random() * available.length);
             const nextUser = available[randomIndex];
@@ -386,14 +433,14 @@ export function RadioLayout() {
     };
 
     let timerId: ReturnType<typeof setTimeout>;
-    
+
     // Initial trigger after 8 seconds of power-on
     timerId = setTimeout(() => {
       setSimulatedUsers((prevSimulated) => {
         const currentList = latestUserListRef.current;
         const currentIds = currentList.map((u) => (typeof u === 'string' ? u : u.userId));
         const available = SIMULATED_CANDIDATES.filter((cand) => !currentIds.includes(cand.userId));
-        
+
         if (available.length > 0) {
           const randomIndex = Math.floor(Math.random() * available.length);
           const nextUser = available[randomIndex];
@@ -461,30 +508,30 @@ export function RadioLayout() {
             try {
               const chunksToPlay = [...echoChunksRef.current];
               echoChunksRef.current = [];
-              
+
               // Combine all base64 chunks into a single ArrayBuffer (full WebM file)
               let totalLength = 0;
-              const byteArrays = chunksToPlay.map(b64 => {
+              const byteArrays = chunksToPlay.map((b64) => {
                 const binary = window.atob(b64);
                 const bytes = new Uint8Array(binary.length);
                 for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
                 totalLength += bytes.length;
                 return bytes;
               });
-              
+
               const combinedBuffer = new Uint8Array(totalLength);
               let offset = 0;
               for (const bytes of byteArrays) {
                 combinedBuffer.set(bytes, offset);
                 offset += bytes.length;
               }
-              
+
               let combinedBinary = '';
               for (let i = 0; i < combinedBuffer.length; i++) {
                 combinedBinary += String.fromCharCode(combinedBuffer[i]);
               }
               const combinedBase64 = window.btoa(combinedBinary);
-              
+
               // Local loopback offline fallback triggers the playAudioChunk
               playAudioChunk(combinedBase64);
             } catch (err) {
@@ -721,9 +768,14 @@ export function RadioLayout() {
           { id, category: payload.category, reaction: payload.reaction, x, senderName },
         ]);
         if (payload.category === 'sound') playReactionSound(payload.reaction);
-        setTimeout(() => {
-          setFloatingReactions((prev) => prev.filter((r) => r.id !== id));
-        }, 5000);
+        const isVideo = payload.reaction === 'lion' || payload.reaction === 'aquarium';
+        const isKetawa = payload.reaction === 'ketawa_nular' || payload.reaction === 'ketawa_anjay';
+        setTimeout(
+          () => {
+            setFloatingReactions((prev) => prev.filter((r) => r.id !== id));
+          },
+          isVideo ? 60000 : isKetawa ? 12000 : 5000
+        );
       }
     });
     return () => {
@@ -747,9 +799,14 @@ export function RadioLayout() {
       { id: localId, category, reaction: reactionType, x, senderName: localDisplayName },
     ]);
     if (category === 'sound') playReactionSound(reactionType);
-    setTimeout(() => {
-      setFloatingReactions((prev) => prev.filter((r) => r.id !== localId));
-    }, 5000);
+    const isVideo = reactionType === 'lion' || reactionType === 'aquarium';
+    const isKetawa = reactionType === 'ketawa_nular' || reactionType === 'ketawa_anjay';
+    setTimeout(
+      () => {
+        setFloatingReactions((prev) => prev.filter((r) => r.id !== localId));
+      },
+      isVideo ? 60000 : isKetawa ? 12000 : 5000
+    );
 
     // Broadcast to other peers on the channel
     broadcastReaction(category, reactionType);
@@ -760,7 +817,6 @@ export function RadioLayout() {
       setIsSettingsOpen(true);
     }
   };
-
 
   const displayUser = infoText ? infoText.toUpperCase() : 'USER';
   const displayLoc = locationText ? locationText.toUpperCase() : 'BANDUNG, JABAR';
@@ -915,14 +971,51 @@ export function RadioLayout() {
             }}
             className="flex-1 min-h-0 w-full max-w-[400px] flex flex-col items-center pt-[14px] px-[10px] pb-20 relative cursor-default"
           >
-
             {isUserListOpen ? (
-              <UserListModal
-                channel={channel}
-                channelName={channelNameStr}
-                users={dynamicUserList}
-                onClose={() => setIsUserListOpen(false)}
-              />
+              <div className="w-full max-w-[340px] h-[426px] relative -mt-[14px] overflow-hidden">
+                {/* Background Video Reaction (Lion or Aquarium) */}
+                {isPowerOn &&
+                  floatingReactions.some(
+                    (r) => r.reaction === 'lion' || r.reaction === 'aquarium'
+                  ) &&
+                  (() => {
+                    const activeReaction = floatingReactions.find(
+                      (r) => r.reaction === 'lion' || r.reaction === 'aquarium'
+                    );
+                    const isLion = activeReaction?.reaction === 'lion';
+                    const videoId = isLion ? 'SvBAptWsNZo' : 'jBbqxCpUsjM';
+                    return (
+                      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden bg-black animate-in fade-in duration-300">
+                        <iframe
+                          src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}&modestbranding=1&rel=0&iv_load_policy=3&vq=highres`}
+                          title={isLion ? '3D Lion Background' : 'Aquarium / Relaxing Background'}
+                          className="absolute pointer-events-none"
+                          style={{
+                            border: 'none',
+                            width: '1084px',
+                            height: '610px',
+                            top: '-92px',
+                            left: '-372px',
+                            filter: 'brightness(1.45) contrast(1.15) saturate(1.25)',
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/10 via-transparent to-black/10 pointer-events-none" />
+                      </div>
+                    );
+                  })()}
+                <UserListModal
+                  channel={channel}
+                  channelName={channelNameStr}
+                  users={dynamicUserList}
+                  onClose={() => setIsUserListOpen(false)}
+                  hasVideoBackground={
+                    isPowerOn &&
+                    floatingReactions.some(
+                      (r) => r.reaction === 'lion' || r.reaction === 'aquarium'
+                    )
+                  }
+                />
+              </div>
             ) : (
               <div className="w-full h-[424px] flex flex-col justify-start items-center relative">
                 {/* Themed Faceplate Container */}
@@ -983,12 +1076,24 @@ export function RadioLayout() {
 
             {/* Floating Reactions Overlay — rendered on top of both UserListModal and faceplate */}
             {isPowerOn && floatingReactions.length > 0 && (
-              <div className={`absolute inset-x-0 top-[14px] w-full max-w-[340px] mx-auto h-[426px] pointer-events-none z-30 overflow-hidden ${isUserListOpen ? 'flex items-center justify-center' : ''}`}>
+              <div
+                className={`absolute inset-x-0 top-[14px] w-full max-w-[340px] mx-auto h-[426px] pointer-events-none z-30 overflow-hidden ${isUserListOpen ? 'flex items-center justify-center' : ''}`}
+              >
                 {floatingReactions.map((r) => {
                   const floatAnim = isUserListOpen ? 'animate-float-center-up' : 'animate-float-up';
                   const posStyle = isUserListOpen
-                    ? { position: 'absolute' as const, left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }
-                    : { position: 'absolute' as const, bottom: 0, left: `${r.x}%`, transform: 'translateX(-50%)' };
+                    ? {
+                        position: 'absolute' as const,
+                        left: '50%',
+                        top: '50%',
+                        transform: 'translate(-50%, -50%)',
+                      }
+                    : {
+                        position: 'absolute' as const,
+                        bottom: 0,
+                        left: `${r.x}%`,
+                        transform: 'translateX(-50%)',
+                      };
 
                   if (r.category === 'sound') {
                     const soundEmojis: Record<string, string> = {
@@ -996,6 +1101,8 @@ export function RadioLayout() {
                       buzzer: '❌',
                       drum: '🥁',
                       horn: '🎺',
+                      ketawa_nular: '😆',
+                      ketawa_anjay: '😂',
                     };
                     return (
                       <div
@@ -1003,8 +1110,18 @@ export function RadioLayout() {
                         className="flex flex-col items-center gap-0.5 pointer-events-none"
                         style={posStyle}
                       >
-                        <div className={`${floatAnim} flex flex-col items-center gap-0.5 opacity-80`}>
-                          <span className="text-[32px]">{soundEmojis[r.reaction] || '🎵'}</span>
+                        <div
+                          className={`${floatAnim} flex flex-col items-center gap-0.5 opacity-80`}
+                        >
+                          <span
+                            className={
+                              isUserListOpen
+                                ? 'text-[110px] filter drop-shadow-[0_0_20px_rgba(255,255,255,0.8)] select-none'
+                                : 'text-[32px] select-none'
+                            }
+                          >
+                            {soundEmojis[r.reaction] || '🎵'}
+                          </span>
                           {r.senderName && (
                             <span className="text-[9px] font-bold text-white px-1.5 py-0.5 rounded-full bg-black/60 backdrop-blur-sm leading-none whitespace-nowrap max-w-[80px] truncate">
                               {r.senderName}
@@ -1042,7 +1159,11 @@ export function RadioLayout() {
                         style={posStyle}
                       >
                         <div className={`${floatAnim} flex flex-col items-center gap-0.5`}>
-                          <img src={bartSvg} className="w-[110px] h-[110px] object-contain" alt="Bart Simpson" />
+                          <img
+                            src={bartSvg}
+                            className="w-[110px] h-[110px] object-contain"
+                            alt="Bart Simpson"
+                          />
                           {r.senderName && (
                             <span className="text-[9px] font-bold text-white px-1.5 py-0.5 rounded-full bg-black/60 backdrop-blur-sm leading-none whitespace-nowrap max-w-[110px] truncate">
                               {r.senderName}
@@ -1061,7 +1182,11 @@ export function RadioLayout() {
                         style={posStyle}
                       >
                         <div className={`${floatAnim} flex flex-col items-center gap-0.5`}>
-                          <img src={foxSvg} className="w-[180px] h-[180px] object-contain" alt="Cute Fox" />
+                          <img
+                            src={foxSvg}
+                            className="w-[180px] h-[180px] object-contain"
+                            alt="Cute Fox"
+                          />
                           {r.senderName && (
                             <span className="text-[9px] font-bold text-white px-1.5 py-0.5 rounded-full bg-black/60 backdrop-blur-sm leading-none whitespace-nowrap max-w-[120px] truncate">
                               {r.senderName}
@@ -1079,13 +1204,18 @@ export function RadioLayout() {
                         className="flex flex-col items-center gap-0.5 pointer-events-none"
                         style={posStyle}
                       >
-                        <div className={`${isUserListOpen ? 'animate-float-center-up' : 'animate-rocket-launch'} flex flex-col items-center gap-0.5`}>
+                        <div
+                          className={`${isUserListOpen ? 'animate-float-center-up' : 'animate-rocket-launch'} flex flex-col items-center gap-0.5`}
+                        >
                           <span
                             className="text-[52px] select-none"
                             style={{
                               display: 'inline-block',
-                              animation: isUserListOpen ? undefined : 'rocket3d 4s ease-out forwards',
-                              filter: 'drop-shadow(0 0 10px rgba(255,140,0,0.9)) drop-shadow(0 6px 12px rgba(0,0,0,0.5))',
+                              animation: isUserListOpen
+                                ? undefined
+                                : 'rocket3d 4s ease-out forwards',
+                              filter:
+                                'drop-shadow(0 0 10px rgba(255,140,0,0.9)) drop-shadow(0 6px 12px rgba(0,0,0,0.5))',
                             }}
                           >
                             🚀
@@ -1106,13 +1236,18 @@ export function RadioLayout() {
                         className="flex flex-col items-center gap-0.5 pointer-events-none"
                         style={posStyle}
                       >
-                        <div className={`${isUserListOpen ? 'animate-float-center-up' : ''} flex flex-col items-center gap-0.5`}>
+                        <div
+                          className={`${isUserListOpen ? 'animate-float-center-up' : ''} flex flex-col items-center gap-0.5`}
+                        >
                           <span
                             className="text-[58px] select-none"
                             style={{
                               display: 'inline-block',
-                              animation: isUserListOpen ? undefined : 'lightning3d 4s ease-out forwards',
-                              filter: 'drop-shadow(0 0 16px rgba(255,255,60,1)) drop-shadow(0 0 32px rgba(255,200,0,0.7))',
+                              animation: isUserListOpen
+                                ? undefined
+                                : 'lightning3d 4s ease-out forwards',
+                              filter:
+                                'drop-shadow(0 0 16px rgba(255,255,60,1)) drop-shadow(0 0 32px rgba(255,200,0,0.7))',
                             }}
                           >
                             ⚡
@@ -1134,13 +1269,18 @@ export function RadioLayout() {
                         className="flex flex-col items-center gap-0.5 pointer-events-none"
                         style={posStyle}
                       >
-                        <div className={`${isUserListOpen ? 'animate-float-center-up' : ''} flex flex-col items-center gap-0.5`}>
+                        <div
+                          className={`${isUserListOpen ? 'animate-float-center-up' : ''} flex flex-col items-center gap-0.5`}
+                        >
                           <span
                             className="text-[56px] select-none"
                             style={{
                               display: 'inline-block',
-                              animation: isUserListOpen ? undefined : 'star3dSpin 4.5s ease-out forwards',
-                              filter: 'drop-shadow(0 0 14px rgba(255,220,0,0.95)) drop-shadow(0 0 28px rgba(255,180,0,0.6))',
+                              animation: isUserListOpen
+                                ? undefined
+                                : 'star3dSpin 4.5s ease-out forwards',
+                              filter:
+                                'drop-shadow(0 0 14px rgba(255,220,0,0.95)) drop-shadow(0 0 28px rgba(255,180,0,0.6))',
                             }}
                           >
                             🌟
@@ -1151,6 +1291,43 @@ export function RadioLayout() {
                             </span>
                           )}
                         </div>
+                      </div>
+                    );
+                  }
+
+                  if (r.reaction === 'lion' || r.reaction === 'aquarium') {
+                    if (isUserListOpen) return null; // Rendered as background behind UserListModal instead
+                    const isLion = r.reaction === 'lion';
+                    const videoId = isLion ? 'SvBAptWsNZo' : 'jBbqxCpUsjM';
+                    return (
+                      <div
+                        key={r.id}
+                        className="absolute inset-0 w-full h-full z-40 pointer-events-auto flex flex-col items-center justify-center bg-black animate-in fade-in duration-300"
+                      >
+                        <div className="w-full h-full relative overflow-hidden bg-black flex items-center justify-center">
+                          <iframe
+                            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}&modestbranding=1&rel=0&iv_load_policy=3&vq=highres`}
+                            title={isLion ? '3D Lion Reaction' : 'Aquarium / Relaxing Reaction'}
+                            className="absolute pointer-events-none"
+                            style={{
+                              border: 'none',
+                              width: '1084px',
+                              height: '610px',
+                              top: '-92px',
+                              left: '-372px',
+                              filter: 'brightness(1.45) contrast(1.15) saturate(1.25)',
+                            }}
+                          />
+                          {/* Overlay to prevent clicking/navigating inside the iframe */}
+                          <div className="absolute inset-0 bg-transparent" />
+                        </div>
+                        {r.senderName && (
+                          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50">
+                            <span className="text-[10px] font-bold text-white px-3 py-1.5 rounded-full bg-black/80 border border-white/10 backdrop-blur-sm shadow-md whitespace-nowrap">
+                              REAKSI DARI: {r.senderName.toUpperCase()}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     );
                   }
@@ -1261,6 +1438,22 @@ export function RadioLayout() {
           onSelectChannel={(num) => setChannelNumber(num)}
         />
       )}
+
+      {/* Preloaded Sound Reaction Players */}
+      <iframe
+        id="youtube-player-ketawa-nular"
+        src="https://www.youtube.com/embed/EwydqM4dNQE?enablejsapi=1&autoplay=0&controls=0"
+        title="Preloaded Ketawa Nular"
+        className="absolute w-0 h-0 opacity-0 pointer-events-none"
+        style={{ border: 'none' }}
+      />
+      <iframe
+        id="youtube-player-ketawa-anjay"
+        src="https://www.youtube.com/embed/1wmyPH1jUU4?enablejsapi=1&autoplay=0&controls=0"
+        title="Preloaded Ketawa Anjay"
+        className="absolute w-0 h-0 opacity-0 pointer-events-none"
+        style={{ border: 'none' }}
+      />
 
       {/* In-App Feedback Modal */}
       <FeedbackModal />

@@ -17,8 +17,8 @@
 export const ICON_PIXEL_SIZES = {
   voice: { w: 49, h: 46 }, // icon_voice.png          — single user / voice
   username: { w: 49, h: 46 }, // icon_username.png       — alias dari voice
-  moderator: { w: 43, h: 41 }, // icon_moderator.png
-  operator: { w: 41, h: 39 }, // icon_operator.png
+  moderator: { w: 42, h: 40 }, // icon_moderator.png
+  operator: { w: 42, h: 40 }, // icon_operator.png
   noc: { w: 41, h: 39 }, // icon_noc.png
   silent: { w: 38, h: 37 }, // icon_silent.png
   controlled: { w: 42, h: 42 }, // icon_controlled.png

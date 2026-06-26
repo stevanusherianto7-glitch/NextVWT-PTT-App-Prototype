@@ -105,9 +105,7 @@ const setupAudioMocks = (rmsValue = 0.05) => {
   };
 
   // Wire fake context into the mocked module function
-  vi.mocked(initGlobalAudioContext).mockReturnValue(
-    mockAudioContext as unknown as AudioContext,
-  );
+  vi.mocked(initGlobalAudioContext).mockReturnValue(mockAudioContext as unknown as AudioContext);
 };
 
 // ─── Mock MediaStreamTrack ────────────────────────────────────────────────────

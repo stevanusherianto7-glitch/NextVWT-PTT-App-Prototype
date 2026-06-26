@@ -52,6 +52,8 @@ export function QuickActionDock({
     { kind: 'rocket', emoji: '🚀' },
     { kind: 'lightning', emoji: '⚡' },
     { kind: 'star3d', emoji: '🌟' },
+    { kind: 'lion', emoji: '🦁' },
+    { kind: 'aquarium', emoji: '🐠' },
   ];
 
   const soundReactions = [
@@ -59,6 +61,8 @@ export function QuickActionDock({
     { kind: 'buzzer', emoji: '❌' },
     { kind: 'drum', emoji: '🥁' },
     { kind: 'horn', emoji: '🎺' },
+    { kind: 'ketawa_nular', emoji: '😆' },
+    { kind: 'ketawa_anjay', emoji: '😂' },
   ];
 
   const giftReactions = [
@@ -195,25 +199,43 @@ export function QuickActionDock({
               : activeTab === 'sound'
                 ? soundReactions
                 : giftReactions
-            ).map((r) => (
-              <button
-                type="button"
-                key={r.kind}
-                onClick={() => handleReactionClick(activeTab, r.kind)}
-                className="w-10 h-10 flex items-center justify-center text-[22px] rounded-xl cursor-pointer focus:outline-none transition-all duration-100 active:scale-90"
-                style={{ background: 'transparent' }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.background =
-                    'linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04))';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-                }}
-                title={r.kind}
-              >
-                {r.emoji}
-              </button>
-            ))}
+            ).map((r) => {
+              const getReactionTitle = (kind: string) => {
+                switch (kind) {
+                  case 'aquarium':
+                    return 'Aquarium / Relaxing';
+                  case 'star3d':
+                    return 'Star 3D';
+                  case 'giftbox':
+                    return 'Gift Box';
+                  case 'ketawa_nular':
+                    return 'Ketawa Nular';
+                  case 'ketawa_anjay':
+                    return 'Ketawa Anjay';
+                  default:
+                    return kind.charAt(0).toUpperCase() + kind.slice(1);
+                }
+              };
+              return (
+                <button
+                  type="button"
+                  key={r.kind}
+                  onClick={() => handleReactionClick(activeTab, r.kind)}
+                  className="w-10 h-10 flex items-center justify-center text-[22px] rounded-xl cursor-pointer focus:outline-none transition-all duration-100 active:scale-90"
+                  style={{ background: 'transparent' }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.background =
+                      'linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04))';
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+                  }}
+                  title={getReactionTitle(r.kind)}
+                >
+                  {r.emoji}
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
