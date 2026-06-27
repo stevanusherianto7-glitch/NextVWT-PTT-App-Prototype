@@ -740,9 +740,16 @@ export function RadioLayout() {
   useEffect(() => {
     setOnReactionReceived((payload) => {
       if (isPowerOn) {
+        // Prevent playing/showing our own reactions twice (since Supabase loopback self: true echoes it back)
+        const state = usePTTStore.getState();
+        const isSelf =
+          payload.senderId === state.userId &&
+          (!payload.senderCallSign || payload.senderCallSign === state.callSign);
+        if (isSelf) return;
+
         const id = payload.id || Math.random().toString();
         const x = 30 + Math.random() * 40;
-        const senderName = (payload as { senderName?: string }).senderName || 'User';
+        const senderName = payload.senderName || 'User';
         setFloatingReactions((prev) => [
           ...prev,
           { id, category: payload.category, reaction: payload.reaction, x, senderName },

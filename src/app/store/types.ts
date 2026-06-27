@@ -146,6 +146,8 @@ export interface PTTState {
         category: 'animation' | 'sound' | 'gift';
         reaction: string;
         senderName: string;
+        senderId?: string;
+        senderCallSign?: string | null;
       }) => void)
     | null;
   setOnReactionReceived: (
@@ -155,6 +157,8 @@ export interface PTTState {
           category: 'animation' | 'sound' | 'gift';
           reaction: string;
           senderName: string;
+          senderId?: string;
+          senderCallSign?: string | null;
         }) => void)
       | null
   ) => void;

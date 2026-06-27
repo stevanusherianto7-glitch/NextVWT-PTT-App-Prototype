@@ -74,6 +74,7 @@ export const ReactionPayloadSchema = z.object({
   senderName: z.string().min(1).max(100),
   roomId: z.string().optional(),
   senderId: UserIdSchema.optional(),
+  senderCallSign: z.string().optional().nullable(),
   createdAt: z.number().optional(),
 });
 export type ReactionPayload = z.infer<typeof ReactionPayloadSchema>;

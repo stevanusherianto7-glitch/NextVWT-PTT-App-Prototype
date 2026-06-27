@@ -289,6 +289,7 @@ export const createUISlice: StateCreator<
           id: Math.random().toString(),
           roomId: state.channelId,
           senderId: state.userId,
+          senderCallSign: state.callSign,
           senderName: state.infoText || 'User',
           category,
           reaction,
