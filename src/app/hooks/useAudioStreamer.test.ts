@@ -2,7 +2,7 @@
  * src/app/hooks/useAudioStreamer.test.ts
  * Unit tests untuk useAudioStreamer hook
  */
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useAudioStreamer } from './useAudioStreamer';
 import { usePTTStore } from '../store/usePTTStore';
@@ -85,7 +85,7 @@ class MockMediaRecorder {
 
   constructor(public stream: any, public options: any) {}
 
-  start(timeslice?: number) {
+  start(_timeslice?: number) {
     this.state = 'recording';
     // Simulate chunk delivery immediately
     if (this.ondataavailable) {
@@ -113,7 +113,7 @@ describe('useAudioStreamer – Hook Unit Tests', () => {
     vi.clearAllMocks();
     usePTTStore.setState({
       isConnected: true,
-      audioMode: 'normal',
+      audioMode: 'discussion',
       builtInEcho: false,
     });
   });
