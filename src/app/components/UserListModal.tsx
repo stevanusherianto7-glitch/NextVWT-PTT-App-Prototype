@@ -626,12 +626,16 @@ export function UserListModal({
       }
 
       const isLocalUser = uId === localUserId || profileData.displayName === localName;
+      const isPebeUser =
+        uId === 'Pebe Herianto' ||
+        profileData.displayName.toLowerCase() === 'pebe herianto' ||
+        profileData.displayName.toLowerCase() === 'pebri haryanto';
 
       return {
         ...profileData,
         avatarUrl: isLocalUser && localAvatar ? localAvatar : profileData.avatarUrl,
         userId: uId,
-        role: localRole || profileData.role || 'guest',
+        role: isPebeUser ? 'noc' : (localRole || profileData.role || 'guest'),
         isMuted: localStatus === 'muted' || (localStatus ? false : profileData.isMuted) || false,
         isControlled:
           localStatus === 'controlled' || (localStatus ? false : profileData.isControlled) || false,
@@ -985,7 +989,7 @@ export function UserListModal({
                   >
                     <span className="truncate inline-flex items-center gap-1">
                       {profile.role === 'noc' && (
-                        <span className="text-[#E53935] font-bold" title="NOC (Red Star)">★</span>
+                        <span className="text-[#800000] font-bold" title="NOC (Maroon Star)">★</span>
                       )}
                       {profile.displayName}
                     </span>

@@ -202,7 +202,7 @@ export function LCDPanel({
                   className="text-base -ml-1 truncate max-w-[110px] leading-none mb-[7px] inline-flex items-center gap-0.5"
                   style={{ fontWeight: 600, color: 'var(--lcd-label-color)' }}
                 >
-                  {isNoc && <span className="text-[#E53935] mr-0.5">★</span>}
+                  {isNoc && <span className="text-[#800000] mr-0.5">★</span>}
                   {username}
                 </span>
               </div>
