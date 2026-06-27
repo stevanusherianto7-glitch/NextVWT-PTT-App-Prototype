@@ -1247,8 +1247,42 @@ export function UserListModal({
                       className="w-3.5 h-3.5 object-contain"
                       alt="Moderator"
                     />
-                    Moderator
+                    PJC (Mod)
                   </button>
+
+                  {/* Sys Admin */}
+                  {(localRole === 'noc' || localRole === 'sys_admin') && (
+                    <button
+                      type="button"
+                      onClick={() => handleUpdateRole(activeZoomedAvatar.userId, 'sys_admin')}
+                      className={`flex items-center justify-center gap-0.5 py-1 rounded-lg border text-[10px] font-semibold transition-all duration-200 ${
+                        activeZoomedAvatar.role === 'sys_admin'
+                          ? 'bg-purple-50 border-purple-500/30 text-purple-700 shadow-sm'
+                          : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100'
+                      }`}
+                    >
+                      <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-current text-purple-600" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+                      </svg>
+                      Sys Admin
+                    </button>
+                  )}
+
+                  {/* NOC Bintang Merah */}
+                  {localRole === 'noc' && (
+                    <button
+                      type="button"
+                      onClick={() => handleUpdateRole(activeZoomedAvatar.userId, 'noc')}
+                      className={`flex items-center justify-center gap-0.5 py-1 rounded-lg border text-[10px] font-semibold transition-all duration-200 ${
+                        activeZoomedAvatar.role === 'noc'
+                          ? 'bg-red-50 border-red-500/30 text-red-700 shadow-sm'
+                          : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100'
+                      }`}
+                    >
+                      <span className="text-[#E53935] font-bold text-[12px] mr-0.5">★</span>
+                      NOC (★ Merah)
+                    </button>
+                  )}
                 </div>
 
                 {/* NOC Only: Banned Button */}
