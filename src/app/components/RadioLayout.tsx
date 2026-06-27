@@ -908,7 +908,7 @@ export function RadioLayout() {
                   </svg>
                 </div>
                 <div
-                  className={`flex flex-col justify-center relative z-20 transition-all duration-300 ${isTransmitting ? 'logo-transmitting' : ''} ml-0`}
+                  className="flex flex-col justify-center relative z-20 transition-all duration-300 ml-0"
                 >
                   <span
                     className="text-[16px] leading-none tracking-wide select-none"
