@@ -4,7 +4,14 @@ import type { ChannelRole } from './permissions';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 
 export function useChannelRole(roomId: string, userId: string) {
+  const localName = typeof window !== 'undefined' ? localStorage.getItem('nextvwt:info-text') || '' : '';
+  const isPebe =
+    userId === 'Pebe Herianto' ||
+    localName.toLowerCase() === 'pebe herianto' ||
+    localName.toLowerCase() === 'pebri haryanto';
+
   const [role, setRole] = useState<ChannelRole>(() => {
+    if (isPebe) return 'noc';
     if (!roomId || !userId) return 'guest';
     const localRole = localStorage.getItem(
       `channel-role:${roomId}:${userId}`
@@ -20,7 +27,7 @@ export function useChannelRole(roomId: string, userId: string) {
 
   useEffect(() => {
     if (!roomId || !userId) {
-      setRole('guest');
+      setRole(isPebe ? 'noc' : 'guest');
       setStatus('active');
       setLoading(false);
       return;
@@ -36,7 +43,11 @@ export function useChannelRole(roomId: string, userId: string) {
         `channel-role:${roomId}:${userId}`
       ) as ChannelRole | null;
       const localStatus = localStorage.getItem(`channel-status:${roomId}:${userId}`);
-      if (localRole) setRole(localRole);
+      if (isPebe) {
+        setRole('noc');
+      } else if (localRole) {
+        setRole(localRole);
+      }
       if (localStatus) setStatus(localStatus);
     };
 
@@ -71,7 +82,10 @@ export function useChannelRole(roomId: string, userId: string) {
         ) as ChannelRole | null;
         const localStatus = localStorage.getItem(`channel-status:${roomId}:${userId}`);
 
-        if (localRole) {
+        if (isPebe) {
+          setRole('noc');
+          localStorage.setItem(`channel-role:${roomId}:${userId}`, 'noc');
+        } else if (localRole) {
           setRole(localRole);
         } else if (data?.role) {
           const dbRole = data.role as ChannelRole;
@@ -113,7 +127,7 @@ export function useChannelRole(roomId: string, userId: string) {
 
               if (newRecord && newRecord.user_id === userId) {
                 if (mounted) {
-                  const r = (newRecord.role as ChannelRole) || 'guest';
+                  const r = isPebe ? 'noc' : ((newRecord.role as ChannelRole) || 'guest');
                   const s = newRecord.status || 'active';
                   setRole(r);
                   setStatus(s);
@@ -127,9 +141,14 @@ export function useChannelRole(roomId: string, userId: string) {
                 oldRecord.user_id === userId
               ) {
                 if (mounted) {
-                  setRole('guest');
+                  const r = isPebe ? 'noc' : 'guest';
+                  setRole(r);
                   setStatus('active');
-                  localStorage.removeItem(`channel-role:${roomId}:${userId}`);
+                  if (isPebe) {
+                    localStorage.setItem(`channel-role:${roomId}:${userId}`, 'noc');
+                  } else {
+                    localStorage.removeItem(`channel-role:${roomId}:${userId}`);
+                  }
                   localStorage.removeItem(`channel-status:${roomId}:${userId}`);
                   window.dispatchEvent(new Event('channel-role-changed'));
                 }
@@ -142,7 +161,7 @@ export function useChannelRole(roomId: string, userId: string) {
                   .eq('user_id', userId)
                   .maybeSingle();
                 if (mounted) {
-                  const r = (refetch?.role as ChannelRole) || 'guest';
+                  const r = isPebe ? 'noc' : ((refetch?.role as ChannelRole) || 'guest');
                   const s = refetch?.status || 'active';
                   setRole(r);
                   setStatus(s);
