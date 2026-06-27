@@ -105,8 +105,14 @@ test.describe('Multi-User Real-time Modulation Delivery', () => {
     await pageBeta.evaluate(mockUserMediaScript);
 
     // Set channel to a normal non-isolated channel (Channel 16) for both users to allow network broadcasting to be tested
-    await pageAlfa.evaluate(() => (window as any).__store__.getState().setChannelNumber(16));
-    await pageBeta.evaluate(() => (window as any).__store__.getState().setChannelNumber(16));
+    await pageAlfa.evaluate(() => {
+      (window as any).__store__.setState({ coins: 1000 });
+      (window as any).__store__.getState().setChannelNumber(16);
+    });
+    await pageBeta.evaluate(() => {
+      (window as any).__store__.setState({ coins: 1000 });
+      (window as any).__store__.getState().setChannelNumber(16);
+    });
 
     // 5. Retrieve User IDs
     const userIdAlfa = await pageAlfa.evaluate(

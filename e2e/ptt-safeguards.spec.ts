@@ -20,9 +20,20 @@ test.describe('PTT Robustness & Safeguards', () => {
     await page.evaluate(() => {
       const store = (window as any).__store__;
       if (store) {
+        const currentUsers = store.getState().activeUsers || [];
         store.setState({
+          coins: 1000,
           audioMode: 'discussion',
           fullDuplex: false,
+          activeUsers: [
+            ...currentUsers,
+            {
+              userId: 'user-alfa-uuid',
+              displayName: 'User Alfa',
+              callSign: 'ALFA',
+              location: 'BANDUNG',
+            }
+          ],
           activeTransmitter: {
             userId: 'user-alfa-uuid',
             displayName: 'User Alfa',
@@ -67,9 +78,20 @@ test.describe('PTT Robustness & Safeguards', () => {
     await page.evaluate(() => {
       const store = (window as any).__store__;
       if (store) {
+        const currentUsers = store.getState().activeUsers || [];
         store.setState({
+          coins: 1000,
           audioMode: 'discussion',
           fullDuplex: false,
+          activeUsers: [
+            ...currentUsers,
+            {
+              userId: 'user-alfa-uuid',
+              displayName: 'User Alfa',
+              callSign: 'ALFA',
+              location: 'BANDUNG',
+            }
+          ],
           activeTransmitter: {
             userId: 'user-alfa-uuid',
             displayName: 'User Alfa',

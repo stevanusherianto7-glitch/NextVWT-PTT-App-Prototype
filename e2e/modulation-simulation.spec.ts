@@ -62,8 +62,9 @@ test.describe('User Modulation Activity Simulation', () => {
   });
 
   test('user can press-and-hold PTT to modulate voice transmission', async ({ page }) => {
-    // 1. Turn off Toggle PTT directly via store to enable Hold-to-Talk mode
+    // 1. Turn off Toggle PTT and set coins balance directly via store to enable Hold-to-Talk mode
     await page.evaluate(() => {
+      (window as any).__store__.setState({ coins: 1000 });
       (window as any).__store__.getState().updateSettings({ togglePtt: false });
     });
 
