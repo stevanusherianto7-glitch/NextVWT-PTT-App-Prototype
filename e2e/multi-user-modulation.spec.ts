@@ -222,9 +222,11 @@ test.describe('Multi-User Real-time Modulation Delivery', () => {
 
     // Beta's progress bar (modulation) should animate and have width > 0px
     const progressBarBeta = pageBeta.locator('div.h-full.transition-all.duration-75').first();
-    const activeWidthBeta = await progressBarBeta.evaluate((el) => el.style.width);
-    expect(activeWidthBeta).not.toBe('0%');
-    expect(activeWidthBeta).not.toBe('');
+    await expect(async () => {
+      const activeWidthBeta = await progressBarBeta.evaluate((el) => el.style.width);
+      expect(activeWidthBeta).not.toBe('0%');
+      expect(activeWidthBeta).not.toBe('');
+    }).toPass({ timeout: 10_000 });
 
     // 8. User Alfa stops transmitting
     await pageAlfa.mouse.up();

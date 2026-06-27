@@ -3,16 +3,15 @@ import { usePTTStore } from '../../app/store/usePTTStore';
 import { getSupabase } from '../../app/utils/supabase';
 import { STATIC_CHANNELS, ChannelItem } from '../../app/utils/constants';
 import { useChannelRole } from './useChannelRole';
-import { Shield, Key, Sparkles, Coins, Lock, Unlock, ArrowRight, RefreshCw } from 'lucide-react';
+import { Shield, Key, Sparkles, Lock, Unlock, ArrowRight, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface PrivateChannelPanelProps {
   onClose: () => void;
-  onOpenWallet: () => void;
 }
 
-export function PrivateChannelPanel({ onClose, onOpenWallet }: PrivateChannelPanelProps) {
-  const { channelNumber, userId, coins, fetchCoins, setChannelNumber, user, infoText, callSign } =
+export function PrivateChannelPanel({ onClose }: PrivateChannelPanelProps) {
+  const { channelNumber, userId, setChannelNumber, user, infoText, callSign } =
     usePTTStore();
   const roomId = `ptt-room-${channelNumber}`;
 
@@ -73,30 +72,16 @@ export function PrivateChannelPanel({ onClose, onOpenWallet }: PrivateChannelPan
 
   useEffect(() => {
     checkBadgeStatus();
-    fetchCoins();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
-  // Exchange 10 coins for Badge Merah
+  // Exchange 10 coins for Badge Merah (Now FREE!)
   const handleExchangeBadge = async () => {
-    if (coins < 10) {
-      toast.error('Koin tidak cukup! Silakan lakukan pengisian di Dompet Koin.');
-      return;
-    }
-
     setIsExchanging(true);
     try {
       const supabase = await getSupabase();
 
-      // 1. Deduct 10 coins
-      const { error: coinErr } = await supabase
-        .from('user_profiles_extended')
-        .update({ coins: coins - 10 })
-        .eq('user_id', userId);
-
-      if (coinErr) throw coinErr;
-
-      // 2. Insert badge
+      // Insert badge directly without coin checks or deductions
       const { error: badgeErr } = await supabase.from('user_badges').insert({
         user_id: userId,
         badge_key: 'badge_merah',
@@ -105,12 +90,11 @@ export function PrivateChannelPanel({ onClose, onOpenWallet }: PrivateChannelPan
 
       if (badgeErr) throw badgeErr;
 
-      toast.success('Selamat! Anda berhasil menukarkan Badge Merah 🛡️');
+      toast.success('Selamat! Anda berhasil mengaktifkan Badge Merah 🛡️');
       setHasBadge(true);
-      fetchCoins();
     } catch (err) {
       console.error('Failed to exchange badge:', err);
-      toast.error('Gagal menukarkan koin dengan Badge Merah.');
+      toast.error('Gagal mengaktifkan Badge Merah.');
     } finally {
       setIsExchanging(false);
     }
@@ -230,18 +214,8 @@ export function PrivateChannelPanel({ onClose, onOpenWallet }: PrivateChannelPan
 
           <div className="pt-3 border-t border-slate-800/80 flex justify-between items-center text-[10px] text-slate-400">
             <span className="flex items-center gap-1 font-bold">
-              <Coins className="w-3.5 h-3.5 text-amber-500" /> Saldo: {coins} Koin
+              Akses Saluran: Bebas / Tanpa Koin
             </span>
-            <button
-              type="button"
-              onClick={() => {
-                onClose();
-                onOpenWallet();
-              }}
-              className="text-indigo-400 hover:text-indigo-300 font-bold uppercase cursor-pointer"
-            >
-              Top Up
-            </button>
           </div>
         </div>
 
@@ -264,10 +238,10 @@ export function PrivateChannelPanel({ onClose, onOpenWallet }: PrivateChannelPan
             <button
               type="button"
               onClick={handleExchangeBadge}
-              disabled={isExchanging || coins < 10}
+              disabled={isExchanging}
               className="w-full py-2.5 rounded-xl text-white font-bold text-[11px] uppercase bg-gradient-to-b from-[#818cf8] via-[#4f46e5] to-[#3730a3] border-t border-white/20 border-b border-black/20 shadow-md active:translate-y-[1px] active:shadow-none hover:brightness-105 transition-all duration-100 flex items-center justify-center gap-1.5 focus:outline-none cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
             >
-              🛡️ Beli Badge Merah — 10 Koin
+              🛡️ Aktifkan Badge Merah — Gratis
             </button>
           </div>
         )}

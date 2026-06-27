@@ -12,14 +12,12 @@ import vintageMic from '../../assets/vintage_mic.png';
 export interface SettingsPanelProps {
   onClose: () => void;
   onOpenModeration?: () => void;
-  onOpenWallet?: () => void;
   onOpenRoip?: () => void;
 }
 
 export function SettingsPanel({
   onClose,
   onOpenModeration,
-  onOpenWallet,
   onOpenRoip,
 }: SettingsPanelProps) {
   const {
@@ -284,38 +282,26 @@ export function SettingsPanel({
             </button>
           </div>
         )}
-
         {/* FITUR DEVELOPER & NOC */}
         {(role === 'noc' || role === 'sys_admin') && (
           <div className="w-full bg-[#e2e8f0] py-2 px-6 border-b border-gray-200 flex flex-col gap-2.5">
             <span className="text-[10px] font-bold text-[#475569] uppercase tracking-wider">
               Akses Khusus NOC & Developer
             </span>
-            <div className="flex gap-3 pb-1.5">
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  if (onOpenWallet) onOpenWallet();
-                }}
-                className="flex-1 text-center py-2 text-xs font-bold rounded text-white bg-gradient-to-b from-amber-400 to-amber-500 border-t border-white/30 border-b border-black/20 shadow-[0_2.5px_0_#b45309] active:translate-y-[1.5px] active:shadow-none hover:brightness-105 cursor-pointer focus:outline-none flex items-center justify-center gap-1"
-              >
-                Dompet Koin
-              </button>
+            <div className="flex pb-1.5">
               <button
                 type="button"
                 onClick={() => {
                   onClose();
                   if (onOpenRoip) onOpenRoip();
                 }}
-                className="flex-1 text-center py-2 text-xs font-bold rounded text-white bg-gradient-to-b from-sky-400 to-sky-500 border-t border-white/30 border-b border-black/20 shadow-[0_2.5px_0_#0369a1] active:translate-y-[1.5px] active:shadow-none hover:brightness-105 cursor-pointer focus:outline-none flex items-center justify-center gap-1"
+                className="w-full text-center py-2 text-xs font-bold rounded text-white bg-gradient-to-b from-sky-400 to-sky-500 border-t border-white/30 border-b border-black/20 shadow-[0_2.5px_0_#0369a1] active:translate-y-[1.5px] active:shadow-none hover:brightness-105 cursor-pointer focus:outline-none flex items-center justify-center gap-1"
               >
                 Jembatan ROIP
               </button>
             </div>
           </div>
         )}
-
         {/* INFO SECTION */}
         <div className="w-full bg-[#e2e8f0] py-1.5 px-6 text-[11px] font-bold text-[#475569] uppercase tracking-wider">
           Info

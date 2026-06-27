@@ -15,39 +15,6 @@ import { SettingsPanelSkeleton, KaraokePlayerSkeleton } from './SkeletonLoaders'
 import { FeedbackModal } from './FeedbackModal';
 import { initGlobalAudioContext } from '../utils/audioContext';
 
-const SIMULATED_CANDIDATES = [
-  {
-    userId: 'JZ10A',
-    displayName: 'Bambang Supriadi',
-    callSign: 'JZ10A',
-    location: 'SOLO, JATENG',
-  },
-  {
-    userId: 'JZ10B',
-    displayName: 'Dewi Lestari',
-    callSign: 'JZ10B',
-    location: 'SEMARANG, JATENG',
-  },
-  {
-    userId: 'JZ10C',
-    displayName: 'Hendra Wijaya',
-    callSign: 'JZ10C',
-    location: 'SURABAYA, JATIM',
-  },
-  {
-    userId: 'JZ10D',
-    displayName: 'Siti Aminah',
-    callSign: 'JZ10D',
-    location: 'MAKASSAR, SULSEL',
-  },
-  {
-    userId: 'JZ10E',
-    displayName: 'Budi Rahardjo',
-    callSign: 'JZ10E',
-    location: 'BANDUNG, JABAR',
-  },
-];
-
 const playChirpSound = (isJoin: boolean) => {
   try {
     const ctx = initGlobalAudioContext();
@@ -248,7 +215,6 @@ export function RadioLayout() {
     isKaraokePlayerOpen,
     setKaraokePlayerOpen: setIsKaraokePlayerOpen,
     userId,
-    user,
   } = usePTTStore();
 
   const activeChannelObj = STATIC_CHANNELS.find((ch) => ch.number === channel);
@@ -367,74 +333,9 @@ export function RadioLayout() {
     prevUserIdsRef.current = currentIds;
   }, [dynamicUserList, isPowerOn]);
 
-  const latestUserListRef = useRef<any[]>([]);
+  // Automatic background user activity simulation (Disabled)
   useEffect(() => {
-    latestUserListRef.current = dynamicUserList;
-  }, [dynamicUserList]);
-
-  // Automatic background user activity simulation
-  useEffect(() => {
-    if (!isPowerOn) {
-      setSimulatedUsers([]);
-      return;
-    }
-
-    const triggerEvent = () => {
-      setSimulatedUsers((prevSimulated) => {
-        const rand = Math.random();
-        if (rand < 0.55) {
-          const currentList = latestUserListRef.current;
-          const currentIds = currentList.map((u) => (typeof u === 'string' ? u : u.userId));
-          const available = SIMULATED_CANDIDATES.filter(
-            (cand) => !currentIds.includes(cand.userId)
-          );
-
-          if (available.length > 0) {
-            const randomIndex = Math.floor(Math.random() * available.length);
-            const nextUser = available[randomIndex];
-            return [...prevSimulated, nextUser];
-          }
-        } else {
-          if (prevSimulated.length > 0) {
-            const randomIndex = Math.floor(Math.random() * prevSimulated.length);
-            const targetUser = prevSimulated[randomIndex];
-            return prevSimulated.filter((u) => u.userId !== targetUser.userId);
-          }
-        }
-        return prevSimulated;
-      });
-    };
-
-    const runSimulation = () => {
-      const nextDelay = 15000 + Math.random() * 10000;
-      timerId = setTimeout(() => {
-        triggerEvent();
-        runSimulation();
-      }, nextDelay);
-    };
-
-    let timerId: ReturnType<typeof setTimeout>;
-
-    // Initial trigger after 8 seconds of power-on
-    timerId = setTimeout(() => {
-      setSimulatedUsers((prevSimulated) => {
-        const currentList = latestUserListRef.current;
-        const currentIds = currentList.map((u) => (typeof u === 'string' ? u : u.userId));
-        const available = SIMULATED_CANDIDATES.filter((cand) => !currentIds.includes(cand.userId));
-
-        if (available.length > 0) {
-          const randomIndex = Math.floor(Math.random() * available.length);
-          const nextUser = available[randomIndex];
-          return [...prevSimulated, nextUser];
-        }
-        return prevSimulated;
-      });
-      runSimulation();
-    }, 8000);
-
-    return () => {
-      clearTimeout(timerId);
-    };
+    setSimulatedUsers([]);
   }, [isPowerOn]);
 
   // Reset progress when not transmitting and not receiving
@@ -815,53 +716,10 @@ export function RadioLayout() {
     };
   }, []);
 
-  // Coin deduction watchdog during active PTT transmission
+  // Coin deduction watchdog during active PTT transmission (Disabled: Free Transmission)
   useEffect(() => {
-    let intervalId: ReturnType<typeof setInterval> | null = null;
-
-    if (isTransmitting && isPowerOn && user) {
-      const store = usePTTStore.getState();
-      
-      if (store.coins <= 0) {
-        toast.error('Koin Anda habis! Silakan lakukan pengisian koin.');
-        setIsTransmitting(false);
-        return;
-      }
-
-      intervalId = setInterval(async () => {
-        const currentStore = usePTTStore.getState();
-        if (currentStore.coins <= 0) {
-          toast.error('Koin Anda habis! Transmisi dihentikan.');
-          setIsTransmitting(false);
-          return;
-        }
-
-        try {
-          const supabase = await getSupabase();
-          const newCoins = Math.max(0, currentStore.coins - 1);
-          const { error } = await supabase
-            .from('user_profiles_extended')
-            .update({ coins: newCoins })
-            .eq('user_id', currentStore.userId);
-
-          if (error) throw error;
-          
-          if (newCoins <= 0) {
-            toast.error('Koin Anda habis! Transmisi dihentikan.');
-            setIsTransmitting(false);
-          }
-        } catch (err) {
-          console.warn('Failed to deduct coin during transmission:', err);
-        }
-      }, 5000);
-    }
-
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
-  }, [isTransmitting, isPowerOn, user, setIsTransmitting]);
+    // Disabled coin checks and deduction to make transmission completely free of charge.
+  }, []);
 
   // AI Operator automated responder (Channel 99)
   const wasTransmittingRef = useRef(false);
@@ -980,7 +838,6 @@ export function RadioLayout() {
       ) : isPrivateOpen ? (
         <PrivateChannelPanel
           onClose={() => setIsPrivateOpen(false)}
-          onOpenWallet={() => setIsWalletOpen(true)}
         />
       ) : isSettingsOpen ? (
         // Suspense boundary: tampilkan skeleton saat SettingsPanel sedang dimuat
@@ -989,7 +846,6 @@ export function RadioLayout() {
           <SettingsPanel
             onClose={() => setIsSettingsOpen(false)}
             onOpenModeration={() => setIsManageOpen(true)}
-            onOpenWallet={() => setIsWalletOpen(true)}
             onOpenRoip={() => setIsRoipOpen(true)}
           />
         </Suspense>
