@@ -84,42 +84,24 @@ const createRadioNoise = (
  */
 const playPressSound = (ctx: AudioContext, masterGain: GainNode) => {
   const t = ctx.currentTime;
+  const duration = 0.08; // 80ms duration
 
-  // Modern Ascending Digital Chirp (Nextel/Digital Radio style)
-  const tones = [
-    { freq: 950, start: 0.0, dur: 0.035 },
-    { freq: 1420, start: 0.04, dur: 0.035 },
-    { freq: 1800, start: 0.08, dur: 0.045 },
-  ];
+  const osc = ctx.createOscillator();
+  const env = ctx.createGain();
 
-  tones.forEach(({ freq, start, dur }) => {
-    const osc = ctx.createOscillator();
-    const env = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(1000, t); // Clean 1000Hz tone like IndoVWT
 
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(freq, t + start);
+  env.gain.setValueAtTime(0, t);
+  env.gain.linearRampToValueAtTime(0.38, t + 0.003); // Instant attack
+  env.gain.setValueAtTime(0.38, t + duration - 0.01);
+  env.gain.exponentialRampToValueAtTime(0.001, t + duration); // Fast release decay
 
-    env.gain.setValueAtTime(0, t + start);
-    env.gain.linearRampToValueAtTime(0.35, t + start + 0.004);
-    env.gain.setValueAtTime(0.35, t + start + dur - 0.008);
-    env.gain.exponentialRampToValueAtTime(0.001, t + start + dur);
+  osc.connect(env);
+  env.connect(masterGain);
 
-    // Speaker resonance filter simulation
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.value = freq;
-    filter.Q.value = 5.0;
-
-    osc.connect(env);
-    env.connect(filter);
-    filter.connect(masterGain);
-
-    osc.start(t + start);
-    osc.stop(t + start + dur + 0.01);
-  });
-
-  // Short RF squelch click tail at the end (t + 0.12s)
-  createRadioNoise(ctx, masterGain, 0.06, t + 0.12, 0.15);
+  osc.start(t);
+  osc.stop(t + duration + 0.01);
 };
 
 /**
