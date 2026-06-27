@@ -1,90 +1,88 @@
-# Analisis Teknis Referensi Open-Source untuk NextVWT
+# Analisis Teknis Open-Source & AI Agents untuk NextVWT
 
-Dokumen ini merangkum temuan arsitektur dan pola kode dari proyek-proyek *open-source* PTT/Walkie-Talkie di GitHub, serta bagaimana kita dapat menerapkannya secara konkret ke dalam codebase **NextVWT**.
+Dokumen ini merangkum analisis arsitektur mendalam dari tiga referensi *open-source* global terbaru (`smartwalkie/Walkie-talkie-android-by-voiceping`, `Kajatin/walkie-talkie`, dan `livekit/agents`), serta pemetaan implementasinya ke dalam aplikasi **NextVWT**.
 
 ---
 
-## 1. Pemetaan Proyek Referensi & Aspek Teknis
+## 1. Pemetaan Referensi Baru & Nilai Adopsi
 
-| Proyek GitHub | Fokus Utama | Teknologi Utama | Aspek yang Diadopsi untuk NextVWT |
+| Repositori | Keahlian Utama | Arsitektur & Protokol | Fitur Kunci yang Bisa Diadopsi untuk NextVWT |
 | :--- | :--- | :--- | :--- |
-| **`david-spies/ptt-radio`** | WebRTC P2P PTT murni | WebRTC, JS murni, Opus | Manajemen status track audio & penanganan latensi. |
-| **`SmartWalkieOrg/voiceping-router`** | SDK & Router PTT Android | Java/Kotlin, Opus, Android SDK | Penanganan *background service* & optimasi konsumsi data seluler. |
-| **`codewithmichael/webrtc-intercom`** | Interkom P2P Web | WebRTC, Node.js WebSocket | Struktur signaling minimal untuk koneksi peer. |
-| **`devapro/LANwalkieTalkie`** | Walkie-Talkie Wi-Fi Lokal | NSD (Network Service Discovery) | Fitur komunikasi lokal nirkabel (Off-Grid/Local LAN). |
-| **`ibnux/PoC-Walkie-Talkie`** | WebSocket PoC | WebSockets, Audio Chunks | Logika fallback transmisi data biner jika WebRTC gagal. |
+| **`smartwalkie/Walkie-talkie-android`** | PTT Kelas Enterprise di Android | WebSocket + Opus codec (16kHz, 60ms frame) | • Mengoptimalkan data bandwidth (~300KB/menit).<br>• Manajemen State Rekoneksi Otomatis di jaringan seluler (2G/3G/4G).<br>• Fitur *Channel Scanning* (otomatis pindah ke channel aktif). |
+| **`Kajatin/walkie-talkie`** | WebRTC PTT berbasis Web modern | Next.js + WebRTC + Socket.io | • Pola inisialisasi media track & koordinasi Peer-to-Peer.<br>• Mekanisme fallback transmisi suara via biner audio chunk ketika WebRTC diblokir oleh NAT/Firewall ketat. |
+| **`livekit/agents`** | Agen AI Multimodal Real-time | Python/JS, WebRTC, LLM, TTS/STT | • **Virtual AI Participant:** Agen AI yang masuk ke channel sebagai pengguna virtual.<br>• Integrasi suara real-time dengan LLM (seperti Gemini 1.5 Flash) menggunakan alur PTT. |
 
 ---
 
-## 2. Penerapan Teknis Spesifik untuk NextVWT
+## 2. Analisis Mendalam & Skenario Implementasi
 
-### A. Mekanisme Floor Control & Manajemen Track Audio (WebRTC PTT)
-Mengacu pada pendekatan `ptt-radio` dan `webrtc-intercom`, kita dapat mengoptimalkan interaksi tombol PTT agar bebas dari tabrakan (*collision-free*) secara kooperatif di Fase A:
+### A. VoicePing: Optimasi Bandwidth & Channel Scanning
+Driver Ojol (Andi) dan kurir lapangan (Siti) membutuhkan konsumsi baterai dan data internet sekecil mungkin. VoicePing memberikan cetak biru optimasi berikut:
 
-*   **Pola Default Mute:** Semua peer menonaktifkan track mikrofon lokal secara default untuk mencegah kebocoran suara.
-    ```typescript
-    // Inisialisasi track dengan keadaan dinonaktifkan
-    localStream.getAudioTracks().forEach(track => {
-      track.enabled = false;
-    });
-    ```
-*   **Transmisi PTT (Hold to Talk):** Saat tombol ditekan (`onMouseDown` / `onTouchStart`):
-    1.  Cek status channel melalui Supabase Realtime/state lokal.
-    2.  Jika kosong: Aktifkan track audio (`track.enabled = true`), kirim status broadcast `TALKING: user_id`, dan putar *pre-chirp tone*.
-    3.  Jika sibuk: Berikan *haptic feedback* penolakan dan tampilkan status "Busy".
-*   **Pelepasan PTT (Release to Listen):** Saat tombol dilepas (`onMouseUp` / `onTouchEnd`):
-    1.  Matikan kembali track audio (`track.enabled = false`).
-    2.  Kirim broadcast `RELEASED`.
-    3.  Mainkan bunyi *roger beep* + *squelch tail* lokal.
-
-### B. Kelangsungan Hidup Aplikasi di Background (Android Foreground Service)
-Mengacu pada SDK `voiceping-router`, NextVWT memerlukan `PttForegroundService` native untuk menjaga koneksi tetap hidup di Android meskipun layar dikunci.
-
-*   **Implementasi FGS Native (di folder `android/app/src/main/java/`):**
-    *   Buat `PttForegroundService` yang mewarisi `Service` Android.
-    *   Deklarasikan tipe layanan sebagai `microphone` dan `dataSync` di `AndroidManifest.xml` (sudah dideklarasikan di codebase saat ini).
-    *   Gunakan `NotificationCompat.Builder` untuk menampilkan notifikasi persisten "NextVWT Siaga - Channel [X]".
-*   **Pencegahan Doze Mode:**
-    *   Gunakan `PowerManager.WakeLock` untuk menjaga CPU tetap aktif saat mendengarkan transmisi masuk.
-    *   Gunakan **FCM High-Priority Data Messages** untuk membangunkan *service* dari mode tidur nyenyak (*deep sleep*) ketika ada transmisi darurat (Emergency Override).
-
-### C. Penanganan Jaringan Fluktuatif & Codec Adaptif
-Pekerja lapangan seperti driver Ojol (Andi) dan kurir (Siti) sering berpindah-pindah area dengan sinyal seluler yang tidak stabil.
-
-*   **Opus Codec Tuning:** Mengoptimalkan pengaturan WebRTC peer connection agar menghemat kuota dan toleran terhadap *packet loss*.
-    ```javascript
-    // Modifikasi SDP untuk membatasi bitrate Opus & mengaktifkan In-band Forward Error Correction (FEC)
-    const setOpusParameters = (sdp) => {
-      return sdp.replace(
-        "useinbandfec=1",
-        "useinbandfec=1; maxaveragebitrate=24000; cbr=0" // Batasi bitrate ke 24kbps (hemat kuota)
-      );
-    };
-    ```
-*   **Fallback Audio Chunks (Base64/Binary):** Jika WebRTC terputus akibat NAT seluler yang ketat:
-    *   Gunakan pencuplikan biner audio pendek 200ms.
-    *   Kirimkan potongan audio tersebut via WebSocket / Supabase Realtime secara berurutan seperti yang dicontohkan pada proyek `PoC-Walkie-Talkie`.
-
-### D. Fitur Off-Grid (Local Wi-Fi Walkie-Talkie)
-Mengadopsi logika `LANwalkieTalkie` menggunakan Network Service Discovery (NSD) Android untuk skenario darurat atau wilayah tanpa sinyal internet (Relawan SAR - Bambang).
-
-*   **Pola Kerja NSD:**
-    1.  **Registrasi Layanan:** Saat berada di mode LAN, perangkat mendaftarkan dirinya ke jaringan lokal.
-    2.  **Discovery:** Perangkat lain mencari layanan dengan tipe `_nextvwt_ptt._tcp` di jaringan yang sama.
-    3.  **Koneksi:** Lakukan *streaming* audio via soket UDP/TCP lokal langsung antar alamat IP lokal tanpa melewati internet.
+*   **Penyetelan Frame Audio Opus:**
+    *   VoicePing menggunakan frekuensi sampling **16kHz** dengan durasi frame **60ms** (dibanding standar 20ms).
+    *   Dengan frame 60ms, overhead header IP/UDP/WebSocket berkurang drastis hingga 60%, menghemat kuota internet hingga hanya mengonsumsi **~300KB per menit** transmisi aktif.
+*   **Logika Channel Scanning:**
+    *   Pengguna dapat memantau beberapa channel sekaligus. Jika perangkat sedang di Channel 10, namun ada transmisi masuk di Channel 100 (misalnya panggilan penting/darurat), perangkat akan otomatis memutar audio dari Channel 100 dan menandai aktivitas di layar dial LCD.
+    *   *Penerapan di NextVWT:* Kita dapat membuat sub-layanan Supabase Realtime yang mendengarkan event `ptt_state` di channel-channel prioritas selain channel aktif utama.
 
 ---
 
-## 3. Rencana Aksi Implementasi pada Codebase NextVWT
+### B. Kajatin: Arsitektur WebRTC PTT & Fallback
+NextVWT menggunakan WebRTC untuk komunikasi suara langsung antarstasiun, namun jaringan seluler sering mengalami kendala *Symmetric NAT* yang memblokir jalur P2P WebRTC.
+
+*   **Pola Pengkondisian Track:**
+    *   Sama seperti Kajatin, track mikrofon lokal harus diatur ke `enabled = false` secara default untuk privasi penuh.
+    *   Ketika tombol PTT ditekan, track diubah menjadi `enabled = true` dan broadcast `ptt_state` dikirimkan secara instan ke Supabase.
+*   **Mekanisme Fallback Chunk Biner:**
+    *   Jika negosiasi WebRTC gagal (status peer `disconnected` atau `failed` setelah 3 detik), sistem secara otomatis beralih menggunakan pengiriman potongan audio base64 via Supabase Realtime (seperti yang telah kita optimalkan pada *Android Sound Check* di Channel 100). Ini menjamin fungsionalitas 100% di jaringan seluler apa pun.
+
+---
+
+### C. LiveKit Agents: Integrasi Asisten AI dalam Saluran (AI Operator)
+Ini adalah inovasi terbesar yang dapat membedakan NextVWT dari aplikasi HT konvensional. Dengan mengadopsi pola dari `livekit/agents`, kita dapat membangun **AI Operator / AI Companion** di dalam channel.
 
 ```mermaid
-graph TD
-    A[Mulai Integrasi Referensi] --> B[Blok A: Perbaikan RLS & Token Security]
-    B --> C[Tahap 1: Implementasi FGS Native & Floor Arbitrator Edge Function]
-    C --> D[Tahap 2: Integrasi Audio Filter & RNNoise WASM]
-    D --> E[Tahap 3: Opsi Local LAN Mode via NSD]
+sequenceDiagram
+    autonumber
+    actor User as Bambang (Relawan)
+    participant Client as NextVWT Client
+    participant Room as Supabase Realtime
+    participant Agent as NextVWT AI Agent (Server)
+    participant LLM as Gemini API
+
+    User->>Client: Tekan PTT & Berbicara ("Tolong info cuaca pos 1")
+    Client->>Room: Siarkan chunk audio (Base64)
+    Room->>Agent: Terima potongan audio real-time
+    Agent->>Agent: Gabungkan & Dekode WebM
+    Agent->>LLM: Kirim audio ke Gemini (Multimodal input)
+    LLM-->>Agent: Kembalikan respon suara/teks (Gemini output)
+    Agent->>Room: Siarkan ptt_state (isTransmitting: true, displayName: "AI Operator")
+    Agent->>Room: Siarkan chunk audio respon AI
+    Room->>Client: Mainkan audio respon AI di HP Bambang
+    Agent->>Room: Siarkan ptt_state (isTransmitting: false)
 ```
 
-1.  **Langkah 1 (Kritis):** Terapkan mitigasi penanganan kebocoran credential dan perbaiki aturan RLS Supabase sesuai dengan *Runbook Blok A*.
-2.  **Langkah 2 (Stabilitas Audio & Background):** Bangun kelas `PttForegroundService.java` di sisi native Android untuk membungkus WebView Capacitor agar audio tetap dapat mengalir secara real-time.
-3.  **Langkah 3 (Peningkatan Audio):** Integrasikan filter High-Pass Filter (HPF) <150Hz di sisi client React untuk meredam gemuruh angin dan motor (sangat penting untuk Persona Andi - Driver Ojol).
+#### Cara Kerja AI Agent Terintegrasi di NextVWT:
+1.  **Agen AI sebagai User Virtual:**
+    *   Agen berjalan di server (Node.js/Python) dan melakukan login menggunakan `userId` khusus (misal: `ai-operator-uuid`) dengan callsign `AI-OPS`.
+    *   Agen men-subscribe channel Supabase Realtime yang sama dengan pengguna manusia.
+2.  **Pemrosesan Audio Masuk (STT/LLM):**
+    *   Ketika pengguna manusia memancar (misal Bambang di SAR), Agen mendengarkan dan mengumpulkan chunk audio biner.
+    *   Begitu transmisi selesai (`isTransmitting: false`), Agen mengirimkan rekaman audio tersebut ke **Gemini 1.5 Flash API** (yang mendukung input audio secara native).
+3.  **Transmisi Balasan via PTT:**
+    *   Setelah Gemini memproses dan mengeluarkan teks balasan, Agen mengubahnya menjadi audio menggunakan Text-to-Speech (TTS) dengan nada radio HT.
+    *   Agen melakukan broadcast `ptt_state` dengan `isTransmitting: true` agar semua HP menampilkan nama **AI Operator** sedang berbicara, lalu menyiarkan potongan audio balasan tersebut, kemudian mengirimkan `isTransmitting: false` setelah selesai.
+
+---
+
+## 3. Rencana Aksi Integrasi Teknis pada NextVWT
+
+### Fase 1: Optimasi Bandwidth (Adopsi Pola VoicePing)
+*   [ ] Ubah durasi perekaman chunk dari 250ms ke **500ms** di `RadioLayout.tsx` untuk mengurangi jumlah request HTTP/Realtime di jaringan seluler lambat.
+*   [ ] Batasi bit rate audio encoder pada `useAudioPlayback` untuk menjamin kelancaran suara di sinyal 2G/3G.
+
+### Fase 2: Implementasi AI Operator (Adopsi Pola LiveKit Agents)
+*   [ ] Buat repositori mikroservis pendukung `nextvwt-ai-agent` menggunakan Node.js.
+*   [ ] Hubungkan mikroservis tersebut ke Supabase Realtime dengan `userId` khusus.
+*   [ ] Integrasikan Gemini SDK untuk menerima berkas audio, memproses instruksi, dan membalas secara asinkron dengan pola PTT.
