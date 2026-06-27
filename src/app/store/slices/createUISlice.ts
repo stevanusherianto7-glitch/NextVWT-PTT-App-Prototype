@@ -192,6 +192,14 @@ export const createUISlice: StateCreator<
     const state = get();
     if (!state.isPowerOn) return;
 
+    // Hardcode Guard: Never allow hanging up a NOC
+    const targetUser = state.activeUsers.find((u) => u.userId === targetUserId);
+    const targetLocalRole = localStorage.getItem(`channel-role:ptt-room-${state.channelNumber}:${targetUserId}`);
+    if (targetUser?.role === 'noc' || targetLocalRole === 'noc' || targetUserId === 'Pebe Herianto') {
+      console.warn('Cannot hang up NOC user');
+      return;
+    }
+
     // Broadcast hang_up event to all clients on this channel
     if (activeChannelSubscription && state.isConnected) {
       const userMeta = state.user;
@@ -222,6 +230,14 @@ export const createUISlice: StateCreator<
   kickUser: (targetUserId: string, reason?: string) => {
     const state = get();
     if (!state.isPowerOn) return;
+
+    // Hardcode Guard: Never allow kicking a NOC
+    const targetUser = state.activeUsers.find((u) => u.userId === targetUserId);
+    const targetLocalRole = localStorage.getItem(`channel-role:ptt-room-${state.channelNumber}:${targetUserId}`);
+    if (targetUser?.role === 'noc' || targetLocalRole === 'noc' || targetUserId === 'Pebe Herianto') {
+      console.warn('Cannot kick NOC user');
+      return;
+    }
 
     if (activeChannelSubscription && state.isConnected) {
       activeChannelSubscription.send({

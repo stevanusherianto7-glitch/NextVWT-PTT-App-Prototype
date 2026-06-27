@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { usePTTStore } from '../store/usePTTStore';
 import { activeChannelSubscription } from '../store/subscription';
-import { ChannelRole } from '../../features/moderation/permissions';
+import { ChannelRole, canModerateRole } from '../../features/moderation/permissions';
 import iconVoice from '../../assets/icon_voice.png';
 import iconOperator from '../../assets/icon_operator_otomatis.png';
 import iconModerator from '../../assets/icon_moderator.png';
@@ -739,8 +739,22 @@ export function UserListModal({
     localRole === 'sys_admin' ||
     localRole === 'noc';
 
+  const isSelf = activeZoomedAvatar?.userId === localUserId;
+  const canModerateTarget =
+    activeZoomedAvatar &&
+    canModerate &&
+    !isSelf &&
+    activeZoomedAvatar.role !== 'noc' &&
+    activeZoomedAvatar.userId !== 'Pebe Herianto' &&
+    canModerateRole(localRole, activeZoomedAvatar.role || 'guest');
+
   const handleUpdateRole = (uId: string, nextRole: ChannelRole) => {
     const roomId = `ptt-room-${channel}`;
+    const targetUser = modalUsers.find((u) => u.userId === uId);
+    if (targetUser?.role === 'noc' || uId === 'Pebe Herianto') {
+      console.warn('NOC role is protected and cannot be changed');
+      return;
+    }
     sessionStorage.setItem(`channel-role:${roomId}:${uId}`, nextRole);
     localStorage.setItem(`channel-role:${roomId}:${uId}`, nextRole);
     if (uId === localUserId || uId === '2DYUA' || uId === localName) {
@@ -769,6 +783,11 @@ export function UserListModal({
     statusType: 'normal' | 'muted' | 'controlled' | 'wait' | 'wait_controlled'
   ) => {
     const roomId = `ptt-room-${channel}`;
+    const targetUser = modalUsers.find((u) => u.userId === uId);
+    if (targetUser?.role === 'noc' || uId === 'Pebe Herianto') {
+      console.warn('NOC status is protected and cannot be moderated');
+      return;
+    }
     const statusVal = statusType === 'normal' ? 'active' : statusType;
     sessionStorage.setItem(`channel-status:${roomId}:${uId}`, statusVal);
     localStorage.setItem(`channel-status:${roomId}:${uId}`, statusVal);
@@ -987,12 +1006,7 @@ export function UserListModal({
                   <div
                     className={`text-[14px] font-medium truncate leading-snug ${hasVideoBackground ? 'text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)]' : 'text-gray-800'}`}
                   >
-                    <span className="truncate inline-flex items-center gap-1">
-                      {profile.role === 'noc' && (
-                        <span className="text-[#800000] font-bold" title="NOC (Maroon Star)">★</span>
-                      )}
-                      {profile.displayName}
-                    </span>
+                    <span className="truncate">{profile.displayName}</span>
                   </div>
                   <div className="flex items-center text-[11px] mt-0.5 truncate gap-px font-medium leading-none">
                     {isNewUserJoined(profile) && (
@@ -1103,7 +1117,7 @@ export function UserListModal({
             </div>
 
             {/* Moderation Conditioning Panel */}
-            {canModerate && (
+            {canModerateTarget && (
               <div className="w-full mt-4 pt-4 border-t border-gray-100">
                 <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider text-center mb-2">
                   Mode Moderasi Jalur

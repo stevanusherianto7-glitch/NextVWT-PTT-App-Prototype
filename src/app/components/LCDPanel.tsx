@@ -3,7 +3,6 @@ import twinHeadsIcon from '../../imports/ikon_kepala_kembar-2.png';
 import usernameIcon from '../../assets/icon_voice.png';
 import { usePTTStore } from '../store/usePTTStore';
 import { AquariumSkeleton } from './SkeletonLoaders';
-import { useChannelRole } from '../../features/moderation/useChannelRole';
 
 // [P2-2] AquariumCanvas hanya diload jika user memakai theme-v6 + bgActive
 // Ukuran: ~24KB JS + WebGL canvas — 0% users tidak memakai tema ini tidak perlu download
@@ -35,19 +34,8 @@ export function LCDPanel({
   const themeText = usePTTStore((state) => state.themeText);
   const bgActive = usePTTStore((state) => state.bgActive);
 
-  const roomId = `ptt-room-${channel}`;
-  const { role: myRole } = useChannelRole(roomId, localUserId);
-
   const localName = infoText || user?.user_metadata?.full_name || 'Pebe Herianto';
   const isReceiving = activeTransmitter && activeTransmitter.userId !== localUserId;
-
-  const activeRole = isTransmitting
-    ? myRole
-    : isReceiving
-      ? activeTransmitter?.role
-      : myRole;
-
-  const isNoc = activeRole === 'noc';
 
   const username = isTransmitting
     ? localName
@@ -199,10 +187,9 @@ export function LCDPanel({
                 </div>
                 <span
                   data-testid="lcd-username"
-                  className="text-base -ml-1 truncate max-w-[110px] leading-none mb-[7px] inline-flex items-center gap-0.5"
+                  className="text-base -ml-1 truncate max-w-[110px] leading-none mb-[7px]"
                   style={{ fontWeight: 600, color: 'var(--lcd-label-color)' }}
                 >
-                  {isNoc && <span className="text-[#800000] mr-0.5">★</span>}
                   {username}
                 </span>
               </div>
