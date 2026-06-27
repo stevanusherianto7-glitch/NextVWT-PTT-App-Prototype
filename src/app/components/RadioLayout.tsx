@@ -894,7 +894,7 @@ export function RadioLayout() {
                   )}
                   <svg
                     viewBox="0 0 100 100"
-                    className={`w-[68px] h-[68px] relative z-20 transition-all duration-300 ${isTransmitting ? 'logo-transmitting' : ''}`}
+                    className="w-[68px] h-[68px] relative z-20 transition-all duration-300"
                     style={{ filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.25))' }}
                   >
                     <image
