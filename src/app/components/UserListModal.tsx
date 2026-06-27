@@ -671,9 +671,8 @@ export function UserListModal({
   useEffect(() => {
     const currentMapped = mapUsers(users);
     const prevMapped = prevModalUsersRef.current;
-
-    const currentIds = currentMapped.map((u) => u.userId);
-    const prevIds = prevMapped.map((u) => u.userId);
+    const currentIds = currentMapped.map((u) => `${u.userId}_${u.callSign || ''}`);
+    const prevIds = prevMapped.map((u) => `${u.userId}_${u.callSign || ''}`);
 
     if (isFirstRender.current) {
       prevModalUsersRef.current = currentMapped;
@@ -681,8 +680,8 @@ export function UserListModal({
       return;
     }
 
-    const joined = currentMapped.filter((u) => !prevIds.includes(u.userId));
-    const left = prevMapped.filter((u) => !currentIds.includes(u.userId));
+    const joined = currentMapped.filter((u) => !prevIds.includes(`${u.userId}_${u.callSign || ''}`));
+    const left = prevMapped.filter((u) => !currentIds.includes(`${u.userId}_${u.callSign || ''}`));
 
     if (joined.length > 0 || left.length > 0) {
       const newNotifs: Array<{ id: string; displayName: string; type: 'join' | 'leave' }> = [];
