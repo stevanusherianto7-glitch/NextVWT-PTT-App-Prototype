@@ -188,7 +188,7 @@ export function LCDPanel({
                 <span
                   data-testid="lcd-username"
                   className="text-base -ml-1 truncate max-w-[110px] leading-none mb-[7px]"
-                  style={{ fontWeight: 600, color: 'var(--lcd-label-color)' }}
+                  style={{ fontWeight: 600, color: '#ffffff' }}
                 >
                   {username}
                 </span>
@@ -308,7 +308,7 @@ export function LCDPanel({
                   className="relative text-2xl font-medium tracking-tight"
                   style={{
                     paddingBottom: '2px',
-                    color: 'var(--lcd-label-color)',
+                    color: '#ffffff',
                   }}
                 >
                   CH
@@ -324,7 +324,7 @@ export function LCDPanel({
                     marginLeft: '-2px',
                     textShadow: 'var(--lcd-glow)',
                     paddingBottom: '5px',
-                    color: 'var(--lcd-text-color)',
+                    color: '#ffffff',
                   }}
                 >
                   {channelStr}
@@ -355,7 +355,7 @@ export function LCDPanel({
                     className="text-2xl font-medium tracking-tight leading-none"
                     style={{
                       textShadow: '1px 1px 1px rgba(255,255,255,0.3)',
-                      color: 'var(--lcd-label-color)',
+                      color: '#ffffff',
                     }}
                   >
                     {_isPowerOn ? userCount.toString().padStart(2, '0') : '00'}
