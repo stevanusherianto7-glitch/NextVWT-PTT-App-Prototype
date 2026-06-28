@@ -42,18 +42,41 @@ export function ProgressBar({ progress }: ProgressBarProps) {
         />
       </div>
 
-      {/* Scanning Laser Head (leading edge indicator) */}
+      {/* Redesigned Scanning Laser Head (leading edge indicator with high-intensity focal point) */}
       {progress > 0 && (
         <div
-          className="absolute top-0 bottom-0 w-[5px] -ml-[2.5px] z-20 pointer-events-none"
+          className="absolute top-0 bottom-0 z-20 pointer-events-none"
           style={{
             left: `${progress}%`,
-            background: '#ffffff',
-            boxShadow: `0 0 15px #fff, 0 0 25px ${headGlow}, 0 0 50px ${headGlow}`,
-            borderRadius: '3px',
+            width: '0px',
             transition: 'left 90ms cubic-bezier(0.1, 0.8, 0.25, 1)',
           }}
-        />
+        >
+          {/* Vertical energy beam */}
+          <div
+            className="absolute top-0 bottom-0 w-[3px] -ml-[1.5px] rounded-full"
+            style={{
+              background: 'linear-gradient(to bottom, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.95) 30%, #ffffff 50%, rgba(255,255,255,0.95) 70%, rgba(255,255,255,0.05) 100%)',
+              boxShadow: `0 0 6px rgba(255,255,255,0.8), 0 0 14px ${headGlow}, 0 0 28px ${headGlow}`,
+            }}
+          />
+          {/* High-intensity focal laser spark */}
+          <div
+            className="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 w-[10px] h-[10px] rounded-full"
+            style={{
+              background: '#ffffff',
+              boxShadow: `0 0 12px #ffffff, 0 0 24px ${headGlow}, 0 0 45px ${headGlow}`,
+              border: `1.5px solid ${headGlow}`,
+            }}
+          />
+          {/* Outer energy pulse wave */}
+          <div
+            className="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 w-[18px] h-[18px] rounded-full animate-ping opacity-50"
+            style={{
+              border: `1.5px solid ${headGlow}`,
+            }}
+          />
+        </div>
       )}
     </div>
   );
