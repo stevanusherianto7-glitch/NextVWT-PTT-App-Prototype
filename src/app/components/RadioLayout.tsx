@@ -228,16 +228,35 @@ export function RadioLayout() {
     setSimulatedUsers([]);
   }, [isPowerOn]);
 
-  // Reset progress when not transmitting and not receiving
+  // Pseudo-realtime modulation bar simulation when transmitting or receiving
   useEffect(() => {
-    if (isTransmitting) return;
+    if (!isPowerOn) {
+      setProgress(0);
+      return;
+    }
 
     const isReceiving =
       activeTransmitter && activeTransmitter.userId !== usePTTStore.getState().userId;
-    if (!isReceiving) {
+
+    if (isTransmitting || isReceiving) {
+      const interval = setInterval(() => {
+        // Generate dynamic fluctuation simulating speech amplitude
+        const base = 25;
+        const wave = Math.sin(Date.now() / 80) * 15;
+        const noise = Math.random() * 45;
+        const simulatedProgress = Math.max(0, Math.min(100, base + wave + noise));
+        setProgress(simulatedProgress);
+      }, 100);
+
+      return () => {
+        clearInterval(interval);
+        setProgress(0);
+      };
+    } else {
       setProgress(0);
     }
-  }, [isTransmitting, activeTransmitter, setProgress]);
+  }, [isPowerOn, isTransmitting, activeTransmitter, setProgress]);
+
 
   // Manage audio recording when transmitting
   useEffect(() => {
