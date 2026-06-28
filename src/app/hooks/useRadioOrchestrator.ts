@@ -113,14 +113,10 @@ export function useRadioOrchestrator() {
   const isBusy = !isFullDuplexActive && !!isReceiving;
 
   const safeActiveUsers = activeUsers || [];
-  const rawList = [
-    ...safeActiveUsers,
-    ...(activeChannelObj?.users || []),
-    ...simulatedUsers,
-  ];
+  const rawList = [...safeActiveUsers, ...(activeChannelObj?.users || []), ...simulatedUsers];
 
   // Deduplicate by normalizing key (lowercase) and preferring objects over strings
-  const uniqueUsersMap = new Map<string, typeof rawList[number]>();
+  const uniqueUsersMap = new Map<string, (typeof rawList)[number]>();
   rawList.forEach((u) => {
     const key = typeof u === 'string' ? u : u.userId;
     if (key) {

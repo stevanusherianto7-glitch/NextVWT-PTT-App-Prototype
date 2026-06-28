@@ -481,7 +481,11 @@ function AvatarImage({
         className="w-full h-full rounded-none flex items-center justify-center shadow-[inset_0_2px_4px_rgba(255,255,255,0.4)] border border-white/20"
         style={{ backgroundColor: bgColor }}
       >
-        <img src={fallbackIconUrl} alt={displayName} className="w-full h-full object-contain p-1.5" />
+        <img
+          src={fallbackIconUrl}
+          alt={displayName}
+          className="w-full h-full object-contain p-1.5"
+        />
       </div>
     );
   }
@@ -1094,7 +1098,9 @@ export function UserListModal({
           >
             {/* Expanded Avatar */}
             <div className="w-40 h-40 rounded-none overflow-hidden shadow-lg border-2 border-[#00C853] relative flex items-center justify-center bg-gray-100">
-              {activeZoomedAvatar.avatarUrl && !zoomedHasError && !isGoogleDefaultAvatar(activeZoomedAvatar.avatarUrl) ? (
+              {activeZoomedAvatar.avatarUrl &&
+              !zoomedHasError &&
+              !isGoogleDefaultAvatar(activeZoomedAvatar.avatarUrl) ? (
                 <img
                   src={activeZoomedAvatar.avatarUrl}
                   alt={activeZoomedAvatar.displayName}
@@ -1104,7 +1110,8 @@ export function UserListModal({
               ) : (
                 (() => {
                   const mode = getUserMode(activeZoomedAvatar);
-                  const fallbackIconUrl = activeZoomedAvatar.role === 'noc' ? iconNoc : MODE_ICONS[mode];
+                  const fallbackIconUrl =
+                    activeZoomedAvatar.role === 'noc' ? iconNoc : MODE_ICONS[mode];
                   const bgColor = '#ffffff';
                   return (
                     <div

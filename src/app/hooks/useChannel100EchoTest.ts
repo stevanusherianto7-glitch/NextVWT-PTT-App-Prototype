@@ -46,7 +46,7 @@ export const useChannel100EchoTest = () => {
             // Combine all chunks into a single Blob (a complete WebM file)
             const combinedBlob = new Blob(chunks, { type: mediaRecorder.mimeType });
             const arrayBuffer = await combinedBlob.arrayBuffer();
-            
+
             // Convert to base64
             const base64String = btoa(
               new Uint8Array(arrayBuffer).reduce(
@@ -54,7 +54,7 @@ export const useChannel100EchoTest = () => {
                 ''
               )
             );
-            
+
             // Play the complete audio file
             await playAudioChunk(base64String);
           } catch (error) {

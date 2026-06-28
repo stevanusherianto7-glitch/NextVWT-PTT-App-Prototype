@@ -14,7 +14,9 @@ vi.mock('../utils/supabase', () => {
       if (typeof filterOrCb === 'function') {
         callbacks[type] = filterOrCb as (payload?: unknown) => void;
       } else if (cb && typeof cb === 'function') {
-        const key = (filterOrCb as { event?: string })?.event ? `${type}_${(filterOrCb as { event?: string }).event}` : type;
+        const key = (filterOrCb as { event?: string })?.event
+          ? `${type}_${(filterOrCb as { event?: string }).event}`
+          : type;
         callbacks[key] = cb as (payload?: unknown) => void;
       }
       return mockChannel;
@@ -450,7 +452,12 @@ describe('PTT collision detection (tie-breaking logic)', () => {
   });
 
   it('Terima ptt_state dari NOC (role noc) saat kita transmit → isTransmitting false (NOC override)', () => {
-    const cb = (supabase as unknown as { _callbacks: Record<string, (payload?: unknown) => void>; _setPresenceState: (state: unknown) => void })._callbacks['broadcast_ptt_state'];
+    const cb = (
+      supabase as unknown as {
+        _callbacks: Record<string, (payload?: unknown) => void>;
+        _setPresenceState: (state: unknown) => void;
+      }
+    )._callbacks['broadcast_ptt_state'];
     expect(cb).toBeDefined();
     cb({
       payload: {
@@ -466,7 +473,12 @@ describe('PTT collision detection (tie-breaking logic)', () => {
   });
 
   it('Terima ptt_state timestamp lebih baru dari userId yang lebih kecil → kita kalah, isTransmitting false', () => {
-    const cb = (supabase as unknown as { _callbacks: Record<string, (payload?: unknown) => void>; _setPresenceState: (state: unknown) => void })._callbacks['broadcast_ptt_state'];
+    const cb = (
+      supabase as unknown as {
+        _callbacks: Record<string, (payload?: unknown) => void>;
+        _setPresenceState: (state: unknown) => void;
+      }
+    )._callbacks['broadcast_ptt_state'];
     cb({
       payload: {
         userId: 'user-000',
@@ -481,7 +493,12 @@ describe('PTT collision detection (tie-breaking logic)', () => {
   });
 
   it('Terima ptt_state timestamp sama, userId pengirim > userId kita → kita menang, isTransmitting tetap true', () => {
-    const cb = (supabase as unknown as { _callbacks: Record<string, (payload?: unknown) => void>; _setPresenceState: (state: unknown) => void })._callbacks['broadcast_ptt_state'];
+    const cb = (
+      supabase as unknown as {
+        _callbacks: Record<string, (payload?: unknown) => void>;
+        _setPresenceState: (state: unknown) => void;
+      }
+    )._callbacks['broadcast_ptt_state'];
     cb({
       payload: {
         userId: 'user-ZZZ',
@@ -505,7 +522,12 @@ describe('PTT collision detection (tie-breaking logic)', () => {
       },
       progress: 50,
     });
-    const cb = (supabase as unknown as { _callbacks: Record<string, (payload?: unknown) => void>; _setPresenceState: (state: unknown) => void })._callbacks['broadcast_ptt_state'];
+    const cb = (
+      supabase as unknown as {
+        _callbacks: Record<string, (payload?: unknown) => void>;
+        _setPresenceState: (state: unknown) => void;
+      }
+    )._callbacks['broadcast_ptt_state'];
     cb({
       payload: {
         userId: 'user-TX',
@@ -572,7 +594,12 @@ describe('kick handler', () => {
   });
 
   it('kick payload targetUserId === userId kita → channelNumber berubah ke 302', () => {
-    const cb = (supabase as unknown as { _callbacks: Record<string, (payload?: unknown) => void>; _setPresenceState: (state: unknown) => void })._callbacks['broadcast_kick'];
+    const cb = (
+      supabase as unknown as {
+        _callbacks: Record<string, (payload?: unknown) => void>;
+        _setPresenceState: (state: unknown) => void;
+      }
+    )._callbacks['broadcast_kick'];
     cb({
       payload: {
         targetUserId: 'my-user-id',
@@ -583,7 +610,12 @@ describe('kick handler', () => {
   });
 
   it('kick payload targetUserId !== userId kita → channelNumber tidak berubah', () => {
-    const cb = (supabase as unknown as { _callbacks: Record<string, (payload?: unknown) => void>; _setPresenceState: (state: unknown) => void })._callbacks['broadcast_kick'];
+    const cb = (
+      supabase as unknown as {
+        _callbacks: Record<string, (payload?: unknown) => void>;
+        _setPresenceState: (state: unknown) => void;
+      }
+    )._callbacks['broadcast_kick'];
     cb({
       payload: {
         targetUserId: 'other-user-id',
@@ -594,7 +626,12 @@ describe('kick handler', () => {
   });
 
   it('kick payload invalid (Zod gagal) → state tidak berubah', () => {
-    const cb = (supabase as unknown as { _callbacks: Record<string, (payload?: unknown) => void>; _setPresenceState: (state: unknown) => void })._callbacks['broadcast_kick'];
+    const cb = (
+      supabase as unknown as {
+        _callbacks: Record<string, (payload?: unknown) => void>;
+        _setPresenceState: (state: unknown) => void;
+      }
+    )._callbacks['broadcast_kick'];
     cb({
       payload: {
         targetUserId: '', // empty string fails min(1) Zod validation
@@ -615,7 +652,12 @@ describe('update_role handler', () => {
   });
 
   it('targetUserId === userId kita, nextRole=pjc → myChannelRole === pjc & localStorage updated', () => {
-    const cb = (supabase as unknown as { _callbacks: Record<string, (payload?: unknown) => void>; _setPresenceState: (state: unknown) => void })._callbacks['broadcast_update_role'];
+    const cb = (
+      supabase as unknown as {
+        _callbacks: Record<string, (payload?: unknown) => void>;
+        _setPresenceState: (state: unknown) => void;
+      }
+    )._callbacks['broadcast_update_role'];
     cb({
       payload: {
         targetUserId: 'my-user-id',
@@ -627,7 +669,12 @@ describe('update_role handler', () => {
   });
 
   it('targetUserId !== userId kita → myChannelRole tidak berubah', () => {
-    const cb = (supabase as unknown as { _callbacks: Record<string, (payload?: unknown) => void>; _setPresenceState: (state: unknown) => void })._callbacks['broadcast_update_role'];
+    const cb = (
+      supabase as unknown as {
+        _callbacks: Record<string, (payload?: unknown) => void>;
+        _setPresenceState: (state: unknown) => void;
+      }
+    )._callbacks['broadcast_update_role'];
     cb({
       payload: {
         targetUserId: 'other-user-id',
@@ -647,8 +694,18 @@ describe('presence member tracking', () => {
   });
 
   it('presence join event → activeUsers bertambah 1', () => {
-    const cb = (supabase as unknown as { _callbacks: Record<string, (payload?: unknown) => void>; _setPresenceState: (state: unknown) => void })._callbacks['presence_sync'];
-    (supabase as unknown as { _callbacks: Record<string, (payload?: unknown) => void>; _setPresenceState: (state: unknown) => void })._setPresenceState({
+    const cb = (
+      supabase as unknown as {
+        _callbacks: Record<string, (payload?: unknown) => void>;
+        _setPresenceState: (state: unknown) => void;
+      }
+    )._callbacks['presence_sync'];
+    (
+      supabase as unknown as {
+        _callbacks: Record<string, (payload?: unknown) => void>;
+        _setPresenceState: (state: unknown) => void;
+      }
+    )._setPresenceState({
       key1: [{ userId: 'user-1', displayName: 'User One', callSign: 'US1' }],
     });
     cb();
@@ -657,15 +714,30 @@ describe('presence member tracking', () => {
   });
 
   it('presence leave event → activeUsers berkurang 1', () => {
-    const cb = (supabase as unknown as { _callbacks: Record<string, (payload?: unknown) => void>; _setPresenceState: (state: unknown) => void })._callbacks['presence_sync'];
-    (supabase as unknown as { _callbacks: Record<string, (payload?: unknown) => void>; _setPresenceState: (state: unknown) => void })._setPresenceState({
+    const cb = (
+      supabase as unknown as {
+        _callbacks: Record<string, (payload?: unknown) => void>;
+        _setPresenceState: (state: unknown) => void;
+      }
+    )._callbacks['presence_sync'];
+    (
+      supabase as unknown as {
+        _callbacks: Record<string, (payload?: unknown) => void>;
+        _setPresenceState: (state: unknown) => void;
+      }
+    )._setPresenceState({
       key1: [{ userId: 'user-1', displayName: 'User One' }],
       key2: [{ userId: 'user-2', displayName: 'User Two' }],
     });
     cb();
     expect(usePTTStore.getState().activeUsers.length).toBe(2);
 
-    (supabase as unknown as { _callbacks: Record<string, (payload?: unknown) => void>; _setPresenceState: (state: unknown) => void })._setPresenceState({
+    (
+      supabase as unknown as {
+        _callbacks: Record<string, (payload?: unknown) => void>;
+        _setPresenceState: (state: unknown) => void;
+      }
+    )._setPresenceState({
       key1: [{ userId: 'user-1', displayName: 'User One' }],
     });
     cb();
@@ -673,8 +745,18 @@ describe('presence member tracking', () => {
   });
 
   it('presence join user yang sama dua kali → tidak duplikat di activeUsers', () => {
-    const cb = (supabase as unknown as { _callbacks: Record<string, (payload?: unknown) => void>; _setPresenceState: (state: unknown) => void })._callbacks['presence_sync'];
-    (supabase as unknown as { _callbacks: Record<string, (payload?: unknown) => void>; _setPresenceState: (state: unknown) => void })._setPresenceState({
+    const cb = (
+      supabase as unknown as {
+        _callbacks: Record<string, (payload?: unknown) => void>;
+        _setPresenceState: (state: unknown) => void;
+      }
+    )._callbacks['presence_sync'];
+    (
+      supabase as unknown as {
+        _callbacks: Record<string, (payload?: unknown) => void>;
+        _setPresenceState: (state: unknown) => void;
+      }
+    )._setPresenceState({
       key1: [{ userId: 'user-1', displayName: 'User One' }],
       key2: [{ userId: 'user-1', displayName: 'User One Duplicate' }],
     });
