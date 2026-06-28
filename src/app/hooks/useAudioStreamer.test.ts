@@ -86,7 +86,7 @@ class MockMediaRecorder {
 
   constructor(
     public stream: unknown,
-    public options?: any
+    public options?: MediaRecorderOptions
   ) {
     MockMediaRecorder.lastCreatedInstance = this;
   }
@@ -191,9 +191,9 @@ describe('Phase 1.4: Audio/MediaRecorder Logic & WebRTC Signaling Tests', () => 
       await result.current.startRecording(onChunkAvailable);
     });
 
-    const instance = (global.MediaRecorder as any).lastCreatedInstance;
+    const instance = (global.MediaRecorder as unknown as typeof MockMediaRecorder).lastCreatedInstance;
     expect(instance).toBeDefined();
-    expect(instance.options?.mimeType).toContain('webm');
+    expect(instance?.options?.mimeType).toContain('webm');
     expect(onChunkAvailable).toHaveBeenCalledWith('mock-base64');
   });
 
