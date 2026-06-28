@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react';
 import fishSpriteUrl from '../../assets/fish_spritesheet.png';
+import aquariumBgUrl from '../../assets/aquarium_bg.png';
 
 interface AquariumCanvasProps {
   theme: string;
@@ -124,6 +125,9 @@ export function AquariumCanvas({ theme }: AquariumCanvasProps) {
     const fishImage = new Image();
     fishImage.src = fishSpriteUrl;
 
+    const bgImage = new Image();
+    bgImage.src = aquariumBgUrl;
+
     // --- Initialize Bubbles ---
     const bubbles: Bubble[] = Array.from({ length: 10 }, () => ({
       x: Math.random() * width,
@@ -229,12 +233,16 @@ export function AquariumCanvas({ theme }: AquariumCanvasProps) {
 
       // 1. Clear & Background water gradient
       ctx.clearRect(0, 0, width, height);
-      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
-      bgGrad.addColorStop(0, '#001a4d'); // Deep blue surface
-      bgGrad.addColorStop(0.5, '#000b24'); // Midwater
-      bgGrad.addColorStop(1, '#00030f'); // Abyss bottom
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, width, height);
+      if (bgImage.complete && bgImage.naturalWidth !== 0) {
+        ctx.drawImage(bgImage, 0, 0, width, height);
+      } else {
+        const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+        bgGrad.addColorStop(0, '#001a4d'); // Deep blue surface
+        bgGrad.addColorStop(0.5, '#000b24'); // Midwater
+        bgGrad.addColorStop(1, '#00030f'); // Abyss bottom
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, width, height);
+      }
 
       // 2. Caustic Light Beams (Sunlight rays)
       ctx.save();
@@ -376,80 +384,105 @@ export function AquariumCanvas({ theme }: AquariumCanvasProps) {
 
       // 6. Update and Draw Fish (With Drop Shadows and Fine skeletal Fin Rays)
       fishList.forEach((fish) => {
-        // AI Pathing steering force toward wandering target
+        // AI Pathing: Wander toward target
         const distToTarget = Math.hypot(fish.targetX - fish.x, fish.targetY - fish.y);
-        if (distToTarget < 25 || Math.random() < 0.015) {
+        // Only pick a new target when close or very rarely (once every 8-10 seconds) for long, logical paths
+        if (distToTarget < 30 || Math.random() < 0.002) {
           fish.targetX = Math.random() * (width - 60) + 30;
           fish.targetY = Math.random() * (height - 40) + 20;
         }
 
+        // Calculate desired angle towards target
         const targetAngle = Math.atan2(fish.targetY - fish.y, fish.targetX - fish.x);
         let angleDiff = targetAngle - fish.angle;
         while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
         while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
 
-        fish.angle += angleDiff * 0.045; // Smooth steering speed
+        // Smooth steering towards target
+        fish.angle += angleDiff * 0.035;
 
-        const speedMultiplier = distToTarget < 40 ? 0.6 : 1.0;
-        const desiredVx = Math.cos(fish.angle) * fish.maxSpeed * speedMultiplier;
-        const desiredVy = Math.sin(fish.angle) * fish.maxSpeed * speedMultiplier;
+        // Intermittent burst-and-coast cycle to match real fish swimming
+        const pulseCycle = Math.sin(time * 2.2 + fish.id * 1.7);
+        const isGliding = pulseCycle < -0.15; // Gliding / coasting phase
 
-        fish.vx += (desiredVx - fish.vx) * 0.07;
-        fish.vy += (desiredVy - fish.vy) * 0.07;
+        let targetSpeed = fish.maxSpeed;
+        if (isGliding) {
+          targetSpeed = fish.maxSpeed * 0.22; // Slow glide coast
+        } else {
+          targetSpeed = fish.maxSpeed * (1.15 + Math.abs(pulseCycle) * 0.45); // Active burst sweep
+        }
 
-        // Boundary collision avoidance
-        const margin = 20;
+        const speedMultiplier = distToTarget < 40 ? 0.35 : 1.0;
+        const currentTargetSpeed = targetSpeed * speedMultiplier;
+
+        // Calculate desired velocity
+        const desiredVx = Math.cos(fish.angle) * currentTargetSpeed;
+        const desiredVy = Math.sin(fish.angle) * currentTargetSpeed;
+
+        // Fast acceleration during burst, slow deceleration during glide
+        const lerpFactor = isGliding ? 0.02 : 0.09;
+        fish.vx += (desiredVx - fish.vx) * lerpFactor;
+        fish.vy += (desiredVy - fish.vy) * lerpFactor;
+
+        // Soft boundary avoidance forces (steers away gently instead of bouncing)
+        const margin = 25;
+        let avoidForceX = 0;
+        let avoidForceY = 0;
+
         if (fish.x < margin) {
-          fish.vx += 0.16;
-          fish.angle = Math.PI - fish.angle;
-        }
-        if (fish.x > width - margin) {
-          fish.vx -= 0.16;
-          fish.angle = Math.PI - fish.angle;
-        }
-        if (fish.y < margin) {
-          fish.vy += 0.16;
-          fish.angle = -fish.angle;
-        }
-        if (fish.y > height - margin) {
-          fish.vy -= 0.16;
-          fish.angle = -fish.angle;
+          avoidForceX = (margin - fish.x) * 0.03;
+        } else if (fish.x > width - margin) {
+          avoidForceX = (width - margin - fish.x) * 0.03;
         }
 
+        if (fish.y < margin) {
+          avoidForceY = (margin - fish.y) * 0.03;
+        } else if (fish.y > height - margin) {
+          avoidForceY = (height - margin - fish.y) * 0.03;
+        }
+
+        fish.vx += avoidForceX;
+        fish.vy += avoidForceY;
+
+        // Update positions based on velocities
         fish.x += fish.vx;
         fish.y += fish.vy;
-        fish.angle = Math.atan2(fish.vy, fish.vx);
+
+        // Smoothly align the visual body angle to the actual movement vector
+        const actualMoveAngle = Math.atan2(fish.vy, fish.vx);
+        let moveAngleDiff = actualMoveAngle - fish.angle;
+        while (moveAngleDiff < -Math.PI) moveAngleDiff += Math.PI * 2;
+        while (moveAngleDiff > Math.PI) moveAngleDiff -= Math.PI * 2;
+        fish.angle += moveAngleDiff * 0.08; // Gentle alignment to prevent snaps
 
         const speed = Math.hypot(fish.vx, fish.vy);
-        fish.wigglePhase += fish.wiggleSpeed * (speed / fish.maxSpeed + 0.3);
+        // Tail wiggle speed matches velocity, drops to near zero when gliding
+        const wiggleFactor = speed > fish.maxSpeed * 0.35 ? (speed / fish.maxSpeed) : 0.05;
+        fish.wigglePhase += fish.wiggleSpeed * wiggleFactor * 1.75;
 
-        // --- DRAW FISH ---
+        // --- DRAW FISH (Skeletal Joint bending for maximum flexibility) ---
         ctx.save();
         ctx.translate(fish.x, fish.y);
 
         const isMovingLeft = fish.vx < 0;
-        const scaleX = isMovingLeft !== fish.facingLeft ? -1 : 1;
+        const targetFlip = isMovingLeft !== fish.facingLeft ? -1 : 1;
+        // Smoothly interpolate currentFlip towards targetFlip for realistic 3D turning look
+        fish.currentFlip += (targetFlip - fish.currentFlip) * 0.14;
 
-        // Instant horizontal flip
-        ctx.scale(scaleX, 1);
+        ctx.scale(fish.currentFlip, 1);
 
         // Pitch rotation based on velocity vector
         const speedX = Math.abs(fish.vx);
         const pitch = Math.atan2(fish.vy, speedX);
 
-        // Wiggle rotation
-        const wiggle = Math.sin(fish.wigglePhase) * 0.1;
-
-        ctx.rotate(pitch + wiggle);
-
-        // Scale by fish size
-        ctx.scale(fish.size, fish.size);
+        // Wiggle rotation (decreases if gliding to mimic resting tail)
+        const wiggle = Math.sin(fish.wigglePhase) * (isGliding ? 0.03 : 0.12);
 
         // 3D Drop Shadow effect
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
-        ctx.shadowBlur = 8;
-        ctx.shadowOffsetX = 3;
-        ctx.shadowOffsetY = 5;
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.35)';
+        ctx.shadowBlur = 6;
+        ctx.shadowOffsetX = 3 * fish.currentFlip; // Adjust shadow direction based on flip
+        ctx.shadowOffsetY = 4;
 
         const srcW = 1024 / 3;
         const srcH = 1024 / 5;
@@ -457,7 +490,66 @@ export function AquariumCanvas({ theme }: AquariumCanvasProps) {
         const srcY = fish.spriteRow * srcH;
 
         if (fishImage.complete) {
-          ctx.drawImage(fishImage, srcX, srcY, srcW, srcH, -srcW / 2, -srcH / 2, srcW, srcH);
+          // --- Joint 1: Head (Pivot at center-right of the sprite) ---
+          ctx.save();
+          ctx.rotate(pitch + wiggle * 0.15);
+          ctx.scale(fish.size, fish.size);
+          // Head slice: right 35% of the sprite
+          const headSrcX = srcX + 0.65 * srcW;
+          const headSrcW = 0.35 * srcW;
+          const headDestX = 0.15 * srcW;
+          const headDestW = 0.35 * srcW;
+          ctx.drawImage(
+            fishImage,
+            headSrcX,
+            srcY,
+            headSrcW,
+            srcH,
+            headDestX - srcW / 2,
+            -srcH / 2,
+            headDestW,
+            srcH
+          );
+
+          // --- Joint 2: Body (Pivot at connection joint) ---
+          ctx.translate(headDestX - srcW / 2, 0);
+          ctx.rotate(wiggle * 0.45);
+          // Body slice: middle 35% of the sprite
+          const bodySrcX = srcX + 0.3 * srcW;
+          const bodySrcW = 0.38 * srcW;
+          const bodyDestW = 0.38 * srcW;
+          ctx.drawImage(
+            fishImage,
+            bodySrcX,
+            srcY,
+            bodySrcW,
+            srcH,
+            -bodyDestW + 0.05 * srcW, // slightly overlapped
+            -srcH / 2,
+            bodyDestW,
+            srcH
+          );
+
+          // --- Joint 3: Tail (Pivot at connection joint) ---
+          ctx.translate(-bodyDestW + 0.05 * srcW, 0);
+          ctx.rotate(wiggle * 1.05);
+          // Tail slice: left 32% of the sprite
+          const tailSrcX = srcX;
+          const tailSrcW = 0.32 * srcW;
+          const tailDestW = 0.32 * srcW;
+          ctx.drawImage(
+            fishImage,
+            tailSrcX,
+            srcY,
+            tailSrcW,
+            srcH,
+            -tailDestW + 0.03 * srcW, // slightly overlapped
+            -srcH / 2,
+            tailDestW,
+            srcH
+          );
+
+          ctx.restore();
         }
 
         ctx.restore();
