@@ -23,7 +23,6 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: '9'
           run_install: false
 
       # [FIX P1-4a] Node 18 sudah EOL (April 2025) → upgrade ke Node 20 LTS
@@ -118,7 +117,6 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: '9'
           run_install: false
 
       # [FIX P1-4a] Node 20 LTS konsisten dengan job validate
