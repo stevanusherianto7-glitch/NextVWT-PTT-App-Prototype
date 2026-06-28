@@ -33,7 +33,9 @@ vi.mock('../utils/supabase', () => {
 
   const mockSupabase = {
     _callbacks: callbacks,
-    _setPresenceState: (state: any) => { currentPresenceState = state; },
+    _setPresenceState: (state: any) => {
+      currentPresenceState = state;
+    },
     channel: vi.fn(() => mockChannel),
     auth: {
       getSession: vi.fn(() => Promise.resolve({ data: { session: null } })),

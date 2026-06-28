@@ -220,13 +220,17 @@ describe('Permissions Engine – Unit Tests', () => {
       expect(canUsePTT({ role: 'guest', status: 'active', allowGuestPTT: false })).toBe(false);
     });
     it('operator, status=ptt_blocked → tidak dapat PTT', () => {
-      expect(canUsePTT({ role: 'operator', status: 'ptt_blocked', allowGuestPTT: true })).toBe(false);
+      expect(canUsePTT({ role: 'operator', status: 'ptt_blocked', allowGuestPTT: true })).toBe(
+        false
+      );
     });
     it('pjc, status=banned → tidak dapat PTT', () => {
       expect(canUsePTT({ role: 'pjc', status: 'banned', allowGuestPTT: true })).toBe(false);
     });
     it('sys_admin, status=suspended → tidak dapat PTT', () => {
-      expect(canUsePTT({ role: 'sys_admin', status: 'suspended', allowGuestPTT: true })).toBe(false);
+      expect(canUsePTT({ role: 'sys_admin', status: 'suspended', allowGuestPTT: true })).toBe(
+        false
+      );
     });
   });
 
@@ -239,7 +243,7 @@ describe('Permissions Engine – Unit Tests', () => {
     });
     it('semua role dengan status=chat_blocked → tidak dapat chat', () => {
       const roles: ChannelRole[] = ['noc', 'sys_admin', 'pjc', 'operator', 'guest'];
-      roles.forEach(role => {
+      roles.forEach((role) => {
         expect(canUseChat({ role, status: 'chat_blocked', allowGuestChat: true })).toBe(false);
       });
     });
@@ -250,13 +254,19 @@ describe('Permissions Engine – Unit Tests', () => {
 
   describe('canUseReaction — extended tests', () => {
     it('noc dengan status normal → dapat reaction', () => {
-      expect(canUseReaction({ role: 'noc', status: 'active', allowGuestReaction: false })).toBe(true);
+      expect(canUseReaction({ role: 'noc', status: 'active', allowGuestReaction: false })).toBe(
+        true
+      );
     });
     it('guest, allowGuestReaction=false → tidak dapat reaction', () => {
-      expect(canUseReaction({ role: 'guest', status: 'active', allowGuestReaction: false })).toBe(false);
+      expect(canUseReaction({ role: 'guest', status: 'active', allowGuestReaction: false })).toBe(
+        false
+      );
     });
     it('operator, status=muted → tidak dapat reaction', () => {
-      expect(canUseReaction({ role: 'operator', status: 'muted', allowGuestReaction: true })).toBe(false);
+      expect(canUseReaction({ role: 'operator', status: 'muted', allowGuestReaction: true })).toBe(
+        false
+      );
     });
   });
 
@@ -298,7 +308,7 @@ describe('Permissions Engine – Unit Tests', () => {
   describe('roleRank integrity', () => {
     it('semua role terdefinisi di roleRank', () => {
       const roles: ChannelRole[] = ['noc', 'sys_admin', 'pjc', 'operator', 'guest'];
-      roles.forEach(role => {
+      roles.forEach((role) => {
         expect(roleRank[role]).toBeDefined();
         expect(typeof roleRank[role]).toBe('number');
       });

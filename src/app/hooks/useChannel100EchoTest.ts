@@ -1,0 +1,113 @@
+import { useState, useRef, useCallback } from 'react';
+import { useAudioPlayback } from './useAudioPlayback';
+import { toast } from 'sonner';
+import { usePTTStore } from '../store/usePTTStore';
+
+export const useChannel100EchoTest = () => {
+  const [isCapturing, setIsCapturing] = useState(false);
+  const [hasChunks, setHasChunks] = useState(false);
+  const [isPlayingBack, setIsPlayingBack] = useState(false);
+
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const isCapturingRef = useRef(false);
+  const isPlayingBackRef = useRef(false);
+
+  const { playAudioChunk, getAudioContext } = useAudioPlayback();
+
+  const startEchoCapture = useCallback(async () => {
+    if (isCapturingRef.current) return;
+    isCapturingRef.current = true;
+    setIsCapturing(true);
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: false },
+      });
+      streamRef.current = stream;
+
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      chunksRef.current = [];
+      setHasChunks(false);
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          chunksRef.current.push(e.data);
+          setHasChunks(true);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        isCapturingRef.current = false;
+        setIsCapturing(false);
+        const chunks = chunksRef.current;
+        if (chunks.length > 0 && isPlayingBackRef.current) {
+          // Process chunks for playback
+          for (const chunk of chunks) {
+            const arrayBuffer = await chunk.arrayBuffer();
+            const base64String = btoa(
+              new Uint8Array(arrayBuffer).reduce(
+                (data, byte) => data + String.fromCharCode(byte),
+                ''
+              )
+            );
+            await playAudioChunk({
+              audio_b64: base64String,
+              sequenceNumber: 0,
+              userId: 'echo-test',
+              isLast: false,
+              timestamp: Date.now(),
+            });
+          }
+          isPlayingBackRef.current = false;
+          setIsPlayingBack(false);
+        }
+      };
+
+      mediaRecorder.start(100);
+    } catch (err: any) {
+      isCapturingRef.current = false;
+      setIsCapturing(false);
+      setHasChunks(false);
+      if (err.name === 'NotAllowedError') {
+        throw new Error('MicPermissionDenied');
+      } else if (err.name === 'NotFoundError') {
+        throw new Error('MicNotFound');
+      }
+      throw err;
+    }
+  }, [playAudioChunk]);
+
+  const stopEchoAndPlayback = useCallback(() => {
+    if (mediaRecorderRef.current && isCapturingRef.current) {
+      isPlayingBackRef.current = true;
+      setIsPlayingBack(true);
+      mediaRecorderRef.current.stop();
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+    }
+  }, []);
+
+  const cancelEcho = useCallback(() => {
+    if (mediaRecorderRef.current && isCapturingRef.current) {
+      isCapturingRef.current = false;
+      setIsCapturing(false);
+      isPlayingBackRef.current = false;
+      setIsPlayingBack(false);
+      mediaRecorderRef.current.stop();
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+    }
+  }, []);
+
+  return {
+    startEchoCapture,
+    stopEchoAndPlayback,
+    cancelEcho,
+    echoStatus: { isCapturing, hasChunks, isPlayingBack },
+  };
+};

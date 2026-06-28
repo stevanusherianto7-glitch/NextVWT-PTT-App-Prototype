@@ -10,16 +10,21 @@ export function useLongPress({ onStart, onEnd, threshold = 0 }: UseLongPressOpti
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isPressingRef = useRef(false);
 
-  const start = useCallback((e: React.PointerEvent) => {
-    e.preventDefault();
-    if (isPressingRef.current) return;
-    isPressingRef.current = true;
-    if (threshold > 0) {
-      timerRef.current = setTimeout(() => { onStart?.(); }, threshold);
-    } else {
-      onStart?.();
-    }
-  }, [onStart, threshold]);
+  const start = useCallback(
+    (e: React.PointerEvent) => {
+      e.preventDefault();
+      if (isPressingRef.current) return;
+      isPressingRef.current = true;
+      if (threshold > 0) {
+        timerRef.current = setTimeout(() => {
+          onStart?.();
+        }, threshold);
+      } else {
+        onStart?.();
+      }
+    },
+    [onStart, threshold]
+  );
 
   const end = useCallback(() => {
     if (!isPressingRef.current) return;

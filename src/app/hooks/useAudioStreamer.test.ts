@@ -199,7 +199,9 @@ describe('Phase 1.4: Audio/MediaRecorder Logic & WebRTC Signaling Tests', () => 
 
   it('should gracefully handle microphone permission rejection (NotAllowedError)', async () => {
     const permError = new DOMException('Permission denied', 'NotAllowedError');
-    const getUserMediaSpy = vi.spyOn(navigator.mediaDevices, 'getUserMedia').mockRejectedValueOnce(permError);
+    const getUserMediaSpy = vi
+      .spyOn(navigator.mediaDevices, 'getUserMedia')
+      .mockRejectedValueOnce(permError);
 
     const { result } = renderHook(() => useAudioStreamer());
     const onChunkAvailable = vi.fn();

@@ -41,7 +41,10 @@ describe('PttStatePayloadSchema', () => {
   });
 
   it('displayName > 100 karakter → gagal', () => {
-    const res = PttStatePayloadSchema.safeParse({ ...validPttPayload, displayName: 'D'.repeat(101) });
+    const res = PttStatePayloadSchema.safeParse({
+      ...validPttPayload,
+      displayName: 'D'.repeat(101),
+    });
     expect(res.success).toBe(false);
   });
 
@@ -179,7 +182,10 @@ describe('HangUpPayloadSchema', () => {
   });
 
   it('moderatorName > 100 karakter → gagal', () => {
-    const res = HangUpPayloadSchema.safeParse({ targetUserId: 'user-1', moderatorName: 'M'.repeat(101) });
+    const res = HangUpPayloadSchema.safeParse({
+      targetUserId: 'user-1',
+      moderatorName: 'M'.repeat(101),
+    });
     expect(res.success).toBe(false);
   });
 
@@ -234,7 +240,11 @@ describe('ReactionPayloadSchema', () => {
   });
 
   it('reaction string kosong → gagal', () => {
-    const res = ReactionPayloadSchema.safeParse({ ...validReaction, category: 'animation', reaction: '' });
+    const res = ReactionPayloadSchema.safeParse({
+      ...validReaction,
+      category: 'animation',
+      reaction: '',
+    });
     expect(res.success).toBe(false);
   });
 });
@@ -263,7 +273,10 @@ describe('UpdateStatusPayloadSchema', () => {
   });
 
   it("statusType='unknown_status' → gagal", () => {
-    const res = UpdateStatusPayloadSchema.safeParse({ targetUserId: 'u1', statusType: 'unknown_status' });
+    const res = UpdateStatusPayloadSchema.safeParse({
+      targetUserId: 'u1',
+      statusType: 'unknown_status',
+    });
     expect(res.success).toBe(false);
   });
 });
