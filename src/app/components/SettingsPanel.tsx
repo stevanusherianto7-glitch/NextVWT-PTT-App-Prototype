@@ -313,7 +313,7 @@ export function SettingsPanel({ onClose, onOpenModeration, onOpenRoip }: Setting
             type="text"
             value={infoText}
             onChange={(e) => setInfoText(e.target.value)}
-            className="flex-1 border border-gray-300 rounded px-2.5 py-1.5 text-sm bg-white text-black outline-none focus:border-blue-500"
+            className="flex-1 border border-gray-300 rounded px-2.5 py-1.5 text-sm bg-white text-black font-semibold outline-none focus:border-blue-500"
             placeholder="Username / Display name..."
           />
           <button

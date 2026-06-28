@@ -1034,7 +1034,7 @@ export function UserListModal({
                         </span>
                       ))}
                     <span
-                      className={`text-[#00C853] font-semibold tracking-wide ${hasVideoBackground ? 'drop-shadow-[0_1px_1.5px_rgba(0,0,0,0.6)]' : ''}`}
+                      className={`text-[#00C853] font-normal uppercase ${hasVideoBackground ? 'drop-shadow-[0_1px_1.5px_rgba(0,0,0,0.6)]' : ''}`}
                     >
                       {profile.callSign}
                     </span>

@@ -49,7 +49,7 @@ export function ProgressBar({ progress }: ProgressBarProps) {
         <div
           className="absolute top-1/2 -translate-y-1/2 z-20 pointer-events-none"
           style={{
-            left: `${progress}%`,
+            left: `calc(7px + ${progress}% - ${progress * 0.14}px)`,
             width: '0px',
             height: '0px',
             transition: 'left 90ms cubic-bezier(0.1, 0.8, 0.25, 1)',
