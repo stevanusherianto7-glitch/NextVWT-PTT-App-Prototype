@@ -247,14 +247,11 @@ export function useReactionSounds() {
    * Atur volume master untuk semua efek suara reaksi.
    * @param volume 0.0 – 1.0
    */
-  const setReactionVolume = useCallback(
-    (volume: number) => {
-      if (masterGainRef.current) {
-        masterGainRef.current.gain.value = Math.max(0, Math.min(1, volume));
-      }
-    },
-    []
-  );
+  const setReactionVolume = useCallback((volume: number) => {
+    if (masterGainRef.current) {
+      masterGainRef.current.gain.value = Math.max(0, Math.min(1, volume));
+    }
+  }, []);
 
   return { playReactionSound, setReactionVolume };
 }

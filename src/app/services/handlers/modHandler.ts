@@ -41,22 +41,16 @@ export function handleKick(rawPayload: unknown) {
   }
 }
 
-export function handleUpdateRole(rawPayload: unknown, channelNum: number, activeChannelSubscription: RealtimeChannel | null) {
-  const payload = safeParseRealtimePayload(
-    UpdateRolePayloadSchema,
-    rawPayload,
-    'update_role'
-  );
+export function handleUpdateRole(
+  rawPayload: unknown,
+  channelNum: number,
+  activeChannelSubscription: RealtimeChannel | null
+) {
+  const payload = safeParseRealtimePayload(UpdateRolePayloadSchema, rawPayload, 'update_role');
   if (!payload) return;
   const roomId = `ptt-room-${channelNum}`;
-  sessionStorage.setItem(
-    `channel-role:${roomId}:${payload.targetUserId}`,
-    payload.nextRole
-  );
-  localStorage.setItem(
-    `channel-role:${roomId}:${payload.targetUserId}`,
-    payload.nextRole
-  );
+  sessionStorage.setItem(`channel-role:${roomId}:${payload.targetUserId}`, payload.nextRole);
+  localStorage.setItem(`channel-role:${roomId}:${payload.targetUserId}`, payload.nextRole);
   window.dispatchEvent(new Event('channel-role-changed'));
 
   const currentStore = usePTTStore.getState();
@@ -75,8 +69,7 @@ export function handleUpdateRole(rawPayload: unknown, channelNum: number, active
 
     const localStatus =
       localStorage.getItem(`channel-status:${roomId}:${currentStore.userId}`) || 'active';
-    let presenceStatus: 'normal' | 'muted' | 'controlled' | 'wait' | 'wait_controlled' =
-      'normal';
+    let presenceStatus: 'normal' | 'muted' | 'controlled' | 'wait' | 'wait_controlled' = 'normal';
     if (
       localStatus === 'muted' ||
       localStatus === 'controlled' ||
@@ -101,12 +94,12 @@ export function handleUpdateRole(rawPayload: unknown, channelNum: number, active
   }
 }
 
-export function handleUpdateStatus(rawPayload: unknown, channelNum: number, activeChannelSubscription: RealtimeChannel | null) {
-  const payload = safeParseRealtimePayload(
-    UpdateStatusPayloadSchema,
-    rawPayload,
-    'update_status'
-  );
+export function handleUpdateStatus(
+  rawPayload: unknown,
+  channelNum: number,
+  activeChannelSubscription: RealtimeChannel | null
+) {
+  const payload = safeParseRealtimePayload(UpdateStatusPayloadSchema, rawPayload, 'update_status');
   if (!payload) return;
   const roomId = `ptt-room-${channelNum}`;
   const statusVal = payload.statusType === 'normal' ? 'active' : payload.statusType;
@@ -128,9 +121,8 @@ export function handleUpdateStatus(rawPayload: unknown, channelNum: number, acti
         ? userMeta?.user_metadata?.avatar_url || ''
         : currentStore.customPhotoUrl;
 
-    const localRole = (localStorage.getItem(
-      `channel-role:${roomId}:${currentStore.userId}`
-    ) || 'guest') as ChannelRole;
+    const localRole = (localStorage.getItem(`channel-role:${roomId}:${currentStore.userId}`) ||
+      'guest') as ChannelRole;
 
     activeChannelSubscription
       .track({

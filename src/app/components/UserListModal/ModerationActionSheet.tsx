@@ -18,7 +18,10 @@ interface ModerationActionSheetProps {
   localRole: string;
   canModerateTarget: boolean;
   onClose: () => void;
-  handleUpdateStatus: (uId: string, statusType: 'normal' | 'muted' | 'controlled' | 'wait' | 'wait_controlled') => void;
+  handleUpdateStatus: (
+    uId: string,
+    statusType: 'normal' | 'muted' | 'controlled' | 'wait' | 'wait_controlled'
+  ) => void;
   handleUpdateRole: (uId: string, nextRole: ChannelRole) => void;
 }
 

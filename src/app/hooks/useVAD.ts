@@ -51,13 +51,14 @@ export function useVAD(threshold = 0.01, silenceTimeout = 1500) {
           const PROGRESS_SCALE = 400;
           const rawProgress = Math.min(100, rms * PROGRESS_SCALE);
 
-          const ATTACK = 0.45;  // fast rise
+          const ATTACK = 0.45; // fast rise
           const RELEASE = 0.15; // slow decay
 
           const prev = prevProgressRef.current;
-          const smoothed = rawProgress > prev
-            ? prev + (rawProgress - prev) * ATTACK
-            : prev + (rawProgress - prev) * RELEASE;
+          const smoothed =
+            rawProgress > prev
+              ? prev + (rawProgress - prev) * ATTACK
+              : prev + (rawProgress - prev) * RELEASE;
 
           prevProgressRef.current = smoothed;
           usePTTStore.getState().setProgress(Math.round(smoothed));

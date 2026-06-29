@@ -210,8 +210,7 @@ export function useRadioOrchestrator() {
     }
 
     const isReceiving =
-      !!activeTransmitter &&
-      activeTransmitter.userId !== usePTTStore.getState().userId;
+      !!activeTransmitter && activeTransmitter.userId !== usePTTStore.getState().userId;
 
     // Reset saat tidak ada aktivitas sama sekali
     if (!isTransmitting && !isReceiving) {
@@ -618,8 +617,8 @@ export function useRadioOrchestrator() {
           // - ada "sustain" saat vokal
           // - ada "gap" singkat saat jeda antar kata (setiap ~0.4 detik)
           const wordRhythm = Math.max(0, Math.sin(elapsed * 7.5)); // ~1 kata/detik
-          const syllable = Math.abs(Math.sin(elapsed * 14));        // ~2 suku kata/detik
-          const breathingGap = elapsed % 3.5 < 0.2 ? 0.05 : 1;    // jeda napas setiap 3.5 detik
+          const syllable = Math.abs(Math.sin(elapsed * 14)); // ~2 suku kata/detik
+          const breathingGap = elapsed % 3.5 < 0.2 ? 0.05 : 1; // jeda napas setiap 3.5 detik
 
           const speechEnvelope = (wordRhythm * 0.5 + syllable * 0.5) * breathingGap;
           const naturalProgress = Math.max(5, speechEnvelope * 85 + (Math.random() * 8 - 4));

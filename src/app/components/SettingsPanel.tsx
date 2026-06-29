@@ -12,7 +12,9 @@ export interface SettingsPanelProps {
 }
 
 export function SettingsPanel({ onClose, onOpenModeration, onOpenRoip }: SettingsPanelProps) {
-  const [activeTab, setActiveTab] = useState<'profile' | 'audio' | 'appearance' | 'network'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'audio' | 'appearance' | 'network'>(
+    'profile'
+  );
   const [isUserGuideOpen, setIsUserGuideOpen] = useState(false);
 
   const handleOpenModeration = () => {

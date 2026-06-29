@@ -249,11 +249,7 @@ export function getDeterministicProfile(username: string): UserProfile {
   return { userId: username, displayName, callSign, location, avatarColor, avatarUrl };
 }
 
-export function UserListModal({
-  channel,
-  users,
-  hasVideoBackground,
-}: UserListModalProps) {
+export function UserListModal({ channel, users, hasVideoBackground }: UserListModalProps) {
   const isTransmitting = usePTTStore((state) => state.isTransmitting);
   const activeTransmitter = usePTTStore((state) => state.activeTransmitter);
   const localUserId = usePTTStore((state) => state.userId);
@@ -475,7 +471,9 @@ export function UserListModal({
       });
     }
 
-    setModalUsers((prev: any[]) => prev.map((u) => (u.userId === uId ? { ...u, role: nextRole } : u)));
+    setModalUsers((prev: any[]) =>
+      prev.map((u) => (u.userId === uId ? { ...u, role: nextRole } : u))
+    );
     setActiveZoomedAvatar((prev: any) =>
       prev && prev.userId === uId ? { ...prev, role: nextRole } : prev
     );
@@ -637,8 +635,10 @@ export function UserListModal({
           modalUsers.map((profile, idx) => {
             const isLocalUser =
               profile.userId === localUserId && profile.callSign === localCallSign;
-            const isSpeaking = !!((isTransmitting && isLocalUser) ||
-              (activeTransmitter && activeTransmitter.userId === profile.userId));
+            const isSpeaking = !!(
+              (isTransmitting && isLocalUser) ||
+              (activeTransmitter && activeTransmitter.userId === profile.userId)
+            );
 
             let avatarUrlToUse = profile.avatarUrl;
             if (!showPhotosInList) {

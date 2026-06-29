@@ -138,11 +138,7 @@ export function ReactionsOverlay({ isUserListOpen, floatingReactions }: Reaction
               style={posStyle}
             >
               <div className={`${floatAnim} flex flex-col items-center gap-0.5`}>
-                <img
-                  src={foxSvg}
-                  className="w-[180px] h-[180px] object-contain"
-                  alt="Cute Fox"
-                />
+                <img src={foxSvg} className="w-[180px] h-[180px] object-contain" alt="Cute Fox" />
                 {r.senderName && (
                   <span className="text-[9px] font-bold text-white px-1.5 py-0.5 rounded-full bg-black/60 backdrop-blur-sm leading-none whitespace-nowrap max-w-[120px] truncate">
                     {r.senderName}

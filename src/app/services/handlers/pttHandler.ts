@@ -33,16 +33,11 @@ export function clearActiveTransmitterWatchdog() {
 }
 
 export function handlePttState(rawPayload: unknown) {
-  const payload = safeParseRealtimePayload(
-    PttStatePayloadSchema,
-    rawPayload,
-    'ptt_state'
-  );
+  const payload = safeParseRealtimePayload(PttStatePayloadSchema, rawPayload, 'ptt_state');
   if (!payload) return;
   if (payload.isTransmitting) {
     const state = usePTTStore.getState();
-    const isOtherDevice =
-      payload.userId !== state.userId || payload.callSign !== state.callSign;
+    const isOtherDevice = payload.userId !== state.userId || payload.callSign !== state.callSign;
 
     if (isOtherDevice) {
       const myRole = state.myChannelRole ?? 'guest';
@@ -63,14 +58,11 @@ export function handlePttState(rawPayload: unknown) {
           const remoteTime = payload.timestamp || 0;
 
           const lostCollision =
-            localTime > remoteTime ||
-            (localTime === remoteTime && state.userId > payload.userId);
+            localTime > remoteTime || (localTime === remoteTime && state.userId > payload.userId);
 
           if (lostCollision) {
             usePTTStore.setState({ isTransmitting: false, progress: 0 });
-            toast.warning(
-              `Jalur sibuk! Transmisi bertabrakan dengan ${payload.displayName}.`
-            );
+            toast.warning(`Jalur sibuk! Transmisi bertabrakan dengan ${payload.displayName}.`);
           }
         }
       }

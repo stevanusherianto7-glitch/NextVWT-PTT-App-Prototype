@@ -64,10 +64,7 @@ export function RadioBody({
 
       {/* Floating Reactions Overlay */}
       {isPowerOn && floatingReactions.length > 0 && (
-        <ReactionsOverlay
-          isUserListOpen={isUserListOpen}
-          floatingReactions={floatingReactions}
-        />
+        <ReactionsOverlay isUserListOpen={isUserListOpen} floatingReactions={floatingReactions} />
       )}
 
       {/* Render Quick Action Dock */}
