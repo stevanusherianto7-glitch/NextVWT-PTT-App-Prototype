@@ -4,6 +4,7 @@ import { STATIC_CHANNELS } from '../utils/constants';
 import { useAudioStreamer } from './useAudioStreamer';
 import { base64ToArrayBuffer, arrayBufferToBase64 } from './useAudioPlayback';
 import { toast } from 'sonner';
+import { useReactionSounds } from './useReactionSounds';
 import { initGlobalAudioContext } from '../utils/audioContext';
 import { useChannelRole } from '../../features/moderation/useChannelRole';
 import { useChannelSettings } from '../../features/moderation/useChannelSettings';
@@ -93,6 +94,7 @@ export function useRadioOrchestrator() {
   const [simulatedUsers, setSimulatedUsers] = useState<UserListModalProps['users']>([]);
 
   const { startRecording, stopRecording, playAudioChunk, flushAudioQueue } = useAudioStreamer();
+  const { playReactionSound } = useReactionSounds();
 
   const roomId = `ptt-room-${channel}`;
   const { role, status } = useChannelRole(roomId, userId);
@@ -483,6 +485,12 @@ export function useRadioOrchestrator() {
           (!payload.senderCallSign || payload.senderCallSign === state.callSign);
         if (isSelf) return;
 
+        // ── Putar suara secara lokal saat MENERIMA ──────────────────────────
+        if (payload.category === 'sound') {
+          playReactionSound(payload.reaction);
+        }
+        // ── End sound playback ─────────────────────────────────────────────
+
         const id = payload.id || Math.random().toString();
         const x = 30 + Math.random() * 40;
         const senderName = payload.senderName || 'User';
@@ -503,12 +511,21 @@ export function useRadioOrchestrator() {
     return () => {
       setOnReactionReceived(null);
     };
-  }, [isPowerOn, setOnReactionReceived]);
+  }, [isPowerOn, setOnReactionReceived, playReactionSound]);
 
   const broadcastReaction = usePTTStore((state) => state.broadcastReaction);
 
   const handleSendReaction = (category: 'animation' | 'sound' | 'gift', reactionType: string) => {
     if (!isPowerOn) return;
+
+    // Guard channel 100 dan 0 — tidak ada reaksi di channel khusus ini
+    if (channel === 100 || channel === 0) return;
+
+    // ── Putar suara secara lokal saat MENGIRIM ──────────────────────────────
+    if (category === 'sound') {
+      playReactionSound(reactionType);
+    }
+    // ── End sound playback ──────────────────────────────────────────────────
 
     const localDisplayName = infoText || 'Saya';
 

@@ -88,11 +88,21 @@ export function ReactionsOverlay({ isUserListOpen, floatingReactions }: Reaction
           return (
             <div
               key={r.id}
-              className="fixed inset-0 m-auto w-[150px] h-[150px] flex items-center justify-center animate-bounce z-[100] pointer-events-none drop-shadow-2xl"
+              className="fixed inset-0 m-auto w-[200px] h-[200px] flex flex-col items-center justify-center animate-bounce z-[100] pointer-events-none"
             >
-              <span className="text-[120px] filter drop-shadow-[0_0_20px_rgba(255,255,255,0.8)]">
+              <span
+                className="text-[120px] select-none"
+                style={{
+                  filter: 'drop-shadow(0 0 10px gold) drop-shadow(0 0 25px rgba(255,215,0,0.6))',
+                }}
+              >
                 {giftEmojis[r.reaction] || '🎁'}
               </span>
+              {r.senderName && (
+                <span className="text-[11px] font-bold text-white px-2.5 py-0.5 rounded-full bg-black/75 backdrop-blur-sm shadow-lg whitespace-nowrap -mt-2">
+                  {r.senderName}
+                </span>
+              )}
             </div>
           );
         }

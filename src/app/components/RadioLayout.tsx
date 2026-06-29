@@ -55,6 +55,7 @@ export function RadioLayout() {
     isPanelOpen,
     roomId,
     userId,
+    channel,
   } = useRadioOrchestrator();
 
   return (
@@ -145,6 +146,7 @@ export function RadioLayout() {
                 onOpenQueue={() => setIsQueueOpen(true)}
                 onSendReaction={handleSendReaction}
                 getThemeClass={getThemeClass}
+                channelNumber={channel}
               />
             }
             karaokePlayer={

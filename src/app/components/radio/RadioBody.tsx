@@ -63,7 +63,7 @@ export function RadioBody({
       )}
 
       {/* Floating Reactions Overlay */}
-      {isPowerOn && isUserListOpen && floatingReactions.length > 0 && (
+      {isPowerOn && floatingReactions.length > 0 && (
         <ReactionsOverlay
           isUserListOpen={isUserListOpen}
           floatingReactions={floatingReactions}
