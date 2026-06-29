@@ -146,6 +146,8 @@ export function ModerationLogPanel({ roomId }: ModerationLogPanelProps) {
         return `Memblokir permanen (ban) ${target}${detail.reason ? ` dengan alasan: "${detail.reason}"` : ''}.`;
       case 'UNBAN_USER':
         return `Membatalkan blokir permanen (unban) ${target}.`;
+      case 'ACTIVATE_BADGE_MERAH':
+        return `Mengaktifkan Badge Merah (Akses Saluran Privat) untuk ${target}.`;
       case 'SET_STATUS_NORMAL':
         return `Mengubah status jalur ${target} menjadi normal (Voice).`;
       case 'SET_STATUS_MUTED':
