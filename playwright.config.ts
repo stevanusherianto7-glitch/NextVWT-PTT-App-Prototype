@@ -33,7 +33,7 @@ export default defineConfig({
 
   // ─── Global use ────────────────────────────────────────────────────────────
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL: 'http://localhost:5174',
 
     // Screenshots & Traces untuk debugging CI failures (sesuai user rules)
     screenshot: 'only-on-failure',
@@ -66,9 +66,9 @@ export default defineConfig({
 
   // ─── Web server: auto-start Vite dev server sebelum tests ─────────────────
   webServer: {
-    command: 'pnpm dev',
-    url: 'http://localhost:5173',
-    reuseExistingServer: true,   // Gunakan server yang sudah running
+    command: 'pnpm dev --port 5174 --strictPort',
+    url: 'http://localhost:5174',
+    reuseExistingServer: false,
     timeout: 30_000,
   },
 
