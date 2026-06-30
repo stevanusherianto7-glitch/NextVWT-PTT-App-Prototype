@@ -500,9 +500,7 @@ export function UserListModal({ channel, users, hasVideoBackground }: UserListMo
       previousRole,
     });
 
-    setModalUsers((prev) =>
-      prev.map((u) => (u.userId === uId ? { ...u, role: nextRole } : u))
-    );
+    setModalUsers((prev) => prev.map((u) => (u.userId === uId ? { ...u, role: nextRole } : u)));
     setActiveZoomedAvatar((prev) =>
       prev && prev.userId === uId ? { ...prev, role: nextRole } : prev
     );
