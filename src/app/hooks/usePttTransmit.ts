@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { usePTTStore } from '../store/usePTTStore';
 import { initGlobalAudioContext } from '../utils/audioContext';
 
@@ -68,7 +68,8 @@ const playRadioSound = (
 
     const masterGain = ctx.createGain();
     masterGain.connect(ctx.destination);
-    masterGain.gain.value = Math.min(1.0, pttVolume / 100);
+    // Limit max volume to 70% of hardware capacity for hearing safety
+    masterGain.gain.value = Math.min(0.7, (pttVolume / 100) * 0.7);
 
     if (type === 'press') {
       playPressSound(ctx, masterGain);
@@ -101,6 +102,13 @@ export function usePttTransmit({
   const pttVolume = usePTTStore((state) => state.pttVolume);
   const vibrateOnStart = usePTTStore((state) => state.vibrateOnStart);
 
+  // Sync callbacks to mutable refs to prevent stale closures in event listeners
+  const onPressStartRef = useRef(onPressStart);
+  const onPressEndRef = useRef(onPressEnd);
+
+  onPressStartRef.current = onPressStart;
+  onPressEndRef.current = onPressEnd;
+
   const initAudio = () => {
     return initGlobalAudioContext();
   };
@@ -126,7 +134,7 @@ export function usePttTransmit({
     const ctx = initAudio();
 
     if (!togglePtt && isPowerOn) {
-      onPressStart();
+      onPressStartRef.current();
       if (ctx) playRadioSound('press', ctx, toneOnStartEnd, pttVolume);
     }
   };
@@ -142,14 +150,14 @@ export function usePttTransmit({
       if (togglePtt) {
         const nextState = !isActive;
         if (nextState) {
-          onPressStart();
+          onPressStartRef.current();
           if (ctx) playRadioSound('press', ctx, toneOnStartEnd, pttVolume);
         } else {
-          onPressEnd();
+          onPressEndRef.current();
           if (ctx) playRadioSound('release', ctx, toneOnStartEnd, pttVolume);
         }
       } else {
-        onPressEnd();
+        onPressEndRef.current();
         if (ctx) playRadioSound('release', ctx, toneOnStartEnd, pttVolume);
       }
       triggerHaptic(10);
@@ -162,7 +170,7 @@ export function usePttTransmit({
     const ctx = initAudio();
     if (isDepressed && isPowerOn) {
       if (!togglePtt) {
-        onPressEnd();
+        onPressEndRef.current();
         if (ctx) playRadioSound('release', ctx, toneOnStartEnd, pttVolume);
       }
       triggerHaptic(5);
@@ -182,7 +190,7 @@ export function usePttTransmit({
         const ctx = initAudio();
 
         if (!togglePtt) {
-          onPressStart();
+          onPressStartRef.current();
           if (ctx) playRadioSound('press', ctx, toneOnStartEnd, pttVolume);
         }
       }
@@ -198,14 +206,14 @@ export function usePttTransmit({
           if (togglePtt) {
             const nextState = !isActive;
             if (nextState) {
-              onPressStart();
+              onPressStartRef.current();
               if (ctx) playRadioSound('press', ctx, toneOnStartEnd, pttVolume);
             } else {
-              onPressEnd();
+              onPressEndRef.current();
               if (ctx) playRadioSound('release', ctx, toneOnStartEnd, pttVolume);
             }
           } else {
-            onPressEnd();
+            onPressEndRef.current();
             if (ctx) playRadioSound('release', ctx, toneOnStartEnd, pttVolume);
           }
           triggerHaptic(10);
@@ -220,7 +228,6 @@ export function usePttTransmit({
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isPowerOn,
     isBusy,
@@ -230,7 +237,6 @@ export function usePttTransmit({
     toneOnStartEnd,
     pttVolume,
     vibrateOnStart,
-    onPressEnd,
   ]);
 
   return {
