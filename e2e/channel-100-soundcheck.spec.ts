@@ -114,17 +114,15 @@ test.describe('Channel 100 Sound Check (Parrot Echo Test)', () => {
     });
 
     // 8. Start transmitting (PTT down)
-    await page.evaluate(() => {
-      (window as any).__store__.getState().setTransmitting(true);
-    });
+    const pttButton = page.locator('button:has-text("PTT")');
+    await pttButton.hover();
+    await pttButton.dispatchEvent('mousedown');
 
     // Wait 1.5 seconds for recording to capture chunk(s)
     await page.waitForTimeout(1500);
 
     // 9. Stop transmitting (PTT up)
-    await page.evaluate(() => {
-      (window as any).__store__.getState().setTransmitting(false);
-    });
+    await pttButton.dispatchEvent('mouseup');
 
     // 10. Wait up to 3 seconds for the 350ms playback delay and check if decodeAudioData was called
     await expect

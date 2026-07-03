@@ -28,13 +28,14 @@ test.describe('Multi-User Real-time Modulation Delivery', () => {
     const nameInputAlfa = pageAlfa.locator('input[type="text"]').first();
     await nameInputAlfa.clear();
     await nameInputAlfa.fill('User Alfa');
-    await pageAlfa.click('button:has-text("Simpan")');
+    await pageAlfa.click('button:has-text("Back")');
     await expect(pageAlfa.locator('span:has-text("Pengaturan")').first()).not.toBeVisible();
 
     // Disable Toggle PTT (Hold-to-Talk mode) for User Alfa
     await pageAlfa.click('button:has-text("SET")');
+    await pageAlfa.click('button:has-text("Audio")');
     await pageAlfa.click('label[for="toggle-togglePtt"]');
-    await pageAlfa.click('button:has-text("Simpan")');
+    await pageAlfa.click('button:has-text("Back")');
 
     // 4. User Beta joins
     await pageBeta.goto('/');
@@ -48,7 +49,7 @@ test.describe('Multi-User Real-time Modulation Delivery', () => {
     const nameInputBeta = pageBeta.locator('input[type="text"]').first();
     await nameInputBeta.clear();
     await nameInputBeta.fill('User Beta');
-    await pageBeta.click('button:has-text("Simpan")');
+    await pageBeta.click('button:has-text("Back")');
     await expect(pageBeta.locator('span:has-text("Pengaturan")').first()).not.toBeVisible();
 
     // 5. Mock getUserMedia to return a real synthetic Web Audio destination stream

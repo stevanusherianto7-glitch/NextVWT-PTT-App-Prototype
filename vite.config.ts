@@ -180,6 +180,11 @@ export default defineConfig(({ command: _command, mode }) => {
     // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
     assetsInclude: ['**/*.svg', '**/*.csv'],
 
+    optimizeDeps: {
+      entries: ['index.html'],
+      exclude: ['@opentelemetry/api'],
+    },
+
     // Vitest configuration – exclude Playwright e2e spec files from unit test discovery
     test: {
       include: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'src/**/*.spec.ts'],

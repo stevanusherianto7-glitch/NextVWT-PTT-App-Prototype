@@ -33,7 +33,7 @@ export default defineConfig({
 
   // ─── Global use ────────────────────────────────────────────────────────────
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL: process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:5173',
 
     // Screenshots & Traces untuk debugging CI failures (sesuai user rules)
     screenshot: 'only-on-failure',

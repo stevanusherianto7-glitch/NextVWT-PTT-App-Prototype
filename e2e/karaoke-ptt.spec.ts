@@ -88,21 +88,16 @@ test.describe('PTT Resilience in Karaoke / Music Mode', () => {
     expect(storeState.audioMode).toBe('music');
     expect(storeState.builtInEcho).toBe(true);
 
-    // Set channel to a normal non-isolated channel (Channel 16) and set coins balance via store
+    // Set channel to a normal non-isolated channel (Channel 16), set coins, and open karaoke player via store
     await page.evaluate(() => {
-      (window as any).__store__.setState({ coins: 1000, isConnected: true });
+      (window as any).__store__.setState({ coins: 1000, isConnected: true, isKaraokePlayerOpen: true });
       (window as any).__store__.getState().setChannelNumber(16);
     });
 
-    // 5. Click "Buka Pemutar Karaoke" button to open the player
-    const bukaBtn = page.locator('button:has-text("Buka Pemutar Karaoke")');
-    await bukaBtn.waitFor({ state: 'visible', timeout: 5000 });
-    await bukaBtn.click();
-
-    // Close settings panel to return to main device layout where Karaoke Player is rendered
-    const simpanBtn = page.locator('button:has-text("Simpan")');
-    await simpanBtn.waitFor({ state: 'visible', timeout: 3000 });
-    await simpanBtn.click();
+    // Close settings panel using the Back button to return to main device layout where Karaoke Player is rendered
+    const backBtn = page.locator('button:has-text("Back")');
+    await backBtn.waitFor({ state: 'visible', timeout: 3000 });
+    await backBtn.click();
 
     // Tunggu animasi penutupan panel selesai (400ms)
     await page.waitForTimeout(1000);

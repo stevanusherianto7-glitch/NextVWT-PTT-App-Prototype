@@ -40,18 +40,20 @@ test.describe('Settings Panel Flow', () => {
     await expect(usernameInput).toBeVisible();
   });
 
-  test('settings panel has Simpan (save) button', async ({ page }) => {
-    const saveBtn = page.locator('button', { hasText: 'Simpan' });
-    await expect(saveBtn).toBeVisible();
+  test('settings panel has Back button', async ({ page }) => {
+    const backBtn = page.locator('button', { hasText: 'Back' });
+    await expect(backBtn).toBeVisible();
   });
 
   test('Tentang section shows version 2.0.0', async ({ page }) => {
+    await page.click('button:has-text("Lainnya")');
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     const versionText = await page.textContent('body');
     expect(versionText).toContain('2.0.0');
   });
 
   test('Panduan Pengguna button opens the user guide', async ({ page }) => {
+    await page.click('button:has-text("Lainnya")');
     const guideBtn = page.locator('button', { hasText: 'Panduan Pengguna' });
     await expect(guideBtn).toBeVisible();
     await guideBtn.click();
@@ -59,6 +61,7 @@ test.describe('Settings Panel Flow', () => {
   });
 
   test('user guide contains NextVWT description text', async ({ page }) => {
+    await page.click('button:has-text("Lainnya")');
     await page.locator('button', { hasText: 'Panduan Pengguna' }).click();
     await expect(page.locator('text=PENDAHULUAN')).toBeVisible({ timeout: 5_000 });
 
@@ -69,6 +72,7 @@ test.describe('Settings Panel Flow', () => {
   });
 
   test('back button in user guide returns to settings', async ({ page }) => {
+    await page.click('button:has-text("Lainnya")');
     await page.locator('button', { hasText: 'Panduan Pengguna' }).click();
     await expect(page.locator('text=PENDAHULUAN')).toBeVisible({ timeout: 5_000 });
 

@@ -87,6 +87,9 @@ export const createAuthSlice: StateCreator<
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/`,
+          queryParams: {
+            prompt: 'select_account',
+          },
         },
       });
     } catch (err) {
@@ -134,7 +137,7 @@ export const createAuthSlice: StateCreator<
         activeUsers: [],
         activeTransmitter: null,
         isTransmitting: false,
-        isConnected: false,
+        isConnected: _get().isPowerOn,
         progress: 0,
       });
     } catch (err) {

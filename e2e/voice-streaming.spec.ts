@@ -52,13 +52,13 @@ test.describe('Real-time Voice Streaming & Delivery', () => {
     const nameInputAlfa = pageAlfa.locator('input[type="text"]').first();
     await nameInputAlfa.clear();
     await nameInputAlfa.fill('Speaker Alfa');
-    await pageAlfa.click('button:has-text("Simpan")');
+    await pageAlfa.click('button:has-text("Back")');
 
     await pageBeta.click('button:has-text("SET")');
     const nameInputBeta = pageBeta.locator('input[type="text"]').first();
     await nameInputBeta.clear();
     await nameInputBeta.fill('Listener Beta');
-    await pageBeta.click('button:has-text("Simpan")');
+    await pageBeta.click('button:has-text("Back")');
 
     // Set channel to a normal non-isolated channel (Channel 16) for both users to allow network broadcasting to be tested
     await pageAlfa.evaluate(() => {
@@ -195,8 +195,9 @@ test.describe('Real-time Voice Streaming & Delivery', () => {
 
     // 6. Disable Toggle PTT (enable Hold-to-Talk) for Speaker Alfa
     await pageAlfa.click('button:has-text("SET")');
+    await pageAlfa.click('button:has-text("Audio")');
     await pageAlfa.click('label[for="toggle-togglePtt"]');
-    await pageAlfa.click('button:has-text("Simpan")');
+    await pageAlfa.click('button:has-text("Back")');
 
     // 7. Simulating User Alfa speaking by starting PTT transmission via store
     await pageAlfa.evaluate(() => (window as any).__store__.getState().setTransmitting(true));

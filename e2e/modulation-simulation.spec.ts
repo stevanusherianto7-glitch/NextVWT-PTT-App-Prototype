@@ -128,7 +128,7 @@ test.describe('User Modulation Activity Simulation', () => {
     const nameInput = page.locator('input[type="text"]').first();
     await nameInput.clear();
     await nameInput.fill('Pebe Offline Test');
-    await page.click('button:has-text("Simpan")');
+    await page.click('button:has-text("Back")');
 
     // 4. Verify the updated name is displayed on the LCD panel while offline
     await expect(page.getByTestId('lcd-username')).toHaveText('Pebe Offline Test');

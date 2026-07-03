@@ -78,7 +78,7 @@ test.describe('Cumulative Layout Shift (CLS) Verification', () => {
     }
 
     // Action D: Close Settings
-    await page.click('button:has-text("Simpan")');
+    await page.click('button:has-text("Back")');
     await page.waitForSelector('button:has-text("PTT")', { timeout: 3_000 });
 
     // Action E: Open Channel List Modal (SCAN)

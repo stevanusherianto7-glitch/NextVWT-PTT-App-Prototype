@@ -68,6 +68,28 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
                 Internal details are logged via componentDidCatch above. */}
             Terjadi gangguan tak terduga pada aplikasi. Silakan coba lagi atau restart aplikasi.
           </p>
+          {import.meta.env.DEV && this.state.error && (
+            <pre
+              style={{
+                color: '#ef4444',
+                background: 'rgba(0,0,0,0.8)',
+                padding: '12px',
+                borderRadius: '8px',
+                fontSize: '11px',
+                maxWidth: '90%',
+                maxHeight: '200px',
+                overflow: 'auto',
+                marginBottom: '20px',
+                textAlign: 'left',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-all',
+              }}
+            >
+              <strong>{this.state.error.name}: {this.state.error.message}</strong>
+              {'\n\n'}
+              {this.state.error.stack}
+            </pre>
+          )}
           <button
             type="button"
             onClick={this.handleReset}
