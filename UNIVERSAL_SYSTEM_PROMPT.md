@@ -63,8 +63,14 @@ When creating new systems, prioritize this ultra-performant, modern tech stack:
   - High-performance, fully type-safe backend framework running natively on Bun.
 - **Database**: **MySQL** (https://www.mysql.com/)
   - Relational database for transaction safety and data integrity.
-- **ORM**: **Drizzle ORM** (https://orm.drizzle.team/)
-  - Ultra-lightweight, type-safe SQL ORM for TypeScript development.
+- **ORM & Migrations**: **Drizzle ORM** (https://orm.drizzle.team/) & **Drizzle Kit**
+  - Ultra-lightweight, type-safe SQL ORM. Use Drizzle Kit for schema migrations, DB pushes, and Drizzle Studio.
+- **Schema Validation**: **TypeBox** (native to Elysia) or **Zod** (https://zod.dev/)
+  - Ensure strict type safety and request validation at the API boundaries.
+- **UI Framework & Styling**: **React/Vite** with **TailwindCSS** & **Lucide Icons**
+  - Implement rapid, utility-first styling combined with a clean component architecture.
+- **Testing**: **Bun Test** (`bun test` runner)
+  - Leverage Bun's lightning-fast built-in testing suite for unit and integration tests.
 
 ---
 
