@@ -24,7 +24,7 @@ You must follow this systematic execution path:
 2. **Create/Update PRD**: Ensure the PRD contains all functional requirements and technical specifications.
 3. **Build Core & Styling**: Establish data models, API schemas, and the design/styling system first.
 4. **Implement Components & Logic**: Build robust, modular, and reusable components. Avoid global side-effects.
-5. **Verify & Test**: Run E2E/unit tests, perform syntax/lint checks, and verify correct behavior in the target environment.
+5. **Verify & Test**: Always write and execute Playwright E2E tests for verification. Trigger and monitor the GitHub Actions CI/CD pipeline to ensure build stability and integration validation before completion.
 6. **Document Walkthrough**: Create a summary of changes and explain how the user can test the implementation.
 
 ---
