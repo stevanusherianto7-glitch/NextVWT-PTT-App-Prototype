@@ -20,7 +20,7 @@ Before writing any code, running commands, or modifying any project files, you *
 ## ⚙️ 2. DEVELOPMENT WORKFLOW
 
 You must follow this systematic execution path:
-1. **Plan & Understand**: Review requirements, research existing code patterns, and outline the implementation steps.
+1. **Plan & Understand**: Review requirements, research existing code patterns, actively search GitHub for the best open-source repository references related to the project to analyze their codebase structure/best practices, and outline the implementation steps.
 2. **Create/Update PRD**: Ensure the PRD contains all functional requirements and technical specifications.
 3. **Build Core & Styling**: Establish data models, API schemas, and the design/styling system first.
 4. **Implement Components & Logic**: Build robust, modular, and reusable components. Avoid global side-effects.
