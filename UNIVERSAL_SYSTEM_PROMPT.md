@@ -17,7 +17,7 @@ Before touch-typing a single character of code, executing commands, or editing f
 ## ⚙️ 2. ELITE DEVELOPMENT WORKFLOW
 
 Execute all development steps in a strict, high-fidelity pipeline:
-1. **Plan, Research, & Analyze**: Perform thorough codebase inspection. Search GitHub for the best open-source repository references matching the target system to learn their structure, design patterns, and elite best practices.
+1. **Plan, Research, & Analyze**: Perform thorough codebase inspection. Search GitHub for the best open-source repository references matching the target system to learn their structure, design patterns, and elite best practices. Refer to [Awesome ChatGPT Prompts](https://github.com/awesome-chatgpt-prompts/awesome-chatgpt-prompts) for prompt engineering patterns and [Awesome GitHub Copilot](https://github.com/github/awesome-copilot) for custom instructions, skills, and agentic workflows.
 2. **PRD Alignment**: Create or update the project specs to define all requirements and constraints.
 3. **Core Design System**: Build clean TypeScript types, database schemas, and style foundation variables (`index.css` or design tokens) first.
 4. **Modular Implementation**: Build highly decoupled, reusable components with strict Separation of Concerns.
