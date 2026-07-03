@@ -216,6 +216,7 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           cd android
+          chmod +x gradlew
           if [ -f "app/release.keystore" ]; then
             echo "Building signed release binaries..."
             ./gradlew bundleRelease assembleRelease \
