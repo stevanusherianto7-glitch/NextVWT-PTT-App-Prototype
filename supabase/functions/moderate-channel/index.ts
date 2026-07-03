@@ -3,7 +3,7 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const ALLOWED_ORIGINS = [
-  'http://localhost:5173',
+  'http://localhost:5188',
   'http://localhost:4173',
   'https://nextvwt.vercel.app',
   'https://nextvwt.id',

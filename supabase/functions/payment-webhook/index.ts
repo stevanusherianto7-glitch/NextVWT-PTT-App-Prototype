@@ -10,7 +10,7 @@ declare const Deno: {
 };
 
 const ALLOWED_ORIGINS = [
-  'http://localhost:5173',
+  'http://localhost:5188',
   'http://localhost:4173',
   'https://nextvwt.vercel.app',
   'https://nextvwt.id',

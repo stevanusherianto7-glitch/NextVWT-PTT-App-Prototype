@@ -25,7 +25,7 @@ export default defineConfig(({ command: _command, mode }) => {
     base: './',
     // Development server configuration
     server: {
-      port: 5173,
+      port: 5188,
       host: 'localhost',
       // For mobile testing via local network
       strictPort: true,

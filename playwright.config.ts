@@ -33,7 +33,7 @@ export default defineConfig({
 
   // ─── Global use ────────────────────────────────────────────────────────────
   use: {
-    baseURL: process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:5173',
+    baseURL: process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:5188',
 
     // Screenshots & Traces untuk debugging CI failures (sesuai user rules)
     screenshot: 'only-on-failure',
@@ -67,7 +67,7 @@ export default defineConfig({
   // ─── Web server: auto-start Vite dev server sebelum tests ─────────────────
   webServer: {
     command: 'pnpm dev',
-    url: 'http://localhost:5173',
+    url: 'http://localhost:5188',
     reuseExistingServer: true,   // Gunakan server yang sudah running
     timeout: 30_000,
   },
