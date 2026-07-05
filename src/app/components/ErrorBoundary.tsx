@@ -85,7 +85,9 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
                 wordBreak: 'break-all',
               }}
             >
-              <strong>{this.state.error.name}: {this.state.error.message}</strong>
+              <strong>
+                {this.state.error.name}: {this.state.error.message}
+              </strong>
               {'\n\n'}
               {this.state.error.stack}
             </pre>

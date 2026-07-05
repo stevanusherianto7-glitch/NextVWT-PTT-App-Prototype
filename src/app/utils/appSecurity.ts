@@ -9,7 +9,9 @@ const AppSecurity = registerPlugin<AppSecurityPlugin>('AppSecurity');
 // EXPECTED_SIGNING_HASH sekarang didorong dari environment variable pada build time.
 // Set VITE_EXPECTED_SIGNING_HASH sebagai secret di CI/CD (mis. GitHub Actions, Vercel)
 // dan jangan commit nilai ini ke repo.
-export const EXPECTED_SIGNING_HASH = (import.meta.env.VITE_EXPECTED_SIGNING_HASH || '').toUpperCase();
+export const EXPECTED_SIGNING_HASH = (
+  import.meta.env.VITE_EXPECTED_SIGNING_HASH || ''
+).toUpperCase();
 
 // Flag yang menunjukkan bahwa signing hash telah dikonfigurasi melalui env.
 export const IS_SIGNING_HASH_CONFIGURED = EXPECTED_SIGNING_HASH.length > 0;
