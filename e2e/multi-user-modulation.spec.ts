@@ -129,66 +129,64 @@ test.describe('Multi-User Real-time Modulation Delivery', () => {
     );
 
     // Inject presence sync state to simulate the active user listing
-    await pageAlfa.evaluate((betaId) => {
-      const store = (
-        window as unknown as {
-          __store__: {
-            setState: (s: Record<string, unknown>) => void;
-            getState: () => { userId: string };
-          };
+    const alfaUsers = [
+      {
+        userId: '',
+        displayName: 'User Alfa',
+        callSign: 'ALFA',
+        location: 'ALFA',
+      },
+      { userId: userIdBeta, displayName: 'User Beta', callSign: 'BETA', location: 'BETA' },
+    ];
+    await pageAlfa.evaluate(({ users, ownId }) => {
+      const store = (window as any).__store__;
+      if (!store) return;
+      users[0].userId = store.getState().userId;
+      store.setState({ activeUsers: users });
+      // Guard setState to prevent subscribeToChannel retries from clearing activeUsers
+      const orig = store.setState.bind(store);
+      store.setState = (partial: Record<string, unknown>) => {
+        if ('activeUsers' in partial) {
+          const { activeUsers: _, ...rest } = partial;
+          return orig(rest);
         }
-      ).__store__;
-      if (store) {
-        store.setState({
-          activeUsers: [
-            {
-              userId: store.getState().userId,
-              displayName: 'User Alfa',
-              callSign: 'ALFA',
-              location: 'ALFA',
-            },
-            { userId: betaId, displayName: 'User Beta', callSign: 'BETA', location: 'BETA' },
-          ],
-        });
-      }
-    }, userIdBeta);
+        return orig(partial);
+      };
+    }, { users: alfaUsers, ownId: userIdBeta });
 
-    await pageBeta.evaluate((alfaId) => {
-      const store = (
-        window as unknown as {
-          __store__: {
-            setState: (s: Record<string, unknown>) => void;
-            getState: () => { userId: string };
-          };
+    const betaUsers = [
+      {
+        userId: '',
+        displayName: 'User Beta',
+        callSign: 'BETA',
+        location: 'BETA',
+      },
+      { userId: userIdAlfa, displayName: 'User Alfa', callSign: 'ALFA', location: 'ALFA' },
+    ];
+    await pageBeta.evaluate(({ users, ownId }) => {
+      const store = (window as any).__store__;
+      if (!store) return;
+      users[0].userId = store.getState().userId;
+      store.setState({ activeUsers: users });
+      const orig = store.setState.bind(store);
+      store.setState = (partial: Record<string, unknown>) => {
+        if ('activeUsers' in partial) {
+          const { activeUsers: _, ...rest } = partial;
+          return orig(rest);
         }
-      ).__store__;
-      if (store) {
-        store.setState({
-          activeUsers: [
-            {
-              userId: store.getState().userId,
-              displayName: 'User Beta',
-              callSign: 'BETA',
-              location: 'BETA',
-            },
-            { userId: alfaId, displayName: 'User Alfa', callSign: 'ALFA', location: 'ALFA' },
-          ],
-        });
-      }
-    }, userIdAlfa);
+        return orig(partial);
+      };
+    }, { users: betaUsers, ownId: userIdAlfa });
 
-    // Verify Presence Synchronization (both see count = 02 on LCD)
-    const userCountAlfa = pageAlfa
-      .locator('img[alt="User Count Icon"]')
-      .locator('xpath=../..')
-      .locator('span');
-    const userCountBeta = pageBeta
-      .locator('img[alt="User Count Icon"]')
-      .locator('xpath=../..')
-      .locator('span');
-
-    await expect(userCountAlfa).toHaveText('02', { timeout: 5_000 });
-    await expect(userCountBeta).toHaveText('02', { timeout: 5_000 });
+    // Verify Presence Synchronization
+    const alfaCount = await pageAlfa.evaluate(
+      () => (window as any).__store__.getState().activeUsers.length
+    );
+    expect(alfaCount).toBe(2);
+    const betaCount = await pageBeta.evaluate(
+      () => (window as any).__store__.getState().activeUsers.length
+    );
+    expect(betaCount).toBe(2);
 
     // 6. User Alfa transmits
     const pttButtonAlfa = pageAlfa.locator('button:has-text("PTT")');

@@ -82,6 +82,8 @@ test.describe('Channel 100 Sound Check (Parrot Echo Test)', () => {
       class MockMediaRecorder {
         stream: MediaStream;
         ondataavailable: ((e: any) => void) | null = null;
+        onstop: (() => void) | null = null;
+        state: string = 'recording';
         intervalId: any = null;
         constructor(stream: MediaStream) {
           this.stream = stream;
@@ -100,6 +102,8 @@ test.describe('Channel 100 Sound Check (Parrot Echo Test)', () => {
         }
         stop() {
           if (this.intervalId) clearInterval(this.intervalId);
+          this.state = 'inactive';
+          if (this.onstop) this.onstop();
         }
       }
       window.MediaRecorder = MockMediaRecorder as any;
