@@ -1,6 +1,6 @@
 import { usePTTStore } from '../store/usePTTStore';
 import { getSupabase } from '../utils/supabase';
-import { BRAND } from '../utils/config';
+import { BRAND, USE_SFU } from '../utils/config';
 import type { ChannelRole } from '../../features/moderation/permissions';
 import {
   activeChannelSubscription,
@@ -117,7 +117,11 @@ export function subscribeToChannel(channelNum: number, retryCount = 0) {
             }
           });
           const users = Array.from(uniqueUsersMap.values());
-          usePTTStore.setState({ activeUsers: users });
+          // Task 12: saat SFU aktif, presence dipimpin oleh LiveKit (lihat
+          // useRadioAudioEngine onPresence). Jangan timpa dengan Supabase presence.
+          if (!USE_SFU) {
+            usePTTStore.setState({ activeUsers: users });
+          }
 
           // Watchdog: If the active transmitter is no longer present in presence list, clear it
           const currentTx = usePTTStore.getState().activeTransmitter;

@@ -8,6 +8,14 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
+    // Unit test diisolasi dari backend nyata: jangan load .env, dan paksa
+    // env Supabase/LiveKit kosong agar mock supabase dipakai (bukan client nyata).
+    envFile: false,
+    env: {
+      VITE_SUPABASE_URL: '',
+      VITE_SUPABASE_PUBLISHABLE_KEY: '',
+      VITE_LIVEKIT_URL: '',
+    },
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
     exclude: ['node_modules', 'e2e'],
     coverage: {

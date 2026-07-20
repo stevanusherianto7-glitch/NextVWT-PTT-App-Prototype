@@ -62,15 +62,41 @@ export default defineConfig({
         },
       },
     },
+    // Origin 2: SFU mode. Aktif ONLY bila NEXTVWT_RUN_SFU_E2E=1
+    // (butuh LiveKit jalan + Supabase Edge Function livekit-token deploy).
+    // Menjalankan dev server DENGAN VITE_LIVEKIT_URL ter-set.
+    ...(process.env.NEXTVWT_RUN_SFU_E2E === '1'
+      ? [
+          {
+            name: 'chromium-sfu',
+            use: {
+              ...devices['Desktop Chrome'],
+              launchOptions: {
+                args: [
+                  '--use-fake-ui-for-media-stream',
+                  '--use-fake-device-for-media-stream',
+                ],
+              },
+            },
+          },
+        ]
+      : []),
   ],
 
   // ─── Web server: auto-start Vite dev server sebelum tests ─────────────────
-  webServer: {
-    command: 'pnpm dev',
-    url: 'http://localhost:5188',
-    reuseExistingServer: true,   // Gunakan server yang sudah running
-    timeout: 30_000,
-  },
+  webServer: [
+    {
+      command: 'pnpm dev',
+      url: 'http://localhost:5188',
+      reuseExistingServer: true,
+      timeout: 30_000,
+      // Untuk project chromium-sfu, inject VITE_LIVEKIT_URL via env
+      env:
+        process.env.NEXTVWT_RUN_SFU_E2E === '1'
+          ? { VITE_LIVEKIT_URL: process.env.VITE_LIVEKIT_URL || 'ws://localhost:7880' }
+          : {},
+    },
+  ],
 
   // ─── Output directories ────────────────────────────────────────────────────
   outputDir: 'test-results/',

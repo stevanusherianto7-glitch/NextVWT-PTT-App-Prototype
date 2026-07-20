@@ -3,12 +3,12 @@
 
 | | |
 |---|---|
-| **Versi Dokumen** | 1.0 |
+| **Versi Dokumen** | 1.1 |
 | **Status** | Draft — Review Internal |
-| **Tanggal** | Juni 2026 |
+| **Tanggal** | Juli 2026 |
 | **Product Owner** | Stevan Usherianto |
 | **Platform Target** | Android (iOS roadmap) |
-| **Fase Saat Ini** | Prototipe Fungsional → Beta |
+| **Fase Saat Ini** | Prototipe Fungsional → Beta (audio mesh; rencana migrasi SFU) |
 
 ---
 
@@ -259,8 +259,8 @@ Every feature is tagged **[P0]** (Must Have), **[P1]** (Should Have), **[P2]** (
 
 | ID | Fitur | Prioritas | Deskripsi |
 |---|---|---|---|
-| AUD-01 | WebRTC P2P audio | P0 | Transmisi audio peer-to-peer latensi rendah |
-| AUD-02 | Fallback base64 via Supabase | P0 | Fallback jika WebRTC gagal (NAT/firewall) |
+| AUD-01 | WebRTC P2P audio (mesh) → LiveKit SFU | P0 | Transmisi audio latensi rendah. Prototipe: WebRTC mesh antar peer. Produksi: LiveKit SFU (AD-1, lihat §7.3) |
+| AUD-02 | Fallback base64 via Supabase | P0 | Fallback jika WebRTC/SFU gagal (NAT/firewall) atau saat mesh mode |
 | AUD-03 | VAD (Voice Activity Detection) | P1 | Mute mic otomatis saat silence > 1.5 detik |
 | AUD-04 | Discussion mode audio | P0 | Echo cancel + noise suppress + auto gain |
 | AUD-05 | Music/Karaoke mode | P1 | Stereo, Opus 128kbps, tanpa filter |
@@ -269,7 +269,7 @@ Every feature is tagged **[P0]** (Must Have), **[P1]** (Should Have), **[P2]** (
 | AUD-08 | Echo feedback kontrol | P2 | Slider intensitas efek echo |
 | AUD-09 | Queue management | P1 | Buffer audio dengan batas queue (maxQueue setting) |
 | AUD-10 | STUN server | P0 | Google STUN untuk NAT traversal |
-| AUD-11 | TURN server | P0 | Relay audio saat P2P gagal (wajib produksi) |
+| AUD-11 | TURN server | P0 | Relay audio saat P2P gagal (wajib produksi). Mode mesh: server TURN via env `VITE_TURN_*`. Mode SFU: TURN bawaan LiveKit (AD-1) |
 | AUD-12 | SDP Opus optimization | P1 | Modifikasi SDP untuk stereo+bitrate optimal di music mode |
 
 **Spesifikasi AUD-03 (VAD):**
@@ -442,6 +442,46 @@ Every feature is tagged **[P0]** (Must Have), **[P1]** (Should Have), **[P2]** (
 └──────────────────┘
 ```
 
+### 7.2 Keputusan Arsitektur Audio (Diambil Alih Arsitek — 2026-07-20)
+
+Audio real-time NextVWT akan bertransisi dari **WebRTC mesh** ke **LiveKit SFU**
+(selepas fase prototipe). Keputusan berikut bersifat final dan diambil alih oleh arsitek
+atas delegasi product owner:
+
+| # | Keputusan | Rasional |
+|---|---|---|
+| AD-1 | **SFU self-host di VPS** (bukan LiveKit Cloud) | Konsisten strategi deploy VPS; gratis; region SG dekat Indonesia; kontrol biaya di skala 5000 tenant |
+| AD-2 | **Moderasi tetap di Supabase Realtime** (tidak pindah ke LiveKit Data API) | Sudah berjalan, lebih murah, log moderasi sudah tersimpan di DB (`channel_moderation_logs`) |
+| AD-3 | **Rollout phase via dual-mode flag `VITE_LIVEKIT_URL`** | Kosong = mesh (fallback/dev, behavior lama utuh); terisi = SFU. Mesh menjadi safety net saat UAT |
+| AD-4 | **Channel 100 (echo) tetap loopback lokal** | Tidak publish ke SFU; mencegah mic sendiri terdengar ke user lain (`BRAND.isolatedChannels=[100]`) |
+
+### 7.3 Topology: Mesh → SFU
+
+**Mesh (saat ini — prototipe):**
+- Setiap user yang transmit membuka `RTCPeerConnection` ke semua user lain.
+- Voice dikirim sebagai base64 chunk via Supabase broadcast (`voice_chunk`), di-replay
+  via `AudioContext.decodeAudioData`.
+- **Batasan skala:** mesh tidak layak untuk >~8 peer secara bersamaan
+  (referensi: `david-spies/ptt-radio` membatasi `MAX_PEERS=8`). Target PRD
+  (Persona Pebe: koordinasi 10–50 orang) akan saturasi CPU/bandwidth di sisi transmitter.
+
+**SFU (rencana produksi — LiveKit):**
+- Client hanya punya **1 koneksi** ke server media (LiveKit). Client publish 1 audio
+  track, subscribe track semua user lain. Offload bandwidth ke server.
+- LiveKit menyertakan **TURN bawaan** → memenuhi AUD-11 tanpa server TURN terpisah.
+- Presence diisi dari `Room.participants` (override Supabase saat SFU mode).
+- Migrasi dijalankan tanpa breaking change via flag `VITE_LIVEKIT_URL` (lihat AD-3).
+- Detail implementasi: `.hermes/plans/2026-07-20_162000-nextvwt-mesh-to-livekit-sfu.md`.
+
+### 7.4 Mapping Fitur ke SFU
+
+| Fitur | Implementasi di SFU |
+|---|---|
+| PTT broadcast | `setMicEnabled(true/false)` + broadcast `activeTransmitter` (presence Supabase tetap untuk indikator TX/RX) |
+| Moderasi (hang-up/kick/ban/role/status) | Tetap Supabase Realtime broadcast + `channel_moderation_logs` (AD-2) |
+| Presence | LiveKit `Room.participants` → `usePTTStore.activeUsers` |
+| Channel 100 echo | Loopback lokal, tidak publish SFU (AD-4) |
+
 ---
 
 ## 8. Desain UI/UX
@@ -487,5 +527,27 @@ Layer 6: Background (#1a1c23 dengan device shadow)
 
 ---
 
+## 11. Roadmap Rilis
+
+| Fase | Fokus | Target |
+|---|---|---|
+| **Fase 0** | Fondasi: React+Vite+Zustand, Supabase Auth/Realtime, WebRTC mesh PTT, UI walkie-talkie 8 tema, moderasi, Capacitor Android | ✅ Selesai |
+| **Fase 1** | Hardening & audit (lint/type/test/build hijau, no secrets, no `any`), eksekusi poin 1–5 refactor | ✅ Berjalan/Selesai |
+| **Fase 2** | **Migrasi Mesh → LiveKit SFU** (lihat §7.2–7.4, AD-1…AD-4). Dual-mode flag `VITE_LIVEKIT_URL`, token via Supabase Edge Function, presence dari LiveKit participants | 📋 Rencana (`.hermes/plans/2026-07-20_162000-nextvwt-mesh-to-livekit-sfu.md`) |
+| **Fase 3** | Skala & multi-tenant (white-label 5000 tenant), SFU region Indonesia | 🔭 Visi |
+| **Fase 4** | iOS, background PTT service, ROIP gateway | 🔭 Visi |
+
+## 12. Risiko & Mitigasi
+
+| Risiko | Dampak | Mitigasi |
+|---|---|---|
+| **Mesh tidak skalabilitas** (>8 peer, target PRD 10–50 user/channel) | Audio putus/CPU tinggi di transmitter | Migrasi ke LiveKit SFU (Fase 2, AD-1) |
+| TURN tidak tersedia di NAT/firewall ketat | P2P gagal total | TURN wajib produksi (AUD-11); SFU pakai TURN bawaan LiveKit |
+| Role spoofing via displayName/client | Akses moderasi ilegal | Role server-authoritative dari `channel_roles` (getGlobalRole dihapus) |
+| Secret bocor di client | Compromise akun | LiveKit token di-generate server-side; tidak ada API key di bundle |
+| Rollout SFU gagal saat UAT | Regresi audio | Dual-mode flag (AD-3): mesh tetap sebagai fallback |
+
+---
+
 *Dokumen ini adalah living document. Versi terbaru selalu di repository proyek.*
-*NextVWT PTT App PRD v1.0 — Juni 2026*
+*NextVWT PTT App PRD v1.1 — Juli 2026*

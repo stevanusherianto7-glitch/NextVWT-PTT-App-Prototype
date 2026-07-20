@@ -1,0 +1,27 @@
+# config.yaml — LiveKit dev (localhost single-host Docker)
+# Supabase Edge Function livekit-token pakai LIVEKIT_API_KEY / LIVEKIT_API_SECRET di bawah.
+
+port: 7880
+bind_addresses:
+  - "0.0.0.0"
+
+rtc:
+  port_range_start: 52000
+  port_range_end: 52100
+  use_external_ip: false
+  tcp_port: 7881
+  # Penting untuk Docker single-host di Windows: LiveKit mengiklankan IP ini
+  # (bukan IP container 172.x yang tidak reachable dari browser host).
+  # Browser kirim UDP ke HOST_IP:520XX -> Docker port-map -> container.
+  # Samakan dengan IP host Windows tempat browser/dev-server jalan.
+  node_ip: 192.168.100.8
+
+# TURN sengaja dimatikan di dev (domain localhost ditolak LiveKit).
+# Produksi: enabled true + domain FQDN + tls_cert/tls_key (lihat DEPLOYMENT.md).
+
+# DEV key — GANTI di produksi! Format: <api-key>: <api-secret>
+keys:
+  devkey: devsecret1234567890abcdefghijklmn
+
+logging:
+  level: info

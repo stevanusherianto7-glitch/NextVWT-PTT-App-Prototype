@@ -39,6 +39,9 @@ vi.mock('../utils/supabase', () => {
       currentPresenceState = state;
     },
     channel: vi.fn(() => mockChannel),
+    functions: {
+      invoke: vi.fn(() => Promise.resolve({ data: null, error: null })),
+    },
     auth: {
       getSession: vi.fn(() => Promise.resolve({ data: { session: null } })),
       onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),

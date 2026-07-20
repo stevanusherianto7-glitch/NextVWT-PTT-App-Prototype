@@ -1,0 +1,31 @@
+# docker-compose.livekit.yml — LiveKit SFU lokal (dev/test)
+#
+# Jalankan:  docker compose -f docker-compose.livekit.yml up -d
+# Hentikan:  docker compose -f docker-compose.livekit.yml down
+#
+# Catatan:
+# - Pakai API key/secret DEV (jangan pakai ini di produksi!).
+# - Tanpa TLS (http/ws) — hanya untuk localhost. Produksi wajib wss + TURN.
+# - TURN DISABLED di dev (localhost tidak butuh NAT traversal).
+#   Untuk deploy VPS, set `turn.enabled: true` + domain + sertifikat (lihat DEPLOYMENT.md).
+# - Port: 7880 = WebSocket SFU, 7881 = TCP RTC, 50000-60000 = UDP RTC.
+
+services:
+  livekit:
+    image: livekit/livekit-server:latest
+    container_name: nextvwt-livekit
+    command: --config /etc/livekit.yaml
+    ports:
+      - "7880:7880"          # WebSocket / HTTP API
+      - "7881:7881"          # TCP RTC
+      - "52000-52100:52000-52100/udp"  # UDP RTC range
+      - "3478:3478/udp"      # TURN UDP
+      - "5349:5349"          # TURN TLS
+    volumes:
+      - ./livekit/config.yaml:/etc/livekit.yaml:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "/bin/sh", "-c", "wget -q -O /dev/null http://localhost:7880/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

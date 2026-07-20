@@ -1,85 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { usePTTStore } from '../store/usePTTStore';
 import { initGlobalAudioContext } from '../utils/audioContext';
-
-// ─── Walkie-Talkie Classic Sound Engine ───────────────────────────────────────
-
-/**
- * Mechanical key-click + burst static: the physical sound of pressing a
- * spring-loaded PTT button on an analog transceiver.
- */
-const playPressSound = (ctx: AudioContext, masterGain: GainNode) => {
-  const t = ctx.currentTime;
-  const duration = 0.08; // 80ms duration
-
-  const osc = ctx.createOscillator();
-  const env = ctx.createGain();
-
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(1000, t); // Clean 1000Hz tone like IndoVWT
-
-  env.gain.setValueAtTime(0, t);
-  env.gain.linearRampToValueAtTime(0.38, t + 0.003); // Instant attack
-  env.gain.setValueAtTime(0.38, t + duration - 0.01);
-  env.gain.exponentialRampToValueAtTime(0.001, t + duration); // Fast release decay
-
-  osc.connect(env);
-  env.connect(masterGain);
-
-  osc.start(t);
-  osc.stop(t + duration + 0.01);
-};
-
-/**
- * Roger Beep + Squelch Tail: Replaced with a clean 1100Hz digital beep tone
- * mimicking the IndoVWT app start/end audio experience.
- */
-const playReleaseSound = (ctx: AudioContext, masterGain: GainNode) => {
-  const t = ctx.currentTime;
-  const duration = 0.08; // 80ms duration
-
-  const osc = ctx.createOscillator();
-  const env = ctx.createGain();
-
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(1100, t); // Clean 1100Hz tone for release (distinct pitch)
-
-  env.gain.setValueAtTime(0, t);
-  env.gain.linearRampToValueAtTime(0.38, t + 0.003); // Instant attack
-  env.gain.setValueAtTime(0.38, t + duration - 0.01);
-  env.gain.exponentialRampToValueAtTime(0.001, t + duration); // Fast release decay
-
-  osc.connect(env);
-  env.connect(masterGain);
-
-  osc.start(t);
-  osc.stop(t + duration + 0.01);
-};
-
-const playRadioSound = (
-  type: 'press' | 'release',
-  ctx: AudioContext,
-  toneOnStartEnd: boolean,
-  pttVolume: number
-) => {
-  if (!toneOnStartEnd) return;
-  try {
-    if (ctx.state === 'suspended') ctx.resume();
-
-    const masterGain = ctx.createGain();
-    masterGain.connect(ctx.destination);
-    // Limit max volume to 70% of hardware capacity for hearing safety
-    masterGain.gain.value = Math.min(0.7, (pttVolume / 100) * 0.7);
-
-    if (type === 'press') {
-      playPressSound(ctx, masterGain);
-    } else {
-      playReleaseSound(ctx, masterGain);
-    }
-  } catch (err) {
-    console.warn('PTT audio playback failed:', err);
-  }
-};
+import { playPressSound, playReleaseSound } from '../utils/radioSound';
 
 interface UsePttTransmitProps {
   onPressStart: () => void;
@@ -124,6 +46,14 @@ export function usePttTransmit({
     }
   };
 
+  const playSound = (type: 'press' | 'release', ctx: AudioContext | null) => {
+    if (!toneOnStartEnd) return;
+    if (ctx) {
+      if (type === 'press') playPressSound(pttVolume);
+      else playReleaseSound(pttVolume);
+    }
+  };
+
   const handleMouseDown = (e: React.MouseEvent | React.TouchEvent) => {
     if (isBusy) return;
     if (e.type === 'touchstart') {
@@ -135,7 +65,7 @@ export function usePttTransmit({
 
     if (!togglePtt && isPowerOn) {
       onPressStartRef.current();
-      if (ctx) playRadioSound('press', ctx, toneOnStartEnd, pttVolume);
+      playSound('press', ctx);
     }
   };
 
@@ -151,14 +81,14 @@ export function usePttTransmit({
         const nextState = !isActive;
         if (nextState) {
           onPressStartRef.current();
-          if (ctx) playRadioSound('press', ctx, toneOnStartEnd, pttVolume);
+          playSound('press', ctx);
         } else {
           onPressEndRef.current();
-          if (ctx) playRadioSound('release', ctx, toneOnStartEnd, pttVolume);
+          playSound('release', ctx);
         }
       } else {
         onPressEndRef.current();
-        if (ctx) playRadioSound('release', ctx, toneOnStartEnd, pttVolume);
+        playSound('release', ctx);
       }
       triggerHaptic(10);
     }
@@ -171,14 +101,17 @@ export function usePttTransmit({
     if (isDepressed && isPowerOn) {
       if (!togglePtt) {
         onPressEndRef.current();
-        if (ctx) playRadioSound('release', ctx, toneOnStartEnd, pttVolume);
+        playSound('release', ctx);
       }
       triggerHaptic(5);
     }
     setIsDepressed(false);
   };
 
-  // Keyboard Spacebar event listener
+  // Keyboard Spacebar event listener.
+  // triggerHaptic is stabilized (no external deps) so it is safe to omit from
+  // the dependency array; isDepressed is intentionally excluded to avoid
+  // re-binding the global listener on every press/release cycle.
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === 'Space') {
@@ -191,7 +124,7 @@ export function usePttTransmit({
 
         if (!togglePtt) {
           onPressStartRef.current();
-          if (ctx) playRadioSound('press', ctx, toneOnStartEnd, pttVolume);
+          playSound('press', ctx);
         }
       }
     };
@@ -207,14 +140,14 @@ export function usePttTransmit({
             const nextState = !isActive;
             if (nextState) {
               onPressStartRef.current();
-              if (ctx) playRadioSound('press', ctx, toneOnStartEnd, pttVolume);
+              playSound('press', ctx);
             } else {
               onPressEndRef.current();
-              if (ctx) playRadioSound('release', ctx, toneOnStartEnd, pttVolume);
+              playSound('release', ctx);
             }
           } else {
             onPressEndRef.current();
-            if (ctx) playRadioSound('release', ctx, toneOnStartEnd, pttVolume);
+            playSound('release', ctx);
           }
           triggerHaptic(10);
         }
@@ -228,16 +161,8 @@ export function usePttTransmit({
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [
-    isPowerOn,
-    isBusy,
-    isActive,
-    isDepressed,
-    togglePtt,
-    toneOnStartEnd,
-    pttVolume,
-    vibrateOnStart,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPowerOn, isBusy, isActive, togglePtt, toneOnStartEnd, pttVolume, vibrateOnStart]);
 
   return {
     isDepressed,

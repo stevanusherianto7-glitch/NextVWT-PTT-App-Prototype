@@ -30,6 +30,9 @@ vi.mock('@/app/utils/supabase', () => {
 
   const mockSupabase = {
     channel: vi.fn(() => mockChannel),
+    functions: {
+      invoke: vi.fn(() => Promise.resolve({ data: null, error: null })),
+    },
     auth: {
       getUser: vi.fn(),
       signIn: vi.fn(),

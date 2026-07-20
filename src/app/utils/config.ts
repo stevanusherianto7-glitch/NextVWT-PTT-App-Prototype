@@ -26,6 +26,16 @@ export interface BrandConfig {
   defaultChannel: number;
   isolatedChannels: number[];
 
+  // Artificial offset added to the displayed user count (demo only, 0 in prod)
+  simulatedUserOffset: number;
+
+  /**
+   * LiveKit SFU WebSocket URL. Kosong (= '') → aplikasi menggunakan topologi
+   * WebRTC mesh (Supabase Realtime) sebagai fallback/dev. Terisi → topologi SFU
+   * aktif (lihat AD-3 di PRD §7.2). Diambil dari VITE_LIVEKIT_URL / secure endpoint.
+   */
+  livekitUrl: string;
+
   // Visual branding (optional overrides; uses VISUAL_CONFIG defaults if not set)
   brandColor?: string;
   secondaryColor?: string;
@@ -66,12 +76,32 @@ export const BRAND: BrandConfig = {
   // Channels that disable WebRTC (e.g. for purely server-side processing or privacy)
   isolatedChannels: [100],
 
+  /**
+   * Artificial offset added to the displayed user count to simulate a busy
+   * channel on the LCD panel. This is a cosmetic demo behaviour only and must
+   * NEVER be applied in production builds — real presence counts come from
+   * Supabase Realtime. It is forced to 0 when import.meta.env.PROD is true.
+   */
+  simulatedUserOffset: import.meta.env.PROD ? 0 : 125,
+
+  /**
+   * LiveKit SFU URL. Kosong → mesh (fallback/dev). Terisi → SFU aktif.
+   * Sumber: secure endpoint (prod) atau VITE_LIVEKIT_URL (dev).
+   */
+  livekitUrl: import.meta.env.VITE_LIVEKIT_URL || '',
+
   // ─── Optional Visual Overrides ──────────────────────────────────────────────
   // If not set, defaults from VISUAL_CONFIG below are used
   // brandColor: '#00C853',        // Override primary green
   // secondaryColor: '#FF9800',    // Override secondary orange
   // accentColor: '#FF3D00',       // Override accent red
 };
+
+/**
+ * Dual-mode switch (AD-3, PRD §7.2): true bila LiveKit SFU terkonfigurasi.
+ * false → aplikasi menggunakan WebRTC mesh via Supabase Realtime.
+ */
+export const USE_SFU = Boolean(BRAND.livekitUrl);
 
 /**
  * Channel yang TIDAK menampilkan dock reaksi (Animasi / Suara / Gift).

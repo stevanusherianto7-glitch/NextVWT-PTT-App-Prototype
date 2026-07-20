@@ -38,6 +38,11 @@ Thumbs.db
 npm-debug.log*
 pnpm-debug.log*
 
+# Stray files from other projects / scratch (do not commit)
+RESTOKU_*.md
+rename-brand.ps1
+rename-brand.sh
+
 # Android builds and APKs & signing keys (NEVER commit)
 *.apk
 *.aab

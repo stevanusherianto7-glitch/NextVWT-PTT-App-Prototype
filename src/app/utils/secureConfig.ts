@@ -4,6 +4,7 @@ interface SecureConfig {
   turnUsername: string;
   turnCredential: string;
   turnUrls: string[];
+  livekitUrl: string;
 }
 
 let cachedConfig: SecureConfig | null = null;
@@ -48,6 +49,7 @@ export async function getSecureConfig(): Promise<SecureConfig> {
     turnUrls: import.meta.env.VITE_TURN_URL
       ? [import.meta.env.VITE_TURN_URL]
       : ['stun:stun.l.google.com:19302'],
+    livekitUrl: import.meta.env.VITE_LIVEKIT_URL || '',
   };
 
   // Di production, fetch dari secure endpoint
@@ -69,6 +71,7 @@ export async function getSecureConfig(): Promise<SecureConfig> {
           turnUsername: data.turnUsername,
           turnCredential: data.turnCredential,
           turnUrls: data.turnUrls,
+          livekitUrl: data.livekitUrl || '',
         };
         return cachedConfig;
       }
