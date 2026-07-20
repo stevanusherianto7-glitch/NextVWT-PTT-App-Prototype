@@ -86,18 +86,37 @@ Object.defineProperty(global.navigator, 'mediaDevices', {
   configurable: true,
 });
 
-// Mock AudioContext
-global.AudioContext = vi.fn(() => ({
-  createMediaStreamSource: vi.fn(() => ({ connect: vi.fn() })),
-  createAnalyser: vi.fn(() => ({
+// Mock AudioContext as a proper class (supports `new` keyword in audioContext.ts)
+class MockAudioContext {
+  state = 'running';
+  currentTime = 0;
+  destination = {};
+  createMediaStreamSource = vi.fn(() => ({ connect: vi.fn() }));
+  createAnalyser = vi.fn(() => ({
     connect: vi.fn(),
     getByteFrequencyData: vi.fn(),
     frequencyBinCount: 128,
-  })),
-  resume: vi.fn().mockResolvedValue(undefined),
-  close: vi.fn(),
-  state: 'running',
-})) as unknown as typeof AudioContext;
+  }));
+  createOscillator = vi.fn(() => ({
+    type: 'sine' as OscillatorType,
+    frequency: { setValueAtTime: vi.fn(), exponentialRampToValueAtTime: vi.fn() },
+    connect: vi.fn(),
+    start: vi.fn(),
+    stop: vi.fn(),
+  }));
+  createGain = vi.fn(() => ({
+    gain: {
+      setValueAtTime: vi.fn(),
+      linearRampToValueAtTime: vi.fn(),
+      exponentialRampToValueAtTime: vi.fn(),
+    },
+    connect: vi.fn(),
+  }));
+  resume = vi.fn().mockResolvedValue(undefined);
+  close = vi.fn();
+}
+
+global.AudioContext = MockAudioContext as unknown as typeof AudioContext;
 
 // Silence console.error for expected errors in tests
 const originalError = console.error;
